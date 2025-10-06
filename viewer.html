@@ -20,10 +20,20 @@
     .name { font-weight:600; color:var(--text); }
     .error { color:#ffb4b4; }
   </style>
+
+  <!-- Import map so examples that import 'three' work in the browser -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
 </head>
 <body>
   <div id="app">
     <header><h1>STL Viewer</h1><div style="flex:1"></div></header>
+
     <aside id="sidebar">
       <div class="stat">Model: <span id="modelName" class="name">—</span></div>
       <div class="stat">Triangles: <span id="triCount">—</span></div>
@@ -35,22 +45,14 @@
       </div>
       <div id="message" class="stat"></div>
     </aside>
+
     <main id="viewer"></main>
   </div>
-
-  <!-- Import map so examples that say `import ... from "three"` work in the browser -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-    }
-  }
-  </script>
 
   <script type="module">
     import * as THREE from "three";
     import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-    import { STLLoader }   from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
+    import { STLLoader }     from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
     const VIEW = document.getElementById('viewer');
     const modelNameEl = document.getElementById('modelName');
@@ -61,7 +63,7 @@
     const resetViewBtn = document.getElementById('resetViewBtn');
     const msg = document.getElementById('message');
 
-    // ?file=s1.stl (relative path in the same repo)
+    // ?file=s1.stl
     const params = new URLSearchParams(location.search);
     const file = params.get('file');
 
@@ -86,10 +88,7 @@
 
     let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null;
 
-    function onResize(){
-      const w=VIEW.clientWidth,h=VIEW.clientHeight;
-      camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h);
-    }
+    function onResize(){ const w=VIEW.clientWidth,h=VIEW.clientHeight; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); }
     window.addEventListener('resize', onResize);
 
     function uniqueVerticesFromGeometry(geom, precision=1e-6){
@@ -97,34 +96,31 @@
       const pos = g.attributes.position.array;
       const key=(x,y,z)=>`${Math.round(x/precision)},${Math.round(y/precision)},${Math.round(z/precision)}`;
       const map=new Map();
-      for(let i=0;i<pos.length;i+=3){
-        const x=pos[i],y=pos[i+1],z=pos[i+2];
-        const k=key(x,y,z);
-        if(!map.has(k)) map.set(k,[x,y,z]);
-      }
+      for(let i=0;i<pos.length;i+=3){ const x=pos[i],y=pos[i+1],z=pos[i+2]; const k=key(x,y,z); if(!map.has(k)) map.set(k,[x,y,z]); }
       return Array.from(map.values());
     }
-    function pointsFromVertices(verts,size=0.75){
+    function pointsFromVertices(verts,size){
       const arr=new Float32Array(verts.length*3);
-      for(let i=0,j=0;i<verts.length;i++){ arr[j++]=verts[i][0]; arr[j++]=verts[i][1]; arr[j++]=verts[i][2]; }
+      for(let i=0,j=0;i<verts.length;i++){arr[j++]=verts[i][0];arr[j++]=verts[i][1];arr[j++]=verts[i][2];}
       const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(arr,3));
       return new THREE.Points(g,new THREE.PointsMaterial({size,sizeAttenuation:true}));
     }
     function makeCSV(verts){ return "x,y,z\n"+verts.map(v=>`${v[0]},${v[1]},${v[2]}`).join("\n"); }
+
     function fitCameraToObject(obj, offset=1.2){
-      const box=new THREE.Box3().setFromObject(obj),
-            size=box.getSize(new THREE.Vector3()),
-            center=box.getCenter(new THREE.Vector3());
-      const maxDim=Math.max(size.x,size.y,size.z),
-            fov=camera.fov*(Math.PI/180);
-      let dist=(maxDim/2)/Math.tan(fov/2);
-      dist*=offset;
+      const box=new THREE.Box3().setFromObject(obj);
+      const size=box.getSize(new THREE.Vector3());
+      const center=box.getCenter(new THREE.Vector3());
+      const maxDim=Math.max(size.x,size.y,size.z);
+      const fov=camera.fov*(Math.PI/180);
+      let dist=(maxDim/2)/Math.tan(fov/2); dist*=offset;
       const dir=new THREE.Vector3(1,1,1).normalize();
       camera.position.copy(center).addScaledVector(dir,dist);
       camera.near=dist/100; camera.far=dist*100; camera.updateProjectionMatrix();
       controls.target.copy(center); controls.update();
       lastFitTarget=obj;
     }
+
     function clearScene(){
       if(mesh){scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); mesh=null;}
       if(points){scene.remove(points); points.geometry.dispose(); points.material.dispose(); points=null;}
@@ -135,65 +131,54 @@
 
     function loadLocal(relativePath){
       clearScene();
-      if(!relativePath){
-        msg.innerHTML='<span class="error">No file specified (?file=)</span>';
-        return;
-      }
+      if(!relativePath){ msg.innerHTML='<span class="error">No file specified (?file=)</span>'; return; }
       modelNameEl.textContent = relativePath;
 
       const loader = new STLLoader();
       loader.load(relativePath, (geometry)=>{
-        // ---- important fixes ----
+        // --- important fixes ---
         geometry.computeVertexNormals();
-        geometry.center();              // center model at origin
-
-        // If your CAD exported millimeters or inches, uncomment one:
-        // geometry.scale(0.001, 0.001, 0.001); // mm -> meters
-        // geometry.scale(0.0254, 0.0254, 0.0254); // inches -> meters
+        geometry.center();            // put model at origin
+        // If your units are mm → meters, uncomment next line:
+        // geometry.scale(0.001, 0.001, 0.001);
+        // If inches → meters:
+        // geometry.scale(0.0254, 0.0254, 0.0254);
 
         const material = new THREE.MeshStandardMaterial({
-          color: 0x8aa3ff,
-          metalness: 0.05,
-          roughness: 0.75,
-          // side: THREE.DoubleSide, // uncomment only if faces are flipped/inside-out
+          color: 0x8aa3ff, metalness: 0.05, roughness: 0.75
+          // side: THREE.DoubleSide // uncomment only if faces look inside-out
         });
-
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
 
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // Unique vertices + small, hidden-by-default points
+        // Unique verts + tiny points OFF by default
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
+        // point size scaled to model diagonal
         const box = new THREE.Box3().setFromObject(mesh);
         const diag = box.getSize(new THREE.Vector3()).length();
-        const pointSize = Math.max(0.002, diag * 0.002); // scales with model size
+        const pointSize = Math.max(0.002, diag * 0.002);
 
         points = pointsFromVertices(uniq, pointSize);
-        points.visible = false; // start hidden
-        points.frustumCulled=false;
+        points.visible = false;               // start hidden
+        points.frustumCulled = false;
         scene.add(points);
 
-        // CSV of vertices
+        // CSV
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
-        downloadCsvBtn.onclick=()=>{
-          const a=document.createElement('a');
-          a.href=verticesCSVUrl; a.download='vertices.csv'; a.click();
-        };
+        downloadCsvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=verticesCSVUrl; a.download='vertices.csv'; a.click(); };
 
         // Toggle points
         let showPoints=false;
-        togglePointsBtn.disabled=false;
         togglePointsBtn.textContent='Show points';
-        togglePointsBtn.onclick=()=>{
-          showPoints=!showPoints; points.visible=showPoints;
-          togglePointsBtn.textContent=showPoints?'Hide points':'Show points';
-        };
+        togglePointsBtn.disabled=false;
+        togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
 
         // Reset view
         resetViewBtn.disabled=false;
@@ -205,13 +190,11 @@
       });
     }
 
-    // Start
     const initial = file || 's1.stl'; // default if opened directly
     loadLocal(initial);
 
     const raf = () => { controls.update(); renderer.render(scene, camera); requestAnimationFrame(raf); };
-    requestAnimationFrame(raf);
-    onResize();
+    requestAnimationFrame(raf); onResize();
   </script>
 </body>
 </html>
