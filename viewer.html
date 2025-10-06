@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>STL Viewer</title>
+  <style>
+    :root { --bg:#0f1115; --panel:#171a21; --text:#e8e8e8; --muted:#a8a8a8; }
+    html, body { height:100%; margin:0; background:var(--bg); color:var(--text); font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+    #app { display:grid; grid-template-columns:320px 1fr; grid-template-rows:auto 1fr; height:100%; }
+    header { grid-column:1 / -1; padding:10px 16px; border-bottom:1px solid #222; display:flex; align-items:center; gap:12px; }
+    header h1 { font-size:16px; margin:0; }
+    #sidebar { background:var(--panel); padding:14px; overflow:auto; border-right:1px solid #222; }
+    #viewer { position:relative; }
+    canvas { display:block; width:100%; height:100%; }
+    .stat { font-size:12px; color:var(--muted); margin:4px 0; }
+    .row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    button { padding:8px 10px; border-radius:8px; border:1px solid #2a2f3a; background:#121620; color:var(--text); cursor:pointer; }
+    button:hover { border-color:#394152; }
+    .name { font-weight:600; color:var(--text); }
+    .error { color:#ffb4b4; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header><h1>STL Viewer</h1><div style="flex:1"></div></header>
+    <aside id="sidebar">
+      <div class="stat">Model: <span id="modelName" class="name">—</span></div>
+      <div class="stat">Triangles: <span id="triCount">—</span></div>
+      <div class="stat">Vertices (unique): <span id="vCount">—</span></div>
+      <div class="row">
+        <button id="downloadCsvBtn" disabled>Download vertices CSV</button>
+        <button id="togglePointsBtn" disabled>Hide points</button>
+        <button id="resetViewBtn" disabled>Reset view</button>
+      </div>
+      <div id="message" class="stat"></div>
+    </aside>
+    <main id="viewer"></main>
+  </div>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+    import { STLLoader } from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
+
+    const VIEW = document.getElementById('viewer');
+    const modelNameEl = document.getElementById('modelName');
+    const triCountEl = document.getElementById('triCount');
+    const vCountEl = document.getElementById('vCount');
+    const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+    const togglePointsBtn = document.getElementById('togglePointsBtn');
+    const resetViewBtn = document.getElementById('resetViewBtn');
+    const msg = document.getElementById('message');
+
+    // Get ?file= relative path (e.g., s1.stl)
+    const params = new URLSearchParams(location.search);
+    const file = params.get('file');
+
+    // Three.js setup
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(VIEW.clientWidth, VIEW.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    VIEW.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f1115);
+
+    const camera = new THREE.PerspectiveCamera(50, VIEW.clientWidth / VIEW.clientHeight, 0.01, 2000);
+    camera.position.set(0.8, 0.8, 1.4);
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
+    const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
+    const grid = new THREE.GridHelper(10, 20); grid.material.opacity=0.1; grid.material.transparent=true; scene.add(grid);
+
+    let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null;
+    function onResize(){ const w=VIEW.clientWidth,h=VIEW.clientHeight; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); }
+    window.addEventListener('resize', onResize);
+
+    function uniqueVerticesFromGeometry(geom, precision=1e-6){
+      const g = geom.index ? geom.toNonIndexed() : geom;
+      const pos = g.attributes.position.array;
+      const key=(x,y,z)=>`${Math.round(x/precision)},${Math.round(y/precision)},${Math.round(z/precision)}`;
+      const map=new Map();
+      for(let i=0;i<pos.length;i+=3){ const x=pos[i],y=pos[i+1],z=pos[i+2]; const k=key(x,y,z); if(!map.has(k)) map.set(k,[x,y,z]); }
+      return Array.from(map.values());
+    }
+    function pointsFromVertices(verts,size=0.75){
+      const arr=new Float32Array(verts.length*3); for(let i=0,j=0;i<verts.length;i++){arr[j++]=verts[i][0];arr[j++]=verts[i][1];arr[j++]=verts[i][2];}
+      const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+      return new THREE.Points(g,new THREE.PointsMaterial({size,sizeAttenuation:true}));
+    }
+    function makeCSV(verts){ return "x,y,z\n"+verts.map(v=>`${v[0]},${v[1]},${v[2]}`).join("\n"); }
+    function fitCameraToObject(obj, offset=1.2){
+      const box=new THREE.Box3().setFromObject(obj), size=box.getSize(new THREE.Vector3()), center=box.getCenter(new THREE.Vector3());
+      const maxDim=Math.max(size.x,size.y,size.z), fov=camera.fov*(Math.PI/180); let dist=(maxDim/2)/Math.tan(fov/2); dist*=offset;
+      const dir=new THREE.Vector3(1,1,1).normalize(); camera.position.copy(center).addScaledVector(dir,dist);
+      camera.near=dist/100; camera.far=dist*100; camera.updateProjectionMatrix(); controls.target.copy(center); controls.update(); lastFitTarget=obj;
+    }
+    function clearScene(){
+      if(mesh){scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); mesh=null;}
+      if(points){scene.remove(points); points.geometry.dispose(); points.material.dispose(); points=null;}
+      if(verticesCSVUrl){URL.revokeObjectURL(verticesCSVUrl); verticesCSVUrl=null;}
+      modelNameEl.textContent='—'; triCountEl.textContent='—'; vCountEl.textContent='—';
+      downloadCsvBtn.disabled=true; togglePointsBtn.disabled=true; resetViewBtn.disabled=true;
+    }
+
+    function loadLocal(relativePath){
+      clearScene(); if(!relativePath){ msg.innerHTML='<span class="error">No file specified (?file=)</span>'; return; }
+      modelNameEl.textContent = relativePath;
+      const loader = new STLLoader();
+      loader.load(relativePath, (geometry)=>{
+        geometry.computeVertexNormals();
+        const material = new THREE.MeshStandardMaterial({ color: 0x8aa3ff, metalness: 0.05, roughness: 0.75 });
+        mesh = new THREE.Mesh(geometry, material); scene.add(mesh);
+        const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3; triCountEl.textContent=triCount.toLocaleString();
+        const uniq=uniqueVerticesFromGeometry(geometry,1e-6); vCountEl.textContent=uniq.length.toLocaleString();
+        points=pointsFromVertices(uniq, Math.max(0.02, Math.min(0.75, Math.cbrt(uniq.length)*0.005))); points.frustumCulled=false; scene.add(points);
+        const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'}); verticesCSVUrl=URL.createObjectURL(csvBlob);
+        downloadCsvBtn.disabled=false; downloadCsvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=verticesCSVUrl; a.download='vertices.csv'; a.click(); };
+        let showPoints=true; togglePointsBtn.disabled=false; togglePointsBtn.textContent='Hide points'; togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
+        resetViewBtn.disabled=false; resetViewBtn.onclick=()=> lastFitTarget && fitCameraToObject(lastFitTarget,1.2);
+        fitCameraToObject(mesh,1.2);
+      }, undefined, (err)=>{ msg.innerHTML=`<span class="error">Load failed: ${err?.message||err}</span>`; });
+    }
+
+    // Kick off
+    const initial = file || 's1.stl'; // default if opened directly
+    loadLocal(initial);
+
+    const raf = () => { controls.update(); renderer.render(scene, camera); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf); onResize();
+  </script>
+</body>
+</html>
