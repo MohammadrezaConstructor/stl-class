@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>STL Viewer</title>
   <style>
-    :root { --bg:#0f1115; --panel:#171a21; --text:#e8e8e8; --muted:#a8a8a8; }
+    :root { --bg:#0f1115; --panel:#171a21; --text:#e8e8e8; --muted:#a8a8a8; --accent:#7aa2f7; }
     html, body { height:100%; margin:0; background:var(--bg); color:var(--text); font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
     #app { display:grid; grid-template-columns:320px 1fr; grid-template-rows:auto 1fr; height:100%; }
     header { grid-column:1 / -1; padding:10px 16px; border-bottom:1px solid #222; display:flex; align-items:center; gap:12px; }
@@ -13,26 +13,40 @@
     #sidebar { background:var(--panel); padding:14px; overflow:auto; border-right:1px solid #222; }
     #viewer { position:relative; }
     canvas { display:block; width:100%; height:100%; }
+
     .stat { font-size:12px; color:var(--muted); margin:4px 0; }
     .row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
     button { padding:8px 10px; border-radius:8px; border:1px solid #2a2f3a; background:#121620; color:var(--text); cursor:pointer; }
     button:hover { border-color:#394152; }
     .name { font-weight:600; color:var(--text); }
     .error { color:#ffb4b4; }
-  </style>
 
-  <!-- Import map so examples that import 'three' work in the browser -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    /* Hover tooltip */
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(20, 24, 33, 0.95);
+      border: 1px solid #2a2f3a;
+      color: var(--text);
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      transform: translate(10px, 10px);
+      display: none;
+      z-index: 2;
     }
-  }
-  </script>
+    .tooltip .title { color: var(--accent); font-weight: 600; margin-right: 6px; }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#0e1320; border:1px solid #2a2f3a; font-size:11px; color:var(--text); }
+  </style>
 </head>
 <body>
   <div id="app">
-    <header><h1>STL Viewer</h1><div style="flex:1"></div></header>
+    <header>
+      <h1>STL Viewer</h1>
+      <span class="pill">Axes + Hover coords</span>
+      <div style="flex:1"></div>
+    </header>
 
     <aside id="sidebar">
       <div class="stat">Model: <span id="modelName" class="name">—</span></div>
@@ -40,20 +54,42 @@
       <div class="stat">Vertices (unique): <span id="vCount">—</span></div>
       <div class="row">
         <button id="downloadCsvBtn" disabled>Download vertices CSV</button>
-        <button id="togglePointsBtn" disabled>Show points</button>
+        <button id="togglePointsBtn" disabled>Hide points</button>
         <button id="resetViewBtn" disabled>Reset view</button>
       </div>
       <div id="message" class="stat"></div>
+      <div class="stat" style="margin-top:10px;">
+        <strong>Tip:</strong> Coordinates reflect the current viewer frame. Remove <code>geometry.center()</code> if you want original STL coordinates.
+      </div>
     </aside>
 
-    <main id="viewer"></main>
+    <main id="viewer">
+      <div id="tooltip" class="tooltip"></div>
+    </main>
   </div>
+
+  <!-- Import map so examples that say `import ... from "three"` work in the browser -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
 
   <script type="module">
     import * as THREE from "three";
     import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-    import { STLLoader }     from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
+    import { STLLoader }   from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
+    // ---------------- Configuration ----------------
+    const CENTER_MODEL = true;     // set to false if you want raw STL coordinates
+    // Uncomment one of these to convert units:
+    // const UNIT_SCALE = 0.001;   // mm -> meters
+    // const UNIT_SCALE = 0.0254;  // inches -> meters
+    const RAYCAST_THRESHOLD_FACTOR = 0.01; // pick radius as a fraction of model diagonal
+
+    // ---------------- DOM refs ----------------
     const VIEW = document.getElementById('viewer');
     const modelNameEl = document.getElementById('modelName');
     const triCountEl = document.getElementById('triCount');
@@ -62,12 +98,13 @@
     const togglePointsBtn = document.getElementById('togglePointsBtn');
     const resetViewBtn = document.getElementById('resetViewBtn');
     const msg = document.getElementById('message');
+    const tooltip = document.getElementById('tooltip');
 
-    // ?file=s1.stl
+    // ?file=s1.stl (relative path in the same repo)
     const params = new URLSearchParams(location.search);
     const file = params.get('file');
 
-    // Three.js setup
+    // ---------------- Three.js setup ----------------
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(VIEW.clientWidth, VIEW.clientHeight);
@@ -82,13 +119,26 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
+    // Lights
     const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
     const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
-    const grid = new THREE.GridHelper(10, 20); grid.material.opacity=0.1; grid.material.transparent=true; scene.add(grid);
 
-    let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null;
+    // Helpers (grid + axes, sizes updated per-model)
+    let grid = new THREE.GridHelper(1, 20); // will rescale later
+    grid.material.opacity = 0.1; grid.material.transparent = true;
+    scene.add(grid);
 
-    function onResize(){ const w=VIEW.clientWidth,h=VIEW.clientHeight; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); }
+    let axes = new THREE.AxesHelper(1); // X=red, Y=green, Z=blue
+    scene.add(axes);
+
+    let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null, raycaster=null, pointer=null;
+    let pointPositions = null; // Float32Array copy for fast lookup
+    let pointSize = 0.01;
+
+    function onResize(){
+      const w=VIEW.clientWidth,h=VIEW.clientHeight;
+      camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h);
+    }
     window.addEventListener('resize', onResize);
 
     function uniqueVerticesFromGeometry(geom, precision=1e-6){
@@ -96,23 +146,28 @@
       const pos = g.attributes.position.array;
       const key=(x,y,z)=>`${Math.round(x/precision)},${Math.round(y/precision)},${Math.round(z/precision)}`;
       const map=new Map();
-      for(let i=0;i<pos.length;i+=3){ const x=pos[i],y=pos[i+1],z=pos[i+2]; const k=key(x,y,z); if(!map.has(k)) map.set(k,[x,y,z]); }
+      for(let i=0;i<pos.length;i+=3){
+        const x=pos[i],y=pos[i+1],z=pos[i+2];
+        const k=key(x,y,z);
+        if(!map.has(k)) map.set(k,[x,y,z]);
+      }
       return Array.from(map.values());
     }
-    function pointsFromVertices(verts,size){
+    function pointsFromVertices(verts,size=0.75){
       const arr=new Float32Array(verts.length*3);
-      for(let i=0,j=0;i<verts.length;i++){arr[j++]=verts[i][0];arr[j++]=verts[i][1];arr[j++]=verts[i][2];}
-      const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(arr,3));
-      return new THREE.Points(g,new THREE.PointsMaterial({size,sizeAttenuation:true}));
+      for(let i=0,j=0;i<verts.length;i++){ arr[j++]=verts[i][0]; arr[j++]=verts[i][1]; arr[j++]=verts[i][2]; }
+      const g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+      const m=new THREE.PointsMaterial({size, sizeAttenuation:true});
+      return new THREE.Points(g,m);
     }
     function makeCSV(verts){ return "x,y,z\n"+verts.map(v=>`${v[0]},${v[1]},${v[2]}`).join("\n"); }
-
     function fitCameraToObject(obj, offset=1.2){
-      const box=new THREE.Box3().setFromObject(obj);
-      const size=box.getSize(new THREE.Vector3());
-      const center=box.getCenter(new THREE.Vector3());
-      const maxDim=Math.max(size.x,size.y,size.z);
-      const fov=camera.fov*(Math.PI/180);
+      const box=new THREE.Box3().setFromObject(obj),
+            size=box.getSize(new THREE.Vector3()),
+            center=box.getCenter(new THREE.Vector3());
+      const maxDim=Math.max(size.x,size.y,size.z),
+            fov=camera.fov*(Math.PI/180);
       let dist=(maxDim/2)/Math.tan(fov/2); dist*=offset;
       const dir=new THREE.Vector3(1,1,1).normalize();
       camera.position.copy(center).addScaledVector(dir,dist);
@@ -120,81 +175,157 @@
       controls.target.copy(center); controls.update();
       lastFitTarget=obj;
     }
-
     function clearScene(){
       if(mesh){scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); mesh=null;}
       if(points){scene.remove(points); points.geometry.dispose(); points.material.dispose(); points=null;}
       if(verticesCSVUrl){URL.revokeObjectURL(verticesCSVUrl); verticesCSVUrl=null;}
       modelNameEl.textContent='—'; triCountEl.textContent='—'; vCountEl.textContent='—';
       downloadCsvBtn.disabled=true; togglePointsBtn.disabled=true; resetViewBtn.disabled=true;
+      tooltip.style.display = 'none';
+      pointPositions = null;
+    }
+
+    function updateHelpersScaleFrom(box3){
+      const diag = box3.getSize(new THREE.Vector3()).length();
+      const scale = Math.max(1e-6, diag);
+      // Resize grid to 2x model size, snap divisions
+      scene.remove(grid); grid.geometry.dispose();
+      const size = Math.pow(2, Math.ceil(Math.log2(scale))) * 2;
+      grid = new THREE.GridHelper(size, 20);
+      grid.material.opacity = 0.1; grid.material.transparent = true;
+      scene.add(grid);
+
+      // Axes length ~ model diagonal
+      scene.remove(axes);
+      axes = new THREE.AxesHelper(diag * 0.6);
+      scene.add(axes);
+    }
+
+    function formatXYZ(x, y, z){
+      const f = (n)=> Number.isFinite(n) ? n.toFixed(6) : 'NaN';
+      return `(${f(x)}, ${f(y)}, ${f(z)})`;
+    }
+
+    function attachHoverPicking(){
+      if (!raycaster) raycaster = new THREE.Raycaster();
+      if (!pointer) pointer = new THREE.Vector2();
+
+      // Set a reasonable picking radius in world units (converted to screen internally)
+      const box = new THREE.Box3().setFromObject(mesh);
+      const diag = box.getSize(new THREE.Vector3()).length();
+      const threshold = Math.max(1e-6, diag * RAYCAST_THRESHOLD_FACTOR);
+      raycaster.params.Points = { threshold };
+
+      function onMove(ev){
+        const rect = renderer.domElement.getBoundingClientRect();
+        pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(pointer, camera);
+        if (!points) return;
+
+        const hits = raycaster.intersectObject(points, true);
+        if (hits.length){
+          const i = hits[0].index; // index in BufferAttribute
+          const pos = points.geometry.getAttribute('position');
+          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+
+          tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(x,y,z)}`;
+          tooltip.style.left = ev.clientX + 'px';
+          tooltip.style.top  = ev.clientY + 'px';
+          tooltip.style.display = 'block';
+        } else {
+          tooltip.style.display = 'none';
+        }
+      }
+
+      function onLeave(){
+        tooltip.style.display = 'none';
+      }
+
+      renderer.domElement.addEventListener('pointermove', onMove);
+      renderer.domElement.addEventListener('pointerleave', onLeave);
     }
 
     function loadLocal(relativePath){
       clearScene();
-      if(!relativePath){ msg.innerHTML='<span class="error">No file specified (?file=)</span>'; return; }
+      if(!relativePath){
+        msg.innerHTML='<span class="error">No file specified (?file=)</span>';
+        return;
+      }
       modelNameEl.textContent = relativePath;
 
       const loader = new STLLoader();
       loader.load(relativePath, (geometry)=>{
-        // --- important fixes ---
+        // ---- important fixes ----
         geometry.computeVertexNormals();
-        geometry.center();            // put model at origin
-        // If your units are mm → meters, uncomment next line:
-        // geometry.scale(0.001, 0.001, 0.001);
-        // If inches → meters:
-        // geometry.scale(0.0254, 0.0254, 0.0254);
+        if (CENTER_MODEL) geometry.center(); // center at origin (viewer coordinates)
+        // if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
 
         const material = new THREE.MeshStandardMaterial({
-          color: 0x8aa3ff, metalness: 0.05, roughness: 0.75
-          // side: THREE.DoubleSide // uncomment only if faces look inside-out
+          color: 0x8aa3ff, metalness: 0.05, roughness: 0.75,
+          // side: THREE.DoubleSide, // enable if faces are flipped
         });
+
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
 
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // Unique verts + tiny points OFF by default
+        // Unique vertices + small points (visible by default for hover)
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
-        // point size scaled to model diagonal
         const box = new THREE.Box3().setFromObject(mesh);
         const diag = box.getSize(new THREE.Vector3()).length();
-        const pointSize = Math.max(0.002, diag * 0.002);
+        pointSize = Math.max(0.002, diag * 0.002); // scales with model size
 
         points = pointsFromVertices(uniq, pointSize);
-        points.visible = false;               // start hidden
-        points.frustumCulled = false;
+        points.frustumCulled=false;
         scene.add(points);
 
-        // CSV
+        // For quick access when hovering
+        pointPositions = points.geometry.getAttribute('position').array;
+
+        // CSV of vertices
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
-        downloadCsvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=verticesCSVUrl; a.download='vertices.csv'; a.click(); };
+        downloadCsvBtn.onclick=()=>{
+          const a=document.createElement('a');
+          a.href=verticesCSVUrl; a.download='vertices.csv'; a.click();
+        };
 
         // Toggle points
-        let showPoints=false;
-        togglePointsBtn.textContent='Show points';
+        let showPoints=true;
         togglePointsBtn.disabled=false;
-        togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
+        togglePointsBtn.textContent='Hide points';
+        togglePointsBtn.onclick=()=>{
+          showPoints=!showPoints; points.visible=showPoints;
+          togglePointsBtn.textContent=showPoints?'Hide points':'Show points';
+        };
 
         // Reset view
         resetViewBtn.disabled=false;
         resetViewBtn.onclick=()=> lastFitTarget && fitCameraToObject(lastFitTarget,1.2);
 
+        // Fit + scale helpers + enable hover picking
         fitCameraToObject(mesh,1.2);
+        updateHelpersScaleFrom(new THREE.Box3().setFromObject(mesh));
+        attachHoverPicking();
       }, undefined, (err)=>{
         msg.innerHTML=`<span class="error">Load failed: ${err?.message||err}</span>`;
       });
     }
 
+    // Start
     const initial = file || 's1.stl'; // default if opened directly
     loadLocal(initial);
 
     const raf = () => { controls.update(); renderer.render(scene, camera); requestAnimationFrame(raf); };
-    requestAnimationFrame(raf); onResize();
+    requestAnimationFrame(raf);
+    onResize();
   </script>
 </body>
 </html>
