@@ -21,7 +21,7 @@
     .name { font-weight:600; color:var(--text); }
     .error { color:#ffb4b4; }
 
-    /* Hover tooltip */
+    /* Hover tooltip (no transform; JS positions precisely) */
     .tooltip {
       position: absolute;
       pointer-events: none;
@@ -32,7 +32,6 @@
       border-radius: 8px;
       font-size: 12px;
       white-space: nowrap;
-      transform: translate(10px, 10px);
       display: none;
       z-index: 2;
     }
@@ -132,7 +131,6 @@
     scene.add(axes);
 
     let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null, raycaster=null, pointer=null;
-    let pointPositions = null; // Float32Array copy for fast lookup
     let pointSize = 0.01;
 
     function onResize(){
@@ -182,22 +180,20 @@
       modelNameEl.textContent='—'; triCountEl.textContent='—'; vCountEl.textContent='—';
       downloadCsvBtn.disabled=true; togglePointsBtn.disabled=true; resetViewBtn.disabled=true;
       tooltip.style.display = 'none';
-      pointPositions = null;
     }
 
     function updateHelpersScaleFrom(box3){
       const diag = box3.getSize(new THREE.Vector3()).length();
-      const scale = Math.max(1e-6, diag);
-      // Resize grid to 2x model size, snap divisions
+      // Resize grid ~ power-of-two around model size
       scene.remove(grid); grid.geometry.dispose();
-      const size = Math.pow(2, Math.ceil(Math.log2(scale))) * 2;
+      const size = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, diag)))) * 2;
       grid = new THREE.GridHelper(size, 20);
       grid.material.opacity = 0.1; grid.material.transparent = true;
       scene.add(grid);
 
       // Axes length ~ model diagonal
       scene.remove(axes);
-      axes = new THREE.AxesHelper(diag * 0.6);
+      axes = new THREE.AxesHelper(Math.max(1e-6, diag * 0.6));
       scene.add(axes);
     }
 
@@ -210,38 +206,54 @@
       if (!raycaster) raycaster = new THREE.Raycaster();
       if (!pointer) pointer = new THREE.Vector2();
 
-      // Set a reasonable picking radius in world units (converted to screen internally)
+      // Set a reasonable picking radius in world units (converted internally)
       const box = new THREE.Box3().setFromObject(mesh);
       const diag = box.getSize(new THREE.Vector3()).length();
       const threshold = Math.max(1e-6, diag * RAYCAST_THRESHOLD_FACTOR);
       raycaster.params.Points = { threshold };
 
+      const OFFSET = 8; // px gap from the cursor inside the viewer
+
       function onMove(ev){
         const rect = renderer.domElement.getBoundingClientRect();
+
+        // Normalized device coords for raycasting
         pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
         pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
-
         raycaster.setFromCamera(pointer, camera);
+
         if (!points) return;
 
         const hits = raycaster.intersectObject(points, true);
         if (hits.length){
-          const i = hits[0].index; // index in BufferAttribute
+          const i = hits[0].index;
           const pos = points.geometry.getAttribute('position');
           const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
 
           tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(x,y,z)}`;
-          tooltip.style.left = ev.clientX + 'px';
-          tooltip.style.top  = ev.clientY + 'px';
-          tooltip.style.display = 'block';
+
+          // Position tooltip relative to viewer container
+          let left = (ev.clientX - rect.left) + OFFSET;
+          let top  = (ev.clientY - rect.top)  + OFFSET;
+
+          // Clamp to container bounds
+          tooltip.style.display = 'block'; // measure after showing
+          const ttRect = tooltip.getBoundingClientRect();
+          const ttW = ttRect.width  || 160;
+          const ttH = ttRect.height || 28;
+          const maxLeft = rect.width  - ttW - 2;
+          const maxTop  = rect.height - ttH - 2;
+          if (left > maxLeft) left = Math.max(0, (ev.clientX - rect.left) - ttW - OFFSET);
+          if (top  > maxTop)  top  = Math.max(0, (ev.clientY - rect.top)  - ttH - OFFSET);
+
+          tooltip.style.left = left + 'px';
+          tooltip.style.top  = top  + 'px';
         } else {
           tooltip.style.display = 'none';
         }
       }
 
-      function onLeave(){
-        tooltip.style.display = 'none';
-      }
+      function onLeave(){ tooltip.style.display = 'none'; }
 
       renderer.domElement.addEventListener('pointermove', onMove);
       renderer.domElement.addEventListener('pointerleave', onLeave);
@@ -259,7 +271,7 @@
       loader.load(relativePath, (geometry)=>{
         // ---- important fixes ----
         geometry.computeVertexNormals();
-        if (CENTER_MODEL) geometry.center(); // center at origin (viewer coordinates)
+        if (CENTER_MODEL) geometry.center(); // center at origin (viewer coords)
         // if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
 
         const material = new THREE.MeshStandardMaterial({
@@ -267,7 +279,8 @@
           // side: THREE.DoubleSide, // enable if faces are flipped
         });
 
-        mesh = new THREE.Mesh(geometry, material);
+        const meshLocal = new THREE.Mesh(geometry, material);
+        mesh = meshLocal;
         scene.add(mesh);
 
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
@@ -284,9 +297,6 @@
         points = pointsFromVertices(uniq, pointSize);
         points.frustumCulled=false;
         scene.add(points);
-
-        // For quick access when hovering
-        pointPositions = points.geometry.getAttribute('position').array;
 
         // CSV of vertices
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
