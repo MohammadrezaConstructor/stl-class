@@ -21,7 +21,6 @@
     .name { font-weight:600; color:var(--text); }
     .error { color:#ffb4b4; }
 
-    /* Hover tooltip (no transform; JS positions precisely) */
     .tooltip {
       position: absolute;
       pointer-events: none;
@@ -43,7 +42,7 @@
   <div id="app">
     <header>
       <h1>STL Viewer</h1>
-      <span class="pill">Axes + Hover coords</span>
+      <span class="pill">Min-corner axes + hover coords</span>
       <div style="flex:1"></div>
     </header>
 
@@ -58,7 +57,7 @@
       </div>
       <div id="message" class="stat"></div>
       <div class="stat" style="margin-top:10px;">
-        <strong>Tip:</strong> Coordinates reflect the current viewer frame. Remove <code>geometry.center()</code> if you want original STL coordinates.
+        <strong>Note:</strong> Coordinates are shown relative to the model's <em>min(x,y,z)</em> corner.
       </div>
     </aside>
 
@@ -67,7 +66,7 @@
     </main>
   </div>
 
-  <!-- Import map so examples that say `import ... from "three"` work in the browser -->
+  <!-- Import map for module resolution -->
   <script type="importmap">
   {
     "imports": {
@@ -82,8 +81,8 @@
     import { STLLoader }   from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
     // ---------------- Configuration ----------------
-    const CENTER_MODEL = true;     // set to false if you want raw STL coordinates
-    // Uncomment one of these to convert units:
+    const CENTER_MODEL = false;     // keep original placement so min-corner is meaningful
+    // Uncomment one of these to convert units (min-corner computed after scaling):
     // const UNIT_SCALE = 0.001;   // mm -> meters
     // const UNIT_SCALE = 0.0254;  // inches -> meters
     const RAYCAST_THRESHOLD_FACTOR = 0.01; // pick radius as a fraction of model diagonal
@@ -99,7 +98,7 @@
     const msg = document.getElementById('message');
     const tooltip = document.getElementById('tooltip');
 
-    // ?file=s1.stl (relative path in the same repo)
+    // ?file=s1.stl
     const params = new URLSearchParams(location.search);
     const file = params.get('file');
 
@@ -122,8 +121,8 @@
     const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
     const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
 
-    // Helpers (grid + axes, sizes updated per-model)
-    let grid = new THREE.GridHelper(1, 20); // will rescale later
+    // Helpers (created once; we reposition them per-model)
+    let grid = new THREE.GridHelper(1, 20);
     grid.material.opacity = 0.1; grid.material.transparent = true;
     scene.add(grid);
 
@@ -131,6 +130,7 @@
     scene.add(axes);
 
     let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null, raycaster=null, pointer=null;
+    let minCorner = new THREE.Vector3(); // model-space min corner (after scale/center as chosen)
     let pointSize = 0.01;
 
     function onResize(){
@@ -182,18 +182,23 @@
       tooltip.style.display = 'none';
     }
 
-    function updateHelpersScaleFrom(box3){
-      const diag = box3.getSize(new THREE.Vector3()).length();
-      // Resize grid ~ power-of-two around model size
+    function positionHelpersToMinCorner(box3){
+      const size = box3.getSize(new THREE.Vector3());
+      minCorner.copy(box3.min);
+
+      // Grid: lie on the min-Y plane, centered in XZ
+      const gridSize = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, size.length())))) * 2;
       scene.remove(grid); grid.geometry.dispose();
-      const size = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, diag)))) * 2;
-      grid = new THREE.GridHelper(size, 20);
+      grid = new THREE.GridHelper(gridSize, 20);
       grid.material.opacity = 0.1; grid.material.transparent = true;
+      grid.position.set( (box3.min.x + box3.max.x)/2, box3.min.y, (box3.min.z + box3.max.z)/2 );
       scene.add(grid);
 
-      // Axes length ~ model diagonal
+      // Axes: origin at the min corner, axis length ~ diagonal
+      const diag = size.length();
       scene.remove(axes);
       axes = new THREE.AxesHelper(Math.max(1e-6, diag * 0.6));
+      axes.position.copy(minCorner);
       scene.add(axes);
     }
 
@@ -206,18 +211,17 @@
       if (!raycaster) raycaster = new THREE.Raycaster();
       if (!pointer) pointer = new THREE.Vector2();
 
-      // Set a reasonable picking radius in world units (converted internally)
       const box = new THREE.Box3().setFromObject(mesh);
       const diag = box.getSize(new THREE.Vector3()).length();
       const threshold = Math.max(1e-6, diag * RAYCAST_THRESHOLD_FACTOR);
       raycaster.params.Points = { threshold };
 
-      const OFFSET = 8; // px gap from the cursor inside the viewer
+      const OFFSET = 8; // px gap from cursor
 
       function onMove(ev){
         const rect = renderer.domElement.getBoundingClientRect();
 
-        // Normalized device coords for raycasting
+        // NDC for picking
         pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
         pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
@@ -228,16 +232,18 @@
         if (hits.length){
           const i = hits[0].index;
           const pos = points.geometry.getAttribute('position');
-          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+          // World coords == local coords here (no object transform), but subtract min-corner:
+          const rx = pos.getX(i) - minCorner.x;
+          const ry = pos.getY(i) - minCorner.y;
+          const rz = pos.getZ(i) - minCorner.z;
 
-          tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(x,y,z)}`;
+          tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(rx,ry,rz)}`;
 
-          // Position tooltip relative to viewer container
+          // Place tooltip next to cursor, clamped to viewer
           let left = (ev.clientX - rect.left) + OFFSET;
           let top  = (ev.clientY - rect.top)  + OFFSET;
 
-          // Clamp to container bounds
-          tooltip.style.display = 'block'; // measure after showing
+          tooltip.style.display = 'block';
           const ttRect = tooltip.getBoundingClientRect();
           const ttW = ttRect.width  || 160;
           const ttH = ttRect.height || 28;
@@ -269,36 +275,34 @@
 
       const loader = new STLLoader();
       loader.load(relativePath, (geometry)=>{
-        // ---- important fixes ----
         geometry.computeVertexNormals();
-        if (CENTER_MODEL) geometry.center(); // center at origin (viewer coords)
-        // if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
+        if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
+        if (CENTER_MODEL) geometry.center(); // normally false for min-corner origin
 
         const material = new THREE.MeshStandardMaterial({
           color: 0x8aa3ff, metalness: 0.05, roughness: 0.75,
-          // side: THREE.DoubleSide, // enable if faces are flipped
+          // side: THREE.DoubleSide,
         });
 
-        const meshLocal = new THREE.Mesh(geometry, material);
-        mesh = meshLocal;
+        mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
 
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // Unique vertices + small points (visible by default for hover)
+        // Unique vertices + small points (visible for hover)
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
         const box = new THREE.Box3().setFromObject(mesh);
         const diag = box.getSize(new THREE.Vector3()).length();
-        pointSize = Math.max(0.002, diag * 0.002); // scales with model size
+        pointSize = Math.max(0.002, diag * 0.002);
 
         points = pointsFromVertices(uniq, pointSize);
         points.frustumCulled=false;
         scene.add(points);
 
-        // CSV of vertices
+        // CSV of vertices (original coords, not min-corner-relative)
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
@@ -320,9 +324,10 @@
         resetViewBtn.disabled=false;
         resetViewBtn.onclick=()=> lastFitTarget && fitCameraToObject(lastFitTarget,1.2);
 
-        // Fit + scale helpers + enable hover picking
+        // Fit view, position helpers at MIN corner, enable hover
         fitCameraToObject(mesh,1.2);
-        updateHelpersScaleFrom(new THREE.Box3().setFromObject(mesh));
+        positionHelpersToMinCorner(box);
+        minCorner.copy(box.min);
         attachHoverPicking();
       }, undefined, (err)=>{
         msg.innerHTML=`<span class="error">Load failed: ${err?.message||err}</span>`;
@@ -330,7 +335,7 @@
     }
 
     // Start
-    const initial = file || 's1.stl'; // default if opened directly
+    const initial = file || 's1.stl';
     loadLocal(initial);
 
     const raf = () => { controls.update(); renderer.render(scene, camera); requestAnimationFrame(raf); };
