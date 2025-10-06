@@ -13,28 +13,19 @@
     #sidebar { background:var(--panel); padding:14px; overflow:auto; border-right:1px solid #222; }
     #viewer { position:relative; }
     canvas { display:block; width:100%; height:100%; }
-
     .stat { font-size:12px; color:var(--muted); margin:4px 0; }
     .row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
     button { padding:8px 10px; border-radius:8px; border:1px solid #2a2f3a; background:#121620; color:var(--text); cursor:pointer; }
     button:hover { border-color:#394152; }
     .name { font-weight:600; color:var(--text); }
     .error { color:#ffb4b4; }
-
     .tooltip {
-      position: absolute;
-      pointer-events: none;
-      background: rgba(20, 24, 33, 0.95);
-      border: 1px solid #2a2f3a;
-      color: var(--text);
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      white-space: nowrap;
-      display: none;
-      z-index: 2;
+      position: absolute; pointer-events: none;
+      background: rgba(20,24,33,.95); border:1px solid #2a2f3a;
+      color:var(--text); padding:6px 8px; border-radius:8px;
+      font-size:12px; white-space:nowrap; display:none; z-index:2;
     }
-    .tooltip .title { color: var(--accent); font-weight: 600; margin-right: 6px; }
+    .tooltip .title { color:var(--accent); font-weight:600; margin-right:6px; }
     .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#0e1320; border:1px solid #2a2f3a; font-size:11px; color:var(--text); }
   </style>
 </head>
@@ -42,7 +33,7 @@
   <div id="app">
     <header>
       <h1>STL Viewer</h1>
-      <span class="pill">Min-corner axes + hover coords</span>
+      <span class="pill">Origin = minX,minY,minZ</span>
       <div style="flex:1"></div>
     </header>
 
@@ -57,7 +48,7 @@
       </div>
       <div id="message" class="stat"></div>
       <div class="stat" style="margin-top:10px;">
-        <strong>Note:</strong> Coordinates are shown relative to the model's <em>min(x,y,z)</em> corner.
+        <strong>Note:</strong> Coordinates shown are in the frame where the model’s min corner is at <code>(0,0,0)</code>.
       </div>
     </aside>
 
@@ -68,11 +59,7 @@
 
   <!-- Import map for module resolution -->
   <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-    }
-  }
+  { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
   </script>
 
   <script type="module">
@@ -80,14 +67,14 @@
     import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
     import { STLLoader }   from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
-    // ---------------- Configuration ----------------
-    const CENTER_MODEL = false;     // keep original placement so min-corner is meaningful
-    // Uncomment one of these to convert units (min-corner computed after scaling):
-    // const UNIT_SCALE = 0.001;   // mm -> meters
-    // const UNIT_SCALE = 0.0254;  // inches -> meters
-    const RAYCAST_THRESHOLD_FACTOR = 0.01; // pick radius as a fraction of model diagonal
+    // ---------- Config ----------
+    // Optional units (applied before min-to-origin translation):
+    // const UNIT_SCALE = 0.001;   // mm -> m
+    // const UNIT_SCALE = 0.0254;  // in -> m
+    const RAYCAST_THRESHOLD_FACTOR = 0.01; // picking radius vs model diagonal
+    const TOOLTIP_OFFSET = 8; // px gap from cursor
 
-    // ---------------- DOM refs ----------------
+    // ---------- DOM ----------
     const VIEW = document.getElementById('viewer');
     const modelNameEl = document.getElementById('modelName');
     const triCountEl = document.getElementById('triCount');
@@ -98,11 +85,10 @@
     const msg = document.getElementById('message');
     const tooltip = document.getElementById('tooltip');
 
-    // ?file=s1.stl
     const params = new URLSearchParams(location.search);
-    const file = params.get('file');
+    const file = params.get('file') || 's1.stl';
 
-    // ---------------- Three.js setup ----------------
+    // ---------- Three.js base ----------
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(VIEW.clientWidth, VIEW.clientHeight);
@@ -117,21 +103,22 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-    // Lights
     const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
     const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
 
-    // Helpers (created once; we reposition them per-model)
-    let grid = new THREE.GridHelper(1, 20);
+    // Helpers (origin-based)
+    let grid = new THREE.GridHelper(1, 20);  // will be resized
     grid.material.opacity = 0.1; grid.material.transparent = true;
+    grid.position.set(0, 0, 0); // lies on Y=0 through origin
     scene.add(grid);
 
-    let axes = new THREE.AxesHelper(1); // X=red, Y=green, Z=blue
+    const axes = new THREE.AxesHelper(1); // X=red, Y=green, Z=blue
+    axes.position.set(0,0,0); // origin
     scene.add(axes);
 
-    let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null, raycaster=null, pointer=null;
-    let minCorner = new THREE.Vector3(); // model-space min corner (after scale/center as chosen)
-    let pointSize = 0.01;
+    // State
+    let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null;
+    let raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
 
     function onResize(){
       const w=VIEW.clientWidth,h=VIEW.clientHeight;
@@ -139,6 +126,7 @@
     }
     window.addEventListener('resize', onResize);
 
+    // ---------- Utils ----------
     function uniqueVerticesFromGeometry(geom, precision=1e-6){
       const g = geom.index ? geom.toNonIndexed() : geom;
       const pos = g.attributes.position.array;
@@ -146,8 +134,7 @@
       const map=new Map();
       for(let i=0;i<pos.length;i+=3){
         const x=pos[i],y=pos[i+1],z=pos[i+2];
-        const k=key(x,y,z);
-        if(!map.has(k)) map.set(k,[x,y,z]);
+        const k=key(x,y,z); if(!map.has(k)) map.set(k,[x,y,z]);
       }
       return Array.from(map.values());
     }
@@ -163,7 +150,7 @@
     function fitCameraToObject(obj, offset=1.2){
       const box=new THREE.Box3().setFromObject(obj),
             size=box.getSize(new THREE.Vector3()),
-            center=box.getCenter(new THREE.Vector3());
+            center=size.clone().multiplyScalar(0.5); // since origin is min corner now
       const maxDim=Math.max(size.x,size.y,size.z),
             fov=camera.fov*(Math.PI/180);
       let dist=(maxDim/2)/Math.tan(fov/2); dist*=offset;
@@ -173,6 +160,68 @@
       controls.target.copy(center); controls.update();
       lastFitTarget=obj;
     }
+    function updateHelpersScaleFrom(sizeVec){
+      const diag = sizeVec.length();
+      // Resize grid to comfortably cover model footprint; keep on Y=0
+      scene.remove(grid); grid.geometry.dispose();
+      const gsize = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, diag)))) * 2;
+      grid = new THREE.GridHelper(gsize, 20);
+      grid.material.opacity = 0.1; grid.material.transparent = true;
+      grid.position.set(0,0,0);
+      scene.add(grid);
+
+      // Axes length ~ diagonal (already at origin)
+      axes.scale.setScalar(Math.max(1e-6, diag * 0.6) / 1); // AxesHelper is length=1 initially
+    }
+    function formatXYZ(x,y,z){
+      const f = n => Number.isFinite(n) ? n.toFixed(6) : 'NaN';
+      return `(${f(x)}, ${f(y)}, ${f(z)})`;
+    }
+
+    // ---------- Hover picking ----------
+    function attachHoverPicking(currentPoints, modelSizeDiag){
+      const threshold = Math.max(1e-6, modelSizeDiag * RAYCAST_THRESHOLD_FACTOR);
+      raycaster.params.Points = { threshold };
+
+      function onMove(ev){
+        const rect = renderer.domElement.getBoundingClientRect();
+        pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+
+        const hits = raycaster.intersectObject(currentPoints, true);
+        if (hits.length){
+          const i = hits[0].index;
+          const pos = currentPoints.geometry.getAttribute('position');
+          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i); // already origin=min corner
+
+          tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(x,y,z)}`;
+
+          let left = (ev.clientX - rect.left) + TOOLTIP_OFFSET;
+          let top  = (ev.clientY - rect.top)  + TOOLTIP_OFFSET;
+
+          tooltip.style.display = 'block';
+          const ttRect = tooltip.getBoundingClientRect();
+          const ttW = ttRect.width  || 160;
+          const ttH = ttRect.height || 28;
+          const maxLeft = rect.width  - ttW - 2;
+          const maxTop  = rect.height - ttH - 2;
+          if (left > maxLeft) left = Math.max(0, (ev.clientX - rect.left) - ttW - TOOLTIP_OFFSET);
+          if (top  > maxTop)  top  = Math.max(0, (ev.clientY - rect.top)  - ttH - TOOLTIP_OFFSET);
+
+          tooltip.style.left = left + 'px';
+          tooltip.style.top  = top  + 'px';
+        } else {
+          tooltip.style.display = 'none';
+        }
+      }
+      function onLeave(){ tooltip.style.display = 'none'; }
+
+      renderer.domElement.addEventListener('pointermove', onMove);
+      renderer.domElement.addEventListener('pointerleave', onLeave);
+    }
+
+    // ---------- Load & build ----------
     function clearScene(){
       if(mesh){scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); mesh=null;}
       if(points){scene.remove(points); points.geometry.dispose(); points.material.dispose(); points=null;}
@@ -182,161 +231,73 @@
       tooltip.style.display = 'none';
     }
 
-    function positionHelpersToMinCorner(box3){
-      const size = box3.getSize(new THREE.Vector3());
-      minCorner.copy(box3.min);
-
-      // Grid: lie on the min-Y plane, centered in XZ
-      const gridSize = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, size.length())))) * 2;
-      scene.remove(grid); grid.geometry.dispose();
-      grid = new THREE.GridHelper(gridSize, 20);
-      grid.material.opacity = 0.1; grid.material.transparent = true;
-      grid.position.set( (box3.min.x + box3.max.x)/2, box3.min.y, (box3.min.z + box3.max.z)/2 );
-      scene.add(grid);
-
-      // Axes: origin at the min corner, axis length ~ diagonal
-      const diag = size.length();
-      scene.remove(axes);
-      axes = new THREE.AxesHelper(Math.max(1e-6, diag * 0.6));
-      axes.position.copy(minCorner);
-      scene.add(axes);
-    }
-
-    function formatXYZ(x, y, z){
-      const f = (n)=> Number.isFinite(n) ? n.toFixed(6) : 'NaN';
-      return `(${f(x)}, ${f(y)}, ${f(z)})`;
-    }
-
-    function attachHoverPicking(){
-      if (!raycaster) raycaster = new THREE.Raycaster();
-      if (!pointer) pointer = new THREE.Vector2();
-
-      const box = new THREE.Box3().setFromObject(mesh);
-      const diag = box.getSize(new THREE.Vector3()).length();
-      const threshold = Math.max(1e-6, diag * RAYCAST_THRESHOLD_FACTOR);
-      raycaster.params.Points = { threshold };
-
-      const OFFSET = 8; // px gap from cursor
-
-      function onMove(ev){
-        const rect = renderer.domElement.getBoundingClientRect();
-
-        // NDC for picking
-        pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
-        pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
-        raycaster.setFromCamera(pointer, camera);
-
-        if (!points) return;
-
-        const hits = raycaster.intersectObject(points, true);
-        if (hits.length){
-          const i = hits[0].index;
-          const pos = points.geometry.getAttribute('position');
-          // World coords == local coords here (no object transform), but subtract min-corner:
-          const rx = pos.getX(i) - minCorner.x;
-          const ry = pos.getY(i) - minCorner.y;
-          const rz = pos.getZ(i) - minCorner.z;
-
-          tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(rx,ry,rz)}`;
-
-          // Place tooltip next to cursor, clamped to viewer
-          let left = (ev.clientX - rect.left) + OFFSET;
-          let top  = (ev.clientY - rect.top)  + OFFSET;
-
-          tooltip.style.display = 'block';
-          const ttRect = tooltip.getBoundingClientRect();
-          const ttW = ttRect.width  || 160;
-          const ttH = ttRect.height || 28;
-          const maxLeft = rect.width  - ttW - 2;
-          const maxTop  = rect.height - ttH - 2;
-          if (left > maxLeft) left = Math.max(0, (ev.clientX - rect.left) - ttW - OFFSET);
-          if (top  > maxTop)  top  = Math.max(0, (ev.clientY - rect.top)  - ttH - OFFSET);
-
-          tooltip.style.left = left + 'px';
-          tooltip.style.top  = top  + 'px';
-        } else {
-          tooltip.style.display = 'none';
-        }
-      }
-
-      function onLeave(){ tooltip.style.display = 'none'; }
-
-      renderer.domElement.addEventListener('pointermove', onMove);
-      renderer.domElement.addEventListener('pointerleave', onLeave);
-    }
-
     function loadLocal(relativePath){
       clearScene();
-      if(!relativePath){
-        msg.innerHTML='<span class="error">No file specified (?file=)</span>';
-        return;
-      }
+      if(!relativePath){ msg.innerHTML='<span class="error">No file specified (?file=)</span>'; return; }
       modelNameEl.textContent = relativePath;
 
       const loader = new STLLoader();
       loader.load(relativePath, (geometry)=>{
         geometry.computeVertexNormals();
+        // 1) optional unit scaling
         if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
-        if (CENTER_MODEL) geometry.center(); // normally false for min-corner origin
+        // 2) translate so min corner becomes (0,0,0)
+        geometry.computeBoundingBox();
+        const min = geometry.boundingBox.min.clone();
+        geometry.translate(-min.x, -min.y, -min.z);
 
+        // build mesh
         const material = new THREE.MeshStandardMaterial({
           color: 0x8aa3ff, metalness: 0.05, roughness: 0.75,
-          // side: THREE.DoubleSide,
+          // side: THREE.DoubleSide, // enable only if faces are flipped
         });
-
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
 
+        // stats
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // Unique vertices + small points (visible for hover)
+        // unique vertices (already in min-origin coordinates)
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
+        // points (visible for hover)
         const box = new THREE.Box3().setFromObject(mesh);
-        const diag = box.getSize(new THREE.Vector3()).length();
-        pointSize = Math.max(0.002, diag * 0.002);
-
+        const size = box.getSize(new THREE.Vector3());
+        const diag = size.length();
+        const pointSize = Math.max(0.002, diag * 0.002);
         points = pointsFromVertices(uniq, pointSize);
         points.frustumCulled=false;
         scene.add(points);
 
-        // CSV of vertices (original coords, not min-corner-relative)
+        // CSV (in min-origin coordinates)
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
-        downloadCsvBtn.onclick=()=>{
-          const a=document.createElement('a');
-          a.href=verticesCSVUrl; a.download='vertices.csv'; a.click();
-        };
+        downloadCsvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=verticesCSVUrl; a.download='vertices.csv'; a.click(); };
 
-        // Toggle points
+        // toggle points
         let showPoints=true;
-        togglePointsBtn.disabled=false;
-        togglePointsBtn.textContent='Hide points';
-        togglePointsBtn.onclick=()=>{
-          showPoints=!showPoints; points.visible=showPoints;
-          togglePointsBtn.textContent=showPoints?'Hide points':'Show points';
-        };
+        togglePointsBtn.disabled=false; togglePointsBtn.textContent='Hide points';
+        togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
 
-        // Reset view
+        // fit camera & scale helpers; axes already at origin
+        fitCameraToObject(mesh,1.2);
+        updateHelpersScaleFrom(size);
+
+        // enable hover picking
+        attachHoverPicking(points, diag);
+
         resetViewBtn.disabled=false;
         resetViewBtn.onclick=()=> lastFitTarget && fitCameraToObject(lastFitTarget,1.2);
-
-        // Fit view, position helpers at MIN corner, enable hover
-        fitCameraToObject(mesh,1.2);
-        positionHelpersToMinCorner(box);
-        minCorner.copy(box.min);
-        attachHoverPicking();
       }, undefined, (err)=>{
         msg.innerHTML=`<span class="error">Load failed: ${err?.message||err}</span>`;
       });
     }
 
     // Start
-    const initial = file || 's1.stl';
-    loadLocal(initial);
+    loadLocal(file);
 
     const raf = () => { controls.update(); renderer.render(scene, camera); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);
