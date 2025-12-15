@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>STL Viewer</title>
+  <title>STL Viewer (CAD Z-up)</title>
   <style>
     :root { --bg:#0f1115; --panel:#171a21; --text:#e8e8e8; --muted:#a8a8a8; --accent:#7aa2f7; }
     html, body { height:100%; margin:0; background:var(--bg); color:var(--text); font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
@@ -27,13 +27,14 @@
     }
     .tooltip .title { color:var(--accent); font-weight:600; margin-right:6px; }
     .pill { display:inline-block; padding:2px 8px; border-radius:999px; background:#0e1320; border:1px solid #2a2f3a; font-size:11px; color:var(--text); }
+    code { color: #c9d1d9; }
   </style>
 </head>
 <body>
   <div id="app">
     <header>
       <h1>STL Viewer</h1>
-      <span class="pill">Origin = minX,minY,minZ</span>
+      <span class="pill">CAD view: Z-up (right-handed)</span>
       <div style="flex:1"></div>
     </header>
 
@@ -48,7 +49,7 @@
       </div>
       <div id="message" class="stat"></div>
       <div class="stat" style="margin-top:10px;">
-        <strong>Note:</strong> Coordinates shown are in the frame where the model’s min corner is at <code>(0,0,0)</code>.
+        <strong>Note:</strong> Coordinates shown are in a CAD-style frame (Z-up) where the model’s min corner is at <code>(0,0,0)</code>.
       </div>
     </aside>
 
@@ -57,7 +58,6 @@
     </main>
   </div>
 
-  <!-- Import map for module resolution -->
   <script type="importmap">
   { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
   </script>
@@ -68,11 +68,15 @@
     import { STLLoader }   from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
     // ---------- Config ----------
-    // Optional units (applied before min-to-origin translation):
+    // Optional units (applied before Z-up conversion and min-to-origin translation):
     // const UNIT_SCALE = 0.001;   // mm -> m
     // const UNIT_SCALE = 0.0254;  // in -> m
     const RAYCAST_THRESHOLD_FACTOR = 0.01; // picking radius vs model diagonal
     const TOOLTIP_OFFSET = 8; // px gap from cursor
+
+    // CAD Z-up (right-handed) -> Three.js internal (Y-up) conversion:
+    // Rotate geometry by -90° around X so CAD Z becomes Three Y.
+    const CAD_TO_THREE_ROT_X = -Math.PI / 2;
 
     // ---------- DOM ----------
     const VIEW = document.getElementById('viewer');
@@ -99,21 +103,29 @@
     scene.background = new THREE.Color(0x0f1115);
 
     const camera = new THREE.PerspectiveCamera(50, VIEW.clientWidth / VIEW.clientHeight, 0.01, 2000);
-    camera.position.set(0.8, 0.8, 1.4);
+
+    // A CAD-ish default view
+    camera.position.set(1.5, -1.5, 1.5);
+
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
     const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
     const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
 
-    // Helpers (origin-based)
-    let grid = new THREE.GridHelper(1, 20);  // will be resized
+    // Helpers (CAD-view: Z-up)
+    // GridHelper is XZ plane by default (Y=0). For CAD floor (Z=0), rotate it -90° around X.
+    let grid = new THREE.GridHelper(1, 20);
     grid.material.opacity = 0.1; grid.material.transparent = true;
-    grid.position.set(0, 0, 0); // lies on Y=0 through origin
+    grid.rotation.x = CAD_TO_THREE_ROT_X; // put grid on CAD Z=0 plane
+    grid.position.set(0, 0, 0);
     scene.add(grid);
 
-    const axes = new THREE.AxesHelper(1); // X=red, Y=blue, Z=green
-    axes.position.set(0,0,0); // origin
+    // AxesHelper default: X red, Y green, Z blue (Three.js Y-up).
+    // For CAD view, rotate axes so blue (Z) points up on screen.
+    const axes = new THREE.AxesHelper(1);
+    axes.rotation.x = CAD_TO_THREE_ROT_X; // make Z (blue) be "up" visually
+    axes.position.set(0, 0, 0);
     scene.add(axes);
 
     // State
@@ -127,26 +139,53 @@
     window.addEventListener('resize', onResize);
 
     // ---------- Utils ----------
+    // Geometry positions are stored in THREE internal coordinates.
+    // Convert internal (xT,yT,zT) to CAD (xC,yC,zC):
+    // xT = xC
+    // yT = zC
+    // zT = -yC
+    // => xC = xT, yC = -zT, zC = yT
+    function threeToCad(xT, yT, zT){
+      return { x: xT, y: -zT, z: yT };
+    }
+
     function uniqueVerticesFromGeometry(geom, precision=1e-6){
       const g = geom.index ? geom.toNonIndexed() : geom;
       const pos = g.attributes.position.array;
-      const key=(z,x,y)=>`${Math.round(z/precision)},${Math.round(x/precision)},${Math.round(y/precision)}`;
+      const key = (x,y,z)=>`${Math.round(x/precision)},${Math.round(y/precision)},${Math.round(z/precision)}`;
       const map=new Map();
       for(let i=0;i<pos.length;i+=3){
-        const x=pos[i],y=pos[i+1],z=pos[i+2];
-        const k=key(z,x,y); if(!map.has(k)) map.set(k,[z,x,y]);
+        const x=pos[i], y=pos[i+1], z=pos[i+2];
+        const k=key(x,y,z);
+        if(!map.has(k)) map.set(k,[x,y,z]); // keep internal order
       }
       return Array.from(map.values());
     }
+
     function pointsFromVertices(verts,size=0.75){
       const arr=new Float32Array(verts.length*3);
-      for(let i=0,j=0;i<verts.length;i++){ arr[j++]=verts[i][0]; arr[j++]=verts[i][1]; arr[j++]=verts[i][2]; }
+      for(let i=0,j=0;i<verts.length;i++){
+        arr[j++]=verts[i][0];
+        arr[j++]=verts[i][1];
+        arr[j++]=verts[i][2];
+      }
       const g=new THREE.BufferGeometry();
       g.setAttribute('position',new THREE.BufferAttribute(arr,3));
       const m=new THREE.PointsMaterial({size, sizeAttenuation:true});
       return new THREE.Points(g,m);
     }
-    function makeCSV(verts){ return "x,y,z\n"+verts.map(v=>`${v[0]},${v[1]},${v[2]}`).join("\n"); }
+
+    function makeCSV(vertsInternal){
+      // Export CAD coordinates (Z-up), min-corner already at (0,0,0) in internal space
+      // but note: "min corner" is computed AFTER Z-up conversion, so the CSV is consistent with displayed CAD axes.
+      const lines = ["x,y,z"];
+      for (const v of vertsInternal){
+        const cad = threeToCad(v[0], v[1], v[2]);
+        lines.push(`${cad.x},${cad.y},${cad.z}`);
+      }
+      return lines.join("\n");
+    }
+
     function fitCameraToObject(obj, offset=1.2){
       const box=new THREE.Box3().setFromObject(obj),
             size=box.getSize(new THREE.Vector3()),
@@ -154,28 +193,36 @@
       const maxDim=Math.max(size.x,size.y,size.z),
             fov=camera.fov*(Math.PI/180);
       let dist=(maxDim/2)/Math.tan(fov/2); dist*=offset;
-      const dir=new THREE.Vector3(1,1,1).normalize();
-      camera.position.copy(center).addScaledVector(dir,dist);
+
+      // Keep a CAD-ish isometric direction
+      const dirVec = new THREE.Vector3(1,-1,1).normalize();
+      camera.position.copy(center).addScaledVector(dirVec,dist);
+
       camera.near=dist/100; camera.far=dist*100; camera.updateProjectionMatrix();
       controls.target.copy(center); controls.update();
       lastFitTarget=obj;
     }
+
     function updateHelpersScaleFrom(sizeVec){
       const diag = sizeVec.length();
-      // Resize grid to comfortably cover model footprint; keep on Y=0
+
+      // Resize grid to cover model footprint (CAD floor); keep rotation for Z-up
       scene.remove(grid); grid.geometry.dispose();
       const gsize = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, diag)))) * 2;
       grid = new THREE.GridHelper(gsize, 20);
       grid.material.opacity = 0.1; grid.material.transparent = true;
+      grid.rotation.x = CAD_TO_THREE_ROT_X; // CAD floor (Z=0)
       grid.position.set(0,0,0);
       scene.add(grid);
 
-      // Axes length ~ diagonal (already at origin)
-      axes.scale.setScalar(Math.max(1e-6, diag * 0.6) / 1); // AxesHelper is length=1 initially
+      // Axes length ~ diagonal (axes already rotated for CAD view)
+      axes.scale.setScalar(Math.max(1e-6, diag * 0.6) / 1); // AxesHelper base length=1
     }
-    function formatXYZ(x,y,z){
+
+    function formatXYZ(xT,yT,zT){
+      const cad = threeToCad(xT,yT,zT);
       const f = n => Number.isFinite(n) ? n.toFixed(6) : 'NaN';
-      return `(${f(x)}, ${f(z)}, ${f(y)})`;
+      return `(${f(cad.x)}, ${f(cad.y)}, ${f(cad.z)})`; // CAD order: x,y,z with Z-up
     }
 
     // ---------- Hover picking ----------
@@ -193,7 +240,7 @@
         if (hits.length){
           const i = hits[0].index;
           const pos = currentPoints.geometry.getAttribute('position');
-          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i); // already origin=min corner
+          const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i); // internal coords
 
           tooltip.innerHTML = `<span class="title">XYZ</span> ${formatXYZ(x,y,z)}`;
 
@@ -239,9 +286,14 @@
       const loader = new STLLoader();
       loader.load(relativePath, (geometry)=>{
         geometry.computeVertexNormals();
+
         // 1) optional unit scaling
         if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
-        // 2) translate so min corner becomes (0,0,0)
+
+        // 2) CAD Z-up -> Three internal (Y-up)
+        geometry.rotateX(CAD_TO_THREE_ROT_X);
+
+        // 3) translate so min corner becomes (0,0,0) (in the displayed CAD frame)
         geometry.computeBoundingBox();
         const min = geometry.boundingBox.min.clone();
         geometry.translate(-min.x, -min.y, -min.z);
@@ -258,7 +310,7 @@
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // unique vertices (already in min-origin coordinates)
+        // unique vertices (internal order preserved)
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
@@ -271,7 +323,7 @@
         points.frustumCulled=false;
         scene.add(points);
 
-        // CSV (in min-origin coordinates)
+        // CSV (export CAD Z-up coords)
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
@@ -282,7 +334,7 @@
         togglePointsBtn.disabled=false; togglePointsBtn.textContent='Hide points';
         togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
 
-        // fit camera & scale helpers; axes already at origin
+        // fit camera & scale helpers
         fitCameraToObject(mesh,1.2);
         updateHelpersScaleFrom(size);
 
@@ -305,7 +357,3 @@
   </script>
 </body>
 </html>
-
-
-
-
