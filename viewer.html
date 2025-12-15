@@ -79,6 +79,9 @@
     const MAX_POWER10 = 9;           // try 10^0..10^9
     const INTEGER_EPS = 1e-4;        // tolerance after scaling
     const SAMPLE_STRIDE = 7;         // sample every Nth vertex triple to keep it fast
+    // ✅ NEW: tooltip display scaling
+    const HOVER_DISPLAY_SCALE = 100;      // show coordinates * 100
+    const HOVER_DISPLAY_MODE  = "round";  // "round" or "trunc"
 
     // ✅ Z-up world (CAD-like orbit) – viewer-only, does not change your geometry data
     THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
@@ -196,14 +199,19 @@
     }
 
     // (kept exactly as you had it; shows (x, z, y))
-    function formatXYZ(x,y,z){
-      // ✅ If integer scaling is applied, show integers (clean)
-      if (integerScaleApplied !== 1) {
-        return `(${Math.round(x)}, ${Math.round(z)}, ${Math.round(y)})`;
-      }
-      const f = n => Number.isFinite(n) ? n.toFixed(6) : 'NaN';
-      return `(${f(x)}, ${f(z)}, ${f(y)})`;
+    function formatXYZ(x, y, z) {
+      const scale = HOVER_DISPLAY_SCALE;
+      const quantize = (v) => {
+        const s = v * scale;
+        return (HOVER_DISPLAY_MODE === "trunc")
+          ? Math.trunc(s)      // truncate toward 0
+          : Math.round(s);     // normal rounding
+      };
+    
+      // keep your original ordering (x, z, y)
+      return `(${quantize(x)}, ${quantize(z)}, ${quantize(y)})`;
     }
+
 
     // ✅ NEW: choose smallest 10^p that makes (most) coords integers within tolerance
     function choosePower10IntegerScaleFromPositionArray(posArray){
@@ -374,3 +382,4 @@
   </script>
 </body>
 </html>
+
