@@ -142,11 +142,11 @@
     function uniqueVerticesFromGeometry(geom, precision=1e-6){
       const g = geom.index ? geom.toNonIndexed() : geom;
       const pos = g.attributes.position.array;
-      const key=(z,x,y)=>`${Math.round(z/precision)},${Math.round(x/precision)},${Math.round(y/precision)}`;
+      const key=(x,y,z)=>`${Math.round(x/precision)},${Math.round(y/precision)},${Math.round(z/precision)}`;
       const map=new Map();
       for(let i=0;i<pos.length;i+=3){
         const x=pos[i],y=pos[i+1],z=pos[i+2];
-        const k=key(z,x,y); if(!map.has(k)) map.set(k,[z,x,y]);
+        const k=key(x,y,z); if(!map.has(k)) map.set(k,[x,y,z]);
       }
       return Array.from(map.values());
     }
@@ -203,7 +203,7 @@
         const s = v * HOVER_DISPLAY_SCALE;
         return (HOVER_DISPLAY_MODE === "trunc") ? Math.trunc(s) : Math.round(s);
       };
-      return `(${q(x)}, ${q(z)}, ${q(y)})`;
+      return `(${q(x)}, ${q(y)}, ${q(z)})`;
     }
 
     // ---------- Hover picking ----------
@@ -337,3 +337,4 @@
   </script>
 </body>
 </html>
+
