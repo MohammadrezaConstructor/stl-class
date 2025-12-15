@@ -49,6 +49,7 @@
       <div id="message" class="stat"></div>
       <div class="stat" style="margin-top:10px;">
         <strong>Note:</strong> Coordinates shown are in the frame where the model’s min corner is at <code>(0,0,0)</code>.
+        Hover values are displayed as <code>round(coord * 100)</code> (change to trunc in config if desired).
       </div>
     </aside>
 
@@ -57,6 +58,7 @@
     </main>
   </div>
 
+  <!-- Import map for module resolution -->
   <script type="importmap">
   { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
   </script>
@@ -70,20 +72,14 @@
     // Optional units (applied before min-to-origin translation):
     // const UNIT_SCALE = 0.001;   // mm -> m
     // const UNIT_SCALE = 0.0254;  // in -> m
-
     const RAYCAST_THRESHOLD_FACTOR = 0.01; // picking radius vs model diagonal
     const TOOLTIP_OFFSET = 8; // px gap from cursor
 
-    // ✅ NEW: automatically scale so coordinates become integers (power of 10)
-    const AUTO_INTEGER_SCALE = true;
-    const MAX_POWER10 = 9;           // try 10^0..10^9
-    const INTEGER_EPS = 1e-4;        // tolerance after scaling
-    const SAMPLE_STRIDE = 7;         // sample every Nth vertex triple to keep it fast
-    // ✅ NEW: tooltip display scaling
-    const HOVER_DISPLAY_SCALE = 100;      // show coordinates * 100
+    // ✅ Hover display scaling ONLY (does NOT move points)
+    const HOVER_DISPLAY_SCALE = 100;      // show coord * 100
     const HOVER_DISPLAY_MODE  = "round";  // "round" or "trunc"
 
-    // ✅ Z-up world (CAD-like orbit) – viewer-only, does not change your geometry data
+    // ✅ Z-up world (CAD-like orbit). Does NOT change geometry positions.
     THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
     // ---------- DOM ----------
@@ -135,9 +131,6 @@
     let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null;
     let raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
 
-    // ✅ NEW: remember scale used for integer coords (1 if none)
-    let integerScaleApplied = 1;
-
     function onResize(){
       const w=VIEW.clientWidth,h=VIEW.clientHeight;
       camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h);
@@ -149,7 +142,7 @@
       const g = geom.index ? geom.toNonIndexed() : geom;
       const pos = g.attributes.position.array;
 
-      // (kept exactly as you had it)
+      // kept exactly as your original
       const key=(z,x,y)=>`${Math.round(z/precision)},${Math.round(x/precision)},${Math.round(y/precision)}`;
       const map=new Map();
       for(let i=0;i<pos.length;i+=3){
@@ -161,14 +154,21 @@
 
     function pointsFromVertices(verts,size=0.75){
       const arr=new Float32Array(verts.length*3);
-      for(let i=0,j=0;i<verts.length;i++){ arr[j++]=verts[i][0]; arr[j++]=verts[i][1]; arr[j++]=verts[i][2]; }
+      for(let i=0,j=0;i<verts.length;i++){
+        arr[j++]=verts[i][0];
+        arr[j++]=verts[i][1];
+        arr[j++]=verts[i][2];
+      }
       const g=new THREE.BufferGeometry();
       g.setAttribute('position',new THREE.BufferAttribute(arr,3));
       const m=new THREE.PointsMaterial({size, sizeAttenuation:true});
       return new THREE.Points(g,m);
     }
 
-    function makeCSV(verts){ return "x,y,z\n"+verts.map(v=>`${v[0]},${v[1]},${v[2]}`).join("\n"); }
+    function makeCSV(verts){
+      // CSV stays in your internal (unchanged) coordinate convention
+      return "x,y,z\n"+verts.map(v=>`${v[0]},${v[1]},${v[2]}`).join("\n");
+    }
 
     function fitCameraToObject(obj, offset=1.2){
       const box=new THREE.Box3().setFromObject(obj),
@@ -186,52 +186,29 @@
 
     function updateHelpersScaleFrom(sizeVec){
       const diag = sizeVec.length();
-      scene.remove(grid); grid.geometry.dispose();
 
+      // Resize grid to comfortably cover model footprint; keep on CAD floor (Z=0)
+      scene.remove(grid); grid.geometry.dispose();
       const gsize = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, diag)))) * 2;
       grid = new THREE.GridHelper(gsize, 20);
       grid.material.opacity = 0.1; grid.material.transparent = true;
-      grid.rotation.x = Math.PI / 2; // ✅ keep grid on CAD floor (Z=0)
+      grid.rotation.x = Math.PI / 2; // ✅ keep grid on XY plane
       grid.position.set(0,0,0);
       scene.add(grid);
 
-      axes.scale.setScalar(Math.max(1e-6, diag * 0.6) / 1);
+      // Axes length ~ diagonal (already at origin)
+      axes.scale.setScalar(Math.max(1e-6, diag * 0.6) / 1); // AxesHelper is length=1 initially
     }
 
-    // (kept exactly as you had it; shows (x, z, y))
-    function formatXYZ(x, y, z) {
-      const scale = HOVER_DISPLAY_SCALE;
-      const quantize = (v) => {
-        const s = v * scale;
-        return (HOVER_DISPLAY_MODE === "trunc")
-          ? Math.trunc(s)      // truncate toward 0
-          : Math.round(s);     // normal rounding
+    // ✅ Only scales displayed values. Does NOT change points/mesh.
+    function formatXYZ(x,y,z){
+      const q = (v) => {
+        const s = v * HOVER_DISPLAY_SCALE;
+        return (HOVER_DISPLAY_MODE === "trunc") ? Math.trunc(s) : Math.round(s);
       };
-    
-      // keep your original ordering (x, z, y)
-      return `(${quantize(x)}, ${quantize(z)}, ${quantize(y)})`;
-    }
 
-
-    // ✅ NEW: choose smallest 10^p that makes (most) coords integers within tolerance
-    function choosePower10IntegerScaleFromPositionArray(posArray){
-      // If coords already integer-ish, returns 1.
-      const isIntish = (v) => Math.abs(v - Math.round(v)) <= INTEGER_EPS;
-
-      for (let p = 0; p <= MAX_POWER10; p++) {
-        const s = Math.pow(10, p);
-        let ok = true;
-
-        // sample to keep it fast (still reliable for typical CAD/STL grids)
-        for (let i = 0; i < posArray.length; i += 3 * SAMPLE_STRIDE) {
-          const x = posArray[i] * s;
-          const y = posArray[i + 1] * s;
-          const z = posArray[i + 2] * s;
-          if (!isIntish(x) || !isIntish(y) || !isIntish(z)) { ok = false; break; }
-        }
-        if (ok) return s;
-      }
-      return 1;
+      // Keep your original display order exactly (x, z, y)
+      return `(${q(x)}, ${q(z)}, ${q(y)})`;
     }
 
     // ---------- Hover picking ----------
@@ -266,7 +243,7 @@
           if (top  > maxTop)  top  = Math.max(0, (ev.clientY - rect.top)  - ttH - TOOLTIP_OFFSET);
 
           tooltip.style.left = left + 'px';
-          tooltip.style.top  = top  + 'px';
+          tooltip.style.top  = top + 'px';
         } else {
           tooltip.style.display = 'none';
         }
@@ -285,7 +262,7 @@
       modelNameEl.textContent='—'; triCountEl.textContent='—'; vCountEl.textContent='—';
       downloadCsvBtn.disabled=true; togglePointsBtn.disabled=true; resetViewBtn.disabled=true;
       tooltip.style.display = 'none';
-      integerScaleApplied = 1; // ✅ reset
+      msg.textContent = '';
     }
 
     function loadLocal(relativePath){
@@ -297,27 +274,13 @@
       loader.load(relativePath, (geometry)=>{
         geometry.computeVertexNormals();
 
-        // 1) optional unit scaling
+        // 1) optional unit scaling (kept)
         if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
 
-        // 2) ✅ Ensure (xmin,ymin,zmin) becomes (0,0,0)
+        // 2) translate so min corner becomes (0,0,0)  ✅ (xmin,ymin,zmin)->(0,0,0)
         geometry.computeBoundingBox();
         const min = geometry.boundingBox.min.clone();
         geometry.translate(-min.x, -min.y, -min.z);
-
-        // 3) ✅ NEW: scale coords so they become integers
-        if (AUTO_INTEGER_SCALE) {
-          // Need bbox/positions AFTER translation to origin
-          const posArr = geometry.attributes.position.array;
-          const s = choosePower10IntegerScaleFromPositionArray(posArr);
-          if (s !== 1) {
-            geometry.scale(s, s, s);
-            integerScaleApplied = s;
-
-            // after scaling, recompute bounding box for accurate fit/size
-            geometry.computeBoundingBox();
-          }
-        }
 
         // build mesh
         const material = new THREE.MeshStandardMaterial({
@@ -331,11 +294,11 @@
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // unique vertices (still consistent with your original conventions)
+        // unique vertices (kept)
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
-        // points (visible for hover)
+        // points (kept)
         const box = new THREE.Box3().setFromObject(mesh);
         const size = box.getSize(new THREE.Vector3());
         const diag = size.length();
@@ -344,18 +307,18 @@
         points.frustumCulled=false;
         scene.add(points);
 
-        // CSV
+        // CSV (kept unscaled)
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
         downloadCsvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=verticesCSVUrl; a.download='vertices.csv'; a.click(); };
 
-        // toggle points
+        // toggle points (kept)
         let showPoints=true;
         togglePointsBtn.disabled=false; togglePointsBtn.textContent='Hide points';
         togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
 
-        // fit camera & scale helpers
+        // fit camera & scale helpers; axes already at origin
         fitCameraToObject(mesh,1.2);
         updateHelpersScaleFrom(size);
 
@@ -365,9 +328,7 @@
         resetViewBtn.disabled=false;
         resetViewBtn.onclick=()=> lastFitTarget && fitCameraToObject(lastFitTarget,1.2);
 
-        msg.textContent = (integerScaleApplied !== 1)
-          ? `Scaled by ${integerScaleApplied}× to make coordinates integers.`
-          : '';
+        msg.textContent = `Hover shows ${HOVER_DISPLAY_MODE}(coord * ${HOVER_DISPLAY_SCALE}). Geometry/points are NOT scaled.`;
       }, undefined, (err)=>{
         msg.innerHTML=`<span class="error">Load failed: ${err?.message||err}</span>`;
       });
@@ -382,4 +343,3 @@
   </script>
 </body>
 </html>
-
