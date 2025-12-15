@@ -147,11 +147,11 @@
       const pos = g.attributes.position.array;
 
       // (kept exactly as you had it)
-      const key=(z,x,y)=>`${Math.round(z/precision)},${Math.round(x/precision)},${Math.round(y/precision)}`;
+      const key=(x,y,z)=>`${Math.round(z/precision)},${Math.round(x/precision)},${Math.round(y/precision)}`;
       const map=new Map();
       for(let i=0;i<pos.length;i+=3){
         const x=pos[i],y=pos[i+1],z=pos[i+2];
-        const k=key(z,x,y); if(!map.has(k)) map.set(k,[z,x,y]);
+        const k=key(x,y,z); if(!map.has(k)) map.set(k,[x,y,z]);
       }
       return Array.from(map.values());
     }
@@ -202,7 +202,7 @@
         return `(${Math.round(x)}, ${Math.round(z)}, ${Math.round(y)})`;
       }
       const f = n => Number.isFinite(n) ? n.toFixed(6) : 'NaN';
-      return `(${f(x)}, ${f(z)}, ${f(y)})`;
+      return `(${f(x)}, ${f(y)}, ${f(z)})`;
     }
 
     // ✅ NEW: choose smallest 10^p that makes (most) coords integers within tolerance
@@ -374,3 +374,4 @@
   </script>
 </body>
 </html>
+
