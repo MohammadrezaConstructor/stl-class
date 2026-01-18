@@ -186,29 +186,28 @@
 
       lastFitTarget=obj;
     }
-
     function updateHelpersScaleFrom(sizeVec){
       const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z);
-    
+
       // choose a nice grid step: 1–2–5–10 progression
       const base = Math.pow(10, Math.floor(Math.log10(maxDim)));
       let step = base;
       if (maxDim / step < 5)  step = base / 2;
       if (maxDim / step < 2)  step = base / 5;
-    
+
       const halfSize = Math.ceil(maxDim / step) * step;
       const divisions = Math.round((halfSize * 2) / step);
-    
+
       scene.remove(grid);
       grid.geometry.dispose();
-    
+
       grid = new THREE.GridHelper(halfSize * 2, divisions);
       grid.material.opacity = 0.15;
       grid.material.transparent = true;
       grid.rotation.x = Math.PI / 2;
       grid.position.set(0,0,0);
       scene.add(grid);
-    
+
       axes.scale.setScalar(halfSize * 0.6);
     }
 
@@ -358,4 +357,3 @@
   </script>
 </body>
 </html>
-
