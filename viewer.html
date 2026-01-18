@@ -58,7 +58,6 @@
     </main>
   </div>
 
-  <!-- Import map for module resolution -->
   <script type="importmap">
   { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
   </script>
@@ -69,17 +68,14 @@
     import { STLLoader }   from "https://unpkg.com/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
     // ---------- Config ----------
-    // Optional units (applied before min-to-origin translation):
     // const UNIT_SCALE = 0.001;   // mm -> m
     // const UNIT_SCALE = 0.0254;  // in -> m
-    const RAYCAST_THRESHOLD_FACTOR = 0.01; // picking radius vs model diagonal
-    const TOOLTIP_OFFSET = 8; // px gap from cursor
+    const RAYCAST_THRESHOLD_FACTOR = 0.01;
+    const TOOLTIP_OFFSET = 8;
 
-    // Hover display scaling ONLY (does NOT move points)
-    const HOVER_DISPLAY_SCALE = 100;      // show coord * 100
-    const HOVER_DISPLAY_MODE  = "round";  // "round" or "trunc"
+    const HOVER_DISPLAY_SCALE = 100;
+    const HOVER_DISPLAY_MODE  = "round";
 
-    // Z-up world (CAD-like orbit). Does NOT change geometry positions.
     THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
     // ---------- DOM ----------
@@ -107,24 +103,29 @@
     scene.background = new THREE.Color(0x0f1115);
 
     const camera = new THREE.PerspectiveCamera(50, VIEW.clientWidth / VIEW.clientHeight, 0.01, 2000);
-    camera.up.set(0, 0, 1); // Z-up camera
+    camera.up.set(0, 0, 1);
     camera.position.set(0.8, 0.8, 1.4);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
+    // --- Option B (NECESSARY CHANGES): start with safe clip planes.
+    // They will be continuously adjusted in the render loop based on camera distance.
+    camera.near = 0.0001;
+    camera.far  = 1e9;
+    camera.updateProjectionMatrix();
+
     const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
     const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
 
-    // Helpers (origin-based)
-    let grid = new THREE.GridHelper(1, 20);  // will be resized
+    let grid = new THREE.GridHelper(1, 20);
     grid.material.opacity = 0.1; grid.material.transparent = true;
-    grid.rotation.x = Math.PI / 2; // CAD floor: XY plane (Z=0)
+    grid.rotation.x = Math.PI / 2;
     grid.position.set(0, 0, 0);
     scene.add(grid);
 
-    const axes = new THREE.AxesHelper(1); // X=red, Y=green, Z=blue
-    axes.position.set(0,0,0); // origin
+    const axes = new THREE.AxesHelper(1);
+    axes.position.set(0,0,0);
     scene.add(axes);
 
     // State
@@ -138,7 +139,6 @@
     window.addEventListener('resize', onResize);
 
     // ---------- Utils ----------
-    // IMPORTANT: This is restored to your original behavior (dedupe key and stored vertex order)
     function uniqueVerticesFromGeometry(geom, precision=1e-6){
       const g = geom.index ? geom.toNonIndexed() : geom;
       const pos = g.attributes.position.array;
@@ -171,14 +171,19 @@
     function fitCameraToObject(obj, offset=1.2){
       const box=new THREE.Box3().setFromObject(obj),
             size=box.getSize(new THREE.Vector3()),
-            center=size.clone().multiplyScalar(0.5); // since origin is min corner now
+            center=size.clone().multiplyScalar(0.5);
+
       const maxDim=Math.max(size.x,size.y,size.z),
             fov=camera.fov*(Math.PI/180);
       let dist=(maxDim/2)/Math.tan(fov/2); dist*=offset;
+
       const dir=new THREE.Vector3(1,1,1).normalize();
       camera.position.copy(center).addScaledVector(dir,dist);
-      camera.near=dist/100; camera.far=dist*100; camera.updateProjectionMatrix();
-      controls.target.copy(center); controls.update();
+
+      // --- Option B: don't lock near/far here. Render loop adapts them.
+      controls.target.copy(center);
+      controls.update();
+
       lastFitTarget=obj;
     }
 
@@ -189,15 +194,13 @@
       const gsize = Math.pow(2, Math.ceil(Math.log2(Math.max(1e-6, diag)))) * 2;
       grid = new THREE.GridHelper(gsize, 20);
       grid.material.opacity = 0.1; grid.material.transparent = true;
-      grid.rotation.x = Math.PI / 2; // keep grid on XY plane
+      grid.rotation.x = Math.PI / 2;
       grid.position.set(0,0,0);
       scene.add(grid);
 
       axes.scale.setScalar(Math.max(1e-6, diag * 0.6) / 1);
     }
 
-    // Only scales displayed values. Does NOT change points/mesh.
-    // Restored tooltip order to your original: (x, z, y)
     function formatXYZ(x,y,z){
       const q = (v) => {
         const s = v * HOVER_DISPLAY_SCALE;
@@ -269,30 +272,24 @@
       loader.load(relativePath, (geometry)=>{
         geometry.computeVertexNormals();
 
-        // 1) optional unit scaling
         if (typeof UNIT_SCALE === 'number') geometry.scale(UNIT_SCALE, UNIT_SCALE, UNIT_SCALE);
 
-        // 2) translate so min corner becomes (0,0,0)
         geometry.computeBoundingBox();
         const min = geometry.boundingBox.min.clone();
         geometry.translate(-min.x, -min.y, -min.z);
 
-        // build mesh
         const material = new THREE.MeshStandardMaterial({
           color: 0x8aa3ff, metalness: 0.05, roughness: 0.75,
         });
         mesh = new THREE.Mesh(geometry, material);
         scene.add(mesh);
 
-        // stats
         const triCount=(geometry.index?geometry.index.count:geometry.attributes.position.count)/3;
         triCountEl.textContent=triCount.toLocaleString();
 
-        // unique vertices
         const uniq=uniqueVerticesFromGeometry(geometry,1e-6);
         vCountEl.textContent=uniq.length.toLocaleString();
 
-        // points (visible for hover)
         const box = new THREE.Box3().setFromObject(mesh);
         const size = box.getSize(new THREE.Vector3());
         const diag = size.length();
@@ -301,22 +298,18 @@
         points.frustumCulled=false;
         scene.add(points);
 
-        // CSV
         const csvBlob=new Blob([makeCSV(uniq)],{type:'text/csv'});
         verticesCSVUrl=URL.createObjectURL(csvBlob);
         downloadCsvBtn.disabled=false;
         downloadCsvBtn.onclick=()=>{ const a=document.createElement('a'); a.href=verticesCSVUrl; a.download='vertices.csv'; a.click(); };
 
-        // toggle points
         let showPoints=true;
         togglePointsBtn.disabled=false; togglePointsBtn.textContent='Hide points';
         togglePointsBtn.onclick=()=>{ showPoints=!showPoints; points.visible=showPoints; togglePointsBtn.textContent=showPoints?'Hide points':'Show points'; };
 
-        // fit camera & scale helpers
         fitCameraToObject(mesh,1.2);
         updateHelpersScaleFrom(size);
 
-        // enable hover picking
         attachHoverPicking(points, diag);
 
         resetViewBtn.disabled=false;
@@ -331,10 +324,26 @@
     // Start
     loadLocal(file);
 
-    const raf = () => { controls.update(); renderer.render(scene, camera); requestAnimationFrame(raf); };
+    // --- Option B (NECESSARY CHANGES): continuously adapt clip planes to camera distance
+    const raf = () => {
+      controls.update();
+
+      const d = camera.position.distanceTo(controls.target);
+      const newNear = Math.max(0.0001, d / 10000);
+      const newFar  = d * 10000;
+
+      if (Math.abs(camera.near - newNear) > 1e-12 || Math.abs(camera.far - newFar) > 1e-6) {
+        camera.near = newNear;
+        camera.far = newFar;
+        camera.updateProjectionMatrix();
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(raf);
+    };
     requestAnimationFrame(raf);
+
     onResize();
   </script>
 </body>
 </html>
-
