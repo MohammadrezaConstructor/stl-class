@@ -11,7 +11,8 @@
     header { grid-column:1 / -1; padding:10px 16px; border-bottom:1px solid #222; display:flex; align-items:center; gap:12px; }
     header h1 { font-size:16px; margin:0; }
     #sidebar { background:var(--panel); padding:14px; overflow:auto; border-right:1px solid #222; }
-    #viewer { position:relative; }
+    /* IMPORTANT for Google Sites: ensure the viewer area actually has height */
+    #viewer { position:relative; min-height:400px; height:100%; }
     canvas { display:block; width:100%; height:100%; }
     .stat { font-size:12px; color:var(--muted); margin:4px 0; }
     .row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
@@ -95,31 +96,37 @@
     // ---------- Three.js base ----------
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(VIEW.clientWidth, VIEW.clientHeight);
+    renderer.setSize(Math.max(1, VIEW.clientWidth), Math.max(1, VIEW.clientHeight));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     VIEW.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f1115);
 
-    const camera = new THREE.PerspectiveCamera(50, VIEW.clientWidth / VIEW.clientHeight, 0.01, 2000);
+    const camera = new THREE.PerspectiveCamera(
+      50,
+      Math.max(1, VIEW.clientWidth) / Math.max(1, VIEW.clientHeight),
+      0.0001,
+      1e9
+    );
     camera.up.set(0, 0, 1);
     camera.position.set(0.8, 0.8, 1.4);
+    camera.updateProjectionMatrix();
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-    // --- Option B (NECESSARY CHANGES): start with safe clip planes.
-    // They will be continuously adjusted in the render loop based on camera distance.
-    camera.near = 0.0001;
-    camera.far  = 1e9;
-    camera.updateProjectionMatrix();
+    // Google Sites/iframe: prevent the page from stealing wheel when over canvas
+    renderer.domElement.addEventListener('wheel', (e) => {
+      e.preventDefault();
+    }, { passive: false });
 
     const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.0); scene.add(hemi);
     const dir  = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(1,1,1); scene.add(dir);
 
+    // Helpers (origin-based)
     let grid = new THREE.GridHelper(1, 20);
-    grid.material.opacity = 0.1; grid.material.transparent = true;
+    grid.material.opacity = 0.15; grid.material.transparent = true;
     grid.rotation.x = Math.PI / 2;
     grid.position.set(0, 0, 0);
     scene.add(grid);
@@ -132,9 +139,14 @@
     let mesh=null, points=null, verticesCSVUrl=null, lastFitTarget=null;
     let raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
 
+    // --- Google Sites/iframe-safe resize (guards 0x0)
     function onResize(){
-      const w=VIEW.clientWidth,h=VIEW.clientHeight;
-      camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h);
+      const w = VIEW.clientWidth;
+      const h = VIEW.clientHeight;
+      if (!w || !h) return; // critical for Google Sites layout passes
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
     }
     window.addEventListener('resize', onResize);
 
@@ -180,23 +192,23 @@
       const dir=new THREE.Vector3(1,1,1).normalize();
       camera.position.copy(center).addScaledVector(dir,dist);
 
-      // --- Option B: don't lock near/far here. Render loop adapts them.
       controls.target.copy(center);
       controls.update();
 
       lastFitTarget=obj;
     }
+
+    // Grid aligned to size (nice 1–2–5 steps)
     function updateHelpersScaleFrom(sizeVec){
       const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z);
 
-      // choose a nice grid step: 1–2–5–10 progression
-      const base = Math.pow(10, Math.floor(Math.log10(maxDim)));
+      const base = Math.pow(10, Math.floor(Math.log10(Math.max(1e-12, maxDim))));
       let step = base;
       if (maxDim / step < 5)  step = base / 2;
       if (maxDim / step < 2)  step = base / 5;
 
       const halfSize = Math.ceil(maxDim / step) * step;
-      const divisions = Math.round((halfSize * 2) / step);
+      const divisions = Math.max(1, Math.round((halfSize * 2) / step));
 
       scene.remove(grid);
       grid.geometry.dispose();
@@ -208,7 +220,7 @@
       grid.position.set(0,0,0);
       scene.add(grid);
 
-      axes.scale.setScalar(halfSize * 0.6);
+      axes.scale.setScalar(Math.max(1e-6, halfSize * 0.6));
     }
 
     function formatXYZ(x,y,z){
@@ -334,13 +346,13 @@
     // Start
     loadLocal(file);
 
-    // --- Option B (NECESSARY CHANGES): continuously adapt clip planes to camera distance
+    // Option B: continuously adapt clip planes to camera distance
     const raf = () => {
       controls.update();
 
       const d = camera.position.distanceTo(controls.target);
       const newNear = Math.max(0.0001, d / 10000);
-      const newFar  = d * 10000;
+      const newFar  = Math.max(newNear * 10, d * 10000);
 
       if (Math.abs(camera.near - newNear) > 1e-12 || Math.abs(camera.far - newFar) > 1e-6) {
         camera.near = newNear;
@@ -353,7 +365,10 @@
     };
     requestAnimationFrame(raf);
 
-    onResize();
+    // Google Sites/iframe: run resize multiple times after load to survive layout passes
+    requestAnimationFrame(onResize);
+    setTimeout(onResize, 50);
+    setTimeout(onResize, 250);
   </script>
 </body>
 </html>
