@@ -259,25 +259,25 @@
     
     // X axis (red, along +u direction / right-down)
     const xEnd = worldToScreen(axisLen, 0);
-    context.strokeStyle = '#ff6b6b';
+    context.strokeStyle = '#4ecdc4';
     context.beginPath();
     context.moveTo(o.x, o.y);
     context.lineTo(xEnd.x, xEnd.y);
     context.stroke();
-    drawArrowhead(context, o, xEnd, '#ff6b6b');
-    context.fillStyle = '#ff6b6b';
+    drawArrowhead(context, o, xEnd, '#4ecdc4');
+    context.fillStyle = '#4ecdc4';
     context.font = 'bold 13px Inter, sans-serif';
     context.fillText('X', xEnd.x + 8, xEnd.y + 4);
     
     // Y axis (green, along +v direction / left-down)
     const yEnd = worldToScreen(0, axisLen);
-    context.strokeStyle = '#4ecdc4';
+    context.strokeStyle = '#ff6b6b';
     context.beginPath();
     context.moveTo(o.x, o.y);
     context.lineTo(yEnd.x, yEnd.y);
     context.stroke();
-    drawArrowhead(context, o, yEnd, '#4ecdc4');
-    context.fillStyle = '#4ecdc4';
+    drawArrowhead(context, o, yEnd, '#ff6b6b');
+    context.fillStyle = '#ff6b6b';
     context.fillText('Y', yEnd.x - 16, yEnd.y + 4);
     
     // Z axis (blue, vertical up)
