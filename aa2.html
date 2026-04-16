@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Feature-Based Design — Part Creation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #080c12;
+    color: #e0f0ff;
+    font-family: 'Share Tech Mono', monospace;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; overflow: hidden;
+  }
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(14px, 2vw, 20px);
+    letter-spacing: 0.3em; color: #4af;
+    text-transform: uppercase; margin-bottom: 10px;
+    text-shadow: 0 0 20px #4af8;
+  }
+  #stage {
+    position: relative;
+    width: min(960px, 98vw);
+    height: min(560px, 58vw);
+    border: 1px solid #1a3050;
+    border-radius: 4px;
+    background: radial-gradient(circle at 50% 50%, #0d1e30 0%, #060c14 100%);
+    box-shadow: 0 0 40px #0af3;
+    overflow: hidden;
+  }
+  #three { width: 100%; height: 100%; display: block; }
+
+  /* Feature tree */
+  #tree {
+    position: absolute; top: 12px; left: 12px;
+    width: 190px;
+    background: #0a1520cc;
+    border: 1px solid #1e3a55;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 11px;
+    pointer-events: none;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+  }
+  .tree-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px; letter-spacing: 0.2em; color: #4af;
+    border-bottom: 1px solid #1e3a55;
+    padding-bottom: 6px; margin-bottom: 8px;
+  }
+  .feat {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 0; color: #4a6a8a;
+    transition: color 0.4s; font-size: 11px;
+  }
+  .feat.active { color: #7cf; }
+  .feat.done   { color: #3a9a5c; }
+  .feat .icon  { font-size: 13px; width: 16px; }
+  .bar {
+    height: 2px; background: #1e3a55;
+    border-radius: 1px; overflow: hidden;
+    margin-left: 22px; margin-bottom: 4px;
+  }
+  .bar-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg,#4af,#0f9);
+    transition: width 0.05s linear;
+  }
+
+  /* Status bar */
+  #status {
+    position: absolute; bottom: 14px; left: 50%;
+    transform: translateX(-50%);
+    background: #0a1520dd;
+    border: 1px solid #1e3a55;
+    border-radius: 20px;
+    padding: 7px 22px;
+    font-size: 12px; letter-spacing: 0.1em;
+    color: #7cf; white-space: nowrap;
+    text-shadow: 0 0 8px #4af;
+    z-index: 10;
+  }
+
+  /* Scanline overlay */
+  #scanlines {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent 0, transparent 2px,
+      rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 3px);
+    z-index: 5;
+  }
+
+  /* Vignette */
+  #vignette {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.6);
+    z-index: 4;
+  }
+
+  /* HUD corners */
+  .hud { position: absolute; font-size: 9px; color: #4af8; letter-spacing: 0.2em; z-index: 10; font-family: 'Orbitron', sans-serif; }
+  .hud.tr { top: 14px; right: 16px; }
+  .hud.br { bottom: 16px; right: 16px; }
+
+  /* Controls */
+  #controls {
+    margin-top: 14px; display: flex; gap: 10px;
+  }
+  button {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px; letter-spacing: 0.15em;
+    padding: 8px 22px;
+    background: #0a1a2a; color: #4af;
+    border: 1px solid #2a5070; border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  button:hover { background: #1a3a5a; box-shadow: 0 0 12px #4af5; }
+</style>
+</head>
+<body>
+
+<h1>Feature-Based Design · Part Creation</h1>
+
+<div id="stage">
+  <canvas id="three"></canvas>
+
+  <div id="tree">
+    <div class="tree-title">📁 FEATURE TREE</div>
+    <div class="feat" id="f0"><span class="icon">📐</span> Base Sketch</div>
+    <div class="bar"><div class="bar-fill" id="bf0"></div></div>
+    <div class="feat" id="f1"><span class="icon">⬆</span> Extrude Boss</div>
+    <div class="bar"><div class="bar-fill" id="bf1"></div></div>
+    <div class="feat" id="f2"><span class="icon">⭕</span> Cut — Hole ×2</div>
+    <div class="bar"><div class="bar-fill" id="bf2"></div></div>
+    <div class="feat" id="f3"><span class="icon">▲</span> Extrude Boss 2</div>
+    <div class="bar"><div class="bar-fill" id="bf3"></div></div>
+    <div class="feat" id="f4"><span class="icon">◢</span> Chamfer</div>
+    <div class="bar"><div class="bar-fill" id="bf4"></div></div>
+    <div class="feat" id="f5"><span class="icon">◯</span> Fillet</div>
+    <div class="bar"><div class="bar-fill" id="bf5"></div></div>
+  </div>
+
+  <div class="hud tr">CAD · ORBIT CAM · ISO</div>
+  <div class="hud br" id="frameHud">FRAME 0000</div>
+  <div id="status">Initialising feature model…</div>
+  <div id="vignette"></div>
+  <div id="scanlines"></div>
+</div>
+
+<div id="controls">
+  <button id="btnPlay">▶ REPLAY</button>
+  <button id="btnSpeed">SPEED ×1</button>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ─── Scene setup ────────────────────────────────────────────────────────────
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('three');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+renderer.setSize(stage.clientWidth, stage.clientHeight, false);
+renderer.setClearColor(0x000000, 0);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(35, stage.clientWidth/stage.clientHeight, 0.1, 100);
+camera.position.set(6, 5, 7);
+camera.lookAt(0, 0.3, 0);
+
+// Lights
+scene.add(new THREE.AmbientLight(0x4a7bb0, 0.4));
+const key = new THREE.DirectionalLight(0xcce6ff, 1.2);
+key.position.set(5, 8, 4);
+key.castShadow = true;
+key.shadow.mapSize.set(1024,1024);
+key.shadow.camera.left=-5; key.shadow.camera.right=5;
+key.shadow.camera.top=5; key.shadow.camera.bottom=-5;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x3a7ab0, 0.5);
+fill.position.set(-4, 3, -4);
+scene.add(fill);
+const rim = new THREE.PointLight(0x4af8ff, 0.6, 20);
+rim.position.set(-3, 2, 3);
+scene.add(rim);
+
+// ─── Grid floor ─────────────────────────────────────────────────────────────
+const grid = new THREE.GridHelper(20, 40, 0x1a3550, 0x0d2035);
+grid.position.y = -0.01;
+scene.add(grid);
+
+// Ground plane (for shadows)
+const groundMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(20,20), groundMat);
+ground.rotation.x = -Math.PI/2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// ─── Axis indicator ─────────────────────────────────────────────────────────
+const axesGroup = new THREE.Group();
+function axisArrow(dir, color) {
+  const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(0,0,0), 0.8, color, 0.18, 0.12);
+  axesGroup.add(arrow);
+}
+axisArrow(new THREE.Vector3(1,0,0), 0xff5555);
+axisArrow(new THREE.Vector3(0,1,0), 0x55ff55);
+axisArrow(new THREE.Vector3(0,0,1), 0x5599ff);
+axesGroup.position.set(-1.6, 0.02, 1.6);
+
+// ─── Part dimensions ────────────────────────────────────────────────────────
+const PART = {
+  w: 3.0,   // x
+  d: 1.8,   // z
+  h: 0.7,   // y (extrude height)
+  boss2: { w: 1.0, d: 0.8, h: 0.35 },
+  holeR: 0.22,
+  holes: [ { x: -0.9, z: -0.45 }, { x: 0.9, z: 0.45 } ],
+};
+
+// ─── Materials ──────────────────────────────────────────────────────────────
+const steelMat = new THREE.MeshStandardMaterial({
+  color: 0x3d7aaa,
+  metalness: 0.85,
+  roughness: 0.35,
+  flatShading: false,
+});
+const boss2Mat = new THREE.MeshStandardMaterial({
+  color: 0x4a8cc0,
+  metalness: 0.85,
+  roughness: 0.3,
+});
+const edgeMat = new THREE.LineBasicMaterial({ color: 0x0a1a2a, linewidth: 1 });
+
+// Sketch (dashed lines)
+const sketchGroup = new THREE.Group();
+{
+  const w = PART.w, d = PART.d;
+  const pts = [
+    new THREE.Vector3(-w/2,0.005,-d/2),
+    new THREE.Vector3( w/2,0.005,-d/2),
+    new THREE.Vector3( w/2,0.005, d/2),
+    new THREE.Vector3(-w/2,0.005, d/2),
+    new THREE.Vector3(-w/2,0.005,-d/2),
+  ];
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  const m = new THREE.LineDashedMaterial({ color: 0x4af, dashSize: 0.12, gapSize: 0.08, linewidth: 2 });
+  const line = new THREE.Line(g, m);
+  line.computeLineDistances();
+  sketchGroup.add(line);
+
+  // corner dots
+  pts.slice(0,4).forEach(p=>{
+    const dot = new THREE.Mesh(
+      new THREE.SphereGeometry(0.04, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0x4af })
+    );
+    dot.position.copy(p);
+    sketchGroup.add(dot);
+  });
+}
+scene.add(sketchGroup);
+sketchGroup.visible = false;
+
+// ─── Base body (with holes via Shape + ExtrudeGeometry) ─────────────────────
+// Using Shape with holes gives us a proper cut-through, no booleans needed.
+function buildBaseBody(withHoles, chamferFrac=0, filletFrac=0) {
+  const w = PART.w, d = PART.d;
+  const shape = new THREE.Shape();
+
+  // Base rect with optional filleted corners (phase 5)
+  const r = 0.18 * filletFrac; // fillet radius grows
+  if (r > 0.005) {
+    shape.moveTo(-w/2 + r, -d/2);
+    shape.lineTo( w/2 - r, -d/2);
+    shape.quadraticCurveTo( w/2, -d/2,  w/2, -d/2 + r);
+    shape.lineTo( w/2,  d/2 - r);
+    shape.quadraticCurveTo( w/2,  d/2,  w/2 - r,  d/2);
+    shape.lineTo(-w/2 + r,  d/2);
+    shape.quadraticCurveTo(-w/2,  d/2, -w/2,  d/2 - r);
+    shape.lineTo(-w/2, -d/2 + r);
+    shape.quadraticCurveTo(-w/2, -d/2, -w/2 + r, -d/2);
+  } else {
+    shape.moveTo(-w/2,-d/2);
+    shape.lineTo( w/2,-d/2);
+    shape.lineTo( w/2, d/2);
+    shape.lineTo(-w/2, d/2);
+    shape.lineTo(-w/2,-d/2);
+  }
+
+  // Holes (shape holes — these become actual through-holes in the extrude)
+  if (withHoles) {
+    PART.holes.forEach(h=>{
+      const hole = new THREE.Path();
+      hole.absarc(h.x, h.z, PART.holeR, 0, Math.PI*2, true);
+      shape.holes.push(hole);
+    });
+  }
+
+  // Chamfer via bevel on top edge
+  const bevelSize = 0.06 * chamferFrac;
+  const extrudeSettings = {
+    depth: PART.h,
+    bevelEnabled: bevelSize > 0.001,
+    bevelThickness: bevelSize,
+    bevelSize: bevelSize,
+    bevelOffset: 0,
+    bevelSegments: 2,
+    curveSegments: 32,
+  };
+
+  const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+  // ExtrudeGeometry extrudes along +Z; we want +Y (up). Rotate.
+  geom.rotateX(-Math.PI/2);
+  geom.computeVertexNormals();
+  return geom;
+}
+
+let baseMesh = null;
+function rebuildBase(withHoles, chamferFrac, filletFrac) {
+  if (baseMesh) {
+    scene.remove(baseMesh);
+    baseMesh.geometry.dispose();
+  }
+  const g = buildBaseBody(withHoles, chamferFrac, filletFrac);
+  baseMesh = new THREE.Mesh(g, steelMat);
+  baseMesh.castShadow = true;
+  baseMesh.receiveShadow = true;
+  scene.add(baseMesh);
+
+  // Edges overlay
+  if (baseMesh.userData.edges) scene.remove(baseMesh.userData.edges);
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(g, 20),
+    new THREE.LineBasicMaterial({ color: 0x0a1a2a })
+  );
+  baseMesh.userData.edges = edges;
+  scene.add(edges);
+}
+
+// ─── Boss 2 ─────────────────────────────────────────────────────────────────
+const boss2 = new THREE.Mesh(
+  new THREE.BoxGeometry(PART.boss2.w, PART.boss2.h, PART.boss2.d),
+  boss2Mat
+);
+boss2.castShadow = true;
+boss2.receiveShadow = true;
+scene.add(boss2);
+boss2.visible = false;
+
+// Boss 2 edges
+const boss2Edges = new THREE.LineSegments(
+  new THREE.EdgesGeometry(boss2.geometry),
+  new THREE.LineBasicMaterial({ color: 0x0a1a2a })
+);
+scene.add(boss2Edges);
+boss2Edges.visible = false;
+
+// ─── Highlight overlays (chamfer / fillet glow) ─────────────────────────────
+const chamferHighlight = new THREE.Group();
+scene.add(chamferHighlight);
+
+const filletHighlight = new THREE.Group();
+scene.add(filletHighlight);
+
+function buildChamferHighlight() {
+  chamferHighlight.clear();
+  const w = PART.w, d = PART.d, h = PART.h;
+  // Top rectangle outline in orange
+  const pts = [
+    new THREE.Vector3(-w/2, h+0.005, -d/2),
+    new THREE.Vector3( w/2, h+0.005, -d/2),
+    new THREE.Vector3( w/2, h+0.005,  d/2),
+    new THREE.Vector3(-w/2, h+0.005,  d/2),
+    new THREE.Vector3(-w/2, h+0.005, -d/2),
+  ];
+  const g = new THREE.BufferGeometry().setFromPoints(pts);
+  const m = new THREE.LineBasicMaterial({ color: 0xffaa22, linewidth: 2, transparent: true, opacity: 0.9 });
+  chamferHighlight.add(new THREE.Line(g, m));
+}
+
+function buildFilletHighlight() {
+  filletHighlight.clear();
+  const w = PART.w, d = PART.d, h = PART.h;
+  const cornerPositions = [
+    [-w/2,-d/2],[ w/2,-d/2],[ w/2, d/2],[-w/2, d/2]
+  ];
+  cornerPositions.forEach(([x,z])=>{
+    // Vertical glowing ring at each corner edge
+    const geom = new THREE.TorusGeometry(0.14, 0.015, 8, 24);
+    const mat = new THREE.MeshBasicMaterial({ color: 0x00ff99, transparent: true, opacity: 0.8 });
+    const ring = new THREE.Mesh(geom, mat);
+    ring.position.set(x, h, z);
+    ring.rotation.x = Math.PI/2;
+    filletHighlight.add(ring);
+
+    // Glow sprite-ish (larger transparent torus)
+    const glow = new THREE.Mesh(
+      new THREE.TorusGeometry(0.22, 0.04, 8, 24),
+      new THREE.MeshBasicMaterial({ color: 0x00ff99, transparent: true, opacity: 0.15 })
+    );
+    glow.position.set(x, h, z);
+    glow.rotation.x = Math.PI/2;
+    filletHighlight.add(glow);
+  });
+}
+
+// ─── Sketch dimensions (HTML-style labels as sprites) ───────────────────────
+function makeTextSprite(text, color='#4af') {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 64;
+  const cx = c.getContext('2d');
+  cx.fillStyle = color;
+  cx.font = 'bold 32px "Share Tech Mono", monospace';
+  cx.textAlign = 'center';
+  cx.textBaseline = 'middle';
+  cx.fillText(text, 128, 32);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+  const sp = new THREE.Sprite(mat);
+  sp.scale.set(0.8, 0.2, 1);
+  return sp;
+}
+const dimW = makeTextSprite('300 mm'); dimW.position.set(0, 0.02, -PART.d/2 - 0.25);
+const dimD = makeTextSprite('180 mm'); dimD.position.set(PART.w/2 + 0.35, 0.02, 0);
+sketchGroup.add(dimW);
+sketchGroup.add(dimD);
+
+// ─── Animation phases ───────────────────────────────────────────────────────
+const PHASES = [
+  { name:'Base Sketch',     dur: 1.6 },
+  { name:'Extrude Boss',    dur: 1.6 },
+  { name:'Cut — Holes ×2',  dur: 1.6 },
+  { name:'Extrude Boss 2',  dur: 1.6 },
+  { name:'Chamfer',         dur: 1.4 },
+  { name:'Fillet',          dur: 1.6 },
+  { name:'Complete',        dur: 2.0 },
+];
+const totalDur = PHASES.reduce((a,b)=>a+b.dur,0);
+
+function phaseOf(t) {
+  let acc = 0;
+  for (let i=0;i<PHASES.length;i++){
+    if (t < acc + PHASES[i].dur)
+      return { i, local: t-acc, frac: (t-acc)/PHASES[i].dur };
+    acc += PHASES[i].dur;
+  }
+  return { i: PHASES.length-1, local: PHASES.at(-1).dur, frac: 1 };
+}
+
+// Easing
+const eOut = t => 1-(1-t)*(1-t);
+const eInOut = t => t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+
+// ─── Main animation loop ────────────────────────────────────────────────────
+let speedMul = 1;
+let startTime = null;
+let frameCount = 0;
+
+function setFeatureState(i, state, fracPct=0) {
+  const el = document.getElementById(`f${i}`);
+  const bf = document.getElementById(`bf${i}`);
+  if (!el) return;
+  el.className = `feat ${state}`;
+  if (bf) bf.style.width = (state==='done' ? 100 : state==='active' ? fracPct : 0) + '%';
+}
+
+function updateTree(phaseIdx, frac) {
+  for (let i=0;i<6;i++){
+    if (phaseIdx > i) setFeatureState(i, 'done');
+    else if (phaseIdx === i) setFeatureState(i, 'active', frac*100);
+    else setFeatureState(i, '', 0);
+  }
+}
+
+const statusEl = document.getElementById('status');
+const frameHud = document.getElementById('frameHud');
+
+// State trackers so we don't rebuild geometry every frame
+let lastChamfer = -1, lastFillet = -1, lastHoles = -1;
+
+function updateScene(t) {
+  const { i: phase, frac } = phaseOf(t);
+
+  // Camera slow orbit
+  const camAngle = -Math.PI*0.25 + t*0.05;
+  const camRadius = 7.5;
+  camera.position.x = Math.cos(camAngle)*camRadius;
+  camera.position.z = Math.sin(camAngle)*camRadius;
+  camera.position.y = 4.5 + Math.sin(t*0.3)*0.3;
+  camera.lookAt(0, 0.4, 0);
+
+  // Sketch visible only in phase 0
+  sketchGroup.visible = (phase === 0);
+  if (phase === 0) {
+    // Fade-in corner dots + dash animation feel handled by opacity
+    sketchGroup.traverse(obj=>{
+      if (obj.material) {
+        obj.material.transparent = true;
+        obj.material.opacity = Math.min(1, frac*2);
+      }
+    });
+  }
+
+  // ── Base body build logic ──
+  // Phase 1: extrude grows h. Phase 2: holes appear. Phase 4: chamfer. Phase 5: fillet.
+  let extH = PART.h;
+  let showBase = phase >= 1;
+  let withHoles = phase >= 2 ? 1 : 0;
+  let chamferFrac = phase >= 4 ? (phase === 4 ? eOut(frac) : 1) : 0;
+  let filletFrac  = phase >= 5 ? (phase === 5 ? eOut(frac) : 1) : 0;
+
+  // Rebuild only on state change
+  if (withHoles !== lastHoles || Math.abs(chamferFrac - lastChamfer) > 0.02 || Math.abs(filletFrac - lastFillet) > 0.02) {
+    rebuildBase(!!withHoles, chamferFrac, filletFrac);
+    lastHoles = withHoles;
+    lastChamfer = chamferFrac;
+    lastFillet = filletFrac;
+  }
+
+  if (baseMesh) {
+    baseMesh.visible = showBase;
+    if (baseMesh.userData.edges) baseMesh.userData.edges.visible = showBase;
+
+    // Phase 1: grow the extrude (scale Y from 0 to 1)
+    if (phase === 1) {
+      const s = eOut(frac);
+      baseMesh.scale.y = Math.max(0.01, s);
+      if (baseMesh.userData.edges) baseMesh.userData.edges.scale.y = Math.max(0.01, s);
+    } else {
+      baseMesh.scale.y = 1;
+      if (baseMesh.userData.edges) baseMesh.userData.edges.scale.y = 1;
+    }
+  }
+
+  // ── Boss 2 ──
+  if (phase >= 3) {
+    boss2.visible = true;
+    boss2Edges.visible = true;
+    const growFrac = phase === 3 ? eOut(frac) : 1;
+    const h = PART.boss2.h * growFrac;
+    boss2.scale.set(1, Math.max(0.01, growFrac), 1);
+    boss2Edges.scale.set(1, Math.max(0.01, growFrac), 1);
+    boss2.position.set(0, PART.h + h/2, 0);
+    boss2Edges.position.copy(boss2.position);
+  } else {
+    boss2.visible = false;
+    boss2Edges.visible = false;
+  }
+
+  // ── Chamfer highlight ──
+  chamferHighlight.visible = (phase === 4);
+  if (phase === 4) {
+    if (chamferHighlight.children.length === 0) buildChamferHighlight();
+    chamferHighlight.traverse(o=>{
+      if (o.material && o.material.opacity !== undefined) {
+        o.material.opacity = 0.9 * (1 - Math.abs(frac-0.5)*2) + 0.3;
+      }
+    });
+  }
+
+  // ── Fillet highlight ──
+  filletHighlight.visible = (phase === 5);
+  if (phase === 5) {
+    if (filletHighlight.children.length === 0) buildFilletHighlight();
+    filletHighlight.children.forEach((m,i)=>{
+      m.rotation.z = t*2 + i;
+      if (m.material) {
+        const base = i%2===0 ? 0.8 : 0.15;
+        m.material.opacity = base * (1 - Math.abs(frac-0.5));
+      }
+    });
+  }
+
+  // ── UI ──
+  updateTree(phase, frac);
+  if (phase < 6) {
+    statusEl.style.color = '#7cf';
+    statusEl.textContent = '▶  ' + PHASES[phase].name + '…';
+  } else {
+    statusEl.style.color = '#0f9';
+    statusEl.textContent = '✓  MODEL COMPLETE';
+  }
+  frameHud.textContent = 'FRAME ' + String(frameCount).padStart(4,'0');
+}
+
+// Initial build
+rebuildBase(false, 0, 0);
+baseMesh.visible = false;
+
+function animate(ts) {
+  if (!startTime) startTime = ts;
+  const elapsed = ((ts - startTime)/1000) * speedMul;
+  frameCount++;
+
+  if (elapsed < totalDur) {
+    updateScene(elapsed);
+    requestAnimationFrame(animate);
+  } else {
+    updateScene(totalDur - 0.001);
+    // Keep orbiting even after completion
+    requestAnimationFrame(animate);
+  }
+  renderer.render(scene, camera);
+}
+
+function restart() {
+  startTime = null;
+  frameCount = 0;
+  lastHoles = -1; lastChamfer = -1; lastFillet = -1;
+  statusEl.style.color = '#7cf';
+  for (let i=0;i<6;i++) setFeatureState(i, '', 0);
+  requestAnimationFrame(animate);
+}
+
+document.getElementById('btnPlay').addEventListener('click', restart);
+document.getElementById('btnSpeed').addEventListener('click', () => {
+  speedMul = speedMul === 1 ? 2 : speedMul === 2 ? 0.5 : 1;
+  document.getElementById('btnSpeed').textContent = `SPEED ×${speedMul}`;
+});
+
+// Handle resize
+window.addEventListener('resize', () => {
+  renderer.setSize(stage.clientWidth, stage.clientHeight, false);
+  camera.aspect = stage.clientWidth/stage.clientHeight;
+  camera.updateProjectionMatrix();
+});
+
+restart();
+</script>
+</body>
+</html>
