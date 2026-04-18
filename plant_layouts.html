@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plant Layouts — Jobshop, Flow Line, Project Shop, Group Technology</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 24px;
+    background: #FAFAF8;
+    color: #2C2C2A;
+    line-height: 1.55;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+  .subtitle { color: #5F5E5A; font-size: 14px; margin: 0 0 20px; }
+
+  /* SVG text styles */
+  svg text.th { font-family: inherit; font-size: 14px; font-weight: 500; fill: #2C2C2A; }
+  svg text.ts { font-family: inherit; font-size: 12px; font-weight: 400; fill: #444441; }
+
+  /* Animations */
+  @keyframes flow { to { stroke-dashoffset: -40; } }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+  @keyframes hum { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-1px)} }
+
+  @keyframes moveJob1 {
+    0%   { transform: translate(0, 0); }
+    15%  { transform: translate(0, 0); }
+    25%  { transform: translate(430px, 0); }
+    45%  { transform: translate(430px, 0); }
+    55%  { transform: translate(0, 140px); }
+    85%  { transform: translate(0, 140px); }
+    100% { transform: translate(0, 140px); }
+  }
+  @keyframes moveJob2 {
+    0%   { transform: translate(215px, 0); }
+    15%  { transform: translate(215px, 0); }
+    25%  { transform: translate(215px, 140px); }
+    45%  { transform: translate(215px, 140px); }
+    55%  { transform: translate(430px, 140px); }
+    85%  { transform: translate(430px, 140px); }
+    100% { transform: translate(430px, 140px); }
+  }
+  @keyframes moveLineJob {
+    0%   { transform: translateX(0); opacity:0; }
+    5%   { opacity:1; }
+    20%  { transform: translateX(135px); }
+    40%  { transform: translateX(270px); }
+    60%  { transform: translateX(405px); }
+    80%  { transform: translateX(540px); }
+    95%  { transform: translateX(600px); opacity:1; }
+    100% { transform: translateX(620px); opacity:0; }
+  }
+  @keyframes shuttle1 {
+    0%    { transform: translate(0, 0); }
+    12%   { transform: translate(94px, 0); }
+    24%   { transform: translate(94px, 0); }
+    34%   { transform: translate(40px, 0); }
+    46%   { transform: translate(188px, 0); }
+    58%   { transform: translate(188px, 0); }
+    68%   { transform: translate(94px, 0); }
+    80%   { transform: translate(188px, 0); }
+    92%   { transform: translate(230px, 0); opacity:1; }
+    100%  { transform: translate(240px, 0); opacity:0; }
+  }
+  @keyframes shuttle2 {
+    0%    { transform: translate(0, 0); opacity:0; }
+    5%    { opacity:1; }
+    15%   { transform: translate(94px, 0); }
+    28%   { transform: translate(94px, 0); }
+    38%   { transform: translate(30px, 0); }
+    50%   { transform: translate(188px, 0); }
+    62%   { transform: translate(188px, 0); }
+    72%   { transform: translate(94px, 0); }
+    85%   { transform: translate(188px, 0); }
+    95%   { transform: translate(230px, 0); opacity:1; }
+    100%  { transform: translate(240px, 0); opacity:0; }
+  }
+  @keyframes shuttle3 {
+    0%    { transform: translate(0, 0); opacity:0; }
+    6%    { opacity:1; }
+    14%   { transform: translate(110px, 0); }
+    26%   { transform: translate(110px, 0); }
+    36%   { transform: translate(35px, 0); }
+    48%   { transform: translate(220px, 0); }
+    60%   { transform: translate(220px, 0); }
+    70%   { transform: translate(110px, 0); }
+    82%   { transform: translate(220px, 0); }
+    95%   { transform: translate(260px, 0); opacity:1; }
+    100%  { transform: translate(270px, 0); opacity:0; }
+  }
+  @keyframes arrive {
+    0%,8% { opacity:0; transform: translate(var(--fx,0), var(--fy,0)); }
+    20%   { opacity:1; transform: translate(calc(var(--fx,0)*0.5), calc(var(--fy,0)*0.5)); }
+    50%,80% { opacity:1; transform: translate(0,0); }
+    95%   { opacity:0; transform: translate(0,0); }
+    100%  { opacity:0; transform: translate(0,0); }
+  }
+
+  .flow-arrow { stroke-dasharray:6 5; animation: flow 2.4s linear infinite; }
+  .machine { animation: hum 3s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  .machine-light { animation: pulse 1.6s ease-in-out infinite; }
+  .job1 { animation: moveJob1 9s ease-in-out infinite; transform-box: fill-box; }
+  .job2 { animation: moveJob2 9s ease-in-out infinite; transform-box: fill-box; animation-delay: 1.2s; }
+  .line-job { animation: moveLineJob 5s linear infinite; transform-box: fill-box; }
+  .shuttle-1 { animation: shuttle1 7s ease-in-out infinite; transform-box: fill-box; }
+  .shuttle-2 { animation: shuttle2 7s ease-in-out infinite; transform-box: fill-box; animation-delay: 1.2s; }
+  .shuttle-3 { animation: shuttle3 7s ease-in-out infinite; transform-box: fill-box; animation-delay: 2s; }
+  .resource-arrive { animation: arrive 5s ease-in-out infinite; transform-box: fill-box; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+  .tab-btn {
+    padding:8px 16px; font-size:13px; border:1px solid #B4B2A9;
+    border-radius:20px; background:#FFFFFF; color:#5F5E5A;
+    cursor:pointer; transition:all .2s; white-space:nowrap; font-weight:500;
+    font-family: inherit;
+  }
+  .tab-btn.active { background:#E6F1FB; color:#185FA5; border-color:#378ADD; }
+  .tab-btn:hover:not(.active) { background:#F1EFE8; color:#2C2C2A; }
+
+  /* Info cards */
+  .panel-wrap {
+    background: #FFFFFF;
+    border: 1px solid #D3D1C7;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .info-card {
+    background:#F1EFE8;
+    border-radius: 12px;
+    padding:16px 18px;
+    font-size:13.5px;
+    line-height:1.65;
+    border: 1px solid #D3D1C7;
+    margin-top: 12px;
+  }
+  .info-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:12px; }
+  .info-tile {
+    background:#FFFFFF;
+    border-radius:8px; padding:10px 12px;
+    border: 1px solid #D3D1C7;
+  }
+  .info-label { font-size:11px; color:#5F5E5A; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:4px; }
+  .info-value { font-size:13px; font-weight:500; color:#2C2C2A; }
+  .badge { display:inline-block; font-size:11px; padding:3px 9px; border-radius:10px; font-weight:500; margin:3px 3px 0 0; }
+  .b-green { background:#EAF3DE; color:#3B6D11; }
+  .b-amber { background:#FAEEDA; color:#854F0B; }
+  .b-red   { background:#FCEBEB; color:#A32D2D; }
+  .b-blue  { background:#E6F1FB; color:#185FA5; }
+  .section-title { font-size:14px; font-weight:500; margin:14px 0 8px; color:#2C2C2A; }
+  .cmp-table { width:100%; font-size:12.5px; border-collapse:collapse; table-layout:fixed; }
+  .cmp-table th { text-align:left; padding:10px 8px; font-weight:500; color:#5F5E5A; font-size:11px; text-transform:uppercase; letter-spacing:0.4px; background:#F1EFE8; }
+  .cmp-table td { padding:10px 8px; border-bottom:1px solid #D3D1C7; background: #FFFFFF; }
+  .cmp-table tr:last-child td { border-bottom:none; }
+  .cmp-table td:first-child { font-weight:500; }
+  .table-wrap { overflow-x:auto; border-radius:12px; border: 1px solid #D3D1C7; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .panel-title { display:flex; align-items:center; gap:8px; font-weight:500; font-size:15px; }
+  p { margin: 8px 0 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Plant layouts — animated comparison</h1>
+  <p class="subtitle">Four classic manufacturing layouts: jobshop, flow line, project shop, and group technology.</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="show('jobshop',this)">Job shop</button>
+    <button class="tab-btn" onclick="show('flowline',this)">Flow line</button>
+    <button class="tab-btn" onclick="show('project',this)">Project shop</button>
+    <button class="tab-btn" onclick="show('group',this)">Group technology</button>
+  </div>
+
+  <!-- ================== JOB SHOP ================== -->
+  <div id="jobshop" class="layout-panel">
+    <div class="panel-wrap">
+    <svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Job shop layout animation</title>
+      <desc>Machines grouped by function in six departments. Two jobs travel their own unique routes.</desc>
+      <defs>
+        <marker id="ja" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <text class="ts" x="40" y="24" fill="#5F5E5A">Machines grouped by function — jobs traverse varied paths</text>
+
+      <!-- Blue departments (top row) -->
+      <rect x="30" y="40" width="190" height="100" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+      <text class="th" x="125" y="60" text-anchor="middle" fill="#0C447C">Turning dept</text>
+
+      <rect x="245" y="40" width="190" height="100" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+      <text class="th" x="340" y="60" text-anchor="middle" fill="#0C447C">Drilling dept</text>
+
+      <rect x="460" y="40" width="190" height="100" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+      <text class="th" x="555" y="60" text-anchor="middle" fill="#0C447C">Milling dept</text>
+
+      <!-- Teal departments (bottom row) -->
+      <rect x="30" y="180" width="190" height="100" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+      <text class="th" x="125" y="200" text-anchor="middle" fill="#085041">Grinding dept</text>
+
+      <rect x="245" y="180" width="190" height="100" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+      <text class="th" x="340" y="200" text-anchor="middle" fill="#085041">Welding dept</text>
+
+      <rect x="460" y="180" width="190" height="100" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+      <text class="th" x="555" y="200" text-anchor="middle" fill="#085041">Assembly dept</text>
+
+      <!-- Machines (top row: lathes, drills, mills) -->
+      <g class="machine"><rect x="50"  y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><circle cx="72" cy="101" r="7" fill="#378ADD"/><circle class="machine-light" cx="88" cy="84" r="2" fill="#0F6E56"/></g>
+      <g class="machine" style="animation-delay:.5s"><rect x="107" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><circle cx="129" cy="101" r="7" fill="#378ADD"/><circle class="machine-light" cx="145" cy="84" r="2" fill="#0F6E56"/></g>
+      <g class="machine" style="animation-delay:1s"><rect x="164" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><circle cx="186" cy="101" r="7" fill="#378ADD"/><circle class="machine-light" cx="202" cy="84" r="2" fill="#0F6E56"/></g>
+      <g class="machine" style="animation-delay:.2s"><rect x="265" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><rect x="283" y="84" width="8" height="30" fill="#185FA5"/><circle class="machine-light" cx="303" cy="84" r="2" fill="#EF9F27"/></g>
+      <g class="machine" style="animation-delay:.7s"><rect x="322" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><rect x="340" y="84" width="8" height="30" fill="#185FA5"/><circle class="machine-light" cx="360" cy="84" r="2" fill="#EF9F27"/></g>
+      <g class="machine" style="animation-delay:1.2s"><rect x="379" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><rect x="397" y="84" width="8" height="30" fill="#185FA5"/><circle class="machine-light" cx="417" cy="84" r="2" fill="#EF9F27"/></g>
+      <g class="machine" style="animation-delay:.3s"><rect x="480" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><rect x="492" y="88" width="20" height="20" fill="#185FA5"/><circle class="machine-light" cx="518" cy="84" r="2" fill="#E24B4A"/></g>
+      <g class="machine" style="animation-delay:.8s"><rect x="537" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><rect x="549" y="88" width="20" height="20" fill="#185FA5"/><circle class="machine-light" cx="575" cy="84" r="2" fill="#E24B4A"/></g>
+      <g class="machine" style="animation-delay:1.3s"><rect x="594" y="78" width="44" height="46" rx="4" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/><rect x="606" y="88" width="20" height="20" fill="#185FA5"/><circle class="machine-light" cx="632" cy="84" r="2" fill="#E24B4A"/></g>
+
+      <!-- Machines (bottom row: grinders, welders, assembly) -->
+      <g class="machine" style="animation-delay:.1s"><rect x="50"  y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><circle cx="72" cy="241" r="9" fill="#1D9E75"/><circle class="machine-light" cx="88" cy="224" r="2" fill="#EF9F27"/></g>
+      <g class="machine" style="animation-delay:.6s"><rect x="107" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><circle cx="129" cy="241" r="9" fill="#1D9E75"/><circle class="machine-light" cx="145" cy="224" r="2" fill="#EF9F27"/></g>
+      <g class="machine" style="animation-delay:1.1s"><rect x="164" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><circle cx="186" cy="241" r="9" fill="#1D9E75"/><circle class="machine-light" cx="202" cy="224" r="2" fill="#EF9F27"/></g>
+      <g class="machine" style="animation-delay:.4s"><rect x="265" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><path d="M275 240 L295 228 L299 254 L279 258 Z" fill="#1D9E75"/><circle class="machine-light" cx="303" cy="224" r="2" fill="#E24B4A"/></g>
+      <g class="machine" style="animation-delay:.9s"><rect x="322" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><path d="M332 240 L352 228 L356 254 L336 258 Z" fill="#1D9E75"/><circle class="machine-light" cx="360" cy="224" r="2" fill="#E24B4A"/></g>
+      <g class="machine" style="animation-delay:1.4s"><rect x="379" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><path d="M389 240 L409 228 L413 254 L393 258 Z" fill="#1D9E75"/><circle class="machine-light" cx="417" cy="224" r="2" fill="#E24B4A"/></g>
+      <g class="machine" style="animation-delay:.5s"><rect x="480" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><rect x="492" y="230" width="20" height="20" rx="2" fill="#1D9E75"/><circle class="machine-light" cx="518" cy="224" r="2" fill="#0F6E56"/></g>
+      <g class="machine" style="animation-delay:1.0s"><rect x="537" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><rect x="549" y="230" width="20" height="20" rx="2" fill="#1D9E75"/><circle class="machine-light" cx="575" cy="224" r="2" fill="#0F6E56"/></g>
+      <g class="machine" style="animation-delay:1.5s"><rect x="594" y="218" width="44" height="46" rx="4" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/><rect x="606" y="230" width="20" height="20" rx="2" fill="#1D9E75"/><circle class="machine-light" cx="632" cy="224" r="2" fill="#0F6E56"/></g>
+
+      <!-- Job 1 route: Turning → Milling → Grinding -->
+      <path class="flow-arrow" fill="none" stroke="#BA7517" stroke-width="1.4" opacity="0.85" marker-end="url(#ja)" d="M155 100 L525 100"/>
+      <path class="flow-arrow" fill="none" stroke="#BA7517" stroke-width="1.4" opacity="0.85" marker-end="url(#ja)" d="M555 130 L555 160 L125 160 L125 210"/>
+
+      <!-- Job 2 route: Drilling → Welding → Assembly -->
+      <path class="flow-arrow" fill="none" stroke="#7F77DD" stroke-width="1.4" opacity="0.85" marker-end="url(#ja)" d="M340 130 L340 210"/>
+      <path class="flow-arrow" fill="none" stroke="#7F77DD" stroke-width="1.4" opacity="0.85" marker-end="url(#ja)" d="M370 240 L525 240"/>
+
+      <!-- Job 1 ticket -->
+      <g class="job1">
+        <rect x="115" y="92" width="22" height="16" rx="3" fill="#EF9F27" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="126" y="104" text-anchor="middle" font-size="10" fill="#633806" font-weight="500">J1</text>
+      </g>
+      <!-- Job 2 ticket -->
+      <g class="job2">
+        <rect x="115" y="92" width="22" height="16" rx="3" fill="#AFA9EC" stroke="#3C3489" stroke-width="0.5"/>
+        <text x="126" y="104" text-anchor="middle" font-size="10" fill="#26215C" font-weight="500">J2</text>
+      </g>
+
+      <!-- Legend -->
+      <g transform="translate(30, 305)">
+        <line x1="0" y1="8" x2="22" y2="8" stroke="#BA7517" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text class="ts" x="28" y="12">Job 1: Turn → Mill → Grind</text>
+        <line x1="240" y1="8" x2="262" y2="8" stroke="#7F77DD" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text class="ts" x="268" y="12">Job 2: Drill → Weld → Assemble</text>
+      </g>
+    </svg>
+    </div>
+
+    <div class="info-card">
+      <div class="panel-title"><span class="dot" style="background:#378ADD"></span>Job shop (process layout)</div>
+      <p>Machines of the same type are grouped together. Each job has its own routing sequence, visiting only the departments it needs.</p>
+      <div class="info-grid">
+        <div class="info-tile"><div class="info-label">Best for</div><div class="info-value">Low-volume, high-variety work</div></div>
+        <div class="info-tile"><div class="info-label">Flow pattern</div><div class="info-value">Jumbled, criss-cross routes</div></div>
+        <div class="info-tile"><div class="info-label">Labour</div><div class="info-value">Skilled, flexible operators</div></div>
+        <div class="info-tile"><div class="info-label">Real examples</div><div class="info-value">Machine shops, hospitals, restaurants</div></div>
+      </div>
+      <div style="margin-top:10px">
+        <span class="badge b-green">High flexibility</span>
+        <span class="badge b-green">Fault-tolerant</span>
+        <span class="badge b-amber">Complex scheduling</span>
+        <span class="badge b-red">High WIP</span>
+        <span class="badge b-red">Long throughput time</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== FLOW LINE ================== -->
+  <div id="flowline" class="layout-panel" style="display:none">
+    <div class="panel-wrap">
+    <svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Flow line layout animation</title>
+      <desc>Five stations in sequence along a conveyor.</desc>
+      <defs>
+        <marker id="la" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <text class="ts" x="40" y="24" fill="#5F5E5A">Stations laid out in process sequence — every unit follows identical path</text>
+
+      <!-- Raw input buffer -->
+      <rect x="20" y="155" width="50" height="60" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+      <text class="ts" x="45" y="189" text-anchor="middle" fill="#2C2C2A">Raw</text>
+      <text class="ts" x="45" y="204" text-anchor="middle" fill="#2C2C2A">input</text>
+
+      <!-- Conveyor -->
+      <rect x="70" y="177" width="540" height="16" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+      <g stroke="#888780" stroke-width="0.5" opacity="0.5">
+        <line x1="90"  y1="177" x2="90"  y2="193"/>
+        <line x1="130" y1="177" x2="130" y2="193"/>
+        <line x1="170" y1="177" x2="170" y2="193"/>
+        <line x1="210" y1="177" x2="210" y2="193"/>
+        <line x1="250" y1="177" x2="250" y2="193"/>
+        <line x1="290" y1="177" x2="290" y2="193"/>
+        <line x1="330" y1="177" x2="330" y2="193"/>
+        <line x1="370" y1="177" x2="370" y2="193"/>
+        <line x1="410" y1="177" x2="410" y2="193"/>
+        <line x1="450" y1="177" x2="450" y2="193"/>
+        <line x1="490" y1="177" x2="490" y2="193"/>
+        <line x1="530" y1="177" x2="530" y2="193"/>
+        <line x1="570" y1="177" x2="570" y2="193"/>
+      </g>
+
+      <!-- Ship out buffer -->
+      <rect x="610" y="155" width="50" height="60" rx="6" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.8"/>
+      <text class="ts" x="635" y="189" text-anchor="middle" fill="#173404">Ship</text>
+      <text class="ts" x="635" y="204" text-anchor="middle" fill="#173404">out</text>
+
+      <!-- Station 1: Cut -->
+      <rect x="75" y="55" width="110" height="110" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+      <text class="th" x="130" y="77" text-anchor="middle" fill="#712B13">1. Cut</text>
+      <text class="ts" x="130" y="93" text-anchor="middle" fill="#993C1D">shear + stamp</text>
+      <g class="machine">
+        <rect x="98" y="105" width="64" height="45" rx="3" fill="#F5C4B3" stroke="#993C1D" stroke-width="0.5"/>
+        <path d="M108 138 L152 138" stroke="#993C1D" stroke-width="2" stroke-linecap="round"/>
+        <path d="M118 120 L132 132 L146 120" stroke="#993C1D" stroke-width="1.5" fill="none"/>
+        <circle class="machine-light" cx="155" cy="112" r="2.5" fill="#EF9F27"/>
+      </g>
+
+      <!-- Station 2: Drill -->
+      <rect x="210" y="55" width="110" height="110" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+      <text class="th" x="265" y="77" text-anchor="middle" fill="#712B13">2. Drill</text>
+      <text class="ts" x="265" y="93" text-anchor="middle" fill="#993C1D">holes + tap</text>
+      <g class="machine" style="animation-delay:.3s">
+        <rect x="233" y="105" width="64" height="45" rx="3" fill="#F5C4B3" stroke="#993C1D" stroke-width="0.5"/>
+        <rect x="261" y="108" width="8" height="28" fill="#993C1D"/>
+        <polygon points="261,136 269,136 265,144" fill="#993C1D"/>
+        <rect x="245" y="142" width="40" height="5" fill="#993C1D"/>
+        <circle class="machine-light" cx="290" cy="112" r="2.5" fill="#EF9F27"/>
+      </g>
+
+      <!-- Station 3: Weld -->
+      <rect x="345" y="55" width="110" height="110" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+      <text class="th" x="400" y="77" text-anchor="middle" fill="#712B13">3. Weld</text>
+      <text class="ts" x="400" y="93" text-anchor="middle" fill="#993C1D">seam + joint</text>
+      <g class="machine" style="animation-delay:.6s">
+        <rect x="368" y="105" width="64" height="45" rx="3" fill="#F5C4B3" stroke="#993C1D" stroke-width="0.5"/>
+        <path d="M378 138 Q388 124 400 138 T422 138" stroke="#993C1D" stroke-width="2" fill="none"/>
+        <polygon points="395,114 403,114 400,122" fill="#EF9F27"/>
+        <circle class="machine-light" cx="425" cy="112" r="2.5" fill="#E24B4A"/>
+      </g>
+
+      <!-- Station 4: Paint -->
+      <rect x="480" y="55" width="110" height="110" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+      <text class="th" x="535" y="77" text-anchor="middle" fill="#712B13">4. Paint</text>
+      <text class="ts" x="535" y="93" text-anchor="middle" fill="#993C1D">spray + dry</text>
+      <g class="machine" style="animation-delay:.9s">
+        <rect x="503" y="105" width="64" height="45" rx="3" fill="#F5C4B3" stroke="#993C1D" stroke-width="0.5"/>
+        <path d="M514 116 L508 128 L520 128 Z" fill="#993C1D"/>
+        <circle cx="528" cy="138" r="2" fill="#993C1D"/>
+        <circle cx="538" cy="135" r="2" fill="#993C1D"/>
+        <circle cx="548" cy="140" r="2" fill="#993C1D"/>
+        <circle cx="558" cy="136" r="2" fill="#993C1D"/>
+        <circle class="machine-light" cx="560" cy="112" r="2.5" fill="#EF9F27"/>
+      </g>
+
+      <!-- Flow arrows -->
+      <line x1="70"  y1="185" x2="186" y2="185" class="flow-arrow" stroke="#993C1D" stroke-width="1.5" marker-end="url(#la)"/>
+      <line x1="188" y1="185" x2="321" y2="185" class="flow-arrow" stroke="#993C1D" stroke-width="1.5" marker-end="url(#la)"/>
+      <line x1="323" y1="185" x2="456" y2="185" class="flow-arrow" stroke="#993C1D" stroke-width="1.5" marker-end="url(#la)"/>
+      <line x1="458" y1="185" x2="591" y2="185" class="flow-arrow" stroke="#993C1D" stroke-width="1.5" marker-end="url(#la)"/>
+      <line x1="593" y1="185" x2="609" y2="185" class="flow-arrow" stroke="#993C1D" stroke-width="1.5" marker-end="url(#la)"/>
+
+      <!-- Moving units -->
+      <g class="line-job" style="animation-delay:0s"><rect x="78" y="177" width="16" height="16" rx="2" fill="#EF9F27" stroke="#854F0B" stroke-width="0.5"/></g>
+      <g class="line-job" style="animation-delay:1.3s"><rect x="78" y="177" width="16" height="16" rx="2" fill="#AFA9EC" stroke="#3C3489" stroke-width="0.5"/></g>
+      <g class="line-job" style="animation-delay:2.6s"><rect x="78" y="177" width="16" height="16" rx="2" fill="#5DCAA5" stroke="#0F6E56" stroke-width="0.5"/></g>
+      <g class="line-job" style="animation-delay:3.9s"><rect x="78" y="177" width="16" height="16" rx="2" fill="#F09595" stroke="#A32D2D" stroke-width="0.5"/></g>
+
+      <!-- Takt time bar -->
+      <g transform="translate(30,240)">
+        <rect x="0" y="0" width="620" height="60" rx="8" fill="#F1EFE8" stroke="#D3D1C7" stroke-width="0.8"/>
+        <text class="th" x="12" y="22">Line balancing</text>
+        <text class="ts" x="12" y="40">Each station's cycle time ≈ equal → steady takt, no bottlenecks</text>
+        <rect x="380" y="18" width="50" height="30" rx="4" fill="#EAF3DE" stroke="#639922" stroke-width="0.5"/><text class="ts" x="405" y="37" text-anchor="middle" fill="#3B6D11">30s</text>
+        <rect x="440" y="18" width="50" height="30" rx="4" fill="#EAF3DE" stroke="#639922" stroke-width="0.5"/><text class="ts" x="465" y="37" text-anchor="middle" fill="#3B6D11">32s</text>
+        <rect x="500" y="18" width="50" height="30" rx="4" fill="#EAF3DE" stroke="#639922" stroke-width="0.5"/><text class="ts" x="525" y="37" text-anchor="middle" fill="#3B6D11">29s</text>
+        <rect x="560" y="18" width="50" height="30" rx="4" fill="#EAF3DE" stroke="#639922" stroke-width="0.5"/><text class="ts" x="585" y="37" text-anchor="middle" fill="#3B6D11">31s</text>
+      </g>
+    </svg>
+    </div>
+
+    <div class="info-card">
+      <div class="panel-title"><span class="dot" style="background:#D85A30"></span>Flow line (product layout)</div>
+      <p>Machines are arranged in the order of operations. All products move in one continuous, sequential flow from raw material to finished good.</p>
+      <div class="info-grid">
+        <div class="info-tile"><div class="info-label">Best for</div><div class="info-value">High-volume, standardised products</div></div>
+        <div class="info-tile"><div class="info-label">Flow pattern</div><div class="info-value">Single straight line, one-way</div></div>
+        <div class="info-tile"><div class="info-label">Labour</div><div class="info-value">Specialised, repetitive tasks</div></div>
+        <div class="info-tile"><div class="info-label">Real examples</div><div class="info-value">Car assembly, bottling, PCB lines</div></div>
+      </div>
+      <div style="margin-top:10px">
+        <span class="badge b-green">High throughput</span>
+        <span class="badge b-green">Low WIP</span>
+        <span class="badge b-green">Simple control</span>
+        <span class="badge b-red">Low flexibility</span>
+        <span class="badge b-red">Breakdown halts line</span>
+        <span class="badge b-amber">High capital cost</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== PROJECT SHOP ================== -->
+  <div id="project" class="layout-panel" style="display:none">
+    <div class="panel-wrap">
+    <svg width="100%" viewBox="0 0 680 340" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Project shop (fixed-position) animation</title>
+      <desc>Large stationary product at centre; resources arrive from all sides.</desc>
+      <defs>
+        <marker id="pa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <text class="ts" x="40" y="24" fill="#5F5E5A">Product stays fixed — labour, materials and equipment come to it</text>
+
+      <!-- Product area with ship silhouette -->
+      <g>
+        <rect x="230" y="120" width="220" height="120" rx="12" fill="#D3D1C7" stroke="#5F5E5A" stroke-width="1" opacity="0.3"/>
+        <path d="M245 215 L255 235 L425 235 L435 215 L420 195 L260 195 Z" fill="#888780" stroke="#2C2C2A" stroke-width="1"/>
+        <rect x="285" y="165" width="110" height="30" fill="#B4B2A9" stroke="#2C2C2A" stroke-width="0.5"/>
+        <rect x="315" y="140" width="50" height="25" fill="#D3D1C7" stroke="#2C2C2A" stroke-width="0.5"/>
+        <rect x="335" y="118" width="14" height="22" fill="#5F5E5A" stroke="#2C2C2A" stroke-width="0.5"/>
+        <circle cx="300" cy="180" r="3" fill="#B5D4F4"/>
+        <circle cx="320" cy="180" r="3" fill="#B5D4F4"/>
+        <circle cx="340" cy="180" r="3" fill="#B5D4F4"/>
+        <circle cx="360" cy="180" r="3" fill="#B5D4F4"/>
+        <circle cx="380" cy="180" r="3" fill="#B5D4F4"/>
+        <line x1="250" y1="110" x2="250" y2="195" stroke="#3C3489" stroke-width="2"/>
+        <line x1="250" y1="110" x2="310" y2="110" stroke="#3C3489" stroke-width="2"/>
+        <line x1="310" y1="110" x2="310" y2="150" stroke="#3C3489" stroke-width="1" stroke-dasharray="2 2"/>
+        <rect x="304" y="148" width="12" height="8" fill="#7F77DD"/>
+        <text class="th" x="340" y="263" text-anchor="middle" fill="#2C2C2A">The product (fixed)</text>
+        <text class="ts" x="340" y="278" text-anchor="middle" fill="#444441">ship, building, turbine, bridge</text>
+      </g>
+
+      <!-- 6 resources -->
+      <rect x="20" y="50" width="110" height="50" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.8"/>
+      <text class="th" x="75" y="72" text-anchor="middle" fill="#0C447C">Labour</text>
+      <text class="ts" x="75" y="88" text-anchor="middle" fill="#185FA5">skilled crews</text>
+
+      <rect x="550" y="50" width="110" height="50" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+      <text class="th" x="605" y="72" text-anchor="middle" fill="#712B13">Materials</text>
+      <text class="ts" x="605" y="88" text-anchor="middle" fill="#993C1D">steel, cable</text>
+
+      <rect x="20" y="165" width="110" height="50" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+      <text class="th" x="75" y="187" text-anchor="middle" fill="#085041">Equipment</text>
+      <text class="ts" x="75" y="203" text-anchor="middle" fill="#0F6E56">cranes, rigs</text>
+
+      <rect x="550" y="165" width="110" height="50" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.8"/>
+      <text class="th" x="605" y="187" text-anchor="middle" fill="#633806">Tooling</text>
+      <text class="ts" x="605" y="203" text-anchor="middle" fill="#854F0B">welders, drills</text>
+
+      <rect x="20" y="280" width="110" height="50" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.8"/>
+      <text class="th" x="75" y="302" text-anchor="middle" fill="#26215C">Sub-contractors</text>
+      <text class="ts" x="75" y="318" text-anchor="middle" fill="#3C3489">electrical, HVAC</text>
+
+      <rect x="550" y="280" width="110" height="50" rx="8" fill="#FBEAF0" stroke="#993556" stroke-width="0.8"/>
+      <text class="th" x="605" y="302" text-anchor="middle" fill="#4B1528">Inspectors</text>
+      <text class="ts" x="605" y="318" text-anchor="middle" fill="#72243E">QA, safety</text>
+
+      <!-- Arrows inward -->
+      <path class="flow-arrow" fill="none" stroke="#185FA5" stroke-width="1.2" marker-end="url(#pa)" d="M130 80 L228 140"/>
+      <path class="flow-arrow" fill="none" stroke="#993C1D" stroke-width="1.2" marker-end="url(#pa)" d="M550 80 L452 140"/>
+      <path class="flow-arrow" fill="none" stroke="#0F6E56" stroke-width="1.2" marker-end="url(#pa)" d="M130 190 L228 185"/>
+      <path class="flow-arrow" fill="none" stroke="#854F0B" stroke-width="1.2" marker-end="url(#pa)" d="M550 190 L452 185"/>
+      <path class="flow-arrow" fill="none" stroke="#3C3489" stroke-width="1.2" marker-end="url(#pa)" d="M130 300 L228 240"/>
+      <path class="flow-arrow" fill="none" stroke="#993556" stroke-width="1.2" marker-end="url(#pa)" d="M550 300 L452 240"/>
+
+      <!-- Animated dots -->
+      <g class="resource-arrive" style="--fx:-90px;--fy:-55px;animation-delay:0s"><circle cx="240" cy="140" r="4" fill="#378ADD"/></g>
+      <g class="resource-arrive" style="--fx:90px;--fy:-55px;animation-delay:0.8s"><circle cx="440" cy="140" r="4" fill="#D85A30"/></g>
+      <g class="resource-arrive" style="--fx:-90px;--fy:0px;animation-delay:1.6s"><circle cx="240" cy="185" r="4" fill="#1D9E75"/></g>
+      <g class="resource-arrive" style="--fx:90px;--fy:0px;animation-delay:2.4s"><circle cx="440" cy="185" r="4" fill="#EF9F27"/></g>
+      <g class="resource-arrive" style="--fx:-90px;--fy:55px;animation-delay:3.2s"><circle cx="240" cy="240" r="4" fill="#7F77DD"/></g>
+      <g class="resource-arrive" style="--fx:90px;--fy:55px;animation-delay:4s"><circle cx="440" cy="240" r="4" fill="#D4537E"/></g>
+    </svg>
+    </div>
+
+    <div class="info-card">
+      <div class="panel-title"><span class="dot" style="background:#888780"></span>Project shop (fixed-position layout)</div>
+      <p>The product is too large, heavy, or delicate to move. Instead, everything needed to build it — workers, materials, tools — is brought to a single stationary site.</p>
+      <div class="info-grid">
+        <div class="info-tile"><div class="info-label">Best for</div><div class="info-value">One-off, large-scale products</div></div>
+        <div class="info-tile"><div class="info-label">Flow pattern</div><div class="info-value">Resources converge inward</div></div>
+        <div class="info-tile"><div class="info-label">Labour</div><div class="info-value">Multi-disciplinary teams</div></div>
+        <div class="info-tile"><div class="info-label">Real examples</div><div class="info-value">Shipyards, construction, aircraft</div></div>
+      </div>
+      <div style="margin-top:10px">
+        <span class="badge b-green">Handles any size</span>
+        <span class="badge b-green">Product never moves</span>
+        <span class="badge b-amber">Complex logistics</span>
+        <span class="badge b-amber">High coordination</span>
+        <span class="badge b-red">Very high unit cost</span>
+        <span class="badge b-red">Slow output rate</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== GROUP TECHNOLOGY ================== -->
+  <div id="group" class="layout-panel" style="display:none">
+    <div class="panel-wrap">
+    <svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>Group technology (cellular) animation</title>
+      <desc>Three dedicated cells, each serving a part family. Parts shuttle back and forth between machines inside their cell.</desc>
+      <defs>
+        <marker id="ga" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <text class="ts" x="40" y="24" fill="#5F5E5A">Parts move back and forth between machines inside their own cell</text>
+
+      <!-- Cell 1: Shaft family (green) -->
+      <rect x="20" y="45" width="320" height="135" rx="12" fill="#EAF3DE" stroke="#639922" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+      <text class="th" x="180" y="64" text-anchor="middle" fill="#3B6D11">Cell 1 — shaft family</text>
+      <g transform="translate(32,70)"><rect x="0" y="0" width="28" height="6" rx="1" fill="#3B6D11"/><circle cx="4" cy="3" r="3" fill="#639922"/><circle cx="24" cy="3" r="3" fill="#639922"/></g>
+      <g class="machine">
+        <rect x="40"  y="100" width="74" height="60" rx="6" fill="#C0DD97" stroke="#3B6D11" stroke-width="0.5"/>
+        <circle cx="77" cy="132" r="12" fill="#639922"/>
+        <circle cx="77" cy="132" r="4" fill="#3B6D11"/>
+        <text class="ts" x="77" y="156" text-anchor="middle" fill="#173404">Lathe</text>
+        <circle class="machine-light" cx="105" cy="107" r="2" fill="#EF9F27"/>
+      </g>
+      <g class="machine" style="animation-delay:.4s">
+        <rect x="134" y="100" width="74" height="60" rx="6" fill="#C0DD97" stroke="#3B6D11" stroke-width="0.5"/>
+        <rect x="162" y="114" width="18" height="22" fill="#639922"/>
+        <rect x="167" y="108" width="8" height="8" fill="#3B6D11"/>
+        <text class="ts" x="171" y="156" text-anchor="middle" fill="#173404">Mill</text>
+        <circle class="machine-light" cx="199" cy="107" r="2" fill="#EF9F27"/>
+      </g>
+      <g class="machine" style="animation-delay:.8s">
+        <rect x="228" y="100" width="74" height="60" rx="6" fill="#C0DD97" stroke="#3B6D11" stroke-width="0.5"/>
+        <rect x="258" y="110" width="12" height="30" fill="#639922"/>
+        <circle cx="264" cy="145" r="4" fill="#3B6D11"/>
+        <text class="ts" x="265" y="156" text-anchor="middle" fill="#173404">Drill</text>
+        <circle class="machine-light" cx="293" cy="107" r="2" fill="#EF9F27"/>
+      </g>
+      <line x1="114" y1="125" x2="133" y2="125" class="flow-arrow" stroke="#3B6D11" stroke-width="1.3" marker-end="url(#ga)"/>
+      <line x1="133" y1="140" x2="114" y2="140" class="flow-arrow" stroke="#3B6D11" stroke-width="1.3" opacity="0.5" marker-end="url(#ga)"/>
+      <line x1="208" y1="125" x2="227" y2="125" class="flow-arrow" stroke="#3B6D11" stroke-width="1.3" marker-end="url(#ga)"/>
+      <line x1="227" y1="140" x2="208" y2="140" class="flow-arrow" stroke="#3B6D11" stroke-width="1.3" opacity="0.5" marker-end="url(#ga)"/>
+      <g class="shuttle-1">
+        <rect x="66" y="128" width="22" height="8" rx="1" fill="#3B6D11" stroke="#173404" stroke-width="0.5"/>
+        <circle cx="68" cy="132" r="2.5" fill="#97C459"/>
+        <circle cx="86" cy="132" r="2.5" fill="#97C459"/>
+      </g>
+
+      <!-- Cell 2: Bracket family (amber) -->
+      <rect x="355" y="45" width="305" height="135" rx="12" fill="#FAEEDA" stroke="#BA7517" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+      <text class="th" x="507" y="64" text-anchor="middle" fill="#854F0B">Cell 2 — bracket family</text>
+      <g transform="translate(367,66)"><path d="M0 8 L0 0 L14 0 L14 5 L6 5 L6 8 Z" fill="#854F0B"/></g>
+      <g class="machine" style="animation-delay:.1s">
+        <rect x="375" y="100" width="74" height="60" rx="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
+        <circle cx="412" cy="132" r="12" fill="#BA7517"/>
+        <circle cx="412" cy="132" r="4" fill="#854F0B"/>
+        <text class="ts" x="412" y="156" text-anchor="middle" fill="#412402">Lathe</text>
+        <circle class="machine-light" cx="440" cy="107" r="2" fill="#E24B4A"/>
+      </g>
+      <g class="machine" style="animation-delay:.5s">
+        <rect x="469" y="100" width="74" height="60" rx="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
+        <path d="M493 125 Q503 117 513 125 T533 125" stroke="#854F0B" stroke-width="2" fill="none"/>
+        <rect x="498" y="130" width="20" height="8" fill="#BA7517"/>
+        <text class="ts" x="506" y="156" text-anchor="middle" fill="#412402">Weld</text>
+        <circle class="machine-light" cx="534" cy="107" r="2" fill="#E24B4A"/>
+      </g>
+      <g class="machine" style="animation-delay:.9s">
+        <rect x="563" y="100" width="74" height="60" rx="6" fill="#FAC775" stroke="#854F0B" stroke-width="0.5"/>
+        <circle cx="600" cy="132" r="13" fill="#BA7517"/>
+        <circle cx="600" cy="132" r="6" fill="#FAEEDA"/>
+        <text class="ts" x="600" y="156" text-anchor="middle" fill="#412402">Grind</text>
+        <circle class="machine-light" cx="628" cy="107" r="2" fill="#E24B4A"/>
+      </g>
+      <line x1="449" y1="125" x2="468" y2="125" class="flow-arrow" stroke="#854F0B" stroke-width="1.3" marker-end="url(#ga)"/>
+      <line x1="468" y1="140" x2="449" y2="140" class="flow-arrow" stroke="#854F0B" stroke-width="1.3" opacity="0.5" marker-end="url(#ga)"/>
+      <line x1="543" y1="125" x2="562" y2="125" class="flow-arrow" stroke="#854F0B" stroke-width="1.3" marker-end="url(#ga)"/>
+      <line x1="562" y1="140" x2="543" y2="140" class="flow-arrow" stroke="#854F0B" stroke-width="1.3" opacity="0.5" marker-end="url(#ga)"/>
+      <g class="shuttle-2">
+        <path d="M398 128 L420 128 L420 136 L410 136 L410 134 L398 134 Z" fill="#854F0B" stroke="#412402" stroke-width="0.5"/>
+      </g>
+
+      <!-- Cell 3: Plate family (blue) -->
+      <rect x="170" y="205" width="340" height="110" rx="12" fill="#E6F1FB" stroke="#185FA5" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+      <text class="th" x="340" y="224" text-anchor="middle" fill="#0C447C">Cell 3 — plate family</text>
+      <g transform="translate(182,214)"><rect x="0" y="0" width="16" height="10" fill="#0C447C"/></g>
+      <g class="machine" style="animation-delay:.2s">
+        <rect x="190" y="240" width="74" height="60" rx="6" fill="#B5D4F4" stroke="#0C447C" stroke-width="0.5"/>
+        <rect x="218" y="254" width="18" height="22" fill="#185FA5"/>
+        <rect x="223" y="248" width="8" height="8" fill="#0C447C"/>
+        <text class="ts" x="227" y="296" text-anchor="middle" fill="#042C53">Mill</text>
+        <circle class="machine-light" cx="255" cy="247" r="2" fill="#3B6D11"/>
+      </g>
+      <g class="machine" style="animation-delay:.6s">
+        <rect x="300" y="240" width="74" height="60" rx="6" fill="#B5D4F4" stroke="#0C447C" stroke-width="0.5"/>
+        <rect x="330" y="250" width="12" height="30" fill="#185FA5"/>
+        <circle cx="336" cy="285" r="4" fill="#0C447C"/>
+        <text class="ts" x="337" y="296" text-anchor="middle" fill="#042C53">Drill</text>
+        <circle class="machine-light" cx="365" cy="247" r="2" fill="#3B6D11"/>
+      </g>
+      <g class="machine" style="animation-delay:1s">
+        <rect x="410" y="240" width="74" height="60" rx="6" fill="#B5D4F4" stroke="#0C447C" stroke-width="0.5"/>
+        <rect x="430" y="250" width="34" height="10" fill="#185FA5"/>
+        <rect x="430" y="272" width="34" height="10" fill="#185FA5"/>
+        <line x1="447" y1="260" x2="447" y2="272" stroke="#0C447C" stroke-width="2"/>
+        <text class="ts" x="447" y="296" text-anchor="middle" fill="#042C53">Press</text>
+        <circle class="machine-light" cx="475" cy="247" r="2" fill="#3B6D11"/>
+      </g>
+      <line x1="264" y1="265" x2="299" y2="265" class="flow-arrow" stroke="#0C447C" stroke-width="1.3" marker-end="url(#ga)"/>
+      <line x1="299" y1="280" x2="264" y2="280" class="flow-arrow" stroke="#0C447C" stroke-width="1.3" opacity="0.5" marker-end="url(#ga)"/>
+      <line x1="374" y1="265" x2="409" y2="265" class="flow-arrow" stroke="#0C447C" stroke-width="1.3" marker-end="url(#ga)"/>
+      <line x1="409" y1="280" x2="374" y2="280" class="flow-arrow" stroke="#0C447C" stroke-width="1.3" opacity="0.5" marker-end="url(#ga)"/>
+      <g class="shuttle-3">
+        <rect x="216" y="268" width="16" height="10" fill="#0C447C" stroke="#042C53" stroke-width="0.5"/>
+      </g>
+    </svg>
+    </div>
+
+    <div class="info-card">
+      <div class="panel-title"><span class="dot" style="background:#639922"></span>Group technology (cellular manufacturing)</div>
+      <p>A hybrid approach. Parts are classified into families based on similar shape or processing, and each family gets its own self-contained cell. Within a cell, a part may move back and forth between machines as operations require.</p>
+      <div class="info-grid">
+        <div class="info-tile"><div class="info-label">Best for</div><div class="info-value">Medium-volume, medium-variety</div></div>
+        <div class="info-tile"><div class="info-label">Flow pattern</div><div class="info-value">Bidirectional inside cell</div></div>
+        <div class="info-tile"><div class="info-label">Labour</div><div class="info-value">Multi-skilled cell operators</div></div>
+        <div class="info-tile"><div class="info-label">Real examples</div><div class="info-value">Aerospace, electronics, automotive parts</div></div>
+      </div>
+      <div style="margin-top:10px">
+        <span class="badge b-green">Low WIP vs job shop</span>
+        <span class="badge b-green">Short routes</span>
+        <span class="badge b-blue">Medium flexibility</span>
+        <span class="badge b-amber">Needs family analysis</span>
+        <span class="badge b-red">Upfront reorganisation</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">At-a-glance comparison</div>
+  <div class="table-wrap">
+    <table class="cmp-table">
+      <thead>
+        <tr>
+          <th style="width:17%">Layout</th>
+          <th style="width:13%">Volume</th>
+          <th style="width:13%">Variety</th>
+          <th style="width:11%">WIP</th>
+          <th style="width:13%">Flexibility</th>
+          <th style="width:13%">Capital</th>
+          <th style="width:20%">Flow shape</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:#378ADD"></span>Job shop</td><td>Low</td><td>Very high</td><td>High</td><td>Very high</td><td>Low</td><td>Jumbled</td></tr>
+        <tr><td><span class="dot" style="background:#D85A30"></span>Flow line</td><td>Very high</td><td>Very low</td><td>Low</td><td>Very low</td><td>Very high</td><td>Straight line</td></tr>
+        <tr><td><span class="dot" style="background:#888780"></span>Project shop</td><td>One-off</td><td>Unique</td><td>N/A</td><td>Max</td><td>Very high</td><td>Converging</td></tr>
+        <tr><td><span class="dot" style="background:#639922"></span>Group tech.</td><td>Medium</td><td>Medium</td><td>Medium</td><td>Medium</td><td>Medium</td><td>Back-and-forth in cells</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.layout-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).style.display = 'block';
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
