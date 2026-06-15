@@ -1,0 +1,370 @@
+<div id="layerResolutionVisual" style="max-width:1050px; margin:32px auto; padding:24px; background:#f8fafc; border:1px solid #dbe4f0; border-radius:18px; font-family:Arial, Helvetica, sans-serif; color:#1e293b;">
+
+  <h2 style="margin:0 0 8px 0; font-size:30px; line-height:1.25; color:#0f172a;">
+    Effect of Layer Height on Vertical Resolution
+  </h2>
+
+  <p style="margin:0 0 22px 0; font-size:16px; line-height:1.6; color:#475569;">
+    Layer height controls how finely a 3D printed object is divided along the vertical direction.
+    Smaller layers create a smoother approximation of curved or sloped surfaces. Larger layers reduce
+    the number of layers, but the surface becomes more visibly stepped.
+  </p>
+
+  <div style="display:flex; flex-wrap:wrap; gap:22px; align-items:stretch;">
+
+    <div style="flex:1 1 300px; min-width:280px; padding:20px; background:#ffffff; border:1px solid #dbe4f0; border-radius:16px;">
+
+      <h3 style="margin:0 0 14px 0; font-size:20px; color:#0f172a;">
+        Control Layer Height
+      </h3>
+
+      <label for="resolutionLayerSlider" style="display:block; margin-bottom:8px; font-size:15px; font-weight:bold; color:#334155;">
+        Layer height:
+        <span id="resolutionLayerValue" style="color:#1d4ed8;">0.20 mm</span>
+      </label>
+
+      <input
+        id="resolutionLayerSlider"
+        type="range"
+        min="0.10"
+        max="1.00"
+        step="0.05"
+        value="0.20"
+        oninput="updateResolutionVisual()"
+        style="width:100%; margin:8px 0 20px 0;"
+      >
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+
+        <div style="padding:14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Part height</div>
+          <div id="resolutionPartHeight" style="font-size:24px; font-weight:bold; color:#1d4ed8;">20 mm</div>
+        </div>
+
+        <div style="padding:14px; background:#ecfdf5; border:1px solid #bbf7d0; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Number of layers</div>
+          <div id="resolutionLayerCount" style="font-size:24px; font-weight:bold; color:#15803d;">100</div>
+        </div>
+
+        <div style="padding:14px; background:#fff7ed; border:1px solid #fed7aa; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Vertical resolution</div>
+          <div id="resolutionQualityText" style="font-size:22px; font-weight:bold; color:#ea580c;">High</div>
+        </div>
+
+        <div style="padding:14px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Surface stepping</div>
+          <div id="resolutionSteppingText" style="font-size:22px; font-weight:bold; color:#dc2626;">Low</div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px;">
+        <div style="font-size:14px; color:#475569; line-height:1.6;">
+          Formula:
+          <br>
+          <strong style="color:#0f172a;">Number of layers = Part height / Layer height</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="flex:2 1 620px; min-width:340px; padding:20px; background:#ffffff; border:1px solid #dbe4f0; border-radius:16px;">
+
+      <h3 style="margin:0 0 14px 0; font-size:20px; color:#0f172a;">
+        Visual Comparison
+      </h3>
+
+      <svg id="resolutionSvg" width="100%" viewBox="0 0 760 520" preserveAspectRatio="xMidYMid meet" style="display:block; min-height:430px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px;">
+
+        <rect x="0" y="0" width="760" height="520" fill="#f8fafc"></rect>
+
+        <text x="190" y="42" text-anchor="middle" font-size="19" font-weight="bold" fill="#0f172a">
+          Ideal curved surface
+        </text>
+
+        <text x="570" y="42" text-anchor="middle" font-size="19" font-weight="bold" fill="#0f172a">
+          Printed layer approximation
+        </text>
+
+        <line x1="380" y1="70" x2="380" y2="440" stroke="#cbd5e1" stroke-width="2"></line>
+
+        <g id="idealLeftGroup"></g>
+        <g id="stairStepGroup"></g>
+        <g id="layerHeightMarker"></g>
+
+        <text x="190" y="465" text-anchor="middle" font-size="15" fill="#475569">
+          Smooth mathematical geometry
+        </text>
+
+        <text id="printedCaption" x="570" y="465" text-anchor="middle" font-size="15" fill="#475569">
+          Layered approximation
+        </text>
+
+      </svg>
+
+      <div style="margin-top:14px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; font-size:14.5px; line-height:1.6; color:#475569;">
+        <strong style="color:#0f172a;">Interpretation:</strong>
+        <span id="resolutionExplanation">
+          Smaller layer heights create more layers, so the printed surface follows the ideal curved geometry more closely.
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div style="margin-top:22px; padding:18px 20px; background:#fff7ed; border:1px solid #fed7aa; border-radius:16px;">
+    <strong style="color:#9a3412;">Key takeaway:</strong>
+    <span style="color:#7c2d12; line-height:1.6;">
+      Layer height is a resolution parameter. It does not change the original CAD geometry, but it changes how closely the printed layers approximate curved or sloped surfaces.
+    </span>
+  </div>
+
+</div>
+
+<script>
+  function updateResolutionVisual() {
+    var partHeight = 20;
+    var slider = document.getElementById("resolutionLayerSlider");
+    var layerHeight = parseFloat(slider.value);
+    var layerCount = Math.ceil(partHeight / layerHeight);
+
+    document.getElementById("resolutionLayerValue").innerHTML = layerHeight.toFixed(2) + " mm";
+    document.getElementById("resolutionLayerCount").innerHTML = layerCount;
+    document.getElementById("resolutionPartHeight").innerHTML = partHeight + " mm";
+
+    var quality = "";
+    var stepping = "";
+    var explanation = "";
+
+    if (layerHeight <= 0.20) {
+      quality = "High";
+      stepping = "Low";
+      explanation = "Small layer height creates many thin layers. The stair-step effect is reduced and the printed surface follows the ideal curved geometry more closely.";
+    } else if (layerHeight <= 0.50) {
+      quality = "Medium";
+      stepping = "Medium";
+      explanation = "Medium layer height creates a moderate number of layers. The surface is still recognizable, but stair-stepping becomes more visible.";
+    } else {
+      quality = "Low";
+      stepping = "High";
+      explanation = "Large layer height creates fewer thick layers. The surface becomes rougher because each layer approximates a larger vertical portion of the geometry.";
+    }
+
+    document.getElementById("resolutionQualityText").innerHTML = quality;
+    document.getElementById("resolutionSteppingText").innerHTML = stepping;
+    document.getElementById("resolutionExplanation").innerHTML = explanation;
+
+    drawVisual(layerHeight);
+  }
+
+  function profileX(y, offsetX) {
+    /*
+      One shared curve equation for both visuals.
+      This guarantees that the ideal and approximated profiles have the same direction.
+      y ranges from topY = 105 to bottomY = 405.
+    */
+    var topY = 105;
+    var bottomY = 405;
+
+    var t = (bottomY - y) / (bottomY - topY);
+
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+
+    /*
+      Shape logic:
+      - Starts lower-left
+      - Moves right as height increases
+      - Slightly bends back near the top
+    */
+    var x =
+      offsetX +
+      20 +
+      210 * t -
+      85 * Math.pow(t, 2) +
+      55 * Math.sin(Math.PI * t * 0.85);
+
+    return x;
+  }
+
+  function buildSmoothPath(offsetX) {
+    var topY = 105;
+    var bottomY = 405;
+    var points = [];
+
+    for (var i = 0; i <= 100; i++) {
+      var y = bottomY - (bottomY - topY) * (i / 100);
+      var x = profileX(y, offsetX);
+      points.push([x, y]);
+    }
+
+    var d = "M" + points[0][0] + " " + points[0][1];
+
+    for (var j = 1; j < points.length; j++) {
+      d += " L" + points[j][0] + " " + points[j][1];
+    }
+
+    return d;
+  }
+
+  function drawVisual(layerHeight) {
+    var idealLeftGroup = document.getElementById("idealLeftGroup");
+    var group = document.getElementById("stairStepGroup");
+    var marker = document.getElementById("layerHeightMarker");
+
+    idealLeftGroup.innerHTML = "";
+    group.innerHTML = "";
+    marker.innerHTML = "";
+
+    var topY = 105;
+    var bottomY = 405;
+    var visualHeight = bottomY - topY;
+
+    var leftOffset = 70;
+    var rightOffset = 425;
+
+    /*
+      Draw ideal curve on the left.
+    */
+    var leftGlow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    leftGlow.setAttribute("d", buildSmoothPath(leftOffset));
+    leftGlow.setAttribute("fill", "none");
+    leftGlow.setAttribute("stroke", "#93c5fd");
+    leftGlow.setAttribute("stroke-width", "15");
+    leftGlow.setAttribute("stroke-linecap", "round");
+    leftGlow.setAttribute("opacity", "0.35");
+    idealLeftGroup.appendChild(leftGlow);
+
+    var leftCurve = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    leftCurve.setAttribute("d", buildSmoothPath(leftOffset));
+    leftCurve.setAttribute("fill", "none");
+    leftCurve.setAttribute("stroke", "#1d4ed8");
+    leftCurve.setAttribute("stroke-width", "5");
+    leftCurve.setAttribute("stroke-linecap", "round");
+    idealLeftGroup.appendChild(leftCurve);
+
+    /*
+      Draw reference ideal curve on the right using the exact same equation.
+    */
+    var rightIdeal = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    rightIdeal.setAttribute("d", buildSmoothPath(rightOffset));
+    rightIdeal.setAttribute("fill", "none");
+    rightIdeal.setAttribute("stroke", "#94a3b8");
+    rightIdeal.setAttribute("stroke-width", "5");
+    rightIdeal.setAttribute("stroke-dasharray", "8 8");
+    rightIdeal.setAttribute("stroke-linecap", "round");
+    rightIdeal.setAttribute("opacity", "0.65");
+    group.appendChild(rightIdeal);
+
+    /*
+      Convert real layer height to visual layer spacing.
+      Real part height = 20 mm.
+      Visual part height = 300 px.
+    */
+    var spacing = visualHeight * (layerHeight / 20);
+
+    if (spacing < 4) spacing = 4;
+    if (spacing > 58) spacing = 58;
+
+    var steps = Math.ceil(visualHeight / spacing);
+
+    /*
+      Draw horizontal layer lines.
+    */
+    for (var k = 0; k <= steps; k++) {
+      var ly = bottomY - k * spacing;
+      if (ly < topY) ly = topY;
+
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "420");
+      line.setAttribute("x2", "720");
+      line.setAttribute("y1", ly);
+      line.setAttribute("y2", ly);
+      line.setAttribute("stroke", "#cbd5e1");
+      line.setAttribute("stroke-width", "1");
+      line.setAttribute("opacity", "0.45");
+      group.insertBefore(line, group.firstChild);
+    }
+
+    /*
+      Build stair-step approximation from the same profile function.
+    */
+    var path = "";
+    var previousY = bottomY;
+    var previousX = profileX(previousY, rightOffset);
+
+    path += "M" + previousX + " " + previousY + " ";
+
+    for (var s = 1; s <= steps; s++) {
+      var y = bottomY - s * spacing;
+      if (y < topY) y = topY;
+
+      var x = profileX(y, rightOffset);
+
+      path += "L" + x + " " + previousY + " ";
+      path += "L" + x + " " + y + " ";
+
+      previousX = x;
+      previousY = y;
+    }
+
+    var stairPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    stairPath.setAttribute("d", path);
+    stairPath.setAttribute("fill", "none");
+    stairPath.setAttribute("stroke", "#dc2626");
+    stairPath.setAttribute("stroke-width", "5");
+    stairPath.setAttribute("stroke-linejoin", "round");
+    stairPath.setAttribute("stroke-linecap", "square");
+    group.appendChild(stairPath);
+
+    /*
+      Layer height marker.
+    */
+    var markerX = 725;
+    var markerY1 = bottomY;
+    var markerY2 = bottomY - spacing;
+
+    var markerLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    markerLine.setAttribute("x1", markerX);
+    markerLine.setAttribute("x2", markerX);
+    markerLine.setAttribute("y1", markerY1);
+    markerLine.setAttribute("y2", markerY2);
+    markerLine.setAttribute("stroke", "#1d4ed8");
+    markerLine.setAttribute("stroke-width", "4");
+    marker.appendChild(markerLine);
+
+    var cap1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    cap1.setAttribute("x1", markerX - 12);
+    cap1.setAttribute("x2", markerX + 12);
+    cap1.setAttribute("y1", markerY1);
+    cap1.setAttribute("y2", markerY1);
+    cap1.setAttribute("stroke", "#1d4ed8");
+    cap1.setAttribute("stroke-width", "4");
+    marker.appendChild(cap1);
+
+    var cap2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    cap2.setAttribute("x1", markerX - 12);
+    cap2.setAttribute("x2", markerX + 12);
+    cap2.setAttribute("y1", markerY2);
+    cap2.setAttribute("y2", markerY2);
+    cap2.setAttribute("stroke", "#1d4ed8");
+    cap2.setAttribute("stroke-width", "4");
+    marker.appendChild(cap2);
+
+    var label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    label.setAttribute("x", markerX - 8);
+    label.setAttribute("y", markerY2 - 12);
+    label.setAttribute("text-anchor", "middle");
+    label.setAttribute("font-size", "13");
+    label.setAttribute("fill", "#1d4ed8");
+    label.setAttribute("font-weight", "bold");
+    label.textContent = "Layer height";
+    marker.appendChild(label);
+
+    document.getElementById("printedCaption").innerHTML =
+      steps + " visible layer steps in the profile";
+  }
+
+  updateResolutionVisual();
+</script>
