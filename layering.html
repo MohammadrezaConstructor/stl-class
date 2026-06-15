@@ -1,0 +1,458 @@
+<div id="layerHeightModule" style="max-width:1100px; margin:32px auto; padding:24px; background:#f8fafc; border:1px solid #dbe4f0; border-radius:18px; font-family:Arial, Helvetica, sans-serif; color:#1e293b;">
+
+  <h2 style="margin:0 0 8px 0; font-size:30px; line-height:1.25; color:#0f172a;">
+    Layer Height, Number of Layers, and Cross-Sections
+  </h2>
+
+  <p style="margin:0 0 22px 0; font-size:16px; line-height:1.6; color:#475569;">
+    A 3D object can be interpreted as a stack of thin layers. The layer height controls how many layers are needed.
+    The highlighted slicing plane shows one selected layer, and the cross-section panel shows the shape of that layer.
+  </p>
+
+  <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:22px;">
+
+    <button type="button" onclick="setShape('cube')" id="btnCube" style="padding:11px 18px; border:1px solid #1d4ed8; border-radius:999px; background:#1d4ed8; color:#ffffff; font-size:15px; font-weight:bold; cursor:pointer;">
+      Cube
+    </button>
+
+    <button type="button" onclick="setShape('cylinder')" id="btnCylinder" style="padding:11px 18px; border:1px solid #cbd5e1; border-radius:999px; background:#ffffff; color:#334155; font-size:15px; font-weight:bold; cursor:pointer;">
+      Cylinder
+    </button>
+
+    <button type="button" onclick="setShape('sphere')" id="btnSphere" style="padding:11px 18px; border:1px solid #cbd5e1; border-radius:999px; background:#ffffff; color:#334155; font-size:15px; font-weight:bold; cursor:pointer;">
+      Sphere
+    </button>
+
+    <button type="button" onclick="setShape('cone')" id="btnCone" style="padding:11px 18px; border:1px solid #cbd5e1; border-radius:999px; background:#ffffff; color:#334155; font-size:15px; font-weight:bold; cursor:pointer;">
+      Cone
+    </button>
+
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:22px; align-items:stretch;">
+
+    <div style="flex:1 1 320px; min-width:280px; padding:20px; background:#ffffff; border:1px solid #dbe4f0; border-radius:16px;">
+      <h3 style="margin:0 0 14px 0; font-size:20px; color:#0f172a;">
+        Controls
+      </h3>
+
+      <label for="layerSlider" style="display:block; margin-bottom:8px; font-size:15px; font-weight:bold; color:#334155;">
+        Layer height:
+        <span id="layerHeightValue" style="color:#1d4ed8;">0.20 mm</span>
+      </label>
+
+      <input id="layerSlider" type="range" min="0.10" max="1.00" step="0.05" value="0.20" oninput="updateLayerDemo()" style="width:100%; margin:8px 0 22px 0;">
+
+      <label for="sliceSlider" style="display:block; margin-bottom:8px; font-size:15px; font-weight:bold; color:#334155;">
+        Highlighted slice height:
+        <span id="sliceHeightValue" style="color:#dc2626;">20.0 mm</span>
+      </label>
+
+      <input id="sliceSlider" type="range" min="0" max="40" step="0.5" value="20" oninput="updateLayerDemo()" style="width:100%; margin:8px 0 18px 0;">
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+        <div style="padding:14px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Object height</div>
+          <div id="objectHeightText" style="font-size:24px; font-weight:bold; color:#1d4ed8;">40 mm</div>
+        </div>
+
+        <div style="padding:14px; background:#ecfdf5; border:1px solid #bbf7d0; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Number of layers</div>
+          <div id="layerCountText" style="font-size:24px; font-weight:bold; color:#15803d;">200</div>
+        </div>
+
+        <div style="padding:14px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Selected layer</div>
+          <div id="selectedLayerText" style="font-size:24px; font-weight:bold; color:#dc2626;">100</div>
+        </div>
+
+        <div style="padding:14px; background:#fff7ed; border:1px solid #fed7aa; border-radius:12px;">
+          <div style="font-size:13px; color:#475569;">Cross-section size</div>
+          <div id="crossSectionSizeText" style="font-size:24px; font-weight:bold; color:#ea580c;">100%</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px;">
+        <div style="font-size:14px; color:#475569; line-height:1.6;">
+          Formula:
+          <br>
+          <strong style="color:#0f172a;">Number of layers = Object height / Layer height</strong>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:2 1 560px; min-width:320px; padding:20px; background:#ffffff; border:1px solid #dbe4f0; border-radius:16px;">
+      <h3 style="margin:0 0 14px 0; font-size:20px; color:#0f172a;">
+        Visual Interpretation
+      </h3>
+
+      <div style="display:flex; flex-wrap:wrap; gap:18px; align-items:flex-start;">
+
+        <div style="flex:1 1 280px;">
+          <div style="margin-bottom:8px; font-size:14px; font-weight:bold; color:#334155;">
+            Side view: object divided into layers
+          </div>
+
+          <svg id="sideViewSvg" width="100%" viewBox="0 0 360 380" style="display:block; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px;">
+            <defs>
+              <clipPath id="shapeClip">
+                <path id="clipShape" d=""></path>
+              </clipPath>
+            </defs>
+
+            <rect x="0" y="0" width="360" height="380" fill="#f8fafc"></rect>
+
+            <path id="shapeBody" d="" fill="#dbeafe" stroke="#1d4ed8" stroke-width="3"></path>
+
+            <g id="layerLines" clip-path="url(#shapeClip)"></g>
+
+            <line id="highlightSlice" x1="60" y1="180" x2="300" y2="180" stroke="#ef4444" stroke-width="4" stroke-linecap="round"></line>
+
+            <circle id="leftMarker" cx="60" cy="180" r="5" fill="#ef4444"></circle>
+            <circle id="rightMarker" cx="300" cy="180" r="5" fill="#ef4444"></circle>
+
+            <text id="sliceText" x="180" y="340" text-anchor="middle" font-size="14" fill="#475569">
+              Highlighted layer
+            </text>
+
+            <text x="180" y="362" text-anchor="middle" font-size="13" fill="#64748b">
+              Move the slice-height slider to inspect cross-sections
+            </text>
+          </svg>
+        </div>
+
+        <div style="flex:1 1 220px;">
+          <div style="margin-bottom:8px; font-size:14px; font-weight:bold; color:#334155;">
+            Cross-section at highlighted layer
+          </div>
+
+          <svg id="crossSectionSvg" width="100%" viewBox="0 0 300 300" style="display:block; background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px;">
+            <rect x="0" y="0" width="300" height="300" fill="#f8fafc"></rect>
+
+            <g id="crossSectionShape"></g>
+
+            <text id="crossSectionLabel" x="150" y="270" text-anchor="middle" font-size="15" fill="#334155">
+              Square cross-section
+            </text>
+          </svg>
+
+          <div id="shapeExplanation" style="margin-top:14px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; font-size:14.5px; line-height:1.6; color:#475569;">
+            A cube has the same square cross-section at every height.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:22px; padding:18px 20px; background:#fff7ed; border:1px solid #fed7aa; border-radius:16px;">
+    <strong style="color:#9a3412;">Key takeaway:</strong>
+    <span style="color:#7c2d12; line-height:1.6;">
+      The layer height controls the number of stacked layers. The highlighted slicing plane shows that different shapes produce different cross-sections at different heights.
+    </span>
+  </div>
+
+</div>
+
+<script>
+  var currentShape = "cube";
+  var objectHeight = 40;
+
+  function setShape(shape) {
+    currentShape = shape;
+
+    var buttons = {
+      cube: document.getElementById("btnCube"),
+      cylinder: document.getElementById("btnCylinder"),
+      sphere: document.getElementById("btnSphere"),
+      cone: document.getElementById("btnCone")
+    };
+
+    for (var key in buttons) {
+      if (buttons[key]) {
+        buttons[key].style.background = "#ffffff";
+        buttons[key].style.color = "#334155";
+        buttons[key].style.border = "1px solid #cbd5e1";
+      }
+    }
+
+    if (buttons[shape]) {
+      buttons[shape].style.background = "#1d4ed8";
+      buttons[shape].style.color = "#ffffff";
+      buttons[shape].style.border = "1px solid #1d4ed8";
+    }
+
+    updateLayerDemo();
+  }
+
+  function updateLayerDemo() {
+    var layerSlider = document.getElementById("layerSlider");
+    var sliceSlider = document.getElementById("sliceSlider");
+
+    var layerHeight = parseFloat(layerSlider.value);
+    var sliceHeight = parseFloat(sliceSlider.value);
+
+    if (isNaN(layerHeight) || layerHeight <= 0) {
+      layerHeight = 0.2;
+    }
+
+    if (isNaN(sliceHeight)) {
+      sliceHeight = 20;
+    }
+
+    sliceHeight = Math.max(0, Math.min(objectHeight, sliceHeight));
+
+    var layerCount = Math.ceil(objectHeight / layerHeight);
+    var selectedLayer = Math.max(1, Math.min(layerCount, Math.ceil(sliceHeight / layerHeight)));
+
+    document.getElementById("layerHeightValue").textContent = layerHeight.toFixed(2) + " mm";
+    document.getElementById("sliceHeightValue").textContent = sliceHeight.toFixed(1) + " mm";
+    document.getElementById("layerCountText").textContent = layerCount;
+    document.getElementById("objectHeightText").textContent = objectHeight + " mm";
+    document.getElementById("selectedLayerText").textContent = selectedLayer;
+
+    drawSideView(layerHeight, layerCount, sliceHeight);
+    drawCrossSection(sliceHeight);
+  }
+
+  function getShapePath() {
+    if (currentShape === "cube") {
+      return "M90 60 L270 60 L270 300 L90 300 Z";
+    }
+
+    if (currentShape === "cylinder") {
+      return "M100 70 C100 45 260 45 260 70 L260 290 C260 315 100 315 100 290 Z";
+    }
+
+    if (currentShape === "sphere") {
+      return "M180 50 C245 50 300 105 300 180 C300 255 245 310 180 310 C115 310 60 255 60 180 C60 105 115 50 180 50 Z";
+    }
+
+    if (currentShape === "cone") {
+      return "M180 55 L285 300 L75 300 Z";
+    }
+
+    return "M90 60 L270 60 L270 300 L90 300 Z";
+  }
+
+  function getShapeMetrics() {
+    if (currentShape === "cube") {
+      return {
+        topY: 60,
+        bottomY: 300
+      };
+    }
+
+    if (currentShape === "cylinder") {
+      return {
+        topY: 70,
+        bottomY: 290
+      };
+    }
+
+    if (currentShape === "sphere") {
+      return {
+        topY: 50,
+        bottomY: 310,
+        centerY: 180,
+        radiusY: 130
+      };
+    }
+
+    if (currentShape === "cone") {
+      return {
+        topY: 55,
+        bottomY: 300
+      };
+    }
+
+    return {
+      topY: 60,
+      bottomY: 300
+    };
+  }
+
+  function getSliceGeometry(sliceHeight) {
+    var metrics = getShapeMetrics();
+
+    var normalized = sliceHeight / objectHeight;
+    normalized = Math.max(0, Math.min(1, normalized));
+
+    var y = metrics.bottomY - normalized * (metrics.bottomY - metrics.topY);
+
+    var x1 = 90;
+    var x2 = 270;
+    var radiusRatio = 1;
+
+    if (currentShape === "cube") {
+      x1 = 90;
+      x2 = 270;
+      radiusRatio = 1;
+    }
+
+    if (currentShape === "cylinder") {
+      x1 = 100;
+      x2 = 260;
+      radiusRatio = 1;
+    }
+
+    if (currentShape === "sphere") {
+      var dy = Math.abs(y - metrics.centerY);
+      var ratio = Math.sqrt(Math.max(0, 1 - Math.pow(dy / metrics.radiusY, 2)));
+      var halfWidth = 120 * ratio;
+
+      x1 = 180 - halfWidth;
+      x2 = 180 + halfWidth;
+      radiusRatio = ratio;
+    }
+
+    if (currentShape === "cone") {
+      var ratioFromApex = (y - metrics.topY) / (metrics.bottomY - metrics.topY);
+      ratioFromApex = Math.max(0, Math.min(1, ratioFromApex));
+
+      var halfConeWidth = 105 * ratioFromApex;
+
+      x1 = 180 - halfConeWidth;
+      x2 = 180 + halfConeWidth;
+      radiusRatio = ratioFromApex;
+    }
+
+    return {
+      y: y,
+      x1: x1,
+      x2: x2,
+      radiusRatio: radiusRatio
+    };
+  }
+
+  function drawSideView(layerHeight, layerCount, sliceHeight) {
+    var shapeBody = document.getElementById("shapeBody");
+    var clipShape = document.getElementById("clipShape");
+    var layerLines = document.getElementById("layerLines");
+    var highlightSlice = document.getElementById("highlightSlice");
+    var leftMarker = document.getElementById("leftMarker");
+    var rightMarker = document.getElementById("rightMarker");
+    var sliceText = document.getElementById("sliceText");
+
+    var path = getShapePath();
+    var metrics = getShapeMetrics();
+
+    shapeBody.setAttribute("d", path);
+    clipShape.setAttribute("d", path);
+
+    while (layerLines.firstChild) {
+      layerLines.removeChild(layerLines.firstChild);
+    }
+
+    var maxVisibleLines = 100;
+    var visibleCount = Math.min(layerCount, maxVisibleLines);
+    var spacing = (metrics.bottomY - metrics.topY) / visibleCount;
+
+    for (var i = 0; i <= visibleCount; i++) {
+      var y = metrics.bottomY - i * spacing;
+
+      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "45");
+      line.setAttribute("x2", "315");
+      line.setAttribute("y1", y);
+      line.setAttribute("y2", y);
+      line.setAttribute("stroke", "#64748b");
+      line.setAttribute("stroke-width", layerCount > 70 ? "1" : "1.5");
+      line.setAttribute("opacity", layerCount > 70 ? "0.32" : "0.55");
+
+      layerLines.appendChild(line);
+    }
+
+    var slice = getSliceGeometry(sliceHeight);
+
+    highlightSlice.setAttribute("x1", slice.x1);
+    highlightSlice.setAttribute("x2", slice.x2);
+    highlightSlice.setAttribute("y1", slice.y);
+    highlightSlice.setAttribute("y2", slice.y);
+
+    leftMarker.setAttribute("cx", slice.x1);
+    leftMarker.setAttribute("cy", slice.y);
+
+    rightMarker.setAttribute("cx", slice.x2);
+    rightMarker.setAttribute("cy", slice.y);
+
+    sliceText.textContent = "Highlighted slice at Z = " + sliceHeight.toFixed(1) + " mm";
+  }
+
+  function drawCrossSection(sliceHeight) {
+    var group = document.getElementById("crossSectionShape");
+    var label = document.getElementById("crossSectionLabel");
+    var explanation = document.getElementById("shapeExplanation");
+    var sizeText = document.getElementById("crossSectionSizeText");
+
+    while (group.firstChild) {
+      group.removeChild(group.firstChild);
+    }
+
+    var slice = getSliceGeometry(sliceHeight);
+    var ratio = Math.max(0, Math.min(1, slice.radiusRatio));
+
+    if (currentShape === "cube") {
+      group.innerHTML =
+        '<rect x="75" y="75" width="150" height="150" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="4"></rect>' +
+        '<text x="150" y="155" text-anchor="middle" font-size="18" font-weight="bold" fill="#1d4ed8">Square</text>';
+
+      label.textContent = "Square cross-section";
+      sizeText.textContent = "100%";
+      explanation.textContent = "A cube has the same square cross-section at every height. Moving the highlighted slice does not change the cross-section size.";
+    }
+
+    if (currentShape === "cylinder") {
+      group.innerHTML =
+        '<circle cx="150" cy="150" r="78" fill="#dcfce7" stroke="#15803d" stroke-width="4"></circle>' +
+        '<text x="150" y="155" text-anchor="middle" font-size="18" font-weight="bold" fill="#15803d">Circle</text>';
+
+      label.textContent = "Circular cross-section";
+      sizeText.textContent = "100%";
+      explanation.textContent = "A vertical cylinder has the same circular cross-section at every height. Each layer has a constant diameter.";
+    }
+
+    if (currentShape === "sphere") {
+      var sphereR = 94 * ratio;
+      var spherePercent = Math.round(ratio * 100);
+
+      if (sphereR < 3) {
+        group.innerHTML =
+          '<circle cx="150" cy="150" r="4" fill="#fef3c7" stroke="#d97706" stroke-width="3"></circle>' +
+          '<text x="150" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="#d97706">Point</text>';
+      } else {
+        group.innerHTML =
+          '<circle cx="150" cy="150" r="' + sphereR + '" fill="#fef3c7" stroke="#d97706" stroke-width="4"></circle>' +
+          '<circle cx="150" cy="150" r="94" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="6 6" opacity="0.45"></circle>' +
+          '<text x="150" y="155" text-anchor="middle" font-size="18" font-weight="bold" fill="#d97706">Circle</text>';
+      }
+
+      label.textContent = "Changing circular cross-section";
+      sizeText.textContent = spherePercent + "%";
+      explanation.textContent = "A sphere produces circular layers whose diameter changes with slice height. The cross-section is largest near the middle and smallest near the top or bottom.";
+    }
+
+    if (currentShape === "cone") {
+      var coneR = 95 * ratio;
+      var conePercent = Math.round(ratio * 100);
+
+      if (coneR < 3) {
+        group.innerHTML =
+          '<circle cx="150" cy="150" r="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="3"></circle>' +
+          '<text x="150" y="155" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">Point</text>';
+      } else {
+        group.innerHTML =
+          '<circle cx="150" cy="150" r="' + coneR + '" fill="#ede9fe" stroke="#7c3aed" stroke-width="4"></circle>' +
+          '<circle cx="150" cy="150" r="95" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="6 6" opacity="0.45"></circle>' +
+          '<text x="150" y="155" text-anchor="middle" font-size="18" font-weight="bold" fill="#7c3aed">Circle</text>';
+      }
+
+      label.textContent = "Circular cross-section with changing diameter";
+      sizeText.textContent = conePercent + "%";
+      explanation.textContent = "A cone produces circular layers whose diameter decreases as the highlighted slice moves upward. At the base the section is largest; near the tip it becomes very small.";
+    }
+  }
+
+  updateLayerDemo();
+</script>
