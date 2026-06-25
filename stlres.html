@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Closed Surface Tessellation</title>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: white;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #controls {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 16px 20px;
+      border-radius: 12px;
+      z-index: 10;
+      width: 360px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+    }
+
+    #stats {
+      margin-top: 12px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #ddd;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #aaa;
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+
+<body>
+  <div id="controls">
+    <label for="triangleSize">Triangle size</label>
+
+    <input
+      id="triangleSize"
+      type="range"
+      min="8"
+      max="60"
+      step="1"
+      value="16"
+    />
+
+    <div id="stats"></div>
+
+    <div class="hint">
+      This is a closed surface. The blue object is a triangle mesh.
+      Increasing the resolution makes the triangles smaller and the approximation better.
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111111);
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+
+    camera.position.set(5.5, 4.5, 6.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+
+    const light1 = new THREE.DirectionalLight(0xffffff, 2.4);
+    light1.position.set(5, 8, 8);
+    scene.add(light1);
+
+    const light2 = new THREE.DirectionalLight(0xffffff, 1.2);
+    light2.position.set(-6, -3, -5);
+    scene.add(light2);
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    const slider = document.getElementById("triangleSize");
+    const stats = document.getElementById("stats");
+
+    let smoothMesh;
+    let tessellatedMesh;
+    let wireframe;
+    let errorLines;
+
+    function bumpyRadius(direction) {
+      const x = direction.x;
+      const y = direction.y;
+      const z = direction.z;
+
+      return (
+        2.1
+        + 0.25 * Math.sin(4 * x + 2 * y)
+        + 0.18 * Math.cos(5 * z - x)
+        + 0.12 * Math.sin(6 * x * y)
+      );
+    }
+
+    function deformSphereGeometry(geometry) {
+      const position = geometry.attributes.position;
+
+      for (let i = 0; i < position.count; i++) {
+        const p = new THREE.Vector3(
+          position.getX(i),
+          position.getY(i),
+          position.getZ(i)
+        );
+
+        const direction = p.clone().normalize();
+        const r = bumpyRadius(direction);
+
+        p.copy(direction.multiplyScalar(r));
+
+        position.setXYZ(i, p.x, p.y, p.z);
+      }
+
+      position.needsUpdate = true;
+      geometry.computeVertexNormals();
+
+      return geometry;
+    }
+
+    function truePointInDirection(direction) {
+      const d = direction.clone().normalize();
+      return d.multiplyScalar(bumpyRadius(d));
+    }
+
+    function createSmoothReferenceSurface() {
+      const geometry = new THREE.SphereGeometry(1, 120, 80);
+      deformSphereGeometry(geometry);
+
+      const material = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.20,
+        side: THREE.DoubleSide,
+        roughness: 0.5
+      });
+
+      smoothMesh = new THREE.Mesh(geometry, material);
+      group.add(smoothMesh);
+    }
+
+    function updateTessellation(resolution) {
+      if (tessellatedMesh) group.remove(tessellatedMesh);
+      if (wireframe) group.remove(wireframe);
+      if (errorLines) group.remove(errorLines);
+
+      const widthSegments = resolution;
+      const heightSegments = Math.max(6, Math.floor(resolution / 2));
+
+      const geometry = new THREE.SphereGeometry(
+        1,
+        widthSegments,
+        heightSegments
+      );
+
+      deformSphereGeometry(geometry);
+
+      const material = new THREE.MeshStandardMaterial({
+        color: 0x2f8cff,
+        side: THREE.DoubleSide,
+        roughness: 0.7,
+        flatShading: true
+      });
+
+      tessellatedMesh = new THREE.Mesh(geometry, material);
+      group.add(tessellatedMesh);
+
+      const wireGeometry = new THREE.WireframeGeometry(geometry);
+      const wireMaterial = new THREE.LineBasicMaterial({
+        color: 0x000000
+      });
+
+      wireframe = new THREE.LineSegments(wireGeometry, wireMaterial);
+      group.add(wireframe);
+
+      const error = estimateErrorAndCreateLines(geometry);
+
+      errorLines = error.lines;
+      group.add(errorLines);
+
+      const triangleCount = geometry.index.count / 3;
+
+      stats.innerHTML = `
+        Resolution: <b>${resolution}</b><br>
+        Triangles: <b>${triangleCount.toLocaleString()}</b><br>
+        Average approximation error: <b>${error.avg.toFixed(4)}</b><br>
+        Maximum approximation error: <b>${error.max.toFixed(4)}</b>
+      `;
+    }
+
+    function estimateErrorAndCreateLines(geometry) {
+      const position = geometry.attributes.position;
+      const index = geometry.index;
+
+      const linePositions = [];
+
+      let totalError = 0;
+      let maxError = 0;
+      let count = 0;
+
+      const triangleCount = index.count / 3;
+      const skip = Math.max(1, Math.floor(triangleCount / 450));
+
+      for (let i = 0; i < index.count; i += 3) {
+        const ia = index.getX(i);
+        const ib = index.getX(i + 1);
+        const ic = index.getX(i + 2);
+
+        const a = getVertex(position, ia);
+        const b = getVertex(position, ib);
+        const c = getVertex(position, ic);
+
+        const centroid = new THREE.Vector3()
+          .add(a)
+          .add(b)
+          .add(c)
+          .multiplyScalar(1 / 3);
+
+        const truePoint = truePointInDirection(centroid);
+
+        const error = centroid.distanceTo(truePoint);
+
+        totalError += error;
+        maxError = Math.max(maxError, error);
+        count++;
+
+        if (count % skip === 0) {
+          linePositions.push(
+            centroid.x,
+            centroid.y,
+            centroid.z,
+            truePoint.x,
+            truePoint.y,
+            truePoint.z
+          );
+        }
+      }
+
+      const lineGeometry = new THREE.BufferGeometry();
+
+      lineGeometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(linePositions, 3)
+      );
+
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0xff3333
+      });
+
+      return {
+        avg: totalError / count,
+        max: maxError,
+        lines: new THREE.LineSegments(lineGeometry, lineMaterial)
+      };
+    }
+
+    function getVertex(position, index) {
+      return new THREE.Vector3(
+        position.getX(index),
+        position.getY(index),
+        position.getZ(index)
+      );
+    }
+
+    createSmoothReferenceSurface();
+    updateTessellation(Number(slider.value));
+
+    slider.addEventListener("input", () => {
+      updateTessellation(Number(slider.value));
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      group.rotation.y += 0.002;
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
