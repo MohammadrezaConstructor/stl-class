@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section Planes &rarr; Toolpaths</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0f13;
+    --surface:#121922;
+    --surface-2:#0e151d;
+    --line:#1d2933;
+    --line-soft:#16212b;
+    --text:#cdd7df;
+    --muted:#6c7d8b;
+    --cold:#6fb3d6;     /* stock / inactive geometry */
+    --hot:#ff9e3d;      /* the active cutting plane + toolpath */
+    --hot-dim:#7a5326;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans: "Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    font-size:14px;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  #app{
+    height:100vh;
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    grid-template-columns:1fr;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    display:flex; align-items:center; gap:18px;
+    padding:12px 18px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--surface),var(--surface-2));
+  }
+  .brand{display:flex;align-items:baseline;gap:10px;min-width:0}
+  .brand h1{
+    font-size:14px;font-weight:600;letter-spacing:.02em;margin:0;white-space:nowrap;
+  }
+  .brand h1 b{color:var(--hot);font-weight:600}
+  .brand .sub{
+    font-family:var(--mono);font-size:11px;color:var(--muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .spacer{flex:1}
+  .ctrls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  select,button,label.file{
+    font-family:var(--mono);font-size:12px;
+    background:var(--surface-2);color:var(--text);
+    border:1px solid var(--line);border-radius:6px;
+    padding:7px 10px;cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  select:hover,button:hover,label.file:hover{border-color:var(--cold)}
+  button.toggle.on{border-color:var(--hot);color:var(--hot)}
+  label.file input{display:none}
+  .vrule{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
+
+  /* ---------- main ---------- */
+  main{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 380px;
+    min-height:0;
+  }
+  #view{position:relative;background:radial-gradient(120% 120% at 50% 0%,#0f1722,#070a0e);min-height:0;overflow:hidden}
+  #view canvas{display:block}
+  #drophint{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:13px;color:var(--cold);
+    background:rgba(7,10,14,.78);border:1.5px dashed var(--cold);
+    opacity:0;pointer-events:none;transition:opacity .12s;
+  }
+  #view.drag #drophint{opacity:1}
+
+  /* legend + hint, pinned bottom-left of the 3D view */
+  .overlay{position:absolute;left:16px;bottom:14px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  .legend{
+    display:flex;flex-wrap:wrap;gap:6px 14px;max-width:330px;
+    font-family:var(--mono);font-size:10.5px;color:var(--muted);
+    background:rgba(7,10,14,.62);border:1px solid var(--line-soft);border-radius:7px;padding:8px 11px;
+  }
+  .legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .legend i{width:14px;height:0;border-top:2px solid #888;display:inline-block}
+  .legend i.dot{width:7px;height:7px;border-radius:50%;border-top:none}
+  .legend i.face{width:12px;height:9px;border-radius:2px;border-top:none}
+  .badge{
+    font-family:var(--mono);font-size:11px;color:var(--muted);align-self:flex-start;
+    background:rgba(7,10,14,.55);padding:5px 9px;border:1px solid var(--line-soft);border-radius:5px;line-height:1.5;
+  }
+  .badge b{color:var(--text);font-weight:500}
+
+  aside{
+    border-left:1px solid var(--line);
+    background:var(--surface);
+    display:grid;
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    min-height:0;
+  }
+  .panel-title{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);padding:13px 18px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .panel-title b{color:var(--hot);font-weight:500}
+  .caption{
+    font-size:11.5px;line-height:1.5;color:var(--muted);
+    padding:11px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);
+  }
+  .caption b{color:var(--cold);font-weight:600}
+  #plan{position:relative;min-height:0;overflow:hidden;background:
+    linear-gradient(var(--line-soft) 1px,transparent 1px) 0 0/26px 26px,
+    linear-gradient(90deg,var(--line-soft) 1px,transparent 1px) 0 0/26px 26px,
+    var(--surface-2);}
+  #plan canvas{display:block;width:100%;height:100%}
+
+  /* ---------- stats (its own row at the foot of the side panel) ---------- */
+  #stats{
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    background:var(--line);border-top:1px solid var(--line);
+  }
+  .stat{background:var(--surface);padding:9px 18px}
+  .stat .k{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.05em}
+  .stat .v{font-family:var(--mono);font-size:15px;color:var(--text);margin-top:2px}
+  .stat .v.hot{color:var(--hot)}
+
+  /* ---------- footer (height control) ---------- */
+  footer{
+    border-top:1px solid var(--line);
+    background:linear-gradient(0deg,var(--surface),var(--surface-2));
+    padding:15px 22px;
+    display:flex;align-items:center;gap:24px;
+  }
+  .height-wrap{flex:1;display:flex;align-items:center;gap:16px;min-width:0}
+  .height-wrap .lab{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;letter-spacing:.05em}
+  .zread{font-family:var(--mono);font-size:13px;color:var(--hot);min-width:132px;text-align:right}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;
+    background:linear-gradient(90deg,var(--hot) var(--fill,0%),var(--line) var(--fill,0%));
+    outline:none;cursor:pointer;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+    background:var(--hot);border:2px solid #1a120a;box-shadow:0 0 0 3px rgba(255,158,61,.18);
+  }
+  input[type=range]::-moz-range-thumb{
+    width:16px;height:16px;border-radius:50%;background:var(--hot);border:2px solid #1a120a;
+  }
+  .foot-ctrls{display:flex;align-items:center;gap:8px}
+  .layers{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .layers input{width:58px;font-family:var(--mono);font-size:12px;background:var(--surface-2);
+    color:var(--text);border:1px solid var(--line);border-radius:5px;padding:5px 7px}
+
+  @media (max-width:860px){
+    main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 380px}
+    aside{border-left:none;border-top:1px solid var(--line)}
+    .brand .sub{display:none}
+    .legend{max-width:240px}
+    footer{flex-wrap:wrap;gap:14px}
+    .height-wrap{order:2;flex-basis:100%}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <h1>SECTION <b>&rarr;</b> TOOLPATH</h1>
+      <span class="sub" id="fileName">demo: torus</span>
+    </div>
+    <div class="spacer"></div>
+    <div class="ctrls">
+      <select id="shape" title="Built-in demo shape">
+        <option value="torus">Torus (ring)</option>
+        <option value="gear">Gear + bore</option>
+        <option value="cone">Cone</option>
+        <option value="sphere">Sphere</option>
+        <option value="vase">Vase / curved wall</option>
+      </select>
+      <select id="res" title="Triangle density of the demo mesh — coarse shows the facets clearly">
+        <option value="coarse">Mesh: coarse</option>
+        <option value="medium">Mesh: medium</option>
+        <option value="fine">Mesh: fine</option>
+      </select>
+      <label class="file" title="Load your own STL (ASCII or binary)">
+        Load STL<input type="file" id="stlInput" accept=".stl">
+      </label>
+      <span class="vrule"></span>
+      <button id="facetBtn" class="toggle" title="Highlight the triangles the plane cuts + the chord vertices">Cut facets</button>
+      <button id="allBtn" class="toggle" title="Show every layer stacked">Stack layers</button>
+      <button id="spinBtn" class="toggle" title="Auto-rotate view">Spin</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="view">
+      <div id="drophint">drop an .stl file</div>
+      <div class="overlay">
+        <div class="legend">
+          <span><i class="face" style="background:rgba(255,158,61,.28);border:1px solid #ff9e3d"></i>facet cut</span>
+          <span><i style="border-top-color:#ff9e3d"></i>toolpath</span>
+          <span><i class="dot" style="background:#ffe1b3"></i>edge crossing</span>
+          <span><i style="border-top-color:#415f70"></i>mesh wire</span>
+        </div>
+        <div class="badge" id="badge">drag to orbit &middot; scroll to zoom</div>
+      </div>
+    </div>
+    <aside>
+      <div class="panel-title">Top-down toolpath <b id="zLabel">Z 0.00</b></div>
+      <div class="caption">The plane cuts the <b>triangle mesh</b>, not a smooth surface. Each straight chord is one triangle's cut; every dot sits on a triangle edge.</div>
+      <div id="plan">
+        <canvas id="planCanvas"></canvas>
+      </div>
+      <div id="stats">
+        <div class="stat"><div class="k">PLANE HEIGHT</div><div class="v hot" id="sZ">0.00</div></div>
+        <div class="stat"><div class="k">CONTOURS</div><div class="v" id="sC">0</div></div>
+        <div class="stat"><div class="k">FACETS CUT</div><div class="v" id="sFac">0</div></div>
+        <div class="stat"><div class="k">CHORDS</div><div class="v" id="sS">0</div></div>
+        <div class="stat"><div class="k">VERTICES</div><div class="v" id="sV">0</div></div>
+        <div class="stat"><div class="k">PATH LENGTH</div><div class="v" id="sL">0.0</div></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="foot-ctrls">
+      <div class="layers">layers
+        <input type="number" id="layerCount" min="2" max="200" step="1" value="32">
+      </div>
+    </div>
+    <div class="height-wrap">
+      <span class="lab">Z&nbsp;PLANE</span>
+      <input type="range" id="zSlider" min="0" max="100" step="0.1" value="50">
+      <span class="zread" id="zReadout">0.00 / 0.00</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   COLORS (kept in sync with CSS)
+   ============================================================ */
+const C = {
+  cold:   0x6fb3d6,
+  coldDim:0x35515f,
+  hot:    0xff9e3d,
+  steel:  0x32485a,
+  grid:   0x1b2730,
+  plane:  0xff9e3d,
+};
+
+/* ============================================================
+   GEOMETRY HELPERS
+   ============================================================ */
+
+// Pull a flat list of triangles [ax,ay,az,bx,by,bz,cx,cy,cz] from a BufferGeometry.
+function geomTriangles(geom){
+  const pos = geom.attributes.position;
+  const idx = geom.index;
+  const tris = [];
+  const push = (a,b,c)=>tris.push([
+    pos.getX(a),pos.getY(a),pos.getZ(a),
+    pos.getX(b),pos.getY(b),pos.getZ(b),
+    pos.getX(c),pos.getY(c),pos.getZ(c),
+  ]);
+  if(idx){ for(let i=0;i<idx.count;i+=3) push(idx.getX(i),idx.getX(i+1),idx.getX(i+2)); }
+  else   { for(let i=0;i<pos.count;i+=3) push(i,i+1,i+2); }
+  return tris;
+}
+
+// Mesh-density presets. The point of this whole tool: a coarse mesh makes a
+// chunky, obviously-faceted toolpath; a fine mesh makes it look smooth. Default
+// is coarse so the triangle facets are unmistakable.
+const RES = {
+  coarse: { torus:[6,14],  sphere:[12,7],  cone:[9],  lathe:[12,12], gear:[10,8] },
+  medium: { torus:[14,32], sphere:[22,14], cone:[22], lathe:[28,18], gear:[16,16] },
+  fine:   { torus:[28,80], sphere:[44,28], cone:[72], lathe:[72,24], gear:[24,40] },
+};
+
+// Build the demo shapes. All are oriented so their natural axis is +Z (height).
+function makeShape(name, res){
+  const r = RES[res] || RES.coarse;
+  let g;
+  if(name==='cone'){
+    g = new THREE.ConeGeometry(2.2, 4.4, r.cone[0]);
+    g.rotateX(Math.PI/2);                 // Y-axis -> Z-axis
+  } else if(name==='sphere'){
+    g = new THREE.SphereGeometry(2.4, r.sphere[0], r.sphere[1]);
+  } else if(name==='torus'){
+    g = new THREE.TorusGeometry(2.0, 0.85, r.torus[0], r.torus[1]); // axis already +Z
+  } else if(name==='gear'){
+    g = makeGear(r.gear[0], r.gear[1]);
+  } else { // vase: lathe a curved profile -> wall that changes radius with height
+    const [seg,pn]=r.lathe, pts=[];
+    for(let i=0;i<=pn;i++){
+      const t=i/pn;
+      const rad = 1.1 + 1.1*Math.sin(t*Math.PI*0.92);    // bulge
+      pts.push(new THREE.Vector2(rad, t*4.4));
+    }
+    g = new THREE.LatheGeometry(pts, seg);
+    g.rotateX(Math.PI/2);                 // lathe axis Y -> Z
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
+function makeGear(teeth, holeSeg){
+  const rO=2.4, rI=1.95, rHole=0.75, depth=1.6;
+  const shape=new THREE.Shape();
+  const step=Math.PI*2/teeth;
+  for(let i=0;i<teeth;i++){
+    const a=i*step;
+    const ring=[[0.00,rI],[0.18,rO],[0.34,rO],[0.50,rI]];
+    for(const [f,r] of ring){
+      const ang=a+f*step, x=Math.cos(ang)*r, y=Math.sin(ang)*r;
+      if(i===0 && f===0.00) shape.moveTo(x,y); else shape.lineTo(x,y);
+    }
+  }
+  shape.closePath();
+  const hole=new THREE.Path();
+  hole.absarc(0,0,rHole,0,Math.PI*2,true);
+  shape.holes.push(hole);
+  return new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:false,steps:1,curveSegments:holeSeg});
+}
+
+/* ============================================================
+   STL PARSING  (binary + ASCII)
+   ============================================================ */
+function parseSTL(buffer){
+  const dv = new DataView(buffer);
+  if(buffer.byteLength >= 84){
+    const triCount = dv.getUint32(80, true);
+    if(buffer.byteLength === 84 + triCount*50) return parseBinary(dv, triCount);
+  }
+  return parseAscii(buffer);
+}
+function parseBinary(dv, triCount){
+  const tris=[]; let o=84;
+  for(let i=0;i<triCount;i++){
+    o+=12; // skip facet normal
+    const t=[];
+    for(let v=0;v<3;v++){
+      t.push(dv.getFloat32(o,true),dv.getFloat32(o+4,true),dv.getFloat32(o+8,true));
+      o+=12;
+    }
+    o+=2; // attribute byte count
+    tris.push(t);
+  }
+  return tris;
+}
+function parseAscii(buffer){
+  const text=new TextDecoder().decode(buffer);
+  const re=/vertex\s+(-?[\d.eE+]+)\s+(-?[\d.eE+]+)\s+(-?[\d.eE+]+)/g;
+  const verts=[]; let m;
+  while((m=re.exec(text))) verts.push([+m[1],+m[2],+m[3]]);
+  const tris=[];
+  for(let i=0;i+2<verts.length;i+=3){
+    tris.push([...verts[i],...verts[i+1],...verts[i+2]]);
+  }
+  return tris;
+}
+
+/* ============================================================
+   THE SLICER  — intersect every triangle with plane z = level
+   ============================================================ */
+// Returns { segs, cutTris } where cutTris are indices of every mesh triangle
+// the plane actually passes through. Each segment is ONE triangle's cut — a
+// straight chord. That is the whole lesson: the toolpath is built from the
+// mesh's flat facets, not from a smooth surface.
+function sliceAt(tris, level){
+  const segs=[], cutTris=[];
+  const eps=1e-7;
+  for(let i=0;i<tris.length;i++){
+    const t=tris[i];
+    const p=[[t[0],t[1],t[2]],[t[3],t[4],t[5]],[t[6],t[7],t[8]]];
+    // signed distance to plane; nudge on-plane verts to one side to avoid degeneracy
+    const d=[0,0,0];
+    for(let k=0;k<3;k++){ let dd=p[k][2]-level; if(Math.abs(dd)<eps) dd=eps; d[k]=dd; }
+    const hits=[];
+    for(let e=0;e<3;e++){
+      const a=p[e], b=p[(e+1)%3], da=d[e], db=d[(e+1)%3];
+      if((da>0)!==(db>0)){                         // edge crosses the plane
+        const s=da/(da-db);
+        hits.push([a[0]+s*(b[0]-a[0]), a[1]+s*(b[1]-a[1])]);
+      }
+    }
+    if(hits.length===2){ segs.push([hits[0],hits[1]]); cutTris.push(i); }
+  }
+  return {segs, cutTris};
+}
+
+// Chain loose segments into ordered contours (open or closed).
+function buildContours(segs, weld){
+  const q=v=>Math.round(v/weld);
+  const key=p=>q(p[0])+'|'+q(p[1]);
+  const idx=new Map();
+  const add=(k,r)=>{ if(!idx.has(k)) idx.set(k,[]); idx.get(k).push(r); };
+  segs.forEach((s,i)=>{ add(key(s[0]),{i,e:0}); add(key(s[1]),{i,e:1}); });
+  const used=new Array(segs.length).fill(false);
+  const next=pt=>{
+    const list=idx.get(key(pt)); if(!list) return null;
+    for(const r of list) if(!used[r.i]) return r;
+    return null;
+  };
+  const contours=[];
+  for(let i=0;i<segs.length;i++){
+    if(used[i]) continue;
+    used[i]=true;
+    const path=[segs[i][0], segs[i][1]];
+    while(true){
+      const tail=path[path.length-1];
+      const r=next(tail);
+      if(!r) break;
+      used[r.i]=true;
+      const other = r.e===0 ? segs[r.i][1] : segs[r.i][0];
+      path.push(other);
+      if(key(other)===key(path[0])) { path.closed=true; break; }
+    }
+    contours.push(path);
+  }
+  return contours;
+}
+
+function contourLength(c){
+  let L=0;
+  for(let i=1;i<c.length;i++){
+    L+=Math.hypot(c[i][0]-c[i-1][0], c[i][1]-c[i-1][1]);
+  }
+  return L;
+}
+
+/* ============================================================
+   THREE.JS SCENE
+   ============================================================ */
+const viewEl=document.getElementById('view');
+let renderer,scene,camera,meshGroup,planeMesh,gridHelper,contourGroup,stackGroup,intersGroup,vertGroup;
+let triangles=[], bounds=null, weld=0.01, currentZ=0, autoSpin=false, showStack=false;
+let showFacets=true, usingSTL=false, currentShape='torus', currentRes='coarse';
+
+const orbit={target:new THREE.Vector3(),radius:14,theta:0.7,phi:1.05};
+
+function initThree(){
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  viewEl.appendChild(renderer.domElement);
+
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,1,0.01,5000);
+  camera.up.set(0,0,1);                 // Z is height
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.55));
+  const d1=new THREE.DirectionalLight(0xffffff,0.7); d1.position.set(6,4,10); scene.add(d1);
+  const d2=new THREE.DirectionalLight(0x88bbff,0.35); d2.position.set(-8,-6,4); scene.add(d2);
+
+  meshGroup=new THREE.Group();   scene.add(meshGroup);
+  intersGroup=new THREE.Group(); scene.add(intersGroup);
+  contourGroup=new THREE.Group();scene.add(contourGroup);
+  vertGroup=new THREE.Group();   scene.add(vertGroup);
+  stackGroup=new THREE.Group();  scene.add(stackGroup);
+
+  // section plane
+  planeMesh=new THREE.Mesh(
+    new THREE.PlaneGeometry(1,1),
+    new THREE.MeshBasicMaterial({color:C.plane,transparent:true,opacity:0.10,
+      side:THREE.DoubleSide,depthWrite:false})
+  );
+  scene.add(planeMesh);
+  const edge=new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(1,1)),
+    new THREE.LineBasicMaterial({color:C.plane,transparent:true,opacity:0.6})
+  );
+  planeMesh.add(edge);
+
+  // base blueprint grid
+  gridHelper=new THREE.GridHelper(10,20,C.grid,C.grid);
+  gridHelper.rotateX(Math.PI/2);
+  scene.add(gridHelper);
+
+  bindControls();
+  resize();
+  animate();
+}
+
+function bindControls(){
+  const el=renderer.domElement;
+  let dragging=false,lx=0,ly=0;
+  el.style.touchAction='none';
+  el.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;el.setPointerCapture(e.pointerId);});
+  el.addEventListener('pointerup',  ()=>dragging=false);
+  el.addEventListener('pointermove',e=>{
+    if(!dragging) return;
+    orbit.theta -= (e.clientX-lx)*0.006;
+    orbit.phi   -= (e.clientY-ly)*0.006;
+    orbit.phi=Math.max(0.08,Math.min(Math.PI-0.08,orbit.phi));
+    lx=e.clientX; ly=e.clientY;
+  });
+  el.addEventListener('wheel',e=>{
+    e.preventDefault();
+    orbit.radius*=(1+e.deltaY*0.0012);
+    orbit.radius=Math.max(2,Math.min(400,orbit.radius));
+  },{passive:false});
+}
+
+function applyOrbit(){
+  const {radius,theta,phi,target}=orbit;
+  camera.position.set(
+    target.x+radius*Math.sin(phi)*Math.cos(theta),
+    target.y+radius*Math.sin(phi)*Math.sin(theta),
+    target.z+radius*Math.cos(phi)
+  );
+  camera.lookAt(target);
+}
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(autoSpin) orbit.theta+=0.0035;
+  applyOrbit();
+  renderer.render(scene,camera);
+}
+
+function resize(){
+  const w=viewEl.clientWidth,h=viewEl.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h; camera.updateProjectionMatrix();
+  layoutPlanCanvas();
+  drawPlan();
+}
+window.addEventListener('resize',resize);
+
+/* ============================================================
+   LOAD A MODEL  (recenter so minZ=0, XY centered)
+   ============================================================ */
+function loadModel(tris,label){
+  if(!tris.length){ alert('No triangles found in that file.'); return; }
+  // bounds
+  let mnx=Infinity,mny=Infinity,mnz=Infinity,mxx=-Infinity,mxy=-Infinity,mxz=-Infinity;
+  for(const t of tris){
+    for(let k=0;k<9;k+=3){
+      mnx=Math.min(mnx,t[k]);   mxx=Math.max(mxx,t[k]);
+      mny=Math.min(mny,t[k+1]); mxy=Math.max(mxy,t[k+1]);
+      mnz=Math.min(mnz,t[k+2]); mxz=Math.max(mxz,t[k+2]);
+    }
+  }
+  const cx=(mnx+mxx)/2, cy=(mny+mxy)/2;
+  for(const t of tris){
+    for(let k=0;k<9;k+=3){ t[k]-=cx; t[k+1]-=cy; t[k+2]-=mnz; }
+  }
+  triangles=tris;
+  bounds={
+    minX:mnx-cx,maxX:mxx-cx, minY:mny-cy,maxY:mxy-cy,
+    minZ:0, maxZ:mxz-mnz,
+    cx:0, cy:0,
+    spanX:mxx-mnx, spanY:mxy-mny, spanZ:mxz-mnz
+  };
+  weld=Math.max(1e-4,(bounds.spanX+bounds.spanY)/2*0.002);
+
+  buildMeshDisplay();
+
+  // frame camera
+  const dim=Math.max(bounds.spanX,bounds.spanY,bounds.spanZ);
+  orbit.target.set(0,0,bounds.maxZ/2);
+  orbit.radius=dim*2.3;
+
+  // size plane + grid
+  const pad=Math.max(bounds.spanX,bounds.spanY)*1.25 || 4;
+  planeMesh.scale.set(pad,pad,1);
+  gridHelper.scale.set(pad/10,1,pad/10);
+
+  // slider
+  const sl=document.getElementById('zSlider');
+  sl.min=0; sl.max=bounds.maxZ; sl.step=bounds.maxZ/500;
+  sl.value=bounds.maxZ*0.5;
+  setZ(+sl.value);
+
+  document.getElementById('fileName').textContent=label;
+  if(showStack) buildStack();
+}
+
+function buildMeshDisplay(){
+  meshGroup.clear();
+  const arr=new Float32Array(triangles.length*9);
+  for(let i=0;i<triangles.length;i++) arr.set(triangles[i],i*9);
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+  g.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({
+    color:C.steel,metalness:0.1,roughness:0.75,
+    transparent:true,opacity:0.16,side:THREE.DoubleSide,depthWrite:false
+  });
+  meshGroup.add(new THREE.Mesh(g,mat));
+  // Show EVERY triangle edge so the faceting is obvious. For very dense uploaded
+  // meshes fall back to a silhouette so we don't choke the GPU.
+  const wireGeo = triangles.length<=40000
+    ? new THREE.WireframeGeometry(g)
+    : new THREE.EdgesGeometry(g,20);
+  const wire=new THREE.LineSegments(
+    wireGeo,
+    new THREE.LineBasicMaterial({color:C.coldDim,transparent:true,opacity:0.55})
+  );
+  meshGroup.add(wire);
+}
+
+/* ============================================================
+   UPDATE THE ACTIVE SLICE
+   ============================================================ */
+let lastContours=[], lastSegCount=0, lastVertCount=0;
+
+function setZ(z){
+  currentZ=z;
+  const {segs,cutTris}=sliceAt(triangles,z);
+  const contours=buildContours(segs,weld);
+  lastContours=contours; lastSegCount=segs.length;
+
+  // ---- highlight the actual triangles the plane passes through ----
+  intersGroup.clear();
+  if(showFacets && cutTris.length){
+    const arr=new Float32Array(cutTris.length*9);
+    cutTris.forEach((ti,n)=>arr.set(triangles[ti],n*9));
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+    g.computeVertexNormals();
+    intersGroup.add(new THREE.Mesh(g,new THREE.MeshBasicMaterial({
+      color:C.hot,transparent:true,opacity:0.18,side:THREE.DoubleSide,depthWrite:false})));
+    intersGroup.add(new THREE.LineSegments(new THREE.WireframeGeometry(g),
+      new THREE.LineBasicMaterial({color:C.hot,transparent:true,opacity:0.55})));
+  }
+
+  // ---- 3D contour lines: the toolpath, a chain of straight chords ----
+  contourGroup.clear();
+  const mat=new THREE.LineBasicMaterial({color:C.hot,depthTest:false,transparent:true});
+  for(const c of contours){
+    const pos=new Float32Array(c.length*3);
+    for(let i=0;i<c.length;i++){ pos[i*3]=c[i][0]; pos[i*3+1]=c[i][1]; pos[i*3+2]=z; }
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const line=new THREE.Line(g,mat); line.renderOrder=10;
+    contourGroup.add(line);
+  }
+
+  // ---- vertices: every point sits exactly where the plane crosses a triangle edge ----
+  vertGroup.clear();
+  const vset=new Map(), vk=p=>Math.round(p[0]/weld)+'|'+Math.round(p[1]/weld);
+  for(const s of segs){ vset.set(vk(s[0]),s[0]); vset.set(vk(s[1]),s[1]); }
+  lastVertCount=vset.size;
+  if(showFacets && vset.size){
+    const vpos=new Float32Array(vset.size*3); let n=0;
+    for(const p of vset.values()){ vpos[n*3]=p[0]; vpos[n*3+1]=p[1]; vpos[n*3+2]=z; n++; }
+    const vg=new THREE.BufferGeometry();
+    vg.setAttribute('position',new THREE.BufferAttribute(vpos,3));
+    const pts=new THREE.Points(vg,new THREE.PointsMaterial({
+      color:0xffe1b3,size:6.5,sizeAttenuation:false,depthTest:false}));
+    pts.renderOrder=12; vertGroup.add(pts);
+  }
+
+  planeMesh.position.z=z;
+
+  // ---- stats + readouts ----
+  const total=contours.reduce((s,c)=>s+contourLength(c),0);
+  document.getElementById('sZ').textContent=z.toFixed(2);
+  document.getElementById('sC').textContent=contours.length;
+  document.getElementById('sFac').textContent=cutTris.length;
+  document.getElementById('sS').textContent=segs.length;
+  document.getElementById('sV').textContent=vset.size;
+  document.getElementById('sL').textContent=total.toFixed(1);
+  document.getElementById('zLabel').textContent='Z '+z.toFixed(2);
+  document.getElementById('zReadout').textContent=z.toFixed(2)+' / '+bounds.maxZ.toFixed(2);
+  const sl=document.getElementById('zSlider');
+  sl.style.setProperty('--fill',(z/bounds.maxZ*100)+'%');
+
+  drawPlan();
+}
+
+/* ============================================================
+   STACK ALL LAYERS  (faint contours at their true heights)
+   ============================================================ */
+function buildStack(){
+  stackGroup.clear();
+  if(!showStack||!bounds) return;
+  const n=Math.max(2,Math.min(200,+document.getElementById('layerCount').value||32));
+  const mat=new THREE.LineBasicMaterial({color:C.cold,transparent:true,opacity:0.20});
+  for(let i=0;i<n;i++){
+    const z=(i+0.5)/n*bounds.maxZ;
+    const cs=buildContours(sliceAt(triangles,z).segs,weld);
+    for(const c of cs){
+      const pos=new Float32Array(c.length*3);
+      for(let j=0;j<c.length;j++){ pos[j*3]=c[j][0]; pos[j*3+1]=c[j][1]; pos[j*3+2]=z; }
+      const g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      stackGroup.add(new THREE.Line(g,mat));
+    }
+  }
+}
+
+/* ============================================================
+   TOP-DOWN BLUEPRINT (2D canvas)
+   ============================================================ */
+const planCanvas=document.getElementById('planCanvas');
+const pctx=planCanvas.getContext('2d');
+function layoutPlanCanvas(){
+  const r=document.getElementById('plan').getBoundingClientRect();
+  const dpr=Math.min(devicePixelRatio,2);
+  planCanvas.width=Math.max(1,r.width*dpr);
+  planCanvas.height=Math.max(1,r.height*dpr);
+  pctx.setTransform(dpr,0,0,dpr,0,0);
+}
+function drawPlan(){
+  if(!bounds) return;
+  const w=planCanvas.width/Math.min(devicePixelRatio,2);
+  const h=planCanvas.height/Math.min(devicePixelRatio,2);
+  pctx.clearRect(0,0,w,h);
+
+  const m=26;
+  const spanX=bounds.spanX||1, spanY=bounds.spanY||1;
+  const scale=Math.min((w-2*m)/spanX,(h-2*m)/spanY);
+  const ox=w/2, oy=h/2;
+  const map=p=>[ ox+(p[0]-bounds.cx)*scale, oy-(p[1]-bounds.cy)*scale ];
+
+  // model bbox guide
+  pctx.strokeStyle='#22303b'; pctx.lineWidth=1;
+  const bb0=map([bounds.minX,bounds.minY]), bb1=map([bounds.maxX,bounds.maxY]);
+  pctx.strokeRect(Math.min(bb0[0],bb1[0]),Math.min(bb0[1],bb1[1]),
+                  Math.abs(bb1[0]-bb0[0]),Math.abs(bb1[1]-bb0[1]));
+  // crosshair
+  pctx.strokeStyle='#1a2630';
+  pctx.beginPath(); pctx.moveTo(ox-7,oy); pctx.lineTo(ox+7,oy);
+  pctx.moveTo(ox,oy-7); pctx.lineTo(ox,oy+7); pctx.stroke();
+
+  if(!lastContours.length){
+    pctx.fillStyle='#5b6c79'; pctx.font='12px ui-monospace,monospace';
+    pctx.textAlign='center';
+    pctx.fillText('no intersection at this height',ox,oy);
+    pctx.textAlign='left';
+    return;
+  }
+  // fill (faint) + stroke each toolpath (each straight segment = one triangle cut)
+  for(const c of lastContours){
+    pctx.beginPath();
+    c.forEach((p,i)=>{ const q=map(p); i?pctx.lineTo(q[0],q[1]):pctx.moveTo(q[0],q[1]); });
+    if(c.closed) pctx.closePath();
+    pctx.fillStyle='rgba(255,158,61,0.06)'; if(c.closed) pctx.fill();
+    pctx.strokeStyle='#ff9e3d'; pctx.lineWidth=1.6; pctx.stroke();
+  }
+  // vertices: every point lands where the plane crossed a triangle edge.
+  if(showFacets){
+    pctx.fillStyle='#ffe1b3';
+    for(const c of lastContours){
+      const end = c.closed ? c.length-1 : c.length; // last point repeats the first on closed loops
+      for(let i=0;i<end;i++){ const q=map(c[i]); pctx.beginPath(); pctx.arc(q[0],q[1],2.2,0,7); pctx.fill(); }
+    }
+  } else {
+    pctx.fillStyle='#ffd9a8';
+    for(const c of lastContours){ const q=map(c[0]); pctx.beginPath(); pctx.arc(q[0],q[1],2.6,0,7); pctx.fill(); }
+  }
+}
+
+/* ============================================================
+   UI WIRING
+   ============================================================ */
+document.getElementById('zSlider').addEventListener('input',e=>setZ(+e.target.value));
+
+function rebuildDemo(){
+  usingSTL=false;
+  const g=makeShape(currentShape,currentRes);
+  loadModel(geomTriangles(g),'demo: '+currentShape+' ('+currentRes+')');
+}
+document.getElementById('shape').addEventListener('change',e=>{
+  currentShape=e.target.value; rebuildDemo();
+});
+document.getElementById('res').addEventListener('change',e=>{
+  currentRes=e.target.value;
+  if(usingSTL){ e.target.value=currentRes; return; } // resolution only governs demo meshes
+  rebuildDemo();
+});
+document.getElementById('facetBtn').addEventListener('click',e=>{
+  showFacets=!showFacets; e.target.classList.toggle('on',showFacets);
+  setZ(currentZ);
+});
+document.getElementById('layerCount').addEventListener('change',()=>{ if(showStack) buildStack(); });
+document.getElementById('allBtn').addEventListener('click',e=>{
+  showStack=!showStack; e.target.classList.toggle('on',showStack);
+  if(showStack) buildStack(); else stackGroup.clear();
+});
+document.getElementById('spinBtn').addEventListener('click',e=>{
+  autoSpin=!autoSpin; e.target.classList.toggle('on',autoSpin);
+});
+document.getElementById('stlInput').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(f) readSTLFile(f);
+});
+function readSTLFile(f){
+  const r=new FileReader();
+  r.onload=()=>{ try{ usingSTL=true; loadModel(parseSTL(r.result),f.name); if(showStack) buildStack(); }
+                 catch(err){ alert('Could not parse STL: '+err.message);} };
+  r.readAsArrayBuffer(f);
+}
+// drag & drop
+viewEl.addEventListener('dragover',e=>{e.preventDefault();viewEl.classList.add('drag');});
+viewEl.addEventListener('dragleave',()=>viewEl.classList.remove('drag'));
+viewEl.addEventListener('drop',e=>{
+  e.preventDefault(); viewEl.classList.remove('drag');
+  const f=e.dataTransfer.files[0]; if(f) readSTLFile(f);
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+initThree();
+document.getElementById('facetBtn').classList.toggle('on',showFacets);
+loadModel(geomTriangles(makeShape(currentShape,currentRes)),'demo: '+currentShape+' ('+currentRes+')');
+</script>
+</body>
+</html>
