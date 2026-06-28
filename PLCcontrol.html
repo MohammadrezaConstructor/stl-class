@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLC IF–THEN Logic — Multi-Rule Scenarios</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f4f6f8; color: #1f2933; margin: 0; padding: 24px; line-height: 1.5;
+  }
+  .panel {
+    max-width: 720px; margin: 0 auto; background: #fff;
+    border: 1px solid #d9e0e6; border-radius: 12px; padding: 24px;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #62707d; font-size: 14px; margin: 0 0 18px; }
+
+  .row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  label.scenario { font-size: 14px; color: #3e4c59; }
+  select { padding: 6px 10px; border: 1px solid #cbd2d9; border-radius: 6px; font-size: 14px; background: #fff; }
+
+  .section-title {
+    font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+    color: #7b8794; margin: 22px 0 10px;
+  }
+
+  /* Inputs */
+  .inputs { display: flex; flex-wrap: wrap; gap: 12px; }
+  .switch {
+    display: flex; flex-direction: column; align-items: center;
+    border: 1px solid #d9e0e6; border-radius: 10px; padding: 12px 16px;
+    min-width: 120px; background: #fafbfc;
+  }
+  .switch .name { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .toggle { width: 56px; height: 30px; border-radius: 15px; background: #c3ccd5; position: relative; cursor: pointer; transition: background .15s; border: none; }
+  .toggle.on { background: #2f9e44; }
+  .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: transform .15s; }
+  .toggle.on::after { transform: translateX(26px); }
+  .switch .state { font-size: 12px; color: #62707d; margin-top: 6px; }
+  .slider { min-width: 200px; }
+  .slider input { width: 100%; }
+  .slider .val { font-size: 13px; color: #1c64f2; font-weight: 600; margin-top: 4px; }
+
+  /* Rules */
+  .rulecard {
+    border: 1px solid #d9e0e6; border-left: 4px solid #c3ccd5; border-radius: 8px;
+    padding: 12px 14px; margin-bottom: 10px; background: #fbfcfd; transition: border-color .15s, background .15s;
+  }
+  .rulecard.active { border-left-color: #2f9e44; background: #f3fbf5; }
+  .rulehead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .rulenum { font-size: 12px; font-weight: 700; color: #52606d; }
+  .badge { font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 2px 8px; border-radius: 10px; background: #e4e7eb; color: #7b8794; }
+  .badge.on { background: #d3f9d8; color: #2b8a3e; }
+  .ruletext { font-size: 14px; }
+  .kw { font-weight: 700; color: #1c64f2; }
+  .cond { display: inline-block; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  .cond.true  { background: #d3f9d8; color: #2b8a3e; }
+  .cond.false { background: #ffe3e3; color: #c92a2a; }
+
+  /* Outputs */
+  .outputs { display: flex; flex-wrap: wrap; gap: 16px; }
+  .out {
+    display: flex; align-items: center; gap: 12px;
+    border: 1px solid #d9e0e6; border-radius: 10px; padding: 12px 16px; min-width: 180px;
+  }
+  .ind { width: 44px; height: 44px; border-radius: 50%; background: #d2d6db; border: 3px solid #b4bcc4; transition: all .15s; flex-shrink: 0; }
+  .ind.on[data-kind="machine"] { background: #2f9e44; border-color: #2b8a3e; box-shadow: 0 0 16px rgba(47,158,68,.6); }
+  .ind.on[data-kind="lamp"]    { background: #ffd43b; border-color: #f59f00; box-shadow: 0 0 16px rgba(245,159,0,.6); }
+  .ind.on[data-kind="alarm"]   { background: #fa5252; border-color: #e03131; box-shadow: 0 0 16px rgba(224,49,49,.6); }
+  .ind.on[data-kind="heat"]    { background: #ff922b; border-color: #e8590c; box-shadow: 0 0 16px rgba(232,89,12,.6); }
+  .ind.on[data-kind="cool"]    { background: #4dabf7; border-color: #1c7ed6; box-shadow: 0 0 16px rgba(28,126,214,.6); }
+  .out .olabel { font-size: 15px; font-weight: 600; }
+  .out .ostate { font-size: 13px; color: #62707d; }
+
+  .legend { font-size: 12px; color: #7b8794; margin-top: 14px; }
+  .legend .cond { font-size: 11px; }
+  .scan { margin-top: 14px; font-size: 12px; color: #7b8794; display: flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #1c64f2; animation: pulse 1.2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>PLC IF–THEN Logic — Multi-Rule Scenarios</h1>
+  <p class="sub">Adjust the inputs. The PLC runs every rule below on each scan and sets all the outputs.</p>
+
+  <div class="row">
+    <label class="scenario" for="scenario">Scenario:</label>
+    <select id="scenario">
+      <option value="motor">Basic — Motor with E-Stop</option>
+      <option value="tank" selected>Water Tank — analog level control</option>
+      <option value="conveyor">Conveyor — safety interlocks</option>
+      <option value="hvac">HVAC — temperature control</option>
+    </select>
+  </div>
+
+  <div class="section-title">Inputs (field devices)</div>
+  <div class="inputs" id="inputs"></div>
+
+  <div class="section-title">Control rules (run together each scan)</div>
+  <div id="rules"></div>
+
+  <div class="section-title">Outputs</div>
+  <div class="outputs" id="outputs"></div>
+
+  <div class="legend">
+    <span class="cond true">green</span> = condition is currently true &nbsp;·&nbsp;
+    <span class="cond false">red</span> = condition is currently false
+  </div>
+  <div class="scan"><span class="dot"></span> PLC scanning continuously — reads inputs, evaluates every rule, updates outputs</div>
+</div>
+
+<script>
+  /* ---------- Display helpers: turn live values into coloured condition pills ---------- */
+  function pill(isTrue, text) { return `<span class="cond ${isTrue ? "true" : "false"}">${text}</span>`; }
+  function onoff(b)       { return pill(b, b ? "is ON" : "is OFF"); }
+  function notPressed(ok) { return pill(ok, ok ? "not pressed" : "pressed"); }       // ok = "stop is NOT pressed"
+  function notTripped(ok) { return pill(ok, ok ? "not activated" : "activated"); }   // ok = "e-stop is NOT active"
+  function guardState(c)  { return pill(c, c ? "is closed" : "is open"); }
+  function running(r)     { return pill(r, r ? "is running" : "is stopped"); }
+  function comp(valueText, opText, isTrue) { return pill(isTrue, `${valueText} ${opText}`); }
+  function fmt(v, unit) {                                                            // tidy number + unit
+    const n = Math.round(v * 10) / 10;
+    return (Number.isInteger(n) ? n : n.toFixed(1)) + (unit || "");
+  }
+
+  /* ---------- Scenario definitions ----------
+     Each rule has: output (which output it drives),
+                    evaluate(inputs, outputs) -> boolean,
+                    text(inputs, outputs)     -> the live "IF ..." clause as HTML.
+     Rules are evaluated in order, so a later rule can read an earlier output. */
+  const scenarios = {
+    motor: {
+      inputs: [
+        { key: "start", label: "Start",  type: "digital", value: false },
+        { key: "stop",  label: "Stop",   type: "digital", value: false },
+        { key: "estop", label: "E-Stop", type: "digital", value: false }
+      ],
+      outputs: [ { key: "motor", label: "Motor", kind: "machine" } ],
+      rules: [
+        {
+          output: "motor",
+          evaluate: s => s.start && !s.stop && !s.estop,
+          text: s => `<span class="kw">IF</span> Start ${onoff(s.start)}
+            <span class="kw">AND</span> Stop ${notPressed(!s.stop)}
+            <span class="kw">AND</span> E-Stop ${notTripped(!s.estop)}`
+        }
+      ]
+    },
+
+    tank: {
+      inputs: [
+        { key: "start", label: "Start", type: "digital", value: false },
+        { key: "stop",  label: "Stop",  type: "digital", value: false },
+        { key: "level", label: "Tank Level", type: "analog", unit: "%", min: 0, max: 100, step: 1, value: 40 }
+      ],
+      outputs: [
+        { key: "pump", label: "Fill Pump",       kind: "machine" },
+        { key: "full", label: "Full Lamp",       kind: "lamp" },
+        { key: "low",  label: "Low-Level Alarm", kind: "alarm" }
+      ],
+      rules: [
+        {
+          output: "pump",
+          evaluate: s => s.start && !s.stop && s.level < 90,
+          text: s => `<span class="kw">IF</span> Start ${onoff(s.start)}
+            <span class="kw">AND</span> Stop ${notPressed(!s.stop)}
+            <span class="kw">AND</span> ${comp("Level " + fmt(s.level, "%"), "&lt; 90%", s.level < 90)}`
+        },
+        {
+          output: "full",
+          evaluate: s => s.level >= 95,
+          text: s => `<span class="kw">IF</span> ${comp("Level " + fmt(s.level, "%"), "&ge; 95%", s.level >= 95)}`
+        },
+        {
+          output: "low",
+          evaluate: s => s.level <= 15,
+          text: s => `<span class="kw">IF</span> ${comp("Level " + fmt(s.level, "%"), "&le; 15%", s.level <= 15)}`
+        }
+      ]
+    },
+
+    conveyor: {
+      inputs: [
+        { key: "start",  label: "Start",          type: "digital", value: false },
+        { key: "stop",   label: "Stop",           type: "digital", value: false },
+        { key: "estop",  label: "E-Stop",         type: "digital", value: false },
+        { key: "guard",  label: "Guard Closed",   type: "digital", value: true },
+        { key: "object", label: "Object Detected",type: "digital", value: false }
+      ],
+      outputs: [
+        { key: "motor", label: "Conveyor Motor", kind: "machine" },
+        { key: "gate",  label: "Sorting Gate",   kind: "machine" },
+        { key: "fault", label: "Fault Lamp",     kind: "alarm" }
+      ],
+      rules: [
+        {
+          output: "motor",
+          evaluate: s => s.start && !s.stop && !s.estop && s.guard,
+          text: s => `<span class="kw">IF</span> Start ${onoff(s.start)}
+            <span class="kw">AND</span> Stop ${notPressed(!s.stop)}
+            <span class="kw">AND</span> E-Stop ${notTripped(!s.estop)}
+            <span class="kw">AND</span> Guard ${guardState(s.guard)}`
+        },
+        {
+          output: "gate",
+          evaluate: (s, o) => s.object && o.motor,
+          text: (s, o) => `<span class="kw">IF</span> Object ${onoff(s.object)}
+            <span class="kw">AND</span> Conveyor ${running(o.motor)}`
+        },
+        {
+          output: "fault",
+          evaluate: s => s.estop || !s.guard,
+          text: s => `<span class="kw">IF</span> E-Stop ${pill(s.estop, s.estop ? "is activated" : "is not activated")}
+            <span class="kw">OR</span> Guard ${pill(!s.guard, !s.guard ? "is open" : "is closed")}`
+        }
+      ]
+    },
+
+    hvac: {
+      inputs: [
+        { key: "enable",   label: "System Enable", type: "digital", value: true },
+        { key: "temp",     label: "Temperature",   type: "analog", unit: "°C", min: 10, max: 35, step: 0.5, value: 22 },
+        { key: "setpoint", label: "Setpoint",      type: "analog", unit: "°C", min: 16, max: 28, step: 0.5, value: 22 }
+      ],
+      outputs: [
+        { key: "heater", label: "Heater", kind: "heat" },
+        { key: "cooler", label: "Cooler", kind: "cool" },
+        { key: "fan",    label: "Fan",    kind: "machine" }
+      ],
+      rules: [
+        {
+          output: "heater",
+          evaluate: s => s.enable && s.temp < s.setpoint - 1,
+          text: s => `<span class="kw">IF</span> Enable ${onoff(s.enable)}
+            <span class="kw">AND</span> ${comp("Temp " + fmt(s.temp, "°C"),
+              "&lt; " + fmt(s.setpoint - 1, "°C") + " (setpoint − 1)", s.temp < s.setpoint - 1)}`
+        },
+        {
+          output: "cooler",
+          evaluate: s => s.enable && s.temp > s.setpoint + 1,
+          text: s => `<span class="kw">IF</span> Enable ${onoff(s.enable)}
+            <span class="kw">AND</span> ${comp("Temp " + fmt(s.temp, "°C"),
+              "&gt; " + fmt(s.setpoint + 1, "°C") + " (setpoint + 1)", s.temp > s.setpoint + 1)}`
+        },
+        {
+          output: "fan",
+          evaluate: (s, o) => o.heater || o.cooler,
+          text: (s, o) => `<span class="kw">IF</span> Heater ${pill(o.heater, o.heater ? "is ON" : "is OFF")}
+            <span class="kw">OR</span> Cooler ${pill(o.cooler, o.cooler ? "is ON" : "is OFF")}`
+        }
+      ]
+    }
+  };
+
+  let current = "tank";
+  let state = {};
+
+  const inputsEl  = document.getElementById("inputs");
+  const rulesEl   = document.getElementById("rules");
+  const outputsEl = document.getElementById("outputs");
+
+  /* Build input controls (toggles for digital, sliders for analog) */
+  function buildInputs() {
+    const cfg = scenarios[current];
+    state = {};
+    inputsEl.innerHTML = "";
+
+    cfg.inputs.forEach(inp => {
+      state[inp.key] = inp.value;
+
+      if (inp.type === "digital") {
+        const wrap = document.createElement("div");
+        wrap.className = "switch";
+        wrap.innerHTML = `
+          <div class="name">${inp.label}</div>
+          <button class="toggle ${inp.value ? "on" : ""}" aria-pressed="${inp.value}"></button>
+          <div class="state">${inp.value ? "ON" : "OFF"}</div>`;
+        const btn = wrap.querySelector(".toggle");
+        const lbl = wrap.querySelector(".state");
+        btn.addEventListener("click", () => {
+          state[inp.key] = !state[inp.key];
+          btn.classList.toggle("on", state[inp.key]);
+          btn.setAttribute("aria-pressed", state[inp.key]);
+          lbl.textContent = state[inp.key] ? "ON" : "OFF";
+          scan();
+        });
+        inputsEl.appendChild(wrap);
+
+      } else { /* analog */
+        const wrap = document.createElement("div");
+        wrap.className = "switch slider";
+        wrap.innerHTML = `
+          <div class="name">${inp.label}</div>
+          <input type="range" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${inp.value}">
+          <div class="val">${fmt(inp.value, inp.unit)}</div>`;
+        const range = wrap.querySelector("input");
+        const val   = wrap.querySelector(".val");
+        range.addEventListener("input", () => {
+          state[inp.key] = parseFloat(range.value);
+          val.textContent = fmt(state[inp.key], inp.unit);
+          scan();
+        });
+        inputsEl.appendChild(wrap);
+      }
+    });
+    scan();
+  }
+
+  function outputLabel(key) {
+    return scenarios[current].outputs.find(o => o.key === key).label;
+  }
+
+  /* One PLC scan: evaluate every rule, then render rules and outputs */
+  function scan() {
+    const cfg = scenarios[current];
+
+    // Evaluate all rules in order, storing each output so later rules can use it
+    const out = {};
+    cfg.outputs.forEach(o => out[o.key] = false);
+    const results = cfg.rules.map(rule => {
+      const v = rule.evaluate(state, out);
+      out[rule.output] = v;
+      return v;
+    });
+
+    // Render the rule cards with live condition states
+    rulesEl.innerHTML = cfg.rules.map((rule, i) => {
+      const active = results[i];
+      return `
+        <div class="rulecard ${active ? "active" : ""}">
+          <div class="rulehead">
+            <span class="rulenum">Rule ${i + 1}</span>
+            <span class="badge ${active ? "on" : ""}">${active ? "ACTIVE" : "inactive"}</span>
+          </div>
+          <div class="ruletext">
+            ${rule.text(state, out)}
+            <span class="kw">THEN</span> ${outputLabel(rule.output)}
+            ${active ? "<b>turns ON</b>" : "stays OFF"}
+          </div>
+        </div>`;
+    }).join("");
+
+    // Render the output indicators
+    outputsEl.innerHTML = cfg.outputs.map(o => `
+      <div class="out">
+        <div class="ind ${out[o.key] ? "on" : ""}" data-kind="${o.kind}"></div>
+        <div>
+          <div class="olabel">${o.label}</div>
+          <div class="ostate">${out[o.key] ? "ON" : "OFF"}</div>
+        </div>
+      </div>`).join("");
+  }
+
+  document.getElementById("scenario").addEventListener("change", e => {
+    current = e.target.value;
+    buildInputs();
+  });
+
+  buildInputs();
+</script>
+</body>
+</html>
