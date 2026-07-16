@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Location Decision Lab — Factor Rating · Break-even · Transportation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F4; --ink:#1B2A38; --line:#D7DDE2;
+  --accent:#E8630A; --ok:#2E7D5B; --gold:#C79A08; --panel:#fff; --radius:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:15px;line-height:1.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px;background-attachment:fixed}
+.wrap{max-width:1160px;margin:0 auto;padding:24px 16px 80px}
+header{background:var(--panel);border:2px solid var(--ink);display:grid;grid-template-columns:1fr auto;margin-bottom:20px}
+.tb-main{padding:18px 22px;border-right:2px solid var(--ink)}
+.tb-main h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:32px;text-transform:uppercase;letter-spacing:.5px;line-height:1.05}
+.tb-main p{color:#4a5762;max-width:66ch;margin-top:4px;font-size:14px}
+.tb-meta{display:grid;grid-template-rows:repeat(3,1fr);min-width:190px}
+.tb-meta div{padding:6px 14px;border-bottom:1px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.tb-meta div:last-child{border-bottom:none}
+.tb-meta span{display:block;font-size:10px;letter-spacing:.12em;color:#6b7883;text-transform:uppercase}
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:16px;text-transform:uppercase;letter-spacing:.06em;
+  padding:8px 15px;border:2px solid var(--ink);background:var(--panel);cursor:pointer;border-radius:var(--radius)}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.module{display:none}.module.active{display:block}
+.panel{background:var(--panel);border:1.5px solid var(--ink);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.panel h2{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:21px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+h3.sub{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:15.5px;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.cols{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px}
+@media(max-width:940px){.cols{grid-template-columns:1fr}}
+button.action{font-weight:600;font-size:13px;padding:7px 13px;border:1.5px solid var(--ink);background:#fff;border-radius:var(--radius);cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+button.action:hover{background:var(--ink);color:#fff}
+button.action.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.action.primary:hover{background:#c85406}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+label.inline{font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
+input[type=number].num{width:70px;padding:4px 6px;border:1.5px solid var(--ink);border-radius:4px;font-family:'IBM Plex Mono',monospace}
+input[type=text].nm{width:120px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:13px}
+input[type=range]{accent-color:var(--accent)}
+table{border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:4px 7px;text-align:center}
+th{background:#EDEFEA;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:'IBM Plex Mono',monospace}
+tr.winner td{background:#E2F0E9;font-weight:600}
+td.bad{background:#F7E2E0}
+.log{background:#10202E;color:#D9E4EC;border-radius:var(--radius);padding:10px 12px;height:240px;overflow-y:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.log .hl{color:#F5B70A}.log .good{color:#7FD4A8}.log .bad{color:#F09A93}
+.scorebar{display:flex;gap:22px;align-items:baseline;flex-wrap:wrap;border:2px solid var(--ink);border-radius:var(--radius);padding:8px 16px;margin:12px 0;background:#fff}
+.scorebar .big{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:26px;color:var(--accent)}
+.scorebar .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#6b7883;display:block}
+details{margin-top:10px;border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;background:#FBFBF9}
+details summary{cursor:pointer;font-weight:600;font-size:13px}
+details p,details li{margin:6px 0;font-size:13.5px}
+details ol,details ul{padding-left:20px}
+.formula{font-family:'IBM Plex Mono',monospace;background:#EDEFEA;padding:4px 8px;border-radius:4px;display:inline-block;margin:2px 0;font-size:12.5px}
+.hint{font-size:12.5px;color:#6b7883;margin-top:6px}
+.warn{font-size:12.5px;color:#B4443C;font-weight:600}
+.okmsg{font-size:12.5px;color:var(--ok);font-weight:600}
+.mini-svg{border:1px solid var(--line);border-radius:4px;background:#FBFBF9;display:block;max-width:100%}
+input.alloc{width:56px;padding:3px 4px;border:1px solid var(--line);border-radius:3px;font-family:'IBM Plex Mono',monospace;text-align:center;font-size:13px}
+input.alloc:focus{outline:2px solid var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="tb-main">
+    <h1>Location Decision Lab</h1>
+    <p>Three classic tools for choosing <strong>where</strong> a facility goes: <strong>factor rating</strong> (multi-criteria), <strong>locational break-even analysis</strong> (cost–volume), and the <strong>transportation method</strong> (network of plants and markets). Each tab is hands-on: change a number, watch the decision move.</p>
+  </div>
+  <div class="tb-meta">
+    <div><span>Sheet</span>OM-303 / Rev A</div>
+    <div><span>Method</span>Facility Location</div>
+    <div><span>Mode</span>Teaching Edition</div>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tab-fr" aria-selected="true" onclick="showModule('fr')">1 · Factor Rating</button>
+  <button class="tab" id="tab-be" aria-selected="false" onclick="showModule('be')">2 · Break-even Analysis</button>
+  <button class="tab" id="tab-tr" aria-selected="false" onclick="showModule('tr')">3 · Transportation Method</button>
+</div>
+
+<!-- ============ FACTOR RATING ============ -->
+<section class="module active" id="module-fr">
+  <div class="panel">
+    <h2>Factor rating — when money isn't the only thing</h2>
+    <p>Score each candidate site on every factor (0–100), weight the factors by importance, and compare weighted totals. Then use the sensitivity slider: <strong>how robust is the winner to a change of opinion about one weight?</strong></p>
+    <div class="toolbar">
+      <button class="action" onclick="frLoadDefault()">Load example (3 sites)</button>
+      <button class="action" onclick="frAddFactor()">+ Factor</button>
+      <button class="action" onclick="frDelFactor()">− Factor</button>
+    </div>
+    <div class="cols">
+      <div>
+        <h3 class="sub">Scores &amp; weights</h3>
+        <div style="overflow-x:auto"><table id="fr-table"></table></div>
+        <p class="hint">Weights are normalized automatically — what matters is their ratio. Scores: 100 = ideal, 0 = unacceptable.</p>
+        <h3 class="sub">Sensitivity — drag a weight, watch the ranking</h3>
+        <div id="fr-sliders"></div>
+      </div>
+      <div>
+        <h3 class="sub">Weighted totals</h3>
+        <table id="fr-result"></table>
+        <h3 class="sub">Score profile</h3>
+        <svg id="fr-chart" class="mini-svg" width="460" height="220"></svg>
+        <details>
+          <summary>Theory: the factor rating method</summary>
+          <p><span class="formula">Sⱼ = Σᵢ wᵢ · scoreᵢⱼ / Σᵢ wᵢ</span></p>
+          <ol>
+            <li>List the factors that matter (labor, logistics, taxes, quality of life…).</li>
+            <li>Weight each factor by importance.</li>
+            <li>Score every site on every factor on a common scale.</li>
+            <li>The highest weighted total wins — <em>but</em> always test sensitivity: if a small weight change flips the winner, the decision needs more analysis, not more arithmetic.</li>
+          </ol>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BREAK-EVEN ============ -->
+<section class="module" id="module-be">
+  <div class="panel">
+    <h2>Locational break-even — the best site depends on volume</h2>
+    <p>Each site has a fixed cost (land, building, taxes) and a variable cost per unit (labor, transport). Total cost <span class="formula">TC = FC + VC·Q</span> is a straight line — and the cheapest site changes as volume grows. Drag the volume slider along the chart.</p>
+    <div class="toolbar">
+      <button class="action" onclick="beLoadDefault()">Load example (3 sites)</button>
+      <label class="inline">Chart max volume <input type="number" class="num" id="be-vmax" value="12000" min="100" step="500" onchange="beRender()"></label>
+    </div>
+    <div class="cols">
+      <div>
+        <svg id="be-chart" class="mini-svg" width="560" height="330"></svg>
+        <div class="toolbar">
+          <label class="inline" style="flex:1">Your expected volume
+            <input type="range" id="be-q" min="0" max="12000" value="4000" style="flex:1" oninput="beRender()">
+            <span class="mono" id="be-q-lab"></span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <h3 class="sub">Sites</h3>
+        <table id="be-table"></table>
+        <h3 class="sub">Cost at your volume</h3>
+        <table id="be-at-q"></table>
+        <h3 class="sub">Best-site ranges</h3>
+        <table id="be-ranges"></table>
+        <details>
+          <summary>Theory: crossover points</summary>
+          <p>Two sites tie where their cost lines cross: <span class="formula">Q* = (FC₂ − FC₁)/(VC₁ − VC₂)</span>.</p>
+          <p>Low-fixed/high-variable sites win at small volumes; high-fixed/low-variable sites win at large volumes. The decision is only as good as the volume forecast — try moving the slider across a crossover and imagine the forecast being wrong by that much.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRANSPORTATION ============ -->
+<section class="module" id="module-tr">
+  <div class="panel">
+    <h2>Transportation method — locating within a network</h2>
+    <p>Three plants ship to four markets. Fill the allocation table yourself (respecting supply and demand), then compare your total cost against three classic starting heuristics. Adding a <em>candidate</em> plant and re-solving is how the transportation model supports location decisions.</p>
+    <div class="toolbar">
+      <button class="action" onclick="trLoadDefault()">Load example</button>
+      <button class="action" onclick="trClear()">Clear allocations</button>
+      <button class="action primary" onclick="trNWC()">Northwest Corner</button>
+      <button class="action primary" onclick="trLeastCost()">Least Cost</button>
+      <button class="action primary" onclick="trVAM()">Vogel (VAM)</button>
+    </div>
+    <div class="cols">
+      <div>
+        <h3 class="sub">Unit costs (top of cell) &amp; allocations (input)</h3>
+        <div style="overflow-x:auto"><table id="tr-table"></table></div>
+        <p id="tr-status" class="hint"></p>
+        <div class="scorebar">
+          <div><span class="lbl">Total cost of current allocation</span><span class="big" id="tr-cost">0</span></div>
+          <div><span class="lbl">Best found this session</span><span class="big" id="tr-best" style="color:var(--ok)">—</span></div>
+        </div>
+        <details>
+          <summary>Theory: the transportation model</summary>
+          <p>Minimize <span class="formula">Σᵢⱼ cᵢⱼ·xᵢⱼ</span> subject to shipping exactly each plant's supply and meeting each market's demand.</p>
+          <ul>
+            <li><strong>Northwest Corner</strong> ignores costs entirely — it just produces a feasible start.</li>
+            <li><strong>Least Cost</strong> greedily fills the cheapest available cell.</li>
+            <li><strong>VAM</strong> allocates where the <em>penalty</em> for not using the cheapest route is largest — usually the best start.</li>
+          </ul>
+          <p>These are starting solutions; full optimality is then verified with MODI / stepping-stone (next course level — or a solver). If your manual allocation beats VAM, take a screenshot.</p>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Heuristic log</h3>
+        <div class="log" id="tr-log">Load the example, then try allocating by hand before pressing any heuristic button.</div>
+        <h3 class="sub">Scoreboard</h3>
+        <table id="tr-score"><thead><tr><th>Method</th><th>Total cost</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+function showModule(name){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.getElementById('module-'+name).classList.add('active');
+  ['fr','be','tr'].forEach(t=>document.getElementById('tab-'+t).setAttribute('aria-selected',t===name));
+}
+function logTo(id,msg,cls){
+  const el=document.getElementById(id);
+  el.innerHTML+=(cls?`<span class="${cls}">${msg}</span>`:msg)+'\n';
+  el.scrollTop=el.scrollHeight;
+}
+const SITE_COLORS=['#4A6FA5','#2E7D5B','#E8630A','#6B5CA5'];
+
+/* ================= FACTOR RATING ================= */
+let fr={factors:[],sites:[]};
+function frLoadDefault(){
+  fr={
+    factors:[
+      {name:'Labor cost & availability',w:30},
+      {name:'Proximity to markets',w:25},
+      {name:'Transport infrastructure',w:20},
+      {name:'Taxes & incentives',w:15},
+      {name:'Quality of life',w:10}
+    ],
+    sites:[
+      {name:'Riverside',scores:[70,85,80,60,75]},
+      {name:'Northgate',scores:[85,60,70,80,65]},
+      {name:'Portside',scores:[60,80,90,70,55]}
+    ]
+  };
+  frBuild();
+}
+function frAddFactor(){
+  if(fr.factors.length>=8) return;
+  fr.factors.push({name:'New factor',w:10});
+  fr.sites.forEach(s=>s.scores.push(50));
+  frBuild();
+}
+function frDelFactor(){
+  if(fr.factors.length<=2) return;
+  fr.factors.pop(); fr.sites.forEach(s=>s.scores.pop());
+  frBuild();
+}
+function frBuild(){
+  const t=document.getElementById('fr-table');
+  let html='<thead><tr><th>Factor</th><th>Weight</th>'+fr.sites.map((s,j)=>`<th><input type="text" class="nm" style="width:86px" value="${s.name}" data-site="${j}"></th>`).join('')+'</tr></thead><tbody>';
+  fr.factors.forEach((f,i)=>{
+    html+=`<tr><td style="text-align:left"><input type="text" class="nm" value="${f.name}" data-fname="${i}"></td>
+      <td><input type="number" class="num" style="width:56px" min="0" max="100" value="${f.w}" data-fw="${i}"></td>`+
+      fr.sites.map((s,j)=>`<td><input type="number" class="num" style="width:56px" min="0" max="100" value="${s.scores[i]}" data-i="${i}" data-j="${j}"></td>`).join('')+'</tr>';
+  });
+  t.innerHTML=html+'</tbody>';
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    if(inp.dataset.fname!==undefined) fr.factors[+inp.dataset.fname].name=inp.value;
+    else if(inp.dataset.fw!==undefined) fr.factors[+inp.dataset.fw].w=Math.max(0,+inp.value||0);
+    else if(inp.dataset.site!==undefined) fr.sites[+inp.dataset.site].name=inp.value;
+    else fr.sites[+inp.dataset.j].scores[+inp.dataset.i]=Math.max(0,Math.min(100,+inp.value||0));
+    frSliders(); frUpdate();
+  }));
+  frSliders(); frUpdate();
+}
+function frSliders(){
+  const box=document.getElementById('fr-sliders');
+  box.innerHTML=fr.factors.map((f,i)=>`
+    <label class="inline" style="width:100%;margin:4px 0">
+      <span style="width:200px;font-weight:400">${f.name}</span>
+      <input type="range" min="0" max="60" value="${f.w}" style="flex:1" data-sl="${i}">
+      <span class="mono" style="width:34px;text-align:right">${f.w}</span>
+    </label>`).join('');
+  box.querySelectorAll('input[type=range]').forEach(sl=>sl.addEventListener('input',()=>{
+    fr.factors[+sl.dataset.sl].w=+sl.value;
+    sl.nextElementSibling.textContent=sl.value;
+    document.querySelector(`input[data-fw="${sl.dataset.sl}"]`).value=sl.value;
+    frUpdate();
+  }));
+}
+function frUpdate(){
+  const W=fr.factors.reduce((s,f)=>s+f.w,0)||1;
+  const totals=fr.sites.map(s=>fr.factors.reduce((sum,f,i)=>sum+f.w*s.scores[i],0)/W);
+  const best=Math.max(...totals);
+  document.getElementById('fr-result').innerHTML=
+    '<thead><tr><th>Site</th><th>Weighted score</th></tr></thead><tbody>'+
+    fr.sites.map((s,j)=>`<tr ${totals[j]===best?'class="winner"':''}>
+      <td style="text-align:left"><span style="display:inline-block;width:12px;height:12px;background:${SITE_COLORS[j]};border-radius:3px;margin-right:6px"></span>${s.name}</td>
+      <td class="mono"><b>${totals[j].toFixed(1)}</b></td></tr>`).join('')+'</tbody>';
+  // chart: grouped bars per factor
+  const svg=document.getElementById('fr-chart');
+  const Wc=460,Hc=220,padL=28,padB=34,padT=10;
+  const nf=fr.factors.length, ns=fr.sites.length;
+  const gw=(Wc-padL-8)/nf, bw=Math.min(18,(gw-8)/ns);
+  let inner=`<line x1="${padL}" y1="${Hc-padB}" x2="${Wc-4}" y2="${Hc-padB}" stroke="#1B2A38"/>`;
+  [0,50,100].forEach(v=>{
+    const y=Hc-padB-(v/100)*(Hc-padB-padT);
+    inner+=`<line x1="${padL}" y1="${y}" x2="${Wc-4}" y2="${y}" stroke="#D7DDE2"/><text x="${padL-4}" y="${y+4}" text-anchor="end" font-size="9" font-family="IBM Plex Mono">${v}</text>`;
+  });
+  fr.factors.forEach((f,i)=>{
+    const x0=padL+i*gw+4;
+    fr.sites.forEach((s,j)=>{
+      const h=(s.scores[i]/100)*(Hc-padB-padT);
+      inner+=`<rect x="${x0+j*(bw+2)}" y="${Hc-padB-h}" width="${bw}" height="${h}" fill="${SITE_COLORS[j]}" fill-opacity="0.85"><title>${s.name} · ${f.name}: ${s.scores[i]}</title></rect>`;
+    });
+    inner+=`<text x="${x0+(ns*(bw+2))/2}" y="${Hc-padB+12}" text-anchor="middle" font-size="8.5" font-family="IBM Plex Sans">${f.name.split(' ')[0]}</text>
+            <text x="${x0+(ns*(bw+2))/2}" y="${Hc-padB+22}" text-anchor="middle" font-size="8.5" fill="#6b7883">w=${f.w}</text>`;
+  });
+  svg.innerHTML=inner;
+}
+
+/* ================= BREAK-EVEN ================= */
+let be={sites:[]};
+function beLoadDefault(){
+  be={sites:[
+    {name:'City Lease',fc:30000,vc:75},
+    {name:'Suburban Plant',fc:60000,vc:45},
+    {name:'Automated Plant',fc:110000,vc:25}
+  ]};
+  beBuild();
+}
+function beBuild(){
+  const t=document.getElementById('be-table');
+  t.innerHTML='<thead><tr><th>Site</th><th>Fixed cost/yr</th><th>Variable /unit</th></tr></thead><tbody>'+
+    be.sites.map((s,j)=>`<tr>
+      <td><span style="display:inline-block;width:12px;height:12px;background:${SITE_COLORS[j]};border-radius:3px;margin-right:4px"></span><input type="text" class="nm" style="width:110px" value="${s.name}" data-j="${j}" data-f="name"></td>
+      <td><input type="number" class="num" style="width:86px" min="0" step="1000" value="${s.fc}" data-j="${j}" data-f="fc"></td>
+      <td><input type="number" class="num" style="width:64px" min="0" value="${s.vc}" data-j="${j}" data-f="vc"></td></tr>`).join('')+'</tbody>';
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    const s=be.sites[+inp.dataset.j];
+    if(inp.dataset.f==='name') s.name=inp.value;
+    else s[inp.dataset.f]=Math.max(0,+inp.value||0);
+    beRender();
+  }));
+  beRender();
+}
+function beRender(){
+  const vmax=Math.max(100,+document.getElementById('be-vmax').value||12000);
+  document.getElementById('be-q').max=vmax;
+  const Q=+document.getElementById('be-q').value;
+  document.getElementById('be-q-lab').textContent=Q.toLocaleString()+' units';
+  const cost=(s,q)=>s.fc+s.vc*q;
+  const maxC=Math.max(...be.sites.map(s=>cost(s,vmax)))*1.05;
+  const W=560,H=330,pL=62,pB=34,pT=10,pR=8;
+  const X=q=>pL+q/vmax*(W-pL-pR), Y=c=>H-pB-(c/maxC)*(H-pB-pT);
+  let inner='';
+  // axes & gridlines
+  for(let g=0;g<=4;g++){
+    const c=maxC*g/4, y=Y(c);
+    inner+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="#D7DDE2"/>
+      <text x="${pL-6}" y="${y+4}" text-anchor="end" font-size="9" font-family="IBM Plex Mono">${Math.round(c/1000)}k</text>`;
+  }
+  for(let g=0;g<=4;g++){
+    const q=vmax*g/4;
+    inner+=`<text x="${X(q)}" y="${H-pB+14}" text-anchor="middle" font-size="9" font-family="IBM Plex Mono">${Math.round(q).toLocaleString()}</text>`;
+  }
+  inner+=`<line x1="${pL}" y1="${H-pB}" x2="${W-pR}" y2="${H-pB}" stroke="#1B2A38"/>
+          <line x1="${pL}" y1="${pT}" x2="${pL}" y2="${H-pB}" stroke="#1B2A38"/>
+          <text x="${(W+pL)/2}" y="${H-6}" text-anchor="middle" font-size="10" font-family="IBM Plex Sans">Annual volume (units)</text>`;
+  // best-site shading along x
+  const steps=200; let segs=[]; let curBest=-1, segStart=0;
+  for(let k=0;k<=steps;k++){
+    const q=vmax*k/steps;
+    let b=0; for(let j=1;j<be.sites.length;j++) if(cost(be.sites[j],q)<cost(be.sites[b],q)) b=j;
+    if(b!==curBest){ if(curBest>=0) segs.push({j:curBest,q0:segStart,q1:q}); curBest=b; segStart=q; }
+  }
+  segs.push({j:curBest,q0:segStart,q1:vmax});
+  segs.forEach(s=>{
+    inner+=`<rect x="${X(s.q0)}" y="${pT}" width="${X(s.q1)-X(s.q0)}" height="${H-pB-pT}" fill="${SITE_COLORS[s.j]}" fill-opacity="0.08"/>`;
+  });
+  // lines
+  be.sites.forEach((s,j)=>{
+    inner+=`<line x1="${X(0)}" y1="${Y(cost(s,0))}" x2="${X(vmax)}" y2="${Y(cost(s,vmax))}" stroke="${SITE_COLORS[j]}" stroke-width="2.5"/>
+      <text x="${W-pR-4}" y="${Y(cost(s,vmax))-4}" text-anchor="end" font-size="10" font-weight="600" fill="${SITE_COLORS[j]}" font-family="IBM Plex Sans">${s.name}</text>`;
+  });
+  // crossovers
+  const crosses=[];
+  for(let a=0;a<be.sites.length;a++) for(let b=a+1;b<be.sites.length;b++){
+    const sa=be.sites[a],sb=be.sites[b];
+    if(sa.vc===sb.vc) continue;
+    const q=(sb.fc-sa.fc)/(sa.vc-sb.vc);
+    if(q>0&&q<vmax){
+      crosses.push({a,b,q,c:cost(sa,q)});
+      inner+=`<circle cx="${X(q)}" cy="${Y(cost(sa,q))}" r="4.5" fill="#fff" stroke="#1B2A38" stroke-width="1.5"/>
+        <text x="${X(q)}" y="${Y(cost(sa,q))-9}" text-anchor="middle" font-size="9" font-family="IBM Plex Mono">${Math.round(q).toLocaleString()}</text>`;
+    }
+  }
+  // Q marker
+  inner+=`<line x1="${X(Q)}" y1="${pT}" x2="${X(Q)}" y2="${H-pB}" stroke="#C79A08" stroke-width="2" stroke-dasharray="5 4"/>`;
+  document.getElementById('be-chart').innerHTML=inner;
+  // tables
+  const atQ=be.sites.map((s,j)=>({j,c:cost(s,Q)})).sort((x,y)=>x.c-y.c);
+  document.getElementById('be-at-q').innerHTML='<thead><tr><th>Site</th><th>TC @ '+Q.toLocaleString()+'</th></tr></thead><tbody>'+
+    atQ.map((r,k)=>`<tr ${k===0?'class="winner"':''}><td style="text-align:left">${be.sites[r.j].name}</td><td class="mono">${Math.round(r.c).toLocaleString()}</td></tr>`).join('')+'</tbody>';
+  document.getElementById('be-ranges').innerHTML='<thead><tr><th>Volume range</th><th>Cheapest site</th></tr></thead><tbody>'+
+    segs.map(s=>`<tr><td class="mono">${Math.round(s.q0).toLocaleString()} – ${Math.round(s.q1).toLocaleString()}</td><td>${be.sites[s.j].name}</td></tr>`).join('')+'</tbody>';
+}
+
+/* ================= TRANSPORTATION ================= */
+let tr={cost:[],supply:[],demand:[],alloc:[],srcNames:[],dstNames:[],best:null,scores:{}};
+function trLoadDefault(){
+  tr.srcNames=['Plant A','Plant B','Plant C'];
+  tr.dstNames=['Market 1','Market 2','Market 3','Market 4'];
+  tr.cost=[[4,6,8,11],[5,4,7,6],[9,7,4,3]];
+  tr.supply=[100,120,80];
+  tr.demand=[70,90,60,80];
+  tr.alloc=tr.cost.map(r=>r.map(()=>0));
+  tr.best=null; tr.scores={};
+  document.getElementById('tr-log').innerHTML='Example loaded: total supply 300 = total demand 300 (balanced).\nTry filling the table by hand first — cheapest routes are tempting, but watch supply run out.\n';
+  trBuild();
+}
+function trClear(){ tr.alloc=tr.cost.map(r=>r.map(()=>0)); trBuild(); }
+function trBuild(){
+  const m=tr.supply.length,n=tr.demand.length;
+  const t=document.getElementById('tr-table');
+  let html='<thead><tr><th></th>'+tr.dstNames.map((d,j)=>`<th>${d}<br><span style="font-weight:400">dem <input type="number" class="num" style="width:52px" value="${tr.demand[j]}" min="0" data-dem="${j}"></span></th>`).join('')+'<th>Supply</th></tr></thead><tbody>';
+  for(let i=0;i<m;i++){
+    html+=`<tr><th>${tr.srcNames[i]}</th>`;
+    for(let j=0;j<n;j++){
+      html+=`<td><div class="mono" style="font-size:11px;color:#6b7883">c=<input type="number" class="num" style="width:44px;border-color:#D7DDE2" value="${tr.cost[i][j]}" min="0" data-ci="${i}" data-cj="${j}"></div>
+        <input type="number" class="alloc" min="0" value="${tr.alloc[i][j]||''}" placeholder="0" data-i="${i}" data-j="${j}"></td>`;
+    }
+    html+=`<td><input type="number" class="num" style="width:58px" value="${tr.supply[i]}" min="0" data-sup="${i}"></td></tr>`;
+  }
+  html+='<tr><th>Demand</th>'+tr.demand.map((d,j)=>`<td class="mono" id="tr-col-${j}"></td>`).join('')+`<td class="mono" id="tr-balance"></td></tr>`;
+  t.innerHTML=html+'</tbody>';
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    if(inp.dataset.i!==undefined) tr.alloc[+inp.dataset.i][+inp.dataset.j]=Math.max(0,+inp.value||0);
+    else if(inp.dataset.ci!==undefined) tr.cost[+inp.dataset.ci][+inp.dataset.cj]=Math.max(0,+inp.value||0);
+    else if(inp.dataset.sup!==undefined) tr.supply[+inp.dataset.sup]=Math.max(0,+inp.value||0);
+    else if(inp.dataset.dem!==undefined) tr.demand[+inp.dataset.dem]=Math.max(0,+inp.value||0);
+    trUpdate();
+  }));
+  trUpdate();
+}
+function trUpdate(){
+  const m=tr.supply.length,n=tr.demand.length;
+  let cost=0, feasible=true;
+  for(let i=0;i<m;i++) for(let j=0;j<n;j++) cost+=tr.alloc[i][j]*tr.cost[i][j];
+  // column checks
+  for(let j=0;j<n;j++){
+    let s=0; for(let i=0;i<m;i++) s+=tr.alloc[i][j];
+    const el=document.getElementById('tr-col-'+j);
+    if(el){ el.textContent=s+' / '+tr.demand[j]; el.className= s===tr.demand[j]?'mono okmsg':'mono warn'; }
+    if(s!==tr.demand[j]) feasible=false;
+  }
+  // row checks via status text
+  let rowsOK=true;
+  for(let i=0;i<m;i++){
+    let s=0; for(let j=0;j<n;j++) s+=tr.alloc[i][j];
+    if(s!==tr.supply[i]) rowsOK=false;
+  }
+  if(!rowsOK) feasible=false;
+  const S=tr.supply.reduce((a,b)=>a+b,0), D=tr.demand.reduce((a,b)=>a+b,0);
+  document.getElementById('tr-balance').textContent=S===D?'balanced':'S='+S+' vs D='+D;
+  document.getElementById('tr-balance').className=S===D?'mono okmsg':'mono warn';
+  document.getElementById('tr-status').innerHTML= feasible
+    ? '<span class="okmsg">✓ Feasible: all supplies shipped, all demands met.</span>'
+    : '<span class="warn">Not yet feasible — every row must sum to its supply and every column to its demand.</span>';
+  document.getElementById('tr-cost').textContent=cost.toLocaleString();
+  if(feasible){
+    if(tr.best===null||cost<tr.best) tr.best=cost;
+    document.getElementById('tr-best').textContent=tr.best.toLocaleString();
+    if(!tr.scores['Manual']||cost<tr.scores['Manual']) tr.scores['Manual']=cost;
+    trScoreboard();
+  }
+}
+function trScoreboard(){
+  const tb=document.querySelector('#tr-score tbody');
+  const entries=Object.entries(tr.scores).sort((a,b)=>a[1]-b[1]);
+  tb.innerHTML=entries.map(([k,v],i)=>`<tr ${i===0?'class="winner"':''}><td>${k}</td><td class="mono">${v.toLocaleString()}</td></tr>`).join('');
+}
+function trApply(alloc,label,logLines){
+  tr.alloc=alloc;
+  let cost=0;
+  for(let i=0;i<tr.supply.length;i++) for(let j=0;j<tr.demand.length;j++) cost+=alloc[i][j]*tr.cost[i][j];
+  tr.scores[label]=cost;
+  logTo('tr-log',`— ${label} —`,'hl');
+  logLines.forEach(l=>logTo('tr-log',l));
+  logTo('tr-log',`Total cost: ${cost.toLocaleString()}`,'good');
+  trBuild();
+}
+function trNWC(){
+  const m=tr.supply.length,n=tr.demand.length;
+  const s=[...tr.supply], d=[...tr.demand];
+  const a=Array.from({length:m},()=>Array(n).fill(0)), lines=[];
+  let i=0,j=0;
+  while(i<m&&j<n){
+    const q=Math.min(s[i],d[j]);
+    a[i][j]=q; s[i]-=q; d[j]-=q;
+    lines.push(`${tr.srcNames[i]} → ${tr.dstNames[j]}: ${q} (cost ${tr.cost[i][j]})`);
+    if(s[i]===0) i++; else j++;
+    if(d[j]===0&&j<n&&s[i]!==undefined&&i<m&&a[i]) j++;
+    if(j<n&&d[j]===0) j++;
+  }
+  trApply(a,'Northwest Corner',lines);
+}
+function trLeastCost(){
+  const m=tr.supply.length,n=tr.demand.length;
+  const s=[...tr.supply], d=[...tr.demand];
+  const a=Array.from({length:m},()=>Array(n).fill(0)), lines=[];
+  let guard=0;
+  while(guard++<m*n+5){
+    let bi=-1,bj=-1,bc=Infinity;
+    for(let i=0;i<m;i++) for(let j=0;j<n;j++)
+      if(s[i]>0&&d[j]>0&&tr.cost[i][j]<bc){bc=tr.cost[i][j];bi=i;bj=j;}
+    if(bi<0) break;
+    const q=Math.min(s[bi],d[bj]);
+    a[bi][bj]=q; s[bi]-=q; d[bj]-=q;
+    lines.push(`cheapest open cell c=${bc}: ${tr.srcNames[bi]} → ${tr.dstNames[bj]}: ${q}`);
+  }
+  trApply(a,'Least Cost',lines);
+}
+function trVAM(){
+  const m=tr.supply.length,n=tr.demand.length;
+  const s=[...tr.supply], d=[...tr.demand];
+  const a=Array.from({length:m},()=>Array(n).fill(0)), lines=[];
+  const open=(i,j)=>s[i]>0&&d[j]>0;
+  let guard=0;
+  while(guard++<m*n+5){
+    if(!s.some(x=>x>0)||!d.some(x=>x>0)) break;
+    // penalties
+    let best={pen:-1};
+    for(let i=0;i<m;i++){
+      if(s[i]<=0) continue;
+      const cs=[]; for(let j=0;j<n;j++) if(d[j]>0) cs.push({c:tr.cost[i][j],j});
+      if(!cs.length) continue;
+      cs.sort((x,y)=>x.c-y.c);
+      const pen=cs.length>1?cs[1].c-cs[0].c:cs[0].c;
+      if(pen>best.pen) best={pen,type:'row',idx:i,cell:cs[0]};
+    }
+    for(let j=0;j<n;j++){
+      if(d[j]<=0) continue;
+      const cs=[]; for(let i=0;i<m;i++) if(s[i]>0) cs.push({c:tr.cost[i][j],i});
+      if(!cs.length) continue;
+      cs.sort((x,y)=>x.c-y.c);
+      const pen=cs.length>1?cs[1].c-cs[0].c:cs[0].c;
+      if(pen>best.pen) best={pen,type:'col',idx:j,cell:cs[0]};
+    }
+    if(best.pen<0) break;
+    let i,j;
+    if(best.type==='row'){ i=best.idx; j=best.cell.j; } else { j=best.idx; i=best.cell.i; }
+    const q=Math.min(s[i],d[j]);
+    a[i][j]=q; s[i]-=q; d[j]-=q;
+    lines.push(`max penalty ${best.pen} on ${best.type==='row'?tr.srcNames[i]:tr.dstNames[j]} → allocate ${q} to ${tr.srcNames[i]}→${tr.dstNames[j]} (c=${tr.cost[i][j]})`);
+  }
+  trApply(a,'Vogel (VAM)',lines);
+}
+
+/* ---- init ---- */
+frLoadDefault(); beLoadDefault(); trLoadDefault();
+</script>
+</body>
+</html>

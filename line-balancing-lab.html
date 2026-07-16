@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Line Balancing Lab — Product Layout Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F4; --ink:#1B2A38; --line:#D7DDE2;
+  --accent:#E8630A; --ok:#2E7D5B; --gold:#C79A08; --panel:#fff; --radius:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:15px;line-height:1.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px;background-attachment:fixed}
+.wrap{max-width:1160px;margin:0 auto;padding:24px 16px 80px}
+header{background:var(--panel);border:2px solid var(--ink);display:grid;grid-template-columns:1fr auto;margin-bottom:20px}
+.tb-main{padding:18px 22px;border-right:2px solid var(--ink)}
+.tb-main h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:32px;text-transform:uppercase;letter-spacing:.5px;line-height:1.05}
+.tb-main p{color:#4a5762;max-width:66ch;margin-top:4px;font-size:14px}
+.tb-meta{display:grid;grid-template-rows:repeat(3,1fr);min-width:190px}
+.tb-meta div{padding:6px 14px;border-bottom:1px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.tb-meta div:last-child{border-bottom:none}
+.tb-meta span{display:block;font-size:10px;letter-spacing:.12em;color:#6b7883;text-transform:uppercase}
+.panel{background:var(--panel);border:1.5px solid var(--ink);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.panel h2{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:21px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+h3.sub{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:15.5px;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media(max-width:940px){.cols{grid-template-columns:1fr}}
+button.action{font-weight:600;font-size:13px;padding:7px 13px;border:1.5px solid var(--ink);background:#fff;border-radius:var(--radius);cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+button.action:hover:not(:disabled){background:var(--ink);color:#fff}
+button.action.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.action.primary:hover:not(:disabled){background:#c85406}
+button.action:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+label.inline{font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
+input[type=number].num{width:76px;padding:4px 6px;border:1.5px solid var(--ink);border-radius:4px;font-family:'IBM Plex Mono',monospace}
+input[type=text].nm{width:88px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:13px;font-family:'IBM Plex Mono',monospace}
+table{border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:4px 7px;text-align:center}
+th{background:#EDEFEA;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:'IBM Plex Mono',monospace}
+tr.winner td{background:#E2F0E9;font-weight:600}
+.log{background:#10202E;color:#D9E4EC;border-radius:var(--radius);padding:10px 12px;height:220px;overflow-y:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.log .hl{color:#F5B70A}.log .good{color:#7FD4A8}.log .bad{color:#F09A93}
+.scorebar{display:flex;gap:20px;align-items:baseline;flex-wrap:wrap;border:2px solid var(--ink);border-radius:var(--radius);padding:8px 16px;margin:12px 0;background:#fff}
+.scorebar .big{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:24px;color:var(--accent)}
+.scorebar .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#6b7883;display:block}
+details{margin-top:10px;border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;background:#FBFBF9}
+details summary{cursor:pointer;font-weight:600;font-size:13px}
+details p,details li{margin:6px 0;font-size:13.5px}
+details ol,details ul{padding-left:20px}
+.formula{font-family:'IBM Plex Mono',monospace;background:#EDEFEA;padding:4px 8px;border-radius:4px;display:inline-block;margin:2px 0;font-size:12.5px}
+.hint{font-size:12.5px;color:#6b7883;margin-top:6px}
+.warn{color:#B4443C;font-weight:600;font-size:12.5px}
+.mini-svg{border:1px solid var(--line);border-radius:4px;background:#FBFBF9;display:block;max-width:100%}
+/* task chips */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{padding:6px 10px;border:2px solid var(--line);border-radius:var(--radius);font-family:'IBM Plex Mono',monospace;
+  font-size:13px;font-weight:600;background:#EDEFEA;color:#8b98a3}
+.chip.eligible{border-color:var(--accent);background:#FCEBDD;color:var(--ink);cursor:pointer}
+.chip.eligible:hover{background:var(--accent);color:#fff}
+.chip.assigned{border-color:var(--ok);background:#E2F0E9;color:var(--ok)}
+.chip.toobig{border-color:#B4443C;background:#F7E2E0;color:#B4443C}
+/* stations */
+.stations{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.station{border:2px solid var(--ink);border-radius:var(--radius);min-width:110px;background:#fff}
+.station.current{border-color:var(--accent);box-shadow:0 0 0 2px #FCEBDD}
+.station h4{font-family:'Saira Condensed',sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+  background:var(--ink);color:#fff;padding:3px 8px}
+.station.current h4{background:var(--accent)}
+.station .body{padding:6px 8px;min-height:44px;font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+.station .tt{border-top:1px solid var(--line);padding:3px 8px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#4a5762}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="tb-main">
+    <h1>Line Balancing Lab</h1>
+    <p>The <strong>product layout</strong> problem: assign assembly tasks to workstations so that no station exceeds the cycle time, precedence is respected, and idle time is minimal. Balance the line yourself, then let three classic heuristics try — <strong>Largest Candidate</strong>, <strong>Most Followers</strong>, and <strong>Ranked Positional Weight</strong>.</p>
+  </div>
+  <div class="tb-meta">
+    <div><span>Sheet</span>OM-304 / Rev A</div>
+    <div><span>Method</span>Assembly Line Balancing</div>
+    <div><span>Mode</span>Teaching Edition</div>
+  </div>
+</header>
+
+<div class="panel">
+  <h2>1 · Problem data</h2>
+  <div class="cols">
+    <div>
+      <div class="toolbar">
+        <button class="action" onclick="loadExample()">Load example (8 tasks)</button>
+        <button class="action" onclick="addTask()">+ Task</button>
+        <button class="action" onclick="delTask()">− Task</button>
+      </div>
+      <table id="task-table"></table>
+      <p class="hint">Predecessors: comma-separated task names (e.g. <span class="mono">B,C</span>). A task can start only when all its predecessors are finished.</p>
+      <p id="data-warn" class="warn"></p>
+    </div>
+    <div>
+      <h3 class="sub">Cycle time</h3>
+      <div class="toolbar">
+        <label class="inline">Available time/day <input type="number" class="num" id="avail" value="28800" min="60" onchange="dataChanged()"> s</label>
+        <label class="inline">Demand/day <input type="number" class="num" id="demand" value="360" min="1" onchange="dataChanged()"> units</label>
+      </div>
+      <div class="scorebar">
+        <div><span class="lbl">Cycle time = available ÷ demand</span><span class="big" id="ct-val">—</span> <span class="mono">s</span></div>
+        <div><span class="lbl">Σ task times</span><span class="big" id="sum-t">—</span> <span class="mono">s</span></div>
+        <div><span class="lbl">Theoretical min stations ⌈Σt / CT⌉</span><span class="big" id="nmin" style="color:var(--ok)">—</span></div>
+      </div>
+      <h3 class="sub">Precedence diagram</h3>
+      <svg id="prec-svg" class="mini-svg"></svg>
+      <p class="hint">Node label: task (top) and time in seconds (bottom). Arrows read left → right.</p>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>2 · Balance the line</h2>
+  <div class="toolbar">
+    <button class="action primary" onclick="startManual()">Start manual balancing</button>
+    <button class="action" id="btn-close" onclick="closeStation()" disabled>Close station / open next ▸</button>
+    <button class="action" id="btn-undo" onclick="undoTask()" disabled>Undo last task</button>
+    <span style="border-left:1.5px solid var(--line);height:22px"></span>
+    <button class="action" onclick="runHeuristic('LCR')">Largest Candidate</button>
+    <button class="action" onclick="runHeuristic('MF')">Most Followers</button>
+    <button class="action" onclick="runHeuristic('RPW')">Ranked Positional Weight</button>
+  </div>
+  <div class="cols">
+    <div>
+      <h3 class="sub">Task pool — click an orange task to assign it to the current station</h3>
+      <div class="chips" id="chips"></div>
+      <h3 class="sub">Workstations</h3>
+      <div class="stations" id="stations"></div>
+      <h3 class="sub">Station load vs cycle time</h3>
+      <svg id="load-svg" class="mini-svg" width="520" height="170"></svg>
+    </div>
+    <div>
+      <div class="scorebar">
+        <div><span class="lbl">Stations used</span><span class="big" id="m-n">—</span></div>
+        <div><span class="lbl">Efficiency Σt/(n·CT)</span><span class="big" id="m-eff">—</span></div>
+        <div><span class="lbl">Balance delay</span><span class="big" id="m-bd">—</span></div>
+        <div><span class="lbl">Smoothness index</span><span class="big" id="m-si">—</span></div>
+      </div>
+      <h3 class="sub">Log</h3>
+      <div class="log" id="log">Load the example, then press Start manual balancing — or run a heuristic and read its reasoning.</div>
+      <h3 class="sub">Scoreboard (best per method)</h3>
+      <table id="score-table"><thead><tr><th>Method</th><th>Stations</th><th>Efficiency</th></tr></thead><tbody></tbody></table>
+      <details>
+        <summary>Theory: line balancing in five formulas</summary>
+        <ul>
+          <li><span class="formula">CT = available time / demand</span> — the drumbeat of the line (takt).</li>
+          <li><span class="formula">n_min = ⌈Σtᵢ / CT⌉</span> — you can never do better than this many stations.</li>
+          <li><span class="formula">Efficiency = Σtᵢ / (n · CT)</span> and <span class="formula">Balance delay = 1 − Efficiency</span>.</li>
+          <li><span class="formula">Smoothness = √Σ(STmax − STₖ)²</span> — how evenly work is spread (0 = perfect).</li>
+          <li><strong>RPW</strong> ranks tasks by positional weight = own time + times of <em>all</em> tasks that follow it, so bottleneck-feeding tasks go early. <strong>LCR</strong> just grabs the longest eligible task. <strong>Most Followers</strong> prioritizes tasks that unlock the most successors. None is always best — that's why you test all three.</li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ================= DATA ================= */
+let tasks=[]; // {name,time,preds:[names]}
+function loadExample(){
+  tasks=[
+    {name:'A',time:60,preds:[]},
+    {name:'B',time:80,preds:['A']},
+    {name:'C',time:20,preds:['A']},
+    {name:'D',time:50,preds:['A']},
+    {name:'E',time:90,preds:['B','C']},
+    {name:'F',time:30,preds:['C','D']},
+    {name:'G',time:30,preds:['E','F']},
+    {name:'H',time:60,preds:['G']}
+  ];
+  buildTaskTable(); dataChanged();
+}
+function addTask(){
+  if(tasks.length>=14) return;
+  const nm=String.fromCharCode(65+tasks.length);
+  tasks.push({name:nm,time:30,preds:[]});
+  buildTaskTable(); dataChanged();
+}
+function delTask(){
+  if(tasks.length<=2) return;
+  const removed=tasks.pop().name;
+  tasks.forEach(t=>t.preds=t.preds.filter(p=>p!==removed));
+  buildTaskTable(); dataChanged();
+}
+function buildTaskTable(){
+  const t=document.getElementById('task-table');
+  t.innerHTML='<thead><tr><th>Task</th><th>Time (s)</th><th>Predecessors</th></tr></thead><tbody>'+
+    tasks.map((x,i)=>`<tr>
+      <td><input type="text" class="nm" style="width:52px" value="${x.name}" data-i="${i}" data-f="name"></td>
+      <td><input type="number" class="num" style="width:64px" min="1" value="${x.time}" data-i="${i}" data-f="time"></td>
+      <td><input type="text" class="nm" style="width:110px" value="${x.preds.join(',')}" data-i="${i}" data-f="preds"></td>
+    </tr>`).join('')+'</tbody>';
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{
+    const x=tasks[+inp.dataset.i];
+    if(inp.dataset.f==='name'){
+      const old=x.name, nv=inp.value.trim()||old;
+      x.name=nv; tasks.forEach(tt=>tt.preds=tt.preds.map(p=>p===old?nv:p));
+      buildTaskTable();
+    }
+    else if(inp.dataset.f==='time') x.time=Math.max(1,+inp.value||1);
+    else x.preds=inp.value.split(',').map(s=>s.trim()).filter(Boolean);
+    dataChanged();
+  }));
+}
+function byName(n){ return tasks.find(t=>t.name===n); }
+function validate(){
+  const names=new Set(tasks.map(t=>t.name));
+  for(const t of tasks) for(const p of t.preds)
+    if(!names.has(p)) return `Task ${t.name} references unknown predecessor "${p}".`;
+  // cycle check via repeated topo removal
+  const done=new Set(); let progressed=true;
+  while(progressed){
+    progressed=false;
+    for(const t of tasks) if(!done.has(t.name)&&t.preds.every(p=>done.has(p))){ done.add(t.name); progressed=true; }
+  }
+  if(done.size!==tasks.length) return 'Precedence contains a cycle — a task can\'t (indirectly) precede itself.';
+  return '';
+}
+function CT(){ return Math.max(1,(+document.getElementById('avail').value||1)/(+document.getElementById('demand').value||1)); }
+function sumT(){ return tasks.reduce((s,t)=>s+t.time,0); }
+function followersOf(name){ // transitive successors
+  const out=new Set(); let grew=true;
+  while(grew){
+    grew=false;
+    for(const t of tasks)
+      if(!out.has(t.name)&&(t.preds.includes(name)||t.preds.some(p=>out.has(p)))){ out.add(t.name); grew=true; }
+  }
+  return out;
+}
+function posWeight(name){
+  let w=byName(name).time;
+  followersOf(name).forEach(f=>w+=byName(f).time);
+  return w;
+}
+function dataChanged(){
+  const err=validate();
+  document.getElementById('data-warn').textContent=err;
+  const ct=CT(), st=sumT();
+  document.getElementById('ct-val').textContent=ct.toFixed(1);
+  document.getElementById('sum-t').textContent=st;
+  document.getElementById('nmin').textContent=err?'—':Math.ceil(st/ct);
+  const tooBig=tasks.filter(t=>t.time>ct).map(t=>t.name);
+  if(!err&&tooBig.length) document.getElementById('data-warn').textContent=
+    `Task(s) ${tooBig.join(', ')} exceed the cycle time — the line is infeasible. Increase available time, reduce demand, or split the task.`;
+  drawPrecedence();
+  resetAssignment();
+}
+/* ---- precedence diagram ---- */
+function drawPrecedence(){
+  const err=validate(); const svg=document.getElementById('prec-svg');
+  if(err){ svg.innerHTML=''; return; }
+  // level = longest path from a start node
+  const level={};
+  function lv(n){
+    if(level[n]!==undefined) return level[n];
+    const t=byName(n);
+    level[n]=t.preds.length?1+Math.max(...t.preds.map(lv)):0;
+    return level[n];
+  }
+  tasks.forEach(t=>lv(t.name));
+  const maxL=Math.max(...Object.values(level));
+  const colTasks=[]; for(let l=0;l<=maxL;l++) colTasks.push(tasks.filter(t=>level[t.name]===l));
+  const colW=96, rowH=64, R=22;
+  const H=Math.max(...colTasks.map(c=>c.length))*rowH+20;
+  const W=(maxL+1)*colW+30;
+  const posOf={};
+  colTasks.forEach((col,l)=>col.forEach((t,k)=>{
+    posOf[t.name]={x:40+l*colW, y:(H-(col.length*rowH))/2+k*rowH+rowH/2};
+  }));
+  let inner='<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#1B2A38"/></marker></defs>';
+  tasks.forEach(t=>t.preds.forEach(p=>{
+    const a=posOf[p], b=posOf[t.name];
+    inner+=`<line x1="${a.x+R}" y1="${a.y}" x2="${b.x-R-2}" y2="${b.y}" stroke="#1B2A38" stroke-width="1.3" marker-end="url(#arr)"/>`;
+  }));
+  tasks.forEach(t=>{
+    const p=posOf[t.name];
+    inner+=`<circle cx="${p.x}" cy="${p.y}" r="${R}" fill="#fff" stroke="#1B2A38" stroke-width="2"/>
+      <text x="${p.x}" y="${p.y-2}" text-anchor="middle" font-size="13" font-weight="700" font-family="IBM Plex Mono">${t.name}</text>
+      <text x="${p.x}" y="${p.y+12}" text-anchor="middle" font-size="10" font-family="IBM Plex Mono" fill="#4a5762">${t.time}</text>`;
+  });
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width',Math.min(W,560));
+  svg.innerHTML=inner;
+}
+
+/* ================= ASSIGNMENT ================= */
+let stations=[], active=false, history=[], scores={};
+function assignedSet(){ const s=new Set(); stations.forEach(st=>st.forEach(n=>s.add(n))); return s; }
+function stationTime(st){ return st.reduce((s,n)=>s+byName(n).time,0); }
+function eligible(){
+  const done=assignedSet(), ct=CT();
+  const cur=stations[stations.length-1]||[];
+  const remain=ct-stationTime(cur);
+  return tasks.filter(t=>!done.has(t.name)&&t.preds.every(p=>done.has(p)))
+              .map(t=>({name:t.name, fits:t.time<=remain+1e-9}));
+}
+function resetAssignment(){
+  stations=[]; active=false; history=[];
+  document.getElementById('btn-close').disabled=true;
+  document.getElementById('btn-undo').disabled=true;
+  renderAssignment();
+}
+function startManual(){
+  if(validate()){ alert('Fix the data warnings first.'); return; }
+  stations=[[]]; active=true; history=[];
+  document.getElementById('btn-close').disabled=false;
+  document.getElementById('btn-undo').disabled=false;
+  document.getElementById('log').innerHTML='';
+  logL(`Manual balancing started. CT = ${CT().toFixed(1)} s. Theoretical minimum: ${Math.ceil(sumT()/CT())} stations.`,'hl');
+  renderAssignment();
+}
+function assignTask(name){
+  if(!active) return;
+  const e=eligible().find(x=>x.name===name);
+  if(!e) return;
+  if(!e.fits){ logL(`${name} (${byName(name).time}s) doesn't fit the remaining time of station ${stations.length}. Close the station first.`,'bad'); return; }
+  stations[stations.length-1].push(name);
+  history.push(name);
+  logL(`Station ${stations.length}: + ${name} (${byName(name).time}s) → load ${stationTime(stations[stations.length-1]).toFixed(0)} / ${CT().toFixed(0)}s`);
+  checkComplete();
+  renderAssignment();
+}
+function closeStation(){
+  if(!active) return;
+  if(stations[stations.length-1].length===0){ logL('Current station is empty — assign at least one task first.','bad'); return; }
+  stations.push([]); history.push('__ST__');
+  logL(`Station ${stations.length-1} closed. Station ${stations.length} opened.`,'hl');
+  renderAssignment();
+}
+function undoTask(){
+  if(!history.length) return;
+  const last=history.pop();
+  if(last==='__ST__'){ stations.pop(); logL('Undo: reopened previous station.'); }
+  else { stations[stations.length-1].pop(); logL(`Undo: removed ${last}.`); }
+  renderAssignment();
+}
+function checkComplete(){
+  if(assignedSet().size===tasks.length){
+    active=false;
+    document.getElementById('btn-close').disabled=true;
+    const m=metrics();
+    logL(`All tasks assigned! ${m.n} stations, efficiency ${(m.eff*100).toFixed(1)}%, smoothness ${m.si.toFixed(1)}.`,'good');
+    record('Manual (you)',m);
+  }
+}
+/* ---- heuristics ---- */
+function runHeuristic(kind){
+  if(validate()){ alert('Fix the data warnings first.'); return; }
+  const ct=CT();
+  stations=[[]]; active=false; history=[];
+  document.getElementById('btn-close').disabled=true;
+  document.getElementById('btn-undo').disabled=true;
+  const label={LCR:'Largest Candidate Rule',MF:'Most Followers',RPW:'Ranked Positional Weight'}[kind];
+  document.getElementById('log').innerHTML='';
+  logL(`— ${label} — CT = ${ct.toFixed(1)} s`,'hl');
+  if(kind==='RPW') tasks.forEach(t=>logL(`PW(${t.name}) = ${posWeight(t.name)}`));
+  let guard=0;
+  while(assignedSet().size<tasks.length&&guard++<300){
+    const el=eligible().filter(e=>e.fits);
+    if(!el.length){
+      stations.push([]);
+      logL(`No eligible task fits → station ${stations.length-1} closed (${stationTime(stations[stations.length-2]).toFixed(0)}s), station ${stations.length} opened.`);
+      continue;
+    }
+    let pick;
+    if(kind==='LCR') pick=el.reduce((a,b)=>byName(b.name).time>byName(a.name).time?b:a);
+    else if(kind==='MF') pick=el.reduce((a,b)=>followersOf(b.name).size>followersOf(a.name).size?b:a);
+    else pick=el.reduce((a,b)=>posWeight(b.name)>posWeight(a.name)?b:a);
+    stations[stations.length-1].push(pick.name);
+    const why=kind==='LCR'?`t=${byName(pick.name).time}`:kind==='MF'?`${followersOf(pick.name).size} followers`:`PW=${posWeight(pick.name)}`;
+    logL(`Station ${stations.length}: ${pick.name} chosen among {${el.map(e=>e.name).join(',')}} (${why}).`);
+  }
+  const m=metrics();
+  logL(`Result: ${m.n} stations, efficiency ${(m.eff*100).toFixed(1)}%, balance delay ${((1-m.eff)*100).toFixed(1)}%, smoothness ${m.si.toFixed(1)}.`,'good');
+  record(label,m);
+  renderAssignment();
+}
+/* ---- metrics, scoreboard ---- */
+function metrics(){
+  const sts=stations.filter(s=>s.length);
+  const n=sts.length, ct=CT(), st=sumT();
+  const loads=sts.map(stationTime);
+  const stmax=Math.max(...loads,0);
+  const si=Math.sqrt(loads.reduce((s,l)=>s+(stmax-l)**2,0));
+  return {n,eff:st/(n*ct),si,loads};
+}
+function record(label,m){
+  if(!scores[label]||m.n<scores[label].n||(m.n===scores[label].n&&m.eff>scores[label].eff))
+    scores[label]={n:m.n,eff:m.eff};
+  const nmin=Math.ceil(sumT()/CT());
+  const tb=document.querySelector('#score-table tbody');
+  const entries=Object.entries(scores).sort((a,b)=>a[1].n-b[1].n||b[1].eff-a[1].eff);
+  tb.innerHTML=entries.map(([k,v],i)=>`<tr ${i===0?'class="winner"':''}><td style="text-align:left">${k}${v.n===nmin?' ★':''}</td><td class="mono">${v.n}</td><td class="mono">${(v.eff*100).toFixed(1)}%</td></tr>`).join('');
+}
+/* ---- rendering ---- */
+function logL(msg,cls){
+  const el=document.getElementById('log');
+  el.innerHTML+=(cls?`<span class="${cls}">${msg}</span>`:msg)+'\n';
+  el.scrollTop=el.scrollHeight;
+}
+function renderAssignment(){
+  const done=assignedSet(), el=active?eligible():[];
+  // chips
+  document.getElementById('chips').innerHTML=tasks.map(t=>{
+    if(done.has(t.name)) return `<span class="chip assigned">${t.name} ✓</span>`;
+    const e=el.find(x=>x.name===t.name);
+    if(e&&e.fits) return `<span class="chip eligible" onclick="assignTask('${t.name}')">${t.name} · ${t.time}s</span>`;
+    if(e&&!e.fits) return `<span class="chip toobig" title="doesn't fit remaining time">${t.name} · ${t.time}s</span>`;
+    return `<span class="chip">${t.name} · ${t.time}s</span>`;
+  }).join('');
+  // stations
+  const ct=CT();
+  document.getElementById('stations').innerHTML=stations.map((s,i)=>{
+    const cur=active&&i===stations.length-1;
+    return `<div class="station ${cur?'current':''}">
+      <h4>Station ${i+1}${cur?' · open':''}</h4>
+      <div class="body">${s.join(', ')||'&nbsp;'}</div>
+      <div class="tt">${stationTime(s).toFixed(0)} / ${ct.toFixed(0)} s · idle ${(ct-stationTime(s)).toFixed(0)}</div>
+    </div>`;
+  }).join('')||'<span class="hint">no stations yet</span>';
+  // metrics
+  const sts=stations.filter(s=>s.length);
+  if(sts.length){
+    const m=metrics();
+    document.getElementById('m-n').textContent=m.n;
+    document.getElementById('m-eff').textContent=(m.eff*100).toFixed(1)+'%';
+    document.getElementById('m-bd').textContent=((1-m.eff)*100).toFixed(1)+'%';
+    document.getElementById('m-si').textContent=m.si.toFixed(1);
+  } else ['m-n','m-eff','m-bd','m-si'].forEach(id=>document.getElementById(id).textContent='—');
+  // load chart
+  const svg=document.getElementById('load-svg');
+  const W=520,H=170,pL=36,pB=26,pT=12;
+  if(!sts.length){ svg.innerHTML=''; return; }
+  const loads=sts.map(stationTime);
+  const maxY=Math.max(ct,...loads)*1.1;
+  const bw=Math.min(56,(W-pL-10)/sts.length-8);
+  let inner=`<line x1="${pL}" y1="${H-pB}" x2="${W-6}" y2="${H-pB}" stroke="#1B2A38"/>`;
+  const yCT=H-pB-(ct/maxY)*(H-pB-pT);
+  inner+=`<line x1="${pL}" y1="${yCT}" x2="${W-6}" y2="${yCT}" stroke="#B4443C" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="${W-8}" y="${yCT-4}" text-anchor="end" font-size="10" fill="#B4443C" font-family="IBM Plex Mono">CT=${ct.toFixed(0)}</text>`;
+  loads.forEach((l,i)=>{
+    const h=(l/maxY)*(H-pB-pT), x=pL+8+i*(bw+8);
+    inner+=`<rect x="${x}" y="${H-pB-h}" width="${bw}" height="${h}" fill="#4A6FA5" fill-opacity="0.85"/>
+      <text x="${x+bw/2}" y="${H-pB-h-4}" text-anchor="middle" font-size="10" font-family="IBM Plex Mono">${l.toFixed(0)}</text>
+      <text x="${x+bw/2}" y="${H-pB+13}" text-anchor="middle" font-size="10" font-family="IBM Plex Mono">S${i+1}</text>`;
+  });
+  svg.innerHTML=inner;
+}
+/* ---- init ---- */
+loadExample();
+</script>
+</body>
+</html>

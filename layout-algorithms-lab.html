@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Algorithms Lab — CORELAP · ALDEP · CRAFT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F4; --ink:#1B2A38; --line:#D7DDE2;
+  --accent:#E8630A; --ok:#2E7D5B; --gold:#C79A08; --panel:#fff; --radius:6px;
+  --A:#1E6B45; --E:#4C9A6A; --I:#C7A93B; --O:#C98A4B; --U:#9AA5AD; --X:#B4443C;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Sans',sans-serif;font-size:15px;line-height:1.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px;background-attachment:fixed;
+}
+.wrap{max-width:1160px;margin:0 auto;padding:24px 16px 80px}
+
+header{background:var(--panel);border:2px solid var(--ink);display:grid;grid-template-columns:1fr auto;margin-bottom:20px}
+.tb-main{padding:18px 22px;border-right:2px solid var(--ink)}
+.tb-main h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:32px;text-transform:uppercase;letter-spacing:.5px;line-height:1.05}
+.tb-main p{color:#4a5762;max-width:66ch;margin-top:4px;font-size:14px}
+.tb-meta{display:grid;grid-template-rows:repeat(3,1fr);min-width:190px}
+.tb-meta div{padding:6px 14px;border-bottom:1px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.tb-meta div:last-child{border-bottom:none}
+.tb-meta span{display:block;font-size:10px;letter-spacing:.12em;color:#6b7883;text-transform:uppercase}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:17px;text-transform:uppercase;letter-spacing:.06em;
+  padding:8px 16px;border:2px solid var(--ink);background:var(--panel);cursor:pointer;border-radius:var(--radius)}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff}
+.tab:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.module{display:none}.module.active{display:block}
+.panel{background:var(--panel);border:1.5px solid var(--ink);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.panel h2{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:21px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+h3.sub{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:16px;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media(max-width:920px){.cols{grid-template-columns:1fr}}
+
+button.action{font-weight:600;font-size:13px;padding:7px 14px;border:1.5px solid var(--ink);background:#fff;border-radius:var(--radius);cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+button.action:hover:not(:disabled){background:var(--ink);color:#fff}
+button.action.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.action.primary:hover:not(:disabled){background:#c85406}
+button.action:disabled{opacity:.4;cursor:not-allowed}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+label.inline{font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
+input[type=number].num{width:64px;padding:4px 6px;border:1.5px solid var(--ink);border-radius:4px;font-family:'IBM Plex Mono',monospace}
+input[type=text].nm{width:110px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:13px}
+select{padding:4px 8px;border:1.5px solid var(--ink);border-radius:4px;font-size:13px;font-family:'IBM Plex Sans',sans-serif}
+
+table{border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:3px 7px;text-align:center}
+th{background:#EDEFEA;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* REL chart selects colored by rating */
+select.rel{font-family:'IBM Plex Mono',monospace;font-weight:600;border:1px solid var(--line);padding:2px 4px;color:#fff;border-radius:3px}
+select.rel.rA{background:var(--A)} select.rel.rE{background:var(--E)}
+select.rel.rI{background:var(--I);color:#1B2A38} select.rel.rO{background:var(--O)}
+select.rel.rU{background:var(--U)} select.rel.rX{background:var(--X)}
+.rel-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:8px}
+.rel-legend b{display:inline-block;width:20px;text-align:center;color:#fff;border-radius:3px;font-family:'IBM Plex Mono',monospace}
+
+/* grids */
+.grid{display:grid;gap:2px;background:var(--ink);border:3px solid var(--ink);border-radius:4px;width:max-content;max-width:100%}
+.gcell{background:#EDEFEA;position:relative;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:10px}
+.gcell .cand{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:11px;color:var(--ink);background:#FCEBDD;border:1px dashed var(--accent)}
+.gcell .cand.best{background:#F9C99E;border:2px solid var(--accent);font-size:12px}
+.dept-lab{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#fff;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.04em;pointer-events:none}
+.gwrap{overflow-x:auto;padding-bottom:4px}
+.gcell.sel{outline:3px solid var(--gold);outline-offset:-3px;z-index:2}
+.gcell.clickable{cursor:pointer}
+
+.log{background:#10202E;color:#D9E4EC;border-radius:var(--radius);padding:10px 12px;height:280px;overflow-y:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.log .hl{color:#F5B70A}.log .good{color:#7FD4A8}.log .bad{color:#F09A93}
+
+.scorebar{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap;border:2px solid var(--ink);border-radius:var(--radius);padding:8px 16px;margin:12px 0;background:#fff}
+.scorebar .big{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:28px;color:var(--accent)}
+.scorebar .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#6b7883;display:block}
+
+details{margin-top:10px;border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;background:#FBFBF9}
+details summary{cursor:pointer;font-weight:600;font-size:13px}
+details p,details li{margin:6px 0;font-size:13.5px}
+details ol{padding-left:20px}
+.formula{font-family:'IBM Plex Mono',monospace;background:#EDEFEA;padding:4px 8px;border-radius:4px;display:inline-block;margin:2px 0;font-size:12.5px}
+.hint{font-size:12.5px;color:#6b7883;margin-top:6px}
+.chip{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="tb-main">
+    <h1>Layout Algorithms Lab</h1>
+    <p>Construction and improvement algorithms for facility layout, run one decision at a time: <strong>CORELAP</strong> (total closeness rating), <strong>ALDEP</strong> (serpentine sweep), and <strong>CRAFT</strong> (pairwise exchange). Define the REL chart once — every algorithm reads from it.</p>
+  </div>
+  <div class="tb-meta">
+    <div><span>Sheet</span>OM-302 / 1 of 1</div>
+    <div><span>Method</span>SLP · Computerized</div>
+    <div><span>Rev</span>B — Teaching Edition</div>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tab-data" role="tab" aria-selected="true" onclick="showModule('data')">1 · REL Chart &amp; Data</button>
+  <button class="tab" id="tab-corelap" role="tab" aria-selected="false" onclick="showModule('corelap')">2 · CORELAP</button>
+  <button class="tab" id="tab-aldep" role="tab" aria-selected="false" onclick="showModule('aldep')">3 · ALDEP</button>
+  <button class="tab" id="tab-craft" role="tab" aria-selected="false" onclick="showModule('craft')">4 · CRAFT</button>
+</div>
+
+<!-- ================= DATA ================= -->
+<section class="module active" id="module-data">
+  <div class="panel">
+    <h2>Departments &amp; relationship chart</h2>
+    <div class="toolbar">
+      <label class="inline">Departments
+        <select id="ndepts" onchange="setDeptCount(+this.value)">
+          <option>5</option><option>6</option><option>7</option><option selected>8</option>
+        </select>
+      </label>
+      <button class="action" onclick="loadDefaults()">Load textbook example</button>
+    </div>
+    <div class="cols">
+      <div>
+        <h3 class="sub">Departments</h3>
+        <table id="dept-table"></table>
+        <p class="hint">Areas (in unit cells) are used by ALDEP. CORELAP and CRAFT here use the unit-square teaching simplification: one cell per department.</p>
+
+        <h3 class="sub">REL chart (upper triangle)</h3>
+        <div style="overflow-x:auto"><table id="rel-table"></table></div>
+        <div class="rel-legend">
+          <span><b style="background:var(--A)">A</b> absolutely necessary</span>
+          <span><b style="background:var(--E)">E</b> especially important</span>
+          <span><b style="background:var(--I);color:#1B2A38">I</b> important</span>
+          <span><b style="background:var(--O)">O</b> ordinary</span>
+          <span><b style="background:var(--U)">U</b> unimportant</span>
+          <span><b style="background:var(--X)">X</b> undesirable</span>
+        </div>
+      </div>
+      <div>
+        <h3 class="sub">Total closeness rating (TCR)</h3>
+        <table id="tcr-table"></table>
+        <p class="hint">Numerical values: A=6, E=5, I=4, O=3, U=2, X=1. TCRᵢ = Σⱼ value(relᵢⱼ). CORELAP enters departments in decreasing TCR priority.</p>
+        <details open>
+          <summary>How the three algorithms differ</summary>
+          <ul style="padding-left:18px">
+            <li><strong>CORELAP</strong> — construction; qualitative (REL chart); deterministic; places dept with highest TCR first, then grows the layout outward by placement rating.</li>
+            <li><strong>ALDEP</strong> — construction; qualitative; <em>random</em> first department, then requires a minimum closeness with the previous entry; fills a serpentine sweep; run many times, keep the best adjacency score.</li>
+            <li><strong>CRAFT</strong> — improvement; quantitative (from–to flow matrix); starts from an existing layout and applies the best pairwise exchange until no swap reduces load·distance.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CORELAP ================= -->
+<section class="module" id="module-corelap">
+  <div class="panel">
+    <h2>CORELAP — Computerized Relationship Layout Planning</h2>
+    <div class="toolbar">
+      <button class="action primary" id="co-start" onclick="coStart()">Start / Reset</button>
+      <button class="action" id="co-next" onclick="coNext()" disabled>Next step ▸</button>
+      <button class="action" id="co-run" onclick="coRunAll()" disabled>Run to end ▸▸</button>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="co-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Entered</span><span class="big" id="co-progress">0 / 0</span></div>
+          <div><span class="lbl">Adjacency score (A64·E16·I4·O1·U0·X−1024)</span><span class="big" id="co-score">—</span></div>
+        </div>
+        <details>
+          <summary>Theory: the CORELAP procedure</summary>
+          <ol>
+            <li>Compute <span class="formula">TCRᵢ = Σⱼ v(relᵢⱼ)</span> with A=6…X=1. The department with the highest TCR enters first, at the center.</li>
+            <li>Next entry: the department with the strongest relationship (A, then E, then I…) to any already-selected department; ties broken by higher TCR.</li>
+            <li>Placement: evaluate every empty cell touching the layout. <span class="formula">PR = Σ v(rel) × 1 (edge) or × 0.5 (corner)</span> over adjacent placed departments. Place at the highest PR (ties: closest to the layout's centroid).</li>
+          </ol>
+          <p>Candidate cells appear with their PR during each placement step — ask students to predict the winner before clicking Next.</p>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Entering order</h3>
+        <table id="co-order-table"><thead><tr><th>#</th><th>Dept</th><th>TCR</th><th>Reason</th></tr></thead><tbody></tbody></table>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="co-log">Press Start to compute TCRs and begin.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ALDEP ================= -->
+<section class="module" id="module-aldep">
+  <div class="panel">
+    <h2>ALDEP — Automated Layout Design Program</h2>
+    <div class="toolbar">
+      <label class="inline">Building <input type="number" class="num" id="al-cols" value="10" min="4" max="20"> ×
+        <input type="number" class="num" id="al-rows" value="6" min="3" max="15"> cells</label>
+      <label class="inline">Sweep width <input type="number" class="num" id="al-w" value="2" min="1" max="4"></label>
+      <label class="inline">Min. acceptable relation
+        <select id="al-min"><option>A</option><option selected>E</option><option>I</option><option>O</option></select>
+      </label>
+    </div>
+    <div class="toolbar">
+      <button class="action primary" onclick="alStart()">Start / Reset</button>
+      <button class="action" id="al-next" onclick="alNext()" disabled>Place next dept ▸</button>
+      <button class="action" id="al-run" onclick="alRunAll()" disabled>Run to end ▸▸</button>
+      <button class="action" onclick="alTrials(10)">Run 10 trials, keep best</button>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="al-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Placed</span><span class="big" id="al-progress">0 / 0</span></div>
+          <div><span class="lbl">Adjacency score</span><span class="big" id="al-score">—</span></div>
+          <div><span class="lbl">Best of trials</span><span class="big" id="al-best" style="color:var(--ok)">—</span></div>
+        </div>
+        <details>
+          <summary>Theory: the ALDEP procedure</summary>
+          <ol>
+            <li>Select the first department <em>at random</em>.</li>
+            <li>Scan the REL chart for an unplaced department whose relationship with the <em>last entered</em> department meets the minimum acceptable level (here: strongest qualifying one wins). If none qualifies, pick at random.</li>
+            <li>Fill the building in a vertical <strong>serpentine sweep</strong> of the chosen width, allocating each department its area in consecutive cells.</li>
+            <li>Score adjacency: <span class="formula">A=64 · E=16 · I=4 · O=1 · U=0 · X=−1024</span> for each pair of departments sharing an edge. Because step 1–2 involve chance, ALDEP is run many times and the best layout kept.</li>
+          </ol>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="al-log">Press Start. Every run can differ — that is the point of ALDEP.</div>
+        <h3 class="sub">Adjacent department pairs</h3>
+        <table id="al-adj-table"><thead><tr><th>Pair</th><th>Rel</th><th>Points</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CRAFT ================= -->
+<section class="module" id="module-craft">
+  <div class="panel">
+    <h2>CRAFT — Computerized Relative Allocation of Facilities Technique</h2>
+    <div class="toolbar">
+      <button class="action" onclick="crRandom()">Random initial layout</button>
+      <button class="action primary" id="cr-next" onclick="crNext()">Evaluate exchanges ▸</button>
+      <button class="action" id="cr-run" onclick="crRunAll()">Run to local optimum ▸▸</button>
+      <span class="hint">You can also click two departments to swap them manually and see the cost change.</span>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="cr-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Load·distance cost</span><span class="big" id="cr-cost">0</span> <span class="mono">load·m</span></div>
+          <div><span class="lbl">Iteration</span><span class="big" id="cr-iter">0</span></div>
+        </div>
+        <h3 class="sub">From–To flow matrix <span class="mono" style="font-size:11px;font-weight:400">(loads/day — prefilled from REL: A=100 E=45 I=20 O=5 U/X=0)</span></h3>
+        <div style="overflow-x:auto"><table id="cr-flow-table"></table></div>
+        <details>
+          <summary>Theory: the CRAFT procedure</summary>
+          <ol>
+            <li>Start from any complete layout and a quantitative flow matrix.</li>
+            <li>Cost: <span class="formula">TC = Σᵢⱼ fᵢⱼ · dᵢⱼ</span> with rectilinear centroid distances.</li>
+            <li>Each iteration, estimate the cost change of every pairwise exchange, apply the best improving swap, and repeat until no exchange reduces cost — a <em>local</em> optimum (different starts can end differently: try several random initial layouts!).</li>
+          </ol>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Exchange evaluation</h3>
+        <table id="cr-swap-table"><thead><tr><th>Exchange</th><th>Δ cost</th></tr></thead><tbody></tbody></table>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="cr-log">Set a starting layout, then evaluate exchanges.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ================================================================
+   SHARED DATA
+================================================================ */
+const PALETTE=['#4A6FA5','#8A5A44','#2E7D5B','#E8630A','#6B5CA5','#B08A0A','#3A8FA3','#A34A6F'];
+const RATINGS=['A','E','I','O','U','X'];
+const TCRW={A:6,E:5,I:4,O:3,U:2,X:1};
+const ADJW={A:64,E:16,I:4,O:1,U:0,X:-1024};
+const RANK={A:5,E:4,I:3,O:2,U:1,X:0};
+
+let depts=[], rel={};        // rel key "i-j" (i<j) -> rating
+const DEFAULT_NAMES=['Receiving','Machining','Assembly','Painting','Quality','Packaging','Shipping','Offices'];
+const DEFAULT_AREAS=[6,12,12,8,4,6,6,6];
+const DEFAULT_REL={ '0-1':'A','0-2':'I','0-6':'E','0-7':'O',
+  '1-2':'A','1-3':'E','1-4':'I',
+  '2-3':'E','2-4':'I','2-5':'E','2-7':'O',
+  '3-4':'I','3-5':'O','3-7':'X',
+  '4-5':'E','4-6':'I','4-7':'O',
+  '5-6':'A',
+  '6-7':'O' };
+
+function code(i){ return depts[i].name.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||('D'+(i+1)); }
+function getRel(i,j){ if(i===j) return null; const k=i<j?`${i}-${j}`:`${j}-${i}`; return rel[k]||'U'; }
+function setRel(i,j,v){ const k=i<j?`${i}-${j}`:`${j}-${i}`; rel[k]=v; }
+function tcr(i){ let s=0; for(let j=0;j<depts.length;j++) if(j!==i) s+=TCRW[getRel(i,j)]; return s; }
+
+function loadDefaults(){
+  const n=+document.getElementById('ndepts').value;
+  depts=[]; rel={};
+  for(let i=0;i<n;i++) depts.push({name:DEFAULT_NAMES[i]||('Dept '+(i+1)),area:DEFAULT_AREAS[i]||6,color:PALETTE[i]});
+  Object.entries(DEFAULT_REL).forEach(([k,v])=>{
+    const [a,b]=k.split('-').map(Number);
+    if(a<n&&b<n) rel[k]=v;
+  });
+  buildDataUI(); crInitFlow(); crRandom(); coReset(); alReset();
+}
+function setDeptCount(n){
+  while(depts.length<n) depts.push({name:'Dept '+(depts.length+1),area:6,color:PALETTE[depts.length]});
+  depts.length=n;
+  Object.keys(rel).forEach(k=>{const [a,b]=k.split('-').map(Number); if(a>=n||b>=n) delete rel[k];});
+  buildDataUI(); crInitFlow(); crRandom(); coReset(); alReset();
+}
+
+function buildDataUI(){
+  // dept table
+  const dt=document.getElementById('dept-table');
+  dt.innerHTML='<thead><tr><th>Code</th><th>Name</th><th>Area (cells)</th></tr></thead><tbody>'+
+    depts.map((d,i)=>`<tr>
+      <td><span class="chip" style="background:${d.color}"></span><b class="mono">${code(i)}</b></td>
+      <td><input type="text" class="nm" value="${d.name}" data-i="${i}" data-f="name"></td>
+      <td><input type="number" class="num" value="${d.area}" min="1" max="30" data-i="${i}" data-f="area"></td>
+    </tr>`).join('')+'</tbody>';
+  dt.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{
+    const i=+inp.dataset.i;
+    if(inp.dataset.f==='name') depts[i].name=inp.value||('Dept '+(i+1));
+    else depts[i].area=Math.max(1,+inp.value||1);
+    buildDataUI(); crInitFlow(); coReset(); alReset();
+  }));
+
+  // rel table
+  const rt=document.getElementById('rel-table');
+  let html='<thead><tr><th></th>'+depts.map((_,j)=>`<th>${code(j)}</th>`).join('')+'</tr></thead><tbody>';
+  for(let i=0;i<depts.length;i++){
+    html+=`<tr><th>${code(i)}</th>`;
+    for(let j=0;j<depts.length;j++){
+      if(j<=i){ html+='<td style="background:#DDE1DC"></td>'; continue; }
+      const v=getRel(i,j);
+      html+=`<td><select class="rel r${v}" data-i="${i}" data-j="${j}">`+
+        RATINGS.map(r=>`<option ${r===v?'selected':''}>${r}</option>`).join('')+'</select></td>';
+    }
+    html+='</tr>';
+  }
+  rt.innerHTML=html+'</tbody>';
+  rt.querySelectorAll('select.rel').forEach(s=>s.addEventListener('change',()=>{
+    setRel(+s.dataset.i,+s.dataset.j,s.value);
+    s.className='rel r'+s.value;
+    buildTCR(); coReset(); alReset();
+  }));
+  buildTCR();
+}
+function buildTCR(){
+  const rows=depts.map((d,i)=>({i,t:tcr(i)})).sort((a,b)=>b.t-a.t);
+  document.getElementById('tcr-table').innerHTML=
+    '<thead><tr><th>Rank</th><th>Dept</th><th>TCR</th></tr></thead><tbody>'+
+    rows.map((r,k)=>`<tr><td>${k+1}</td><td><span class="chip" style="background:${depts[r.i].color}"></span>${code(r.i)} — ${depts[r.i].name}</td><td class="mono"><b>${r.t}</b></td></tr>`).join('')+'</tbody>';
+}
+
+function showModule(name){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.getElementById('module-'+name).classList.add('active');
+  ['data','corelap','aldep','craft'].forEach(t=>
+    document.getElementById('tab-'+t).setAttribute('aria-selected',t===name));
+}
+function logTo(id,msg,cls){
+  const el=document.getElementById(id);
+  const span=cls?`<span class="${cls}">${msg}</span>`:msg;
+  el.innerHTML+=(el.innerHTML.endsWith('begin.')||el.innerHTML.endsWith('exchanges.')||el.innerHTML.includes('the point')?'\n':'')+span+'\n';
+  el.scrollTop=el.scrollHeight;
+}
+function clearLog(id,msg){ document.getElementById(id).innerHTML=msg||''; }
+
+/* adjacency score for a grid of dept indices (-1 = empty), pairs counted once */
+function adjacencyScore(grid,rows,cols){
+  const seen=new Set(); let score=0; const pairs=[];
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+    const a=grid[r][c]; if(a<0) continue;
+    [[r,c+1],[r+1,c]].forEach(([r2,c2])=>{
+      if(r2>=rows||c2>=cols) return;
+      const b=grid[r2][c2];
+      if(b<0||b===a) return;
+      const k=Math.min(a,b)+'-'+Math.max(a,b);
+      if(seen.has(k)) return;
+      seen.add(k);
+      const rl=getRel(a,b);
+      score+=ADJW[rl];
+      pairs.push({a,b,rl,pts:ADJW[rl]});
+    });
+  }
+  pairs.sort((x,y)=>y.pts-x.pts);
+  return {score,pairs};
+}
+
+/* ================================================================
+   CORELAP  (unit squares, 11x11 board)
+================================================================ */
+const CO_N=11, CO_CELL=40;
+let co={};
+
+function coReset(){
+  co={grid:Array.from({length:CO_N},()=>Array(CO_N).fill(-1)),order:[],k:0,phase:'idle',candidates:[],best:null};
+  document.getElementById('co-next').disabled=true;
+  document.getElementById('co-run').disabled=true;
+  document.getElementById('co-progress').textContent='0 / '+depts.length;
+  document.getElementById('co-score').textContent='—';
+  document.querySelector('#co-order-table tbody').innerHTML='';
+  clearLog('co-log','Press Start to compute TCRs and begin.');
+  coRender();
+}
+
+function coStart(){
+  coReset();
+  // --- selection order (depends only on selected set, precompute) ---
+  const n=depts.length, T=depts.map((_,i)=>tcr(i));
+  const selectedSet=[], order=[];
+  // first: max TCR
+  let first=0; for(let i=1;i<n;i++) if(T[i]>T[first]) first=i;
+  order.push({i:first,reason:`highest TCR (${T[first]})`});
+  selectedSet.push(first);
+  while(selectedSet.length<n){
+    let pick=-1,why='';
+    for(const R of RATINGS){                       // A, E, I, O, U, X
+      const cands=[];
+      for(let d=0;d<n;d++){
+        if(selectedSet.includes(d)) continue;
+        if(selectedSet.some(s=>getRel(s,d)===R)) cands.push(d);
+      }
+      if(cands.length){
+        cands.sort((a,b)=>T[b]-T[a]);
+        pick=cands[0];
+        const w=selectedSet.find(s=>getRel(s,pick)===R);
+        why=`${R} with ${code(w)}`+(cands.length>1?` (tie → higher TCR ${T[pick]})`:'');
+        break;
+      }
+    }
+    order.push({i:pick,reason:why});
+    selectedSet.push(pick);
+  }
+  co.order=order; co.phase='select';
+  // order table
+  document.querySelector('#co-order-table tbody').innerHTML=order.map((o,k)=>
+    `<tr id="co-ord-${k}"><td>${k+1}</td><td><span class="chip" style="background:${depts[o.i].color}"></span>${code(o.i)}</td><td class="mono">${tcr(o.i)}</td><td style="text-align:left">${o.reason}</td></tr>`).join('');
+  logTo('co-log',`TCRs computed. Entering order fixed by the selection rules.`,'hl');
+  logTo('co-log',`Order: ${order.map(o=>code(o.i)).join(' → ')}`);
+  document.getElementById('co-next').disabled=false;
+  document.getElementById('co-run').disabled=false;
+  coRender();
+}
+
+function coCandidates(){
+  const cands=[];
+  for(let r=0;r<CO_N;r++) for(let c=0;c<CO_N;c++){
+    if(co.grid[r][c]>=0) continue;
+    let pr=0, touch=false;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(!dr&&!dc) continue;
+      const r2=r+dr,c2=c+dc;
+      if(r2<0||c2<0||r2>=CO_N||c2>=CO_N) continue;
+      const d=co.grid[r2][c2];
+      if(d<0) continue;
+      touch=true;
+      const v=TCRW[getRel(d,co.order[co.k].i)];
+      pr+=(dr&&dc)?v*0.5:v;
+    }
+    if(touch) cands.push({r,c,pr});
+  }
+  // best: max pr, tie -> closest to centroid of placed
+  let sr=0,sc=0,m=0;
+  for(let r=0;r<CO_N;r++) for(let c=0;c<CO_N;c++) if(co.grid[r][c]>=0){sr+=r;sc+=c;m++;}
+  const cr=sr/m, cc=sc/m;
+  cands.sort((a,b)=> b.pr-a.pr || (Math.hypot(a.r-cr,a.c-cc)-Math.hypot(b.r-cr,b.c-cc)));
+  return cands;
+}
+
+function coNext(){
+  if(co.phase==='select'){
+    const d=co.order[co.k].i;
+    if(co.k===0){
+      const mid=Math.floor(CO_N/2);
+      co.grid[mid][mid]=d;
+      logTo('co-log',`1. ${code(d)} enters first → placed at the center.`,'good');
+      co.k++;
+      if(co.k>=depts.length) coFinish();
+    } else {
+      co.candidates=coCandidates();
+      co.best=co.candidates[0];
+      const top=co.candidates.slice(0,4).map(c=>`(${c.r},${c.c})=${c.pr}`).join('  ');
+      logTo('co-log',`${co.k+1}. ${code(d)} enters (${co.order[co.k].reason}). Candidate PRs: ${top}${co.candidates.length>4?' …':''}`);
+      co.phase='place';
+    }
+  } else if(co.phase==='place'){
+    const d=co.order[co.k].i, b=co.best;
+    co.grid[b.r][b.c]=d;
+    logTo('co-log',`   → placed at (${b.r},${b.c}) with PR = ${b.pr}.`,'good');
+    co.candidates=[]; co.best=null; co.phase='select'; co.k++;
+    if(co.k>=depts.length) coFinish();
+  }
+  document.getElementById('co-progress').textContent=`${Math.min(co.k,depts.length)} / ${depts.length}`;
+  coRender();
+}
+function coFinish(){
+  co.phase='done';
+  const {score}=adjacencyScore(co.grid,CO_N,CO_N);
+  document.getElementById('co-score').textContent=score;
+  logTo('co-log',`Done. Final adjacency score = ${score}. Compare with an ALDEP run on the same REL chart.`,'hl');
+  document.getElementById('co-next').disabled=true;
+  document.getElementById('co-run').disabled=true;
+}
+function coRunAll(){ let guard=0; while(co.phase!=='done'&&co.phase!=='idle'&&guard++<200) coNext(); }
+
+function coRender(){
+  const g=document.getElementById('co-grid');
+  g.style.gridTemplateColumns=`repeat(${CO_N},${CO_CELL}px)`;
+  g.style.gridTemplateRows=`repeat(${CO_N},${CO_CELL}px)`;
+  let html='';
+  for(let r=0;r<CO_N;r++) for(let c=0;c<CO_N;c++){
+    const d=co.grid[r][c];
+    let inner='';
+    if(d>=0) inner=`<div class="dept-lab" style="background:${depts[d].color};inset:1px;border-radius:3px">${code(d)}</div>`;
+    else if(co.phase==='place'){
+      const cand=co.candidates.find(x=>x.r===r&&x.c===c);
+      if(cand) inner=`<div class="cand ${cand===co.best?'best':''}">${cand.pr}</div>`;
+    }
+    html+=`<div class="gcell">${inner}</div>`;
+  }
+  g.innerHTML=html;
+}
+
+/* ================================================================
+   ALDEP
+================================================================ */
+let al={};
+function serpentine(cols,rows,w){
+  const order=[]; let down=true;
+  for(let c0=0;c0<cols;c0+=w){
+    const band=[]; for(let c=c0;c<Math.min(c0+w,cols);c++) band.push(c);
+    if(down) for(let r=0;r<rows;r++) band.forEach(c=>order.push([r,c]));
+    else for(let r=rows-1;r>=0;r--) band.forEach(c=>order.push([r,c]));
+    down=!down;
+  }
+  return order;
+}
+function alReset(){
+  al={grid:null,rows:0,cols:0,cellOrder:[],pos:0,placedList:[],done:false};
+  document.getElementById('al-next').disabled=true;
+  document.getElementById('al-run').disabled=true;
+  document.getElementById('al-progress').textContent='0 / '+depts.length;
+  document.getElementById('al-score').textContent='—';
+  document.querySelector('#al-adj-table tbody').innerHTML='';
+  clearLog('al-log','Press Start. Every run can differ — that is the point of ALDEP.');
+  document.getElementById('al-grid').innerHTML='';
+}
+function alStart(quiet){
+  const cols=Math.max(4,+document.getElementById('al-cols').value||10);
+  const rows=Math.max(3,+document.getElementById('al-rows').value||6);
+  const w=Math.max(1,+document.getElementById('al-w').value||2);
+  const need=depts.reduce((s,d)=>s+d.area,0);
+  if(need>cols*rows){ alert(`Building too small: ${need} cells needed, ${cols*rows} available.`); return false; }
+  al={grid:Array.from({length:rows},()=>Array(cols).fill(-1)),rows,cols,
+      cellOrder:serpentine(cols,rows,w),pos:0,placedList:[],done:false};
+  if(!quiet){
+    clearLog('al-log',`Building ${cols}×${rows}, sweep width ${w}, minimum acceptable relation: ${document.getElementById('al-min').value}.\n`);
+    document.getElementById('al-next').disabled=false;
+    document.getElementById('al-run').disabled=false;
+    document.getElementById('al-score').textContent='—';
+    document.querySelector('#al-adj-table tbody').innerHTML='';
+    alRender();
+  }
+  return true;
+}
+function alSelectNext(quiet){
+  const unplaced=depts.map((_,i)=>i).filter(i=>!al.placedList.includes(i));
+  if(!unplaced.length) return -1;
+  if(al.placedList.length===0){
+    const pick=unplaced[Math.floor(Math.random()*unplaced.length)];
+    if(!quiet) logTo('al-log',`1. ${code(pick)} selected at random (ALDEP rule for the first department).`,'hl');
+    return pick;
+  }
+  const last=al.placedList[al.placedList.length-1];
+  const minR=RANK[document.getElementById('al-min').value];
+  const quals=unplaced.filter(d=>RANK[getRel(last,d)]>=minR)
+                      .sort((a,b)=>RANK[getRel(last,b)]-RANK[getRel(last,a)]);
+  if(quals.length){
+    const pick=quals[0];
+    if(!quiet) logTo('al-log',`${al.placedList.length+1}. ${code(pick)} selected: ${getRel(last,pick)} relation with ${code(last)} (last entered).`);
+    return pick;
+  }
+  const pick=unplaced[Math.floor(Math.random()*unplaced.length)];
+  if(!quiet) logTo('al-log',`${al.placedList.length+1}. No unplaced dept has ≥ ${document.getElementById('al-min').value} with ${code(last)} → ${code(pick)} chosen at random.`,'bad');
+  return pick;
+}
+function alNext(quiet){
+  if(!al.grid||al.done) return;
+  const d=alSelectNext(quiet);
+  if(d<0) return;
+  for(let a=0;a<depts[d].area && al.pos<al.cellOrder.length;a++){
+    const [r,c]=al.cellOrder[al.pos++];
+    al.grid[r][c]=d;
+  }
+  al.placedList.push(d);
+  if(al.placedList.length>=depts.length){
+    al.done=true;
+    const {score,pairs}=adjacencyScore(al.grid,al.rows,al.cols);
+    if(!quiet){
+      document.getElementById('al-score').textContent=score;
+      logTo('al-log',`Done. Adjacency score = ${score}. Run again — the sequence (and score) will likely change.`,'hl');
+      document.querySelector('#al-adj-table tbody').innerHTML=pairs.map(p=>
+        `<tr><td>${code(p.a)}–${code(p.b)}</td><td class="mono">${p.rl}</td><td class="mono">${p.pts}</td></tr>`).join('');
+      document.getElementById('al-next').disabled=true;
+      document.getElementById('al-run').disabled=true;
+    }
+  }
+  if(!quiet){
+    document.getElementById('al-progress').textContent=`${al.placedList.length} / ${depts.length}`;
+    alRender();
+  }
+}
+function alRunAll(){ let g=0; while(al.grid&&!al.done&&g++<50) alNext(); }
+function alTrials(n){
+  let best=null,bestScore=-Infinity;
+  for(let t=0;t<n;t++){
+    if(!alStart(true)) return;
+    let g=0; while(!al.done&&g++<50) alNext(true);
+    const {score}=adjacencyScore(al.grid,al.rows,al.cols);
+    if(score>bestScore){bestScore=score;best=JSON.parse(JSON.stringify(al));}
+  }
+  al=best; al.done=true;
+  clearLog('al-log',`Ran ${n} independent trials.\nBest adjacency score found: ${bestScore}\nSequence of best run: ${best.placedList.map(code).join(' → ')}\n`);
+  const {score,pairs}=adjacencyScore(al.grid,al.rows,al.cols);
+  document.getElementById('al-score').textContent=score;
+  document.getElementById('al-best').textContent=bestScore;
+  document.getElementById('al-progress').textContent=`${depts.length} / ${depts.length}`;
+  document.querySelector('#al-adj-table tbody').innerHTML=pairs.map(p=>
+    `<tr><td>${code(p.a)}–${code(p.b)}</td><td class="mono">${p.rl}</td><td class="mono">${p.pts}</td></tr>`).join('');
+  document.getElementById('al-next').disabled=true;
+  document.getElementById('al-run').disabled=true;
+  alRender();
+}
+function alRender(){
+  const g=document.getElementById('al-grid');
+  const size=Math.min(46,Math.floor(720/al.cols));
+  g.style.gridTemplateColumns=`repeat(${al.cols},${size}px)`;
+  g.style.gridTemplateRows=`repeat(${al.rows},${size}px)`;
+  const labeled=new Set();
+  let html='';
+  for(let r=0;r<al.rows;r++) for(let c=0;c<al.cols;c++){
+    const d=al.grid[r][c];
+    if(d<0){ html+='<div class="gcell"></div>'; continue; }
+    const lab=!labeled.has(d); labeled.add(d);
+    html+=`<div class="gcell" style="background:${depts[d].color}">${lab?`<div class="dept-lab">${code(d)}</div>`:''}</div>`;
+  }
+  g.innerHTML=html;
+}
+
+/* ================================================================
+   CRAFT  (unit squares)
+================================================================ */
+const CR_ROWS=5, CR_COLS=9, M=10;   // meters per cell
+let crPos=[], crFlow=[], crSel=null, crIter=0;
+const REL2FLOW={A:100,E:45,I:20,O:5,U:0,X:0};
+
+function crInitFlow(){
+  const n=depts.length;
+  crFlow=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) crFlow[i][j]=REL2FLOW[getRel(i,j)];
+  crBuildFlowTable();
+}
+function crBuildFlowTable(){
+  const n=depts.length, t=document.getElementById('cr-flow-table');
+  let html='<thead><tr><th></th>'+depts.map((_,j)=>`<th>${code(j)}</th>`).join('')+'</tr></thead><tbody>';
+  for(let i=0;i<n;i++){
+    html+=`<tr><th>${code(i)}</th>`;
+    for(let j=0;j<n;j++){
+      html+= j<=i ? '<td style="background:#DDE1DC"></td>'
+        : `<td><input type="number" class="num" style="width:52px" min="0" value="${crFlow[i][j]}" data-i="${i}" data-j="${j}"></td>`;
+    }
+    html+='</tr>';
+  }
+  t.innerHTML=html+'</tbody>';
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    crFlow[+inp.dataset.i][+inp.dataset.j]=Math.max(0,+inp.value||0);
+    crUpdate();
+  }));
+}
+function crRandom(){
+  const spots=[];
+  for(let r=0;r<CR_ROWS;r++) for(let c=0;c<CR_COLS;c++) spots.push([r,c]);
+  for(let i=spots.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[spots[i],spots[k]]=[spots[k],spots[i]];}
+  crPos=spots.slice(0,depts.length); crSel=null; crIter=0;
+  document.getElementById('cr-iter').textContent='0';
+  clearLog('cr-log','New starting layout. Evaluate exchanges to begin improving.');
+  document.querySelector('#cr-swap-table tbody').innerHTML='';
+  crUpdate();
+}
+function crCost(pos){
+  let tc=0;
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++){
+    const f=crFlow[i][j]; if(!f) continue;
+    tc+=f*(Math.abs(pos[i][0]-pos[j][0])+Math.abs(pos[i][1]-pos[j][1]))*M;
+  }
+  return tc;
+}
+function crNext(){
+  const base=crCost(crPos), evals=[];
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++){
+    const p=crPos.map(x=>[...x]); [p[i],p[j]]=[p[j],p[i]];
+    evals.push({i,j,d:crCost(p)-base});
+  }
+  evals.sort((a,b)=>a.d-b.d);
+  document.querySelector('#cr-swap-table tbody').innerHTML=evals.slice(0,6).map((e,k)=>
+    `<tr class="${k===0&&e.d<0?'winner':''}" ${k===0&&e.d<0?'style="background:#E2F0E9;font-weight:600"':''}>
+      <td>${code(e.i)} ↔ ${code(e.j)}</td><td class="mono">${e.d>0?'+':''}${e.d.toLocaleString()}</td></tr>`).join('');
+  const best=evals[0];
+  if(best.d<0){
+    [crPos[best.i],crPos[best.j]]=[crPos[best.j],crPos[best.i]];
+    crIter++;
+    document.getElementById('cr-iter').textContent=crIter;
+    logTo('cr-log',`Iter ${crIter}: ${evals.length} exchanges evaluated. Best: ${code(best.i)} ↔ ${code(best.j)}, Δ = ${best.d.toLocaleString()} → applied.`,'good');
+  } else {
+    logTo('cr-log',`No exchange improves the layout — local optimum reached at ${base.toLocaleString()} load·m. Try another random start.`,'hl');
+  }
+  crUpdate();
+}
+function crRunAll(){
+  let g=0;
+  while(g++<100){
+    const before=crCost(crPos);
+    crNext();
+    if(crCost(crPos)>=before) break;
+  }
+}
+function crCellClick(r,c){
+  const occ=crPos.findIndex(p=>p[0]===r&&p[1]===c);
+  if(crSel===null){ if(occ>=0){crSel=occ;crUpdate();} return; }
+  const before=crCost(crPos);
+  if(occ>=0&&occ!==crSel) [crPos[occ],crPos[crSel]]=[crPos[crSel],crPos[occ]];
+  else if(occ<0) crPos[crSel]=[r,c];
+  const d=crCost(crPos)-before;
+  if(d!==0) logTo('cr-log',`Manual move: Δ = ${d>0?'+':''}${d.toLocaleString()} ${d<0?'(improvement)':'(worse)'}`,d<0?'good':'bad');
+  crSel=null; crUpdate();
+}
+function crUpdate(){
+  document.getElementById('cr-cost').textContent=crCost(crPos).toLocaleString();
+  const g=document.getElementById('cr-grid');
+  g.style.gridTemplateColumns=`repeat(${CR_COLS},52px)`;
+  g.style.gridTemplateRows=`repeat(${CR_ROWS},52px)`;
+  let html='';
+  for(let r=0;r<CR_ROWS;r++) for(let c=0;c<CR_COLS;c++){
+    const d=crPos.findIndex(p=>p[0]===r&&p[1]===c);
+    html+=`<div class="gcell clickable ${d===crSel?'sel':''}" onclick="crCellClick(${r},${c})">`+
+      (d>=0?`<div class="dept-lab" style="background:${depts[d].color};inset:2px;border-radius:3px">${code(d)}</div>`:'')+'</div>';
+  }
+  g.innerHTML=html;
+}
+
+/* ---- init ---- */
+loadDefaults();
+</script>
+</body>
+</html>
