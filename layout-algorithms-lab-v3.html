@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layout Algorithms Lab — CORELAP · ALDEP · CRAFT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F4; --ink:#1B2A38; --line:#D7DDE2;
+  --accent:#E8630A; --ok:#2E7D5B; --gold:#C79A08; --panel:#fff; --radius:6px;
+  --A:#1E6B45; --E:#4C9A6A; --I:#C7A93B; --O:#C98A4B; --U:#9AA5AD; --X:#B4443C;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Sans',sans-serif;font-size:15px;line-height:1.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:32px 32px;background-attachment:fixed;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 80px}
+
+header{background:var(--panel);border:2px solid var(--ink);display:grid;grid-template-columns:1fr auto;margin-bottom:20px}
+.tb-main{padding:18px 22px;border-right:2px solid var(--ink)}
+.tb-main h1{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:32px;text-transform:uppercase;letter-spacing:.5px;line-height:1.05}
+.tb-main p{color:#4a5762;max-width:68ch;margin-top:4px;font-size:14px}
+.tb-meta{display:grid;grid-template-rows:repeat(3,1fr);min-width:190px}
+.tb-meta div{padding:6px 14px;border-bottom:1px solid var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.tb-meta div:last-child{border-bottom:none}
+.tb-meta span{display:block;font-size:10px;letter-spacing:.12em;color:#6b7883;text-transform:uppercase}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:16px;text-transform:uppercase;letter-spacing:.06em;
+  padding:8px 15px;border:2px solid var(--ink);background:var(--panel);cursor:pointer;border-radius:var(--radius)}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff}
+.tab:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.module{display:none}.module.active{display:block}
+.panel{background:var(--panel);border:1.5px solid var(--ink);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
+.panel h2{font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:21px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+h3.sub{font-family:'Saira Condensed',sans-serif;font-weight:600;font-size:15.5px;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media(max-width:940px){.cols{grid-template-columns:1fr}}
+
+button.action{font-weight:600;font-size:13px;padding:7px 13px;border:1.5px solid var(--ink);background:#fff;border-radius:var(--radius);cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+button.action:hover:not(:disabled){background:var(--ink);color:#fff}
+button.action.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.action.primary:hover:not(:disabled){background:#c85406}
+button.action.ghost{border-style:dashed}
+button.action:disabled{opacity:.4;cursor:not-allowed}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+label.inline{font-size:13px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
+input[type=number].num{width:60px;padding:4px 6px;border:1.5px solid var(--ink);border-radius:4px;font-family:'IBM Plex Mono',monospace}
+input[type=text].nm{width:110px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;font-size:13px}
+select{padding:4px 8px;border:1.5px solid var(--ink);border-radius:4px;font-size:13px;font-family:'IBM Plex Sans',sans-serif}
+
+table{border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:3px 7px;text-align:center}
+th{background:#EDEFEA;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:'IBM Plex Mono',monospace}
+tr.winner td{background:#E2F0E9;font-weight:600}
+
+select.rel{font-family:'IBM Plex Mono',monospace;font-weight:600;border:1px solid var(--line);padding:2px 4px;color:#fff;border-radius:3px}
+select.rel.rA{background:var(--A)} select.rel.rE{background:var(--E)}
+select.rel.rI{background:var(--I);color:#1B2A38} select.rel.rO{background:var(--O)}
+select.rel.rU{background:var(--U)} select.rel.rX{background:var(--X)}
+.rel-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:8px}
+.rel-legend b{display:inline-block;width:20px;text-align:center;color:#fff;border-radius:3px;font-family:'IBM Plex Mono',monospace}
+
+.grid{display:grid;gap:2px;background:var(--ink);border:3px solid var(--ink);border-radius:4px;width:max-content;max-width:100%}
+.gcell{background:#EDEFEA;position:relative;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9AA5AD}
+.gcell .cand{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:11px;color:var(--ink);background:#FCEBDD;border:1px dashed var(--accent)}
+.gcell .cand.best{background:#F9C99E;border:2px solid var(--accent);font-size:12px}
+.gcell .cand.pick{cursor:pointer}
+.gcell .cand.pick:hover{background:#F5B70A}
+.dept-lab{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#fff;font-family:'Saira Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.04em;pointer-events:none}
+.gwrap{overflow-x:auto;padding-bottom:4px;position:relative;width:max-content;max-width:100%}
+.gcell.sel{outline:3px solid var(--gold);outline-offset:-3px;z-index:2}
+.gcell.clickable{cursor:pointer}
+#cr-overlay{position:absolute;inset:0;pointer-events:none}
+
+.log{background:#10202E;color:#D9E4EC;border-radius:var(--radius);padding:10px 12px;height:260px;overflow-y:auto;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.log .hl{color:#F5B70A}.log .good{color:#7FD4A8}.log .bad{color:#F09A93}
+
+.scorebar{display:flex;gap:22px;align-items:baseline;flex-wrap:wrap;border:2px solid var(--ink);border-radius:var(--radius);padding:8px 16px;margin:12px 0;background:#fff}
+.scorebar .big{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:26px;color:var(--accent)}
+.scorebar .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#6b7883;display:block}
+
+details{margin-top:10px;border:1px solid var(--line);border-radius:var(--radius);padding:8px 12px;background:#FBFBF9}
+details summary{cursor:pointer;font-weight:600;font-size:13px}
+details p,details li{margin:6px 0;font-size:13.5px}
+details ol,details ul{padding-left:20px}
+.formula{font-family:'IBM Plex Mono',monospace;background:#EDEFEA;padding:4px 8px;border-radius:4px;display:inline-block;margin:2px 0;font-size:12.5px}
+.hint{font-size:12.5px;color:#6b7883;margin-top:6px}
+.warn{font-size:12.5px;color:var(--X);font-weight:600;margin-top:6px}
+.chip{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.mini-svg{border:1px solid var(--line);border-radius:4px;background:#FBFBF9;display:block;max-width:100%}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  body{background:#fff}
+  .tabs,.toolbar,button,details,.log{display:none!important}
+  .module{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="tb-main">
+    <h1>Layout Algorithms Lab</h1>
+    <p>Construction and improvement algorithms for facility layout, run one decision at a time: <strong>CORELAP</strong> (total closeness rating), <strong>ALDEP</strong> (serpentine sweep), and <strong>CRAFT</strong> (pairwise exchange). Define the REL chart once — every algorithm reads from it. Includes practice modes, trial statistics, and a downloadable session report.</p>
+  </div>
+  <div class="tb-meta">
+    <div><span>Sheet</span>OM-302 / Rev C</div>
+    <div><span>Method</span>SLP · Computerized</div>
+    <div><span>Mode</span>Teaching Edition</div>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" id="tab-data" role="tab" aria-selected="true" onclick="showModule('data')">1 · REL Chart &amp; Data</button>
+  <button class="tab" id="tab-corelap" role="tab" aria-selected="false" onclick="showModule('corelap')">2 · CORELAP</button>
+  <button class="tab" id="tab-aldep" role="tab" aria-selected="false" onclick="showModule('aldep')">3 · ALDEP</button>
+  <button class="tab" id="tab-craft" role="tab" aria-selected="false" onclick="showModule('craft')">4 · CRAFT</button>
+  <button class="tab" id="tab-sa" role="tab" aria-selected="false" onclick="showModule('sa')">5 · Simulated Annealing</button>
+  <button class="tab" id="tab-ga" role="tab" aria-selected="false" onclick="showModule('ga')">6 · Genetic Algorithm</button>
+  <button class="tab" id="tab-results" role="tab" aria-selected="false" onclick="showModule('results')">7 · Results</button>
+</div>
+
+<!-- ================= DATA ================= -->
+<section class="module active" id="module-data">
+  <div class="panel">
+    <h2>Departments &amp; relationship chart</h2>
+    <div class="toolbar">
+      <label class="inline">Departments
+        <select id="ndepts" onchange="setDeptCount(+this.value)">
+          <option>5</option><option>6</option><option>7</option><option selected>8</option>
+        </select>
+      </label>
+      <button class="action" onclick="loadDefaults()">Load textbook example</button>
+      <button class="action ghost" onclick="randomREL()">Random REL chart</button>
+      <button class="action" onclick="exportJSON()">Export data (JSON)</button>
+      <button class="action" onclick="document.getElementById('import-file').click()">Import data</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(this)">
+    </div>
+    <div class="cols">
+      <div>
+        <h3 class="sub">Departments</h3>
+        <table id="dept-table"></table>
+        <p class="hint">Areas (unit cells) are used by ALDEP. CORELAP and CRAFT here use the unit-square teaching simplification: one cell per department.</p>
+
+        <h3 class="sub">REL chart editor (upper triangle)</h3>
+        <div style="overflow-x:auto"><table id="rel-table"></table></div>
+        <div class="rel-legend">
+          <span><b style="background:var(--A)">A</b> absolutely necessary</span>
+          <span><b style="background:var(--E)">E</b> especially important</span>
+          <span><b style="background:var(--I);color:#1B2A38">I</b> important</span>
+          <span><b style="background:var(--O)">O</b> ordinary</span>
+          <span><b style="background:var(--U)">U</b> unimportant</span>
+          <span><b style="background:var(--X)">X</b> undesirable</span>
+        </div>
+        <p class="hint" id="rel-stats"></p>
+      </div>
+      <div>
+        <h3 class="sub">Muther relationship diagram</h3>
+        <svg id="diamond-svg" class="mini-svg"></svg>
+        <p class="hint">The classic SLP diamond chart, generated live from the editor. Ratings A and X are the ones that drive layout decisions.</p>
+
+        <h3 class="sub">Total closeness rating (TCR)</h3>
+        <table id="tcr-table"></table>
+        <p class="hint">Numerical values: A=6, E=5, I=4, O=3, U=2, X=1. TCRᵢ = Σⱼ value(relᵢⱼ). CORELAP enters departments in decreasing TCR priority.</p>
+        <details open>
+          <summary>The six methods in this lab, and how they relate</summary>
+          <p style="font-size:13px">All of them answer one question — <em>which department goes where?</em> — but split into two families by the <strong>data</strong> they use and by <strong>construction vs improvement</strong>.</p>
+          <ul>
+            <li><strong>CORELAP</strong> (1967) — construction; qualitative (REL chart); deterministic; places the highest-TCR dept first, then grows outward by placement rating.</li>
+            <li><strong>ALDEP</strong> (Seehof &amp; Evans, 1967) — construction; qualitative; <em>random</em> first department, minimum-closeness selection, serpentine sweep; run many times, keep the best.</li>
+            <li><strong>CRAFT</strong> (Armour &amp; Buffa, 1963) — improvement; quantitative (from–to flows); best pairwise exchange until no swap helps — a hill-climber that halts at a <em>local</em> optimum.</li>
+            <li><strong>Simulated Annealing</strong> (1983) — improvement metaheuristic; accepts occasional worse layouts to escape local optima; the direct answer to CRAFT's main weakness.</li>
+            <li><strong>Genetic Algorithm</strong> (Holland, 1975) — population metaheuristic; breeds and mutates whole layouts; explores many regions at once.</li>
+          </ul>
+          <p style="font-size:13px">The quantitative methods (CRAFT, SA, GA) all minimise the same <span class="formula">Σ fᵢⱼ·dᵢⱼ</span> — the <strong>Quadratic Assignment Problem</strong>. Because the number of possible layouts is <span class="mono" id="data-space">—</span> for the current department count, and QAP is NP-hard, we rely on heuristics rather than checking every layout.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CORELAP ================= -->
+<section class="module" id="module-corelap">
+  <div class="panel">
+    <h2>CORELAP — Computerized Relationship Layout Planning</h2>
+    <div class="toolbar">
+      <button class="action primary" onclick="coStart()">Start / Reset</button>
+      <button class="action" id="co-next" onclick="coNext()" disabled>Next step ▸</button>
+      <button class="action" id="co-play" onclick="coPlay()" disabled>Auto-play ▶</button>
+      <label class="inline">Speed
+        <select id="co-speed"><option value="1200">Slow</option><option value="700" selected>Normal</option><option value="300">Fast</option></select>
+      </label>
+      <button class="action" id="co-run" onclick="coRunAll()" disabled>Run to end ▸▸</button>
+    </div>
+    <div class="toolbar">
+      <label class="inline"><input type="checkbox" id="co-practice"> Practice mode — <em>you</em> click where each department goes</label>
+      <label class="inline"><input type="checkbox" id="co-show-pr" checked> Show placement ratings</label>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="co-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Entered</span><span class="big" id="co-progress">0 / 0</span></div>
+          <div><span class="lbl">Adjacency score</span><span class="big" id="co-score">—</span></div>
+          <div><span class="lbl">Practice gap (Σ best PR − your PR)</span><span class="big" id="co-gap" style="color:var(--ok)">—</span></div>
+        </div>
+        <details>
+          <summary>Theory: the CORELAP procedure</summary>
+          <ol>
+            <li>Compute <span class="formula">TCRᵢ = Σⱼ v(relᵢⱼ)</span> with A=6…X=1. Highest TCR enters first, at the center.</li>
+            <li>Next entry: the department with the strongest relationship (A, then E, then I…) to any already-selected department; ties broken by higher TCR.</li>
+            <li>Placement: for every empty cell touching the layout, <span class="formula">PR = Σ v(rel) × 1 (edge) or × 0.5 (corner)</span>. Place at the highest PR (ties: closest to the layout centroid).</li>
+          </ol>
+          <p>In practice mode, pick any candidate — the log tells you how far you were from the algorithm's choice. A gap of 0 means you played perfect CORELAP.</p>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Entering order</h3>
+        <table id="co-order-table"><thead><tr><th>#</th><th>Dept</th><th>TCR</th><th>Reason</th></tr></thead><tbody></tbody></table>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="co-log">Press Start to compute TCRs and begin.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ALDEP ================= -->
+<section class="module" id="module-aldep">
+  <div class="panel">
+    <h2>ALDEP — Automated Layout Design Program</h2>
+    <div class="toolbar">
+      <label class="inline">Building <input type="number" class="num" id="al-cols" value="10" min="4" max="20" onchange="alReset()"> ×
+        <input type="number" class="num" id="al-rows" value="6" min="3" max="15" onchange="alReset()"> cells</label>
+      <label class="inline">Sweep width <input type="number" class="num" id="al-w" value="2" min="1" max="4" onchange="alReset()"></label>
+      <label class="inline">Min. relation
+        <select id="al-min"><option>A</option><option selected>E</option><option>I</option><option>O</option></select>
+      </label>
+      <label class="inline"><input type="checkbox" id="al-path" checked onchange="alRender()"> Show sweep path</label>
+      <span class="warn" id="al-area-warn"></span>
+    </div>
+    <div class="toolbar">
+      <button class="action primary" onclick="alStart()">Start / Reset</button>
+      <button class="action" id="al-next" onclick="alNext()" disabled>Place next dept ▸</button>
+      <button class="action" id="al-run" onclick="alRunAll()" disabled>Run to end ▸▸</button>
+      <label class="inline">Trials <input type="number" class="num" id="al-ntrials" value="20" min="2" max="200"></label>
+      <button class="action" onclick="alTrials()">Run trials, keep best</button>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="al-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Placed</span><span class="big" id="al-progress">0 / 0</span></div>
+          <div><span class="lbl">Adjacency score</span><span class="big" id="al-score">—</span></div>
+          <div><span class="lbl">Best of trials</span><span class="big" id="al-best" style="color:var(--ok)">—</span></div>
+        </div>
+        <h3 class="sub">Trial score distribution</h3>
+        <svg id="al-hist" class="mini-svg" width="420" height="90"></svg>
+        <p class="hint">Each bar is one trial (sorted). The spread shows why a single ALDEP run means little — students should always report the best of many.</p>
+        <details>
+          <summary>Theory: the ALDEP procedure</summary>
+          <ol>
+            <li>Select the first department <em>at random</em>.</li>
+            <li>Scan for an unplaced department whose relationship with the <em>last entered</em> one meets the minimum level (strongest qualifying wins here). If none, pick at random.</li>
+            <li>Fill the building in a vertical <strong>serpentine sweep</strong> of the chosen width, giving each department its area in consecutive cells.</li>
+            <li>Score adjacency: <span class="formula">A=64 · E=16 · I=4 · O=1 · U=0 · X=−1024</span> per edge-sharing pair. Run many times, keep the best.</li>
+          </ol>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="al-log">Press Start. Every run can differ — that is the point of ALDEP.</div>
+        <h3 class="sub">Adjacent department pairs</h3>
+        <table id="al-adj-table"><thead><tr><th>Pair</th><th>Rel</th><th>Points</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CRAFT ================= -->
+<section class="module" id="module-craft">
+  <div class="panel">
+    <h2>CRAFT — Computerized Relative Allocation of Facilities Technique</h2>
+    <div class="toolbar">
+      <button class="action" onclick="crRandom()">Random initial layout</button>
+      <button class="action primary" id="cr-next" onclick="crNext()">Evaluate exchanges ▸</button>
+      <button class="action" id="cr-run" onclick="crRunAll()">Run to local optimum ▸▸</button>
+      <label class="inline">Starts <input type="number" class="num" id="cr-nstarts" value="20" min="2" max="200"></label>
+      <button class="action" onclick="crMultiStart()">Multi-start, keep best</button>
+      <label class="inline"><input type="checkbox" id="cr-show-flows" checked onchange="crUpdate()"> Show flow lines</label>
+    </div>
+    <p class="hint">You can also click two departments to swap them manually — the log reports the cost change, so students can race the algorithm.</p>
+    <div class="cols">
+      <div>
+        <div class="gwrap" id="cr-wrap"><div class="grid" id="cr-grid"></div><svg id="cr-overlay"></svg></div>
+        <div class="scorebar">
+          <div><span class="lbl">Load·distance cost</span><span class="big" id="cr-cost">0</span> <span class="mono">load·m</span></div>
+          <div><span class="lbl">Iteration</span><span class="big" id="cr-iter">0</span></div>
+          <div><span class="lbl">Best found</span><span class="big" id="cr-best" style="color:var(--ok)">—</span></div>
+        </div>
+        <h3 class="sub">Cost trajectory</h3>
+        <svg id="cr-spark" class="mini-svg" width="420" height="70"></svg>
+        <h3 class="sub">From–To flow matrix <span class="mono" style="font-size:11px;font-weight:400">(loads/day — prefilled from REL: A=100 E=45 I=20 O=5 U/X=0)</span></h3>
+        <div style="overflow-x:auto"><table id="cr-flow-table"></table></div>
+        <details>
+          <summary>Theory: the CRAFT procedure</summary>
+          <ol>
+            <li>Start from any complete layout and a quantitative flow matrix.</li>
+            <li>Cost: <span class="formula">TC = Σᵢⱼ fᵢⱼ · dᵢⱼ</span> with rectilinear centroid distances.</li>
+            <li>Each iteration, estimate the cost change of every pairwise exchange, apply the best improving swap, and repeat until none helps — a <em>local</em> optimum. Multi-start shows how different beginnings end at different optima.</li>
+          </ol>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Exchange evaluation</h3>
+        <table id="cr-swap-table"><thead><tr><th>Exchange</th><th>Δ cost</th></tr></thead><tbody></tbody></table>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="cr-log">Set a starting layout, then evaluate exchanges.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SIMULATED ANNEALING ================= -->
+<section class="module" id="module-sa">
+  <div class="panel">
+    <h2>Simulated Annealing — climbing out of local optima</h2>
+    <p>CRAFT stops at the first layout no single swap can improve. Simulated annealing (Kirkpatrick, Gelatt &amp; Vecchi, 1983) fixes that: it sometimes <em>accepts a worse layout</em>, with probability <span class="formula">P = e^(−Δ/T)</span>, so it can escape a local optimum. As the "temperature" T cools, those uphill moves fade out and the search settles. Same objective and flows as CRAFT — now solved as a <strong>Quadratic Assignment Problem</strong> over fixed locations.</p>
+    <div class="toolbar">
+      <label class="inline">Start temp T₀ <input type="number" class="num" id="sa-t0" value="4000" min="1"></label>
+      <label class="inline">Cooling α <input type="number" class="num" id="sa-alpha" value="0.95" min="0.5" max="0.999" step="0.01"></label>
+      <label class="inline">Moves / temp <input type="number" class="num" id="sa-steps" value="40" min="1"></label>
+    </div>
+    <div class="toolbar">
+      <button class="action primary" onclick="saStart()">Start / Reset</button>
+      <button class="action" id="sa-temp" onclick="saTempStep()" disabled>One temperature ▸</button>
+      <button class="action" id="sa-play" onclick="saPlay()" disabled>Auto-cool ▶</button>
+      <button class="action" id="sa-run" onclick="saRunAll()" disabled>Run to freeze ▸▸</button>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="sa-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Current cost</span><span class="big" id="sa-cost">—</span></div>
+          <div><span class="lbl">Best found</span><span class="big" id="sa-best" style="color:var(--ok)">—</span></div>
+          <div><span class="lbl">Temperature</span><span class="big" id="sa-temp-val" style="color:#B4443C">—</span></div>
+          <div><span class="lbl">Accept rate (last temp)</span><span class="big" id="sa-acc">—</span></div>
+        </div>
+        <h3 class="sub">Cost trajectory — notice the uphill moves early on</h3>
+        <svg id="sa-traj" class="mini-svg" width="520" height="130"></svg>
+        <details>
+          <summary>Theory: why accept worse solutions?</summary>
+          <ol>
+            <li>Propose a random neighbour (swap two departments between their locations). Compute Δ = new cost − old cost.</li>
+            <li>If Δ &lt; 0 (better) accept it. If Δ &gt; 0 (worse) accept it anyway with probability <span class="formula">e^(−Δ/T)</span>.</li>
+            <li>High T early → many uphill moves → broad exploration. Low T late → almost only downhill → fine tuning.</li>
+            <li>Cool geometrically: <span class="formula">T ← α·T</span>. Always remember the best layout ever seen, since the current one may be worse.</li>
+          </ol>
+          <p>The reference dashed line is the best cost found by 200 random restarts of plain local search (a strong "CRAFT-style" benchmark). Watch SA reach or beat it.</p>
+        </details>
+      </div>
+      <div>
+        <div class="scorebar" style="margin-top:0">
+          <div><span class="lbl">Search space (n! layouts)</span><span class="big mono" id="sa-space" style="font-size:20px">—</span></div>
+        </div>
+        <p class="hint">That factorial is why we can't just check every layout — the reason metaheuristics exist.</p>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="sa-log">Press Start to initialise a random layout and heat the system.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GENETIC ALGORITHM ================= -->
+<section class="module" id="module-ga">
+  <div class="panel">
+    <h2>Genetic Algorithm — evolving a layout</h2>
+    <p>A population-based metaheuristic (Holland, 1975; applied to layout from the late 1980s). Each "chromosome" is a whole layout; good layouts are combined by <strong>crossover</strong> and perturbed by <strong>mutation</strong>, generation after generation. It searches many regions at once, complementing single-point methods like CRAFT and SA. Same QAP objective and flows.</p>
+    <div class="toolbar">
+      <label class="inline">Population <input type="number" class="num" id="ga-pop" value="30" min="6" max="200"></label>
+      <label class="inline">Mutation rate <input type="number" class="num" id="ga-mut" value="0.25" min="0" max="1" step="0.05"></label>
+      <label class="inline">Elite <input type="number" class="num" id="ga-elite" value="2" min="0" max="10"></label>
+      <label class="inline">Tournament k <input type="number" class="num" id="ga-tk" value="3" min="2" max="8"></label>
+    </div>
+    <div class="toolbar">
+      <button class="action primary" onclick="gaStart()">Start / Reset</button>
+      <button class="action" id="ga-step" onclick="gaStep()" disabled>One generation ▸</button>
+      <button class="action" id="ga-play" onclick="gaPlay()" disabled>Auto-evolve ▶</button>
+      <button class="action" id="ga-run" onclick="gaRun(60)" disabled>Run 60 generations ▸▸</button>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="gwrap"><div class="grid" id="ga-grid"></div></div>
+        <div class="scorebar">
+          <div><span class="lbl">Generation</span><span class="big" id="ga-gen">0</span></div>
+          <div><span class="lbl">Best cost</span><span class="big" id="ga-best" style="color:var(--ok)">—</span></div>
+          <div><span class="lbl">Population average</span><span class="big" id="ga-avg">—</span></div>
+        </div>
+        <h3 class="sub">Fitness over generations — best (green) vs average (orange)</h3>
+        <svg id="ga-traj" class="mini-svg" width="520" height="130"></svg>
+        <details>
+          <summary>Theory: the evolutionary loop</summary>
+          <ol>
+            <li><strong>Encoding.</strong> A chromosome is a permutation assigning each department to a location.</li>
+            <li><strong>Selection.</strong> Tournament: pick k random layouts, keep the cheapest — better layouts breed more.</li>
+            <li><strong>Crossover (Order Crossover, OX).</strong> Copy a slice of one parent, fill the rest from the other in order, preserving a valid permutation.</li>
+            <li><strong>Mutation.</strong> Occasionally swap two departments — the source of new variation.</li>
+            <li><strong>Elitism.</strong> Carry the very best layouts unchanged so quality never regresses.</li>
+          </ol>
+          <p>The gap between the best and average curves is the population's diversity; when it collapses, evolution has converged.</p>
+        </details>
+      </div>
+      <div>
+        <h3 class="sub">Population (sorted by cost)</h3>
+        <svg id="ga-pop-svg" class="mini-svg" width="420" height="120"></svg>
+        <p class="hint">Each bar is one layout's cost; the lowest bar is the current champion. Watch the whole population march downward.</p>
+        <h3 class="sub">Execution log</h3>
+        <div class="log" id="ga-log" style="height:150px">Press Start to seed a random population.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section class="module" id="module-results">
+  <div class="panel">
+    <h2>Session results &amp; comparison</h2>
+    <p>Adjacency scores (CORELAP, ALDEP) are comparable with each other; CRAFT optimizes a different, quantitative objective. A good class discussion: why can't the two be compared directly, and when would you trust each?</p>
+    <div class="toolbar">
+      <button class="action primary" onclick="downloadReport()">Download session report (HTML)</button>
+      <button class="action" onclick="window.print()">Print current view</button>
+    </div>
+    <h3 class="sub">Scoreboard</h3>
+    <table id="results-table">
+      <thead><tr><th>Method</th><th>Type</th><th>Objective</th><th>Result</th><th>Notes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="hint" id="cmp-note" style="margin-top:8px"></p>
+
+    <h3 class="sub">The methods landscape — where these fit</h3>
+    <p style="font-size:13.5px">Every method here is, at heart, attacking the <strong>Quadratic Assignment Problem</strong> (Koopmans &amp; Beckmann, 1957): assign facilities to locations to minimise <span class="formula">Σ fᵢⱼ·dᵢⱼ</span>. QAP is NP-hard, so exact optimisation is only feasible for small instances; everything else is a heuristic or metaheuristic trade-off between speed and quality.</p>
+    <table style="width:100%">
+      <thead><tr><th>Era</th><th>Method</th><th>Idea</th><th>Strength / limit</th></tr></thead>
+      <tbody style="font-size:12.5px">
+        <tr><td>1960s</td><td style="text-align:left">CORELAP · ALDEP · CRAFT</td><td style="text-align:left">construction &amp; pairwise-exchange heuristics</td><td style="text-align:left">fast, intuitive; get stuck at local optima</td></tr>
+        <tr><td>1970s–80s</td><td style="text-align:left">BLOCPLAN · MULTIPLE · LOGIC</td><td style="text-align:left">block layouts, space-filling curves, area-aware placement</td><td style="text-align:left">handle unequal areas &amp; shapes better than CRAFT</td></tr>
+        <tr><td>1980s–2000s</td><td style="text-align:left">Simulated Annealing · Tabu Search · Genetic Algorithms · Ant Colony</td><td style="text-align:left">metaheuristics that escape local optima</td><td style="text-align:left">near-optimal on large instances; need tuning</td></tr>
+        <tr><td>exact</td><td style="text-align:left">Branch &amp; Bound · MILP solvers</td><td style="text-align:left">guaranteed optimum</td><td style="text-align:left">only practical up to ~15–30 departments</td></tr>
+        <tr><td>2020s</td><td style="text-align:left">Reinforcement learning &amp; graph-neural approaches</td><td style="text-align:left">learn placement policies from data</td><td style="text-align:left">active research; used in chip-floorplanning</td></tr>
+      </tbody>
+    </table>
+    <p class="hint">This lab implements a representative from each of the first and third rows so you can feel the difference directly. The others are named so you know what to search for next.</p>
+
+    <h3 class="sub">Discussion prompts</h3>
+    <details open>
+      <summary>Questions to explore</summary>
+      <ul>
+        <li>CORELAP is deterministic — rerun it and nothing changes. Is that a strength or a weakness compared to ALDEP?</li>
+        <li>Change one U to an X in the REL chart. Which algorithm reacts most dramatically, and why is the ALDEP X-penalty −1024?</li>
+        <li>Run CRAFT from five random starts, then run Simulated Annealing once. Does SA reliably match the best of the five? Why is that the whole point of accepting worse moves?</li>
+        <li>In the Genetic Algorithm, set mutation rate to 0. What happens to the best-vs-average gap after a few generations, and why does evolution stall without mutation?</li>
+        <li>Raise the department count to 8 and read the "search space (n!)" figure in the SA tab. How many layouts would exhaustive search test, and roughly how long at a million per second?</li>
+        <li>The REL→flow conversion (A=100 … U=0) is arbitrary. Propose a different mapping and see whether it changes which method wins.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* ================================================================
+   SHARED DATA
+================================================================ */
+const PALETTE=['#4A6FA5','#8A5A44','#2E7D5B','#E8630A','#6B5CA5','#B08A0A','#3A8FA3','#A34A6F'];
+const RATINGS=['A','E','I','O','U','X'];
+const RELCOLORS={A:'#1E6B45',E:'#4C9A6A',I:'#C7A93B',O:'#C98A4B',U:'#9AA5AD',X:'#B4443C'};
+const TCRW={A:6,E:5,I:4,O:3,U:2,X:1};
+const ADJW={A:64,E:16,I:4,O:1,U:0,X:-1024};
+const RANK={A:5,E:4,I:3,O:2,U:1,X:0};
+const REL2FLOW={A:100,E:45,I:20,O:5,U:0,X:0};
+
+let depts=[], rel={};
+let results={corelap:null,aldep:null,craft:null,sa:null,ga:null};
+
+const DEFAULT_NAMES=['Receiving','Machining','Assembly','Painting','Quality','Packaging','Shipping','Offices'];
+const DEFAULT_AREAS=[6,12,12,8,4,6,6,6];
+const DEFAULT_REL={'0-1':'A','0-2':'I','0-6':'E','0-7':'O','1-2':'A','1-3':'E','1-4':'I',
+  '2-3':'E','2-4':'I','2-5':'E','2-7':'O','3-4':'I','3-5':'O','3-7':'X',
+  '4-5':'E','4-6':'I','4-7':'O','5-6':'A','6-7':'O'};
+
+function code(i){ return depts[i].name.replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase()||('D'+(i+1)); }
+function getRel(i,j){ if(i===j) return null; const k=i<j?`${i}-${j}`:`${j}-${i}`; return rel[k]||'U'; }
+function setRel(i,j,v){ const k=i<j?`${i}-${j}`:`${j}-${i}`; rel[k]=v; }
+function tcr(i){ let s=0; for(let j=0;j<depts.length;j++) if(j!==i) s+=TCRW[getRel(i,j)]; return s; }
+
+function loadDefaults(){
+  const n=+document.getElementById('ndepts').value;
+  depts=[]; rel={};
+  for(let i=0;i<n;i++) depts.push({name:DEFAULT_NAMES[i]||('Dept '+(i+1)),area:DEFAULT_AREAS[i]||6,color:PALETTE[i]});
+  Object.entries(DEFAULT_REL).forEach(([k,v])=>{
+    const [a,b]=k.split('-').map(Number); if(a<n&&b<n) rel[k]=v;
+  });
+  onDataChanged(true);
+}
+function randomREL(){
+  const bag=['A','E','E','I','I','I','O','O','O','U','U','U','U','U','X'];
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++)
+    setRel(i,j,bag[Math.floor(Math.random()*bag.length)]);
+  onDataChanged(true);
+}
+function setDeptCount(n){
+  while(depts.length<n) depts.push({name:'Dept '+(depts.length+1),area:6,color:PALETTE[depts.length]});
+  depts.length=n;
+  Object.keys(rel).forEach(k=>{const [a,b]=k.split('-').map(Number); if(a>=n||b>=n) delete rel[k];});
+  onDataChanged(true);
+}
+function onDataChanged(fullReset){
+  buildDataUI();
+  if(fullReset){ results={corelap:null,aldep:null,craft:null,sa:null,ga:null}; crInitFlow(); crRandom(); }
+  coReset(); alReset(); saReset(); gaReset(); buildResults();
+}
+
+/* ---------- data tab UI ---------- */
+function buildDataUI(){
+  const dt=document.getElementById('dept-table');
+  dt.innerHTML='<thead><tr><th>Code</th><th>Name</th><th>Area (cells)</th></tr></thead><tbody>'+
+    depts.map((d,i)=>`<tr>
+      <td><span class="chip" style="background:${d.color}"></span><b class="mono">${code(i)}</b></td>
+      <td><input type="text" class="nm" value="${d.name}" data-i="${i}" data-f="name"></td>
+      <td><input type="number" class="num" value="${d.area}" min="1" max="30" data-i="${i}" data-f="area"></td>
+    </tr>`).join('')+'</tbody>';
+  dt.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>{
+    const i=+inp.dataset.i;
+    if(inp.dataset.f==='name') depts[i].name=inp.value||('Dept '+(i+1));
+    else depts[i].area=Math.max(1,+inp.value||1);
+    onDataChanged(false); crBuildFlowTable();
+  }));
+
+  const rt=document.getElementById('rel-table');
+  let html='<thead><tr><th></th>'+depts.map((_,j)=>`<th>${code(j)}</th>`).join('')+'</tr></thead><tbody>';
+  for(let i=0;i<depts.length;i++){
+    html+=`<tr><th>${code(i)}</th>`;
+    for(let j=0;j<depts.length;j++){
+      if(j<=i){ html+='<td style="background:#DDE1DC"></td>'; continue; }
+      const v=getRel(i,j);
+      html+=`<td><select class="rel r${v}" data-i="${i}" data-j="${j}">`+
+        RATINGS.map(r=>`<option ${r===v?'selected':''}>${r}</option>`).join('')+'</select></td>';
+    }
+    html+='</tr>';
+  }
+  rt.innerHTML=html+'</tbody>';
+  rt.querySelectorAll('select.rel').forEach(s=>s.addEventListener('change',()=>{
+    setRel(+s.dataset.i,+s.dataset.j,s.value);
+    s.className='rel r'+s.value;
+    buildTCR(); buildDiamond(); relStats(); coReset(); alReset();
+  }));
+  buildTCR(); buildDiamond(); relStats();
+  const ds=document.getElementById('data-space'); if(ds) ds.textContent=factorialStr(depts.length)+' layouts';
+}
+function relStats(){
+  const c={A:0,E:0,I:0,O:0,U:0,X:0};
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++) c[getRel(i,j)]++;
+  document.getElementById('rel-stats').textContent=
+    `Pair count — A:${c.A}  E:${c.E}  I:${c.I}  O:${c.O}  U:${c.U}  X:${c.X}. `+
+    (c.A>depts.length? 'Tip: real REL charts are sparse — too many A ratings means none of them matters.':'');
+}
+function buildTCR(){
+  const rows=depts.map((d,i)=>({i,t:tcr(i)})).sort((a,b)=>b.t-a.t);
+  document.getElementById('tcr-table').innerHTML=
+    '<thead><tr><th>Rank</th><th>Dept</th><th>TCR</th></tr></thead><tbody>'+
+    rows.map((r,k)=>`<tr ${k===0?'class="winner"':''}><td>${k+1}</td><td style="text-align:left"><span class="chip" style="background:${depts[r.i].color}"></span>${code(r.i)} — ${depts[r.i].name}</td><td class="mono"><b>${r.t}</b></td></tr>`).join('')+'</tbody>';
+}
+
+/* ---------- Muther diamond chart (SVG) ---------- */
+function buildDiamond(){
+  const n=depts.length, rh=34, half=15, L=118;
+  const Wd=L+(n-1)*half+half+16, Hd=n*rh+8;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg"></svg>`; // placeholder
+  let inner='';
+  for(let i=0;i<n;i++){
+    const y=i*rh+rh/2+4;
+    inner+=`<text x="6" y="${y+4}" font-size="12" font-family="IBM Plex Sans" font-weight="600">${i+1}. ${code(i)}</text>
+            <line x1="${L-8}" y1="${y}" x2="${L}" y2="${y}" stroke="#1B2A38" stroke-width="1"/>`;
+    for(let j=i+1;j<n;j++){
+      const r=getRel(i,j);
+      const cx=L+(j-i)*half, cy=((i*rh+rh/2)+(j*rh+rh/2))/2+4;
+      const dark=(r==='I');
+      inner+=`<g><polygon points="${cx},${cy-half} ${cx+half},${cy} ${cx},${cy+half} ${cx-half},${cy}"
+        fill="${RELCOLORS[r]}" stroke="#1B2A38" stroke-width="0.8" fill-opacity="${r==='U'?0.35:0.95}"/>
+        <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="11" font-weight="700"
+          font-family="IBM Plex Mono" fill="${dark?'#1B2A38':(r==='U'?'#4a5762':'#fff')}">${r}</text>
+        <title>${code(i)} – ${code(j)}: ${r}</title></g>`;
+    }
+  }
+  const svg=document.getElementById('diamond-svg');
+  svg.setAttribute('viewBox',`0 0 ${Wd} ${Hd}`);
+  svg.setAttribute('width',Math.min(Wd,460));
+  svg.innerHTML=inner;
+}
+
+/* ---------- generic helpers ---------- */
+function showModule(name){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.getElementById('module-'+name).classList.add('active');
+  ['data','corelap','aldep','craft','sa','ga','results'].forEach(t=>
+    document.getElementById('tab-'+t).setAttribute('aria-selected',t===name));
+  if(name==='results') buildResults();
+  if(name==='sa'&&!sa.locs) saReset();
+  if(name==='ga'&&!ga.locs) gaReset();
+}
+function logTo(id,msg,cls){
+  const el=document.getElementById(id);
+  el.innerHTML+=(cls?`<span class="${cls}">${msg}</span>`:msg)+'\n';
+  el.scrollTop=el.scrollHeight;
+}
+function clearLog(id,msg){ document.getElementById(id).innerHTML=(msg||'')+(msg?'\n':''); }
+
+function adjacencyScore(grid,rows,cols){
+  const seen=new Set(); let score=0; const pairs=[];
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+    const a=grid[r][c]; if(a<0) continue;
+    [[r,c+1],[r+1,c]].forEach(([r2,c2])=>{
+      if(r2>=rows||c2>=cols) return;
+      const b=grid[r2][c2];
+      if(b<0||b===a) return;
+      const k=Math.min(a,b)+'-'+Math.max(a,b);
+      if(seen.has(k)) return;
+      seen.add(k);
+      const rl=getRel(a,b);
+      score+=ADJW[rl];
+      pairs.push({a,b,rl,pts:ADJW[rl]});
+    });
+  }
+  pairs.sort((x,y)=>y.pts-x.pts);
+  return {score,pairs};
+}
+
+/* ================================================================
+   CORELAP
+================================================================ */
+const CO_N=11, CO_CELL=40;
+let co={}, coTimer=null;
+
+function coReset(){
+  coStopPlay();
+  co={grid:Array.from({length:CO_N},()=>Array(CO_N).fill(-1)),order:[],k:0,phase:'idle',
+      candidates:[],best:null,gap:0,userPR:0,algoPR:0};
+  ['co-next','co-run','co-play'].forEach(id=>document.getElementById(id).disabled=true);
+  document.getElementById('co-progress').textContent='0 / '+depts.length;
+  document.getElementById('co-score').textContent='—';
+  document.getElementById('co-gap').textContent='—';
+  document.querySelector('#co-order-table tbody').innerHTML='';
+  clearLog('co-log','Press Start to compute TCRs and begin.');
+  coRender();
+}
+function coStart(){
+  coReset();
+  const n=depts.length, T=depts.map((_,i)=>tcr(i));
+  const sel=[], order=[];
+  let first=0; for(let i=1;i<n;i++) if(T[i]>T[first]) first=i;
+  order.push({i:first,reason:`highest TCR (${T[first]})`}); sel.push(first);
+  while(sel.length<n){
+    let pick=-1,why='';
+    for(const R of RATINGS){
+      const cands=[];
+      for(let d=0;d<n;d++){
+        if(sel.includes(d)) continue;
+        if(sel.some(s=>getRel(s,d)===R)) cands.push(d);
+      }
+      if(cands.length){
+        cands.sort((a,b)=>T[b]-T[a]);
+        pick=cands[0];
+        const w=sel.find(s=>getRel(s,pick)===R);
+        why=`${R} with ${code(w)}`+(cands.length>1?` (tie → higher TCR ${T[pick]})`:'');
+        break;
+      }
+    }
+    order.push({i:pick,reason:why}); sel.push(pick);
+  }
+  co.order=order; co.phase='select';
+  document.querySelector('#co-order-table tbody').innerHTML=order.map((o,k)=>
+    `<tr><td>${k+1}</td><td style="text-align:left"><span class="chip" style="background:${depts[o.i].color}"></span>${code(o.i)}</td><td class="mono">${tcr(o.i)}</td><td style="text-align:left">${o.reason}</td></tr>`).join('');
+  logTo('co-log','TCRs computed. Entering order fixed by the selection rules.','hl');
+  logTo('co-log','Order: '+order.map(o=>code(o.i)).join(' → '));
+  if(document.getElementById('co-practice').checked)
+    logTo('co-log','PRACTICE MODE: on placement steps, click a highlighted cell yourself.','hl');
+  ['co-next','co-run','co-play'].forEach(id=>document.getElementById(id).disabled=false);
+  coRender();
+}
+function coCandidates(){
+  const cands=[];
+  for(let r=0;r<CO_N;r++) for(let c=0;c<CO_N;c++){
+    if(co.grid[r][c]>=0) continue;
+    let pr=0, touch=false;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(!dr&&!dc) continue;
+      const r2=r+dr,c2=c+dc;
+      if(r2<0||c2<0||r2>=CO_N||c2>=CO_N) continue;
+      const d=co.grid[r2][c2]; if(d<0) continue;
+      touch=true;
+      const v=TCRW[getRel(d,co.order[co.k].i)];
+      pr+=(dr&&dc)?v*0.5:v;
+    }
+    if(touch) cands.push({r,c,pr});
+  }
+  let sr=0,sc=0,m=0;
+  for(let r=0;r<CO_N;r++) for(let c=0;c<CO_N;c++) if(co.grid[r][c]>=0){sr+=r;sc+=c;m++;}
+  const cr=sr/m, cc=sc/m;
+  cands.sort((a,b)=> b.pr-a.pr || (Math.hypot(a.r-cr,a.c-cc)-Math.hypot(b.r-cr,b.c-cc)));
+  return cands;
+}
+function coNext(){
+  if(co.phase==='select'){
+    const d=co.order[co.k].i;
+    if(co.k===0){
+      const mid=Math.floor(CO_N/2);
+      co.grid[mid][mid]=d;
+      logTo('co-log',`1. ${code(d)} enters first → placed at the center.`,'good');
+      co.k++;
+      if(co.k>=depts.length) coFinish();
+    } else {
+      co.candidates=coCandidates();
+      co.best=co.candidates[0];
+      const top=co.candidates.slice(0,4).map(c=>`(${c.r},${c.c})=${c.pr}`).join('  ');
+      logTo('co-log',`${co.k+1}. ${code(d)} enters (${co.order[co.k].reason}). Candidates: ${top}${co.candidates.length>4?' …':''}`);
+      co.phase='place';
+      if(document.getElementById('co-practice').checked){
+        logTo('co-log','   → your turn: click a cell.','hl');
+        coStopPlay();
+      }
+    }
+  } else if(co.phase==='place'){
+    if(document.getElementById('co-practice').checked) return; // must click
+    coCommit(co.best,false);
+  }
+  document.getElementById('co-progress').textContent=`${Math.min(co.k,depts.length)} / ${depts.length}`;
+  coRender();
+}
+function coCommit(cell,byUser){
+  const d=co.order[co.k].i;
+  co.grid[cell.r][cell.c]=d;
+  co.userPR+=cell.pr; co.algoPR+=co.best.pr;
+  if(byUser){
+    const gap=co.best.pr-cell.pr;
+    co.gap+=gap;
+    if(gap===0) logTo('co-log',`   → you placed ${code(d)} at (${cell.r},${cell.c}), PR ${cell.pr} — optimal!`,'good');
+    else logTo('co-log',`   → you chose PR ${cell.pr}; the algorithm preferred PR ${co.best.pr} at (${co.best.r},${co.best.c}). Gap +${gap}.`,'bad');
+    document.getElementById('co-gap').textContent=co.gap;
+  } else {
+    logTo('co-log',`   → placed at (${cell.r},${cell.c}) with PR = ${cell.pr}.`,'good');
+  }
+  co.candidates=[]; co.best=null; co.phase='select'; co.k++;
+  if(co.k>=depts.length) coFinish();
+  document.getElementById('co-progress').textContent=`${Math.min(co.k,depts.length)} / ${depts.length}`;
+  coRender();
+}
+function coFinish(){
+  coStopPlay();
+  co.phase='done';
+  const {score}=adjacencyScore(co.grid,CO_N,CO_N);
+  document.getElementById('co-score').textContent=score;
+  const practice=document.getElementById('co-practice').checked;
+  logTo('co-log',`Done. Final adjacency score = ${score}.`+(practice?` Your PR total ${co.userPR} vs algorithm ${co.algoPR} (gap ${co.gap}).`:''),'hl');
+  results.corelap={score,practice,gap:co.gap,grid:co.grid.map(r=>[...r]),rows:CO_N,cols:CO_N,
+    log:document.getElementById('co-log').innerText};
+  ['co-next','co-run','co-play'].forEach(id=>document.getElementById(id).disabled=true);
+  buildResults();
+}
+function coRunAll(){
+  document.getElementById('co-practice').checked=false;
+  let g=0; while(co.phase!=='done'&&co.phase!=='idle'&&g++<300) coNext();
+}
+function coPlay(){
+  if(coTimer){ coStopPlay(); return; }
+  document.getElementById('co-play').textContent='Pause ❚❚';
+  coTimer=setInterval(()=>{
+    if(co.phase==='done'||co.phase==='idle'){ coStopPlay(); return; }
+    if(co.phase==='place'&&document.getElementById('co-practice').checked) return;
+    coNext();
+  },+document.getElementById('co-speed').value);
+}
+function coStopPlay(){
+  if(coTimer){ clearInterval(coTimer); coTimer=null; }
+  const b=document.getElementById('co-play'); if(b) b.textContent='Auto-play ▶';
+}
+function coRender(){
+  const g=document.getElementById('co-grid');
+  g.style.gridTemplateColumns=`repeat(${CO_N},${CO_CELL}px)`;
+  g.style.gridTemplateRows=`repeat(${CO_N},${CO_CELL}px)`;
+  const practice=document.getElementById('co-practice').checked;
+  const showPR=document.getElementById('co-show-pr').checked;
+  let html='';
+  for(let r=0;r<CO_N;r++) for(let c=0;c<CO_N;c++){
+    const d=co.grid[r][c];
+    let inner='';
+    if(d>=0) inner=`<div class="dept-lab" style="background:${depts[d].color};inset:1px;border-radius:3px">${code(d)}</div>`;
+    else if(co.phase==='place'){
+      const cand=co.candidates.find(x=>x.r===r&&x.c===c);
+      if(cand){
+        const isBest=!practice&&cand===co.best;
+        inner=`<div class="cand ${isBest?'best':''} ${practice?'pick':''}"
+          ${practice?`onclick="coCommit({r:${r},c:${c},pr:${cand.pr}},true)"`:''}>${showPR?cand.pr:''}</div>`;
+      }
+    }
+    html+=`<div class="gcell">${inner}</div>`;
+  }
+  g.innerHTML=html;
+}
+
+/* ================================================================
+   ALDEP
+================================================================ */
+let al={};
+function serpentine(cols,rows,w){
+  const order=[]; let down=true;
+  for(let c0=0;c0<cols;c0+=w){
+    const band=[]; for(let c=c0;c<Math.min(c0+w,cols);c++) band.push(c);
+    if(down) for(let r=0;r<rows;r++) band.forEach(c=>order.push([r,c]));
+    else for(let r=rows-1;r>=0;r--) band.forEach(c=>order.push([r,c]));
+    down=!down;
+  }
+  return order;
+}
+function alDims(){
+  return {cols:Math.max(4,+document.getElementById('al-cols').value||10),
+          rows:Math.max(3,+document.getElementById('al-rows').value||6),
+          w:Math.max(1,+document.getElementById('al-w').value||2)};
+}
+function alAreaCheck(){
+  const {cols,rows}=alDims();
+  const need=depts.reduce((s,d)=>s+d.area,0);
+  const el=document.getElementById('al-area-warn');
+  el.textContent = need>cols*rows ? `⚠ ${need} cells needed, only ${cols*rows} available` :
+    (need<cols*rows? `${cols*rows-need} cells will stay empty`:'exact fit');
+  el.className = need>cols*rows?'warn':'hint';
+  return need<=cols*rows;
+}
+function alReset(){
+  const {cols,rows,w}=alDims();
+  al={grid:Array.from({length:rows},()=>Array(cols).fill(-1)),rows,cols,
+      cellOrder:serpentine(cols,rows,w),pos:0,placedList:[],done:false,started:false};
+  ['al-next','al-run'].forEach(id=>document.getElementById(id).disabled=true);
+  document.getElementById('al-progress').textContent='0 / '+depts.length;
+  document.getElementById('al-score').textContent='—';
+  document.querySelector('#al-adj-table tbody').innerHTML='';
+  clearLog('al-log','Press Start. Every run can differ — that is the point of ALDEP.');
+  alAreaCheck(); alRender();
+}
+function alStart(quiet){
+  if(!alAreaCheck()){ if(!quiet) alert('Building too small for the total department area.'); return false; }
+  const {cols,rows,w}=alDims();
+  al={grid:Array.from({length:rows},()=>Array(cols).fill(-1)),rows,cols,
+      cellOrder:serpentine(cols,rows,w),pos:0,placedList:[],done:false,started:true};
+  if(!quiet){
+    clearLog('al-log',`Building ${cols}×${rows}, sweep width ${w}, min acceptable relation: ${document.getElementById('al-min').value}.`);
+    ['al-next','al-run'].forEach(id=>document.getElementById(id).disabled=false);
+    document.getElementById('al-score').textContent='—';
+    document.querySelector('#al-adj-table tbody').innerHTML='';
+    alRender();
+  }
+  return true;
+}
+function alSelectNext(quiet){
+  const unplaced=depts.map((_,i)=>i).filter(i=>!al.placedList.includes(i));
+  if(!unplaced.length) return -1;
+  if(al.placedList.length===0){
+    const pick=unplaced[Math.floor(Math.random()*unplaced.length)];
+    if(!quiet) logTo('al-log',`1. ${code(pick)} selected at random (ALDEP rule for the first department).`,'hl');
+    return pick;
+  }
+  const last=al.placedList[al.placedList.length-1];
+  const minR=RANK[document.getElementById('al-min').value];
+  const quals=unplaced.filter(d=>RANK[getRel(last,d)]>=minR)
+                      .sort((a,b)=>RANK[getRel(last,b)]-RANK[getRel(last,a)]);
+  if(quals.length){
+    const pick=quals[0];
+    if(!quiet) logTo('al-log',`${al.placedList.length+1}. ${code(pick)} selected: ${getRel(last,pick)} relation with ${code(last)} (last entered).`);
+    return pick;
+  }
+  const pick=unplaced[Math.floor(Math.random()*unplaced.length)];
+  if(!quiet) logTo('al-log',`${al.placedList.length+1}. No unplaced dept has ≥ ${document.getElementById('al-min').value} with ${code(last)} → ${code(pick)} chosen at random.`,'bad');
+  return pick;
+}
+function alNext(quiet){
+  if(!al.started||al.done) return;
+  const d=alSelectNext(quiet);
+  if(d<0) return;
+  for(let a=0;a<depts[d].area && al.pos<al.cellOrder.length;a++){
+    const [r,c]=al.cellOrder[al.pos++];
+    al.grid[r][c]=d;
+  }
+  al.placedList.push(d);
+  if(al.placedList.length>=depts.length){
+    al.done=true;
+    if(!quiet) alFinish();
+  }
+  if(!quiet){
+    document.getElementById('al-progress').textContent=`${al.placedList.length} / ${depts.length}`;
+    alRender();
+  }
+}
+function alFinish(){
+  const {score,pairs}=adjacencyScore(al.grid,al.rows,al.cols);
+  document.getElementById('al-score').textContent=score;
+  logTo('al-log',`Done. Adjacency score = ${score}. Sequence: ${al.placedList.map(code).join(' → ')}`,'hl');
+  document.querySelector('#al-adj-table tbody').innerHTML=pairs.map(p=>
+    `<tr ${p.pts<0?'style="background:#F7E2E0"':''}><td>${code(p.a)}–${code(p.b)}</td><td class="mono">${p.rl}</td><td class="mono">${p.pts}</td></tr>`).join('');
+  ['al-next','al-run'].forEach(id=>document.getElementById(id).disabled=true);
+  if(!results.aldep||score>results.aldep.score){
+    results.aldep={score,trials:1,grid:al.grid.map(r=>[...r]),rows:al.rows,cols:al.cols,
+      seq:al.placedList.map(code).join(' → '),log:document.getElementById('al-log').innerText};
+  }
+  buildResults();
+}
+function alRunAll(){ let g=0; while(al.started&&!al.done&&g++<60) alNext(); }
+function alTrials(){
+  const n=Math.max(2,Math.min(200,+document.getElementById('al-ntrials').value||20));
+  let best=null,bestScore=-Infinity; const scores=[];
+  for(let t=0;t<n;t++){
+    if(!alStart(true)) return;
+    let g=0; while(!al.done&&g++<60) alNext(true);
+    const {score}=adjacencyScore(al.grid,al.rows,al.cols);
+    scores.push(score);
+    if(score>bestScore){bestScore=score;best=JSON.parse(JSON.stringify(al));}
+  }
+  al=best; al.done=true; al.started=true;
+  scores.sort((a,b)=>a-b);
+  clearLog('al-log',`Ran ${n} independent trials.\nScores: min ${scores[0]}, median ${scores[Math.floor(n/2)]}, max ${bestScore}.\nBest sequence: ${best.placedList.map(code).join(' → ')}`);
+  const {score,pairs}=adjacencyScore(al.grid,al.rows,al.cols);
+  document.getElementById('al-score').textContent=score;
+  document.getElementById('al-best').textContent=bestScore;
+  document.getElementById('al-progress').textContent=`${depts.length} / ${depts.length}`;
+  document.querySelector('#al-adj-table tbody').innerHTML=pairs.map(p=>
+    `<tr ${p.pts<0?'style="background:#F7E2E0"':''}><td>${code(p.a)}–${code(p.b)}</td><td class="mono">${p.rl}</td><td class="mono">${p.pts}</td></tr>`).join('');
+  ['al-next','al-run'].forEach(id=>document.getElementById(id).disabled=true);
+  alHistogram(scores,bestScore);
+  results.aldep={score:bestScore,trials:n,grid:al.grid.map(r=>[...r]),rows:al.rows,cols:al.cols,
+    seq:best.placedList.map(code).join(' → '),log:document.getElementById('al-log').innerText,
+    min:scores[0],median:scores[Math.floor(n/2)]};
+  buildResults(); alRender();
+}
+function alHistogram(scores,best){
+  const svg=document.getElementById('al-hist');
+  const W=420,H=90,pad=6;
+  const lo=Math.min(...scores), hi=Math.max(...scores), span=Math.max(1,hi-lo);
+  const bw=Math.max(2,Math.floor((W-2*pad)/scores.length)-1);
+  let inner='';
+  scores.forEach((s,i)=>{
+    const h=8+((s-lo)/span)*(H-24);
+    const x=pad+i*(bw+1);
+    inner+=`<rect x="${x}" y="${H-h-4}" width="${bw}" height="${h}" fill="${s===best?'#2E7D5B':'#E8630A'}" fill-opacity="${s===best?1:0.65}"><title>Trial score ${s}</title></rect>`;
+  });
+  inner+=`<text x="${pad}" y="12" font-size="10" font-family="IBM Plex Mono" fill="#6b7883">min ${lo}</text>
+          <text x="${W-pad}" y="12" text-anchor="end" font-size="10" font-family="IBM Plex Mono" fill="#2E7D5B">max ${hi}</text>`;
+  svg.innerHTML=inner;
+}
+function alRender(){
+  const g=document.getElementById('al-grid');
+  if(!al.grid) return;
+  const size=Math.min(46,Math.floor(720/al.cols));
+  g.style.gridTemplateColumns=`repeat(${al.cols},${size}px)`;
+  g.style.gridTemplateRows=`repeat(${al.rows},${size}px)`;
+  const showPath=document.getElementById('al-path').checked;
+  const orderIdx={};
+  if(showPath) al.cellOrder.forEach(([r,c],k)=>orderIdx[r+'-'+c]=k+1);
+  const labeled=new Set();
+  let html='';
+  for(let r=0;r<al.rows;r++) for(let c=0;c<al.cols;c++){
+    const d=al.grid[r][c];
+    if(d<0){
+      html+=`<div class="gcell">${showPath?(orderIdx[r+'-'+c]||''):''}</div>`;
+      continue;
+    }
+    const lab=!labeled.has(d); labeled.add(d);
+    html+=`<div class="gcell" style="background:${depts[d].color}">${lab?`<div class="dept-lab">${code(d)}</div>`:''}</div>`;
+  }
+  g.innerHTML=html;
+}
+
+/* ================================================================
+   CRAFT
+================================================================ */
+const CR_ROWS=5, CR_COLS=9, MPC=10;
+let crPos=[], crFlow=[], crSel=null, crIter=0, crHistory=[], crBestEver=null;
+
+function crInitFlow(){
+  const n=depts.length;
+  crFlow=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) crFlow[i][j]=REL2FLOW[getRel(i,j)];
+  crBuildFlowTable();
+}
+function crBuildFlowTable(){
+  const n=depts.length, t=document.getElementById('cr-flow-table');
+  let html='<thead><tr><th></th>'+depts.map((_,j)=>`<th>${code(j)}</th>`).join('')+'</tr></thead><tbody>';
+  for(let i=0;i<n;i++){
+    html+=`<tr><th>${code(i)}</th>`;
+    for(let j=0;j<n;j++){
+      html+= j<=i ? '<td style="background:#DDE1DC"></td>'
+        : `<td><input type="number" class="num" style="width:52px" min="0" value="${crFlow[i][j]}" data-i="${i}" data-j="${j}"></td>`;
+    }
+    html+='</tr>';
+  }
+  t.innerHTML=html+'</tbody>';
+  t.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{
+    crFlow[+inp.dataset.i][+inp.dataset.j]=Math.max(0,+inp.value||0);
+    crUpdate();
+  }));
+}
+function crRandomPos(){
+  const spots=[];
+  for(let r=0;r<CR_ROWS;r++) for(let c=0;c<CR_COLS;c++) spots.push([r,c]);
+  for(let i=spots.length-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[spots[i],spots[k]]=[spots[k],spots[i]];}
+  return spots.slice(0,depts.length);
+}
+function crRandom(){
+  crPos=crRandomPos(); crSel=null; crIter=0; crHistory=[crCostOf(crPos)];
+  document.getElementById('cr-iter').textContent='0';
+  clearLog('cr-log','New starting layout. Evaluate exchanges to begin improving.');
+  document.querySelector('#cr-swap-table tbody').innerHTML='';
+  crUpdate();
+}
+function crCostOf(pos){
+  let tc=0;
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++){
+    const f=crFlow[i][j]; if(!f) continue;
+    tc+=f*(Math.abs(pos[i][0]-pos[j][0])+Math.abs(pos[i][1]-pos[j][1]))*MPC;
+  }
+  return tc;
+}
+function crBestSwap(pos){
+  const base=crCostOf(pos); let best=null;
+  const evals=[];
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++){
+    const p=pos.map(x=>[...x]); [p[i],p[j]]=[p[j],p[i]];
+    const d=crCostOf(p)-base;
+    evals.push({i,j,d});
+    if(!best||d<best.d) best={i,j,d};
+  }
+  evals.sort((a,b)=>a.d-b.d);
+  return {best,evals,base};
+}
+function crNext(){
+  const {best,evals,base}=crBestSwap(crPos);
+  document.querySelector('#cr-swap-table tbody').innerHTML=evals.slice(0,6).map((e,k)=>
+    `<tr ${k===0&&e.d<0?'class="winner"':''}><td>${code(e.i)} ↔ ${code(e.j)}</td><td class="mono">${e.d>0?'+':''}${e.d.toLocaleString()}</td></tr>`).join('');
+  if(best.d<0){
+    [crPos[best.i],crPos[best.j]]=[crPos[best.j],crPos[best.i]];
+    crIter++; crHistory.push(crCostOf(crPos));
+    document.getElementById('cr-iter').textContent=crIter;
+    logTo('cr-log',`Iter ${crIter}: ${evals.length} exchanges evaluated. Best: ${code(best.i)} ↔ ${code(best.j)}, Δ = ${best.d.toLocaleString()} → applied.`,'good');
+  } else {
+    logTo('cr-log',`No exchange improves the layout — local optimum at ${base.toLocaleString()} load·m. Try another random start or multi-start.`,'hl');
+    crRecordResult(base,'single start');
+  }
+  crUpdate();
+}
+function crRunAll(){
+  let g=0;
+  while(g++<150){
+    const before=crCostOf(crPos);
+    const {best}=crBestSwap(crPos);
+    if(best.d>=0){ crNext(); break; }
+    crNext();
+    if(crCostOf(crPos)>=before) break;
+  }
+}
+function crMultiStart(){
+  const k=Math.max(2,Math.min(200,+document.getElementById('cr-nstarts').value||20));
+  let bestPos=null,bestC=Infinity; const finals=[];
+  for(let t=0;t<k;t++){
+    let pos=crRandomPos(), guard=0;
+    while(guard++<200){
+      const {best}=crBestSwap(pos);
+      if(best.d>=0) break;
+      [pos[best.i],pos[best.j]]=[pos[best.j],pos[best.i]];
+    }
+    const c=crCostOf(pos);
+    finals.push(c);
+    if(c<bestC){bestC=c;bestPos=pos;}
+  }
+  finals.sort((a,b)=>a-b);
+  crPos=bestPos; crSel=null; crIter=0; crHistory=[bestC];
+  clearLog('cr-log',`Multi-start: ${k} random layouts, each improved to its local optimum.\nFinal costs — best ${finals[0].toLocaleString()}, median ${finals[Math.floor(k/2)].toLocaleString()}, worst ${finals[k-1].toLocaleString()}.\nShowing the best layout found.`);
+  crRecordResult(bestC,`best of ${k} starts`);
+  crUpdate();
+}
+function crRecordResult(cost,note){
+  if(!crBestEver||cost<crBestEver) crBestEver=cost;
+  document.getElementById('cr-best').textContent=crBestEver.toLocaleString();
+  if(!results.craft||cost<results.craft.cost){
+    results.craft={cost,note,pos:crPos.map(p=>[...p]),log:document.getElementById('cr-log').innerText};
+  }
+  buildResults();
+}
+function crCellClick(r,c){
+  const occ=crPos.findIndex(p=>p[0]===r&&p[1]===c);
+  if(crSel===null){ if(occ>=0){crSel=occ;crUpdate();} return; }
+  const before=crCostOf(crPos);
+  if(occ>=0&&occ!==crSel) [crPos[occ],crPos[crSel]]=[crPos[crSel],crPos[occ]];
+  else if(occ<0) crPos[crSel]=[r,c];
+  const d=crCostOf(crPos)-before;
+  if(d!==0){ logTo('cr-log',`Manual move: Δ = ${d>0?'+':''}${d.toLocaleString()} ${d<0?'(improvement)':'(worse)'}`,d<0?'good':'bad');
+    crHistory.push(crCostOf(crPos)); }
+  crSel=null; crUpdate();
+}
+function crSpark(){
+  const svg=document.getElementById('cr-spark');
+  const W=420,H=70,pad=8;
+  if(crHistory.length<2){ svg.innerHTML=`<text x="${pad}" y="40" font-size="11" font-family="IBM Plex Mono" fill="#6b7883">apply exchanges to draw the cost curve</text>`; return; }
+  const lo=Math.min(...crHistory), hi=Math.max(...crHistory), span=Math.max(1,hi-lo);
+  const pts=crHistory.map((v,i)=>{
+    const x=pad+i*(W-2*pad)/(crHistory.length-1);
+    const y=pad+ (1-(v-lo)/span)*(H-2*pad-10)+10;
+    return x.toFixed(1)+','+y.toFixed(1);
+  }).join(' ');
+  svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="#E8630A" stroke-width="2"/>
+    <text x="${pad}" y="12" font-size="10" font-family="IBM Plex Mono" fill="#6b7883">start ${crHistory[0].toLocaleString()}</text>
+    <text x="${W-pad}" y="12" text-anchor="end" font-size="10" font-family="IBM Plex Mono" fill="#2E7D5B">now ${crHistory[crHistory.length-1].toLocaleString()}</text>`;
+}
+function crUpdate(){
+  document.getElementById('cr-cost').textContent=crCostOf(crPos).toLocaleString();
+  const g=document.getElementById('cr-grid');
+  const CS=52,GAP=2;
+  g.style.gridTemplateColumns=`repeat(${CR_COLS},${CS}px)`;
+  g.style.gridTemplateRows=`repeat(${CR_ROWS},${CS}px)`;
+  let html='';
+  for(let r=0;r<CR_ROWS;r++) for(let c=0;c<CR_COLS;c++){
+    const d=crPos.findIndex(p=>p[0]===r&&p[1]===c);
+    html+=`<div class="gcell clickable ${d===crSel?'sel':''}" onclick="crCellClick(${r},${c})">`+
+      (d>=0?`<div class="dept-lab" style="background:${depts[d].color};inset:2px;border-radius:3px">${code(d)}</div>`:'')+'</div>';
+  }
+  g.innerHTML=html;
+  // flow overlay
+  const svg=document.getElementById('cr-overlay');
+  const W=CR_COLS*(CS+GAP)-GAP+6, H=CR_ROWS*(CS+GAP)-GAP+6;
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+  let lines='';
+  if(document.getElementById('cr-show-flows').checked){
+    let maxF=1;
+    for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++) maxF=Math.max(maxF,crFlow[i][j]);
+    for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++){
+      const f=crFlow[i][j]; if(!f) continue;
+      const x1=crPos[i][1]*(CS+GAP)+CS/2+3, y1=crPos[i][0]*(CS+GAP)+CS/2+3;
+      const x2=crPos[j][1]*(CS+GAP)+CS/2+3, y2=crPos[j][0]*(CS+GAP)+CS/2+3;
+      lines+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#E8630A"
+        stroke-opacity="${0.3+0.5*f/maxF}" stroke-width="${1+6*f/maxF}" stroke-linecap="round"/>`;
+    }
+  }
+  svg.innerHTML=lines;
+  crSpark();
+}
+
+/* ================================================================
+   RESULTS, REPORT, IMPORT/EXPORT
+================================================================ */
+function buildResults(){
+  const tb=document.querySelector('#results-table tbody');
+  const rows=[];
+  rows.push(results.corelap
+    ? `<tr><td>CORELAP</td><td>Construction</td><td>Adjacency (64/16/4/1/0/−1024)</td><td class="mono"><b>${results.corelap.score}</b></td><td style="text-align:left">${results.corelap.practice?`Practice run, decision gap ${results.corelap.gap}`:'Deterministic run'}</td></tr>`
+    : `<tr><td>CORELAP</td><td>Construction</td><td>Adjacency</td><td>—</td><td style="text-align:left">not run yet</td></tr>`);
+  rows.push(results.aldep
+    ? `<tr><td>ALDEP</td><td>Construction</td><td>Adjacency (64/16/4/1/0/−1024)</td><td class="mono"><b>${results.aldep.score}</b></td><td style="text-align:left">${results.aldep.trials>1?`best of ${results.aldep.trials} trials (min ${results.aldep.min}, median ${results.aldep.median})`:'single run'} · ${results.aldep.seq||''}</td></tr>`
+    : `<tr><td>ALDEP</td><td>Construction</td><td>Adjacency</td><td>—</td><td style="text-align:left">not run yet</td></tr>`);
+  rows.push(results.craft
+    ? `<tr><td>CRAFT</td><td>Improvement (hill-climb)</td><td>Load·distance (min)</td><td class="mono"><b>${results.craft.cost.toLocaleString()}</b> load·m</td><td style="text-align:left">${results.craft.note}</td></tr>`
+    : `<tr><td>CRAFT</td><td>Improvement (hill-climb)</td><td>Load·distance</td><td>—</td><td style="text-align:left">not run yet</td></tr>`);
+  rows.push(results.sa
+    ? `<tr><td>Simulated Annealing</td><td>Metaheuristic (single-point)</td><td>QAP load·distance (min)</td><td class="mono"><b>${results.sa.cost.toLocaleString()}</b> load·m</td><td style="text-align:left">${results.sa.note}</td></tr>`
+    : `<tr><td>Simulated Annealing</td><td>Metaheuristic (single-point)</td><td>QAP load·distance</td><td>—</td><td style="text-align:left">not run yet</td></tr>`);
+  rows.push(results.ga
+    ? `<tr><td>Genetic Algorithm</td><td>Metaheuristic (population)</td><td>QAP load·distance (min)</td><td class="mono"><b>${results.ga.cost.toLocaleString()}</b> load·m</td><td style="text-align:left">${results.ga.note}</td></tr>`
+    : `<tr><td>Genetic Algorithm</td><td>Metaheuristic (population)</td><td>QAP load·distance</td><td>—</td><td style="text-align:left">not run yet</td></tr>`);
+  tb.innerHTML=rows.join('');
+  const note=document.getElementById('cmp-note');
+  if(note){
+    if(results.sa&&results.ga&&results.craft){
+      const best=Math.min(results.craft.cost,results.sa.cost,results.ga.cost);
+      const who=best===results.ga.cost?'the genetic algorithm':best===results.sa.cost?'simulated annealing':'CRAFT';
+      note.textContent=`On the load·distance objective, the lowest cost so far is ${best.toLocaleString()} load·m, reached by ${who}. Metaheuristics won't always win on a small instance — but as departments grow, CRAFT's single-start local optimum falls further behind.`;
+    } else note.textContent='Run CRAFT, Simulated Annealing and the Genetic Algorithm to compare the three solvers on the identical load·distance objective.';
+  }
+}
+function gridHTML(grid,rows,cols){
+  let h='<table style="border-collapse:collapse">';
+  for(let r=0;r<rows;r++){
+    h+='<tr>';
+    for(let c=0;c<cols;c++){
+      const d=grid[r][c];
+      h+=`<td style="width:30px;height:30px;border:1px solid #ccc;text-align:center;font:600 10px monospace;${d>=0?`background:${depts[d].color};color:#fff`:''}">${d>=0?code(d):''}</td>`;
+    }
+    h+='</tr>';
+  }
+  return h+'</table>';
+}
+function downloadReport(){
+  const dt=new Date().toLocaleString();
+  let relRows='';
+  for(let i=0;i<depts.length;i++) for(let j=i+1;j<depts.length;j++)
+    relRows+=`<tr><td>${code(i)}–${code(j)}</td><td>${getRel(i,j)}</td></tr>`;
+  let body=`<h1>Layout Algorithms Lab — Session report</h1><p>${dt}</p>
+    <h2>Departments</h2><table border=1 cellpadding=4 style="border-collapse:collapse">
+    <tr><th>Code</th><th>Name</th><th>Area</th><th>TCR</th></tr>`+
+    depts.map((d,i)=>`<tr><td>${code(i)}</td><td>${d.name}</td><td>${d.area}</td><td>${tcr(i)}</td></tr>`).join('')+
+    `</table><h2>REL chart</h2><table border=1 cellpadding=4 style="border-collapse:collapse"><tr><th>Pair</th><th>Rating</th></tr>${relRows}</table>`;
+  if(results.corelap) body+=`<h2>CORELAP</h2><p>Adjacency score <b>${results.corelap.score}</b>${results.corelap.practice?` (practice, gap ${results.corelap.gap})`:''}</p>`+
+    gridHTML(results.corelap.grid,results.corelap.rows,results.corelap.cols)+
+    `<h3>Log</h3><pre style="background:#f4f4f4;padding:8px;font-size:11px">${results.corelap.log}</pre>`;
+  if(results.aldep) body+=`<h2>ALDEP</h2><p>Best adjacency score <b>${results.aldep.score}</b> (${results.aldep.trials} trial${results.aldep.trials>1?'s':''})</p>`+
+    gridHTML(results.aldep.grid,results.aldep.rows,results.aldep.cols)+
+    `<h3>Log</h3><pre style="background:#f4f4f4;padding:8px;font-size:11px">${results.aldep.log}</pre>`;
+  if(results.craft){
+    const g=Array.from({length:CR_ROWS},()=>Array(CR_COLS).fill(-1));
+    results.craft.pos.forEach((p,i)=>g[p[0]][p[1]]=i);
+    body+=`<h2>CRAFT</h2><p>Best cost <b>${results.craft.cost.toLocaleString()} load·m</b> (${results.craft.note})</p>`+
+      gridHTML(g,CR_ROWS,CR_COLS)+
+      `<h3>Log</h3><pre style="background:#f4f4f4;padding:8px;font-size:11px">${results.craft.log}</pre>`;
+  }
+  if(results.sa) body+=`<h2>Simulated Annealing</h2><p>Best QAP cost <b>${results.sa.cost.toLocaleString()} load·m</b> (${results.sa.note})</p>`;
+  if(results.ga) body+=`<h2>Genetic Algorithm</h2><p>Best QAP cost <b>${results.ga.cost.toLocaleString()} load·m</b> (${results.ga.note})</p>`;
+  if(results.craft&&results.sa&&results.ga){
+    const best=Math.min(results.craft.cost,results.sa.cost,results.ga.cost);
+    body+=`<h2>Quantitative comparison</h2><p>On the identical load·distance objective: CRAFT ${results.craft.cost.toLocaleString()}, SA ${results.sa.cost.toLocaleString()}, GA ${results.ga.cost.toLocaleString()} load·m. Best: <b>${best.toLocaleString()}</b>.</p>`;
+  }
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Layout Lab report</title>
+    <style>body{font-family:Arial,sans-serif;max-width:800px;margin:24px auto;padding:0 16px}h1,h2{color:#1B2A38}</style>
+    </head><body>${body}</body></html>`;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='layout-lab-report.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportJSON(){
+  const blob=new Blob([JSON.stringify({depts,rel,crFlow},null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='layout-lab-data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importJSON(input){
+  const f=input.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      if(!Array.isArray(d.depts)||!d.rel) throw new Error('bad format');
+      depts=d.depts.map((x,i)=>({name:x.name||('Dept '+(i+1)),area:Math.max(1,+x.area||6),color:PALETTE[i%PALETTE.length]}));
+      rel=d.rel;
+      document.getElementById('ndepts').value=Math.min(8,Math.max(5,depts.length));
+      onDataChanged(true);
+      if(Array.isArray(d.crFlow)&&d.crFlow.length===depts.length){ crFlow=d.crFlow; crBuildFlowTable(); crUpdate(); }
+    }catch(e){ alert('Could not read that file: '+e.message); }
+    input.value='';
+  };
+  rd.readAsText(f);
+}
+
+/* ================================================================
+   SHARED QAP MODEL  (used by Simulated Annealing & Genetic Algorithm)
+   A layout = permutation perm[], where perm[i] = index of the location
+   assigned to department i. Locations are fixed cells in a compact block.
+   Cost = Σ_{i<j} f_ij · rectilinear_dist(loc[perm[i]], loc[perm[j]]) · 10 m.
+   This is the classic Quadratic Assignment Problem (QAP).
+================================================================ */
+function qapLocs(){
+  const n=depts.length, cols=Math.ceil(Math.sqrt(n)), locs=[];
+  for(let k=0;k<n;k++) locs.push([Math.floor(k/cols),k%cols]);
+  return locs;
+}
+function flowSym(i,j){ return crFlow[Math.min(i,j)][Math.max(i,j)]; }
+function qapCost(perm,locs){
+  const n=depts.length; let tc=0;
+  for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+    const f=flowSym(i,j); if(!f) continue;
+    const a=locs[perm[i]], b=locs[perm[j]];
+    tc+=f*(Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1]))*MPC;
+  }
+  return tc;
+}
+function randPerm(n){
+  const p=[...Array(n).keys()];
+  for(let i=n-1;i>0;i--){const k=Math.floor(Math.random()*(i+1));[p[i],p[k]]=[p[k],p[i]];}
+  return p;
+}
+function factorialStr(n){
+  let f=1; for(let i=2;i<=n;i++) f*=i;
+  return f>=1e6 ? f.toExponential(2).replace('e+','×10^') : f.toLocaleString();
+}
+/* strong benchmark: best of many random-restart local searches (steepest descent) */
+function qapBenchmark(locs,restarts){
+  const n=depts.length; let best=Infinity;
+  for(let r=0;r<restarts;r++){
+    let p=randPerm(n), c=qapCost(p,locs), improved=true, guard=0;
+    while(improved&&guard++<200){
+      improved=false;
+      for(let i=0;i<n&&!improved;i++) for(let j=i+1;j<n;j++){
+        [p[i],p[j]]=[p[j],p[i]];
+        const c2=qapCost(p,locs);
+        if(c2<c-1e-9){ c=c2; improved=true; break; }
+        [p[i],p[j]]=[p[j],p[i]];
+      }
+    }
+    if(c<best) best=c;
+  }
+  return best;
+}
+/* render a QAP permutation onto a compact grid */
+function renderQAP(gridId,perm,locs){
+  const n=depts.length, rows=Math.max(...locs.map(l=>l[0]))+1, cols=Math.max(...locs.map(l=>l[1]))+1;
+  const g=document.getElementById(gridId), CS=52;
+  g.style.gridTemplateColumns=`repeat(${cols},${CS}px)`;
+  g.style.gridTemplateRows=`repeat(${rows},${CS}px)`;
+  const at={}; for(let i=0;i<n;i++) at[locs[perm[i]][0]+'-'+locs[perm[i]][1]]=i;
+  let html='';
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+    const d=at[r+'-'+c];
+    html+=`<div class="gcell">`+(d!==undefined?`<div class="dept-lab" style="background:${depts[d].color};inset:2px;border-radius:3px">${code(d)}</div>`:'')+`</div>`;
+  }
+  g.innerHTML=html;
+}
+/* generic cost-trajectory sparkline (array of {c} or numbers), optional second series & reference */
+function drawTraj(svgId,series1,series2,refVal,W,H){
+  const svg=document.getElementById(svgId); W=W||520; H=H||130;
+  const all=series1.concat(series2||[]).concat(refVal!=null?[refVal]:[]);
+  if(series1.length<2){ svg.innerHTML=`<text x="10" y="${H/2}" font-size="11" font-family="IBM Plex Mono" fill="#6b7883">run the method to plot the cost curve</text>`; return; }
+  const lo=Math.min(...all), hi=Math.max(...all), span=Math.max(1,hi-lo), pad=8;
+  const X=i=>pad+i*(W-2*pad)/(series1.length-1);
+  const Y=v=>pad+(1-(v-lo)/span)*(H-2*pad-8)+8;
+  const poly=s=>s.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+  let inner='';
+  if(refVal!=null){ const y=Y(refVal); inner+=`<line x1="${pad}" y1="${y}" x2="${W-pad}" y2="${y}" stroke="#6b7883" stroke-dasharray="5 4" stroke-width="1"/><text x="${W-pad}" y="${y-3}" text-anchor="end" font-size="9" font-family="IBM Plex Mono" fill="#6b7883">benchmark ${Math.round(refVal).toLocaleString()}</text>`; }
+  if(series2&&series2.length>1) inner+=`<polyline points="${poly(series2)}" fill="none" stroke="#E8630A" stroke-width="1.5" stroke-opacity="0.8"/>`;
+  inner+=`<polyline points="${poly(series1)}" fill="none" stroke="#2E7D5B" stroke-width="2"/>`;
+  inner+=`<text x="${pad}" y="12" font-size="10" font-family="IBM Plex Mono" fill="#6b7883">${Math.round(series1[0]).toLocaleString()}</text>
+          <text x="${W-pad}" y="12" text-anchor="end" font-size="10" font-family="IBM Plex Mono" fill="#2E7D5B">${Math.round(series1[series1.length-1]).toLocaleString()}</text>`;
+  svg.innerHTML=inner;
+}
+function logSA(m,c){ logTo('sa-log',m,c); }
+function logGA(m,c){ logTo('ga-log',m,c); }
+
+/* ================================================================
+   SIMULATED ANNEALING
+================================================================ */
+let sa={}, saTimer=null;
+function saStart(){
+  saStopPlay();
+  const locs=qapLocs();
+  sa={locs,perm:randPerm(depts.length),bench:qapBenchmark(locs,200),
+      T0:Math.max(1,+document.getElementById('sa-t0').value||4000),
+      alpha:Math.min(0.999,Math.max(0.5,+document.getElementById('sa-alpha').value||0.95)),
+      steps:Math.max(1,+document.getElementById('sa-steps').value||40),
+      hist:[],done:false};
+  sa.cost=qapCost(sa.perm,sa.locs); sa.best=sa.cost; sa.bestPerm=[...sa.perm];
+  sa.T=sa.T0; sa.hist=[sa.cost];
+  ['sa-temp','sa-play','sa-run'].forEach(id=>document.getElementById(id).disabled=false);
+  document.getElementById('sa-space').textContent=factorialStr(depts.length);
+  clearLog('sa-log','');
+  logSA(`Initial random layout cost = ${Math.round(sa.cost).toLocaleString()}. T₀ = ${sa.T0}. Benchmark (200-restart local search) = ${Math.round(sa.bench).toLocaleString()}.`,'hl');
+  saRender();
+}
+function saTempStep(){
+  if(sa.done) return;
+  const n=depts.length; let accepted=0, uphill=0;
+  for(let s=0;s<sa.steps;s++){
+    let i=Math.floor(Math.random()*n), j=Math.floor(Math.random()*n);
+    if(i===j) continue;
+    [sa.perm[i],sa.perm[j]]=[sa.perm[j],sa.perm[i]];
+    const c2=qapCost(sa.perm,sa.locs), d=c2-sa.cost;
+    if(d<0 || Math.random()<Math.exp(-d/sa.T)){
+      sa.cost=c2; accepted++;
+      if(d>0) uphill++;
+      if(c2<sa.best){ sa.best=c2; sa.bestPerm=[...sa.perm]; }
+    } else {
+      [sa.perm[i],sa.perm[j]]=[sa.perm[j],sa.perm[i]]; // revert
+    }
+  }
+  sa.hist.push(sa.cost);
+  document.getElementById('sa-acc').textContent=Math.round(100*accepted/sa.steps)+'%';
+  logSA(`T=${sa.T.toFixed(0)}: accepted ${accepted}/${sa.steps} moves (${uphill} uphill). cost ${Math.round(sa.cost).toLocaleString()}, best ${Math.round(sa.best).toLocaleString()}.`);
+  sa.T*=sa.alpha;
+  if(sa.T<1e-2 || (sa.hist.length>15 && sa.T<sa.T0*0.0005)){ saFinish(); }
+  saRender();
+}
+function saFinish(){
+  sa.done=true; saStopPlay();
+  sa.perm=[...sa.bestPerm]; sa.cost=sa.best;
+  logSA(`Frozen. Best cost = ${Math.round(sa.best).toLocaleString()} (benchmark ${Math.round(sa.bench).toLocaleString()}).`,'good');
+  ['sa-temp','sa-play','sa-run'].forEach(id=>document.getElementById(id).disabled=true);
+  results.sa={cost:Math.round(sa.best),note:`T₀=${sa.T0}, α=${sa.alpha}`};
+  buildResults(); saRender();
+}
+function saRunAll(){ let g=0; while(!sa.done&&g++<400) saTempStep(); }
+function saPlay(){
+  if(saTimer){ saStopPlay(); return; }
+  document.getElementById('sa-play').textContent='Pause ❚❚';
+  saTimer=setInterval(()=>{ if(sa.done){saStopPlay();return;} saTempStep(); },250);
+}
+function saStopPlay(){ if(saTimer){clearInterval(saTimer);saTimer=null;} const b=document.getElementById('sa-play'); if(b)b.textContent='Auto-cool ▶'; }
+function saRender(){
+  if(!sa.locs) return;
+  renderQAP('sa-grid',sa.perm,sa.locs);
+  document.getElementById('sa-cost').textContent=Math.round(sa.cost).toLocaleString();
+  document.getElementById('sa-best').textContent=Math.round(sa.best).toLocaleString();
+  document.getElementById('sa-temp-val').textContent=Math.round(sa.T).toLocaleString();
+  drawTraj('sa-traj',sa.hist,null,sa.bench);
+}
+function saReset(){
+  saStopPlay(); sa={};
+  ['sa-temp','sa-play','sa-run'].forEach(id=>{const e=document.getElementById(id); if(e)e.disabled=true;});
+  ['sa-cost','sa-best','sa-temp-val','sa-acc'].forEach(id=>{const e=document.getElementById(id); if(e)e.textContent='—';});
+  const sp=document.getElementById('sa-space'); if(sp) sp.textContent=factorialStr(depts.length);
+  const g=document.getElementById('sa-grid'); if(g) g.innerHTML='';
+  const t=document.getElementById('sa-traj'); if(t) t.innerHTML='';
+  clearLog('sa-log','Press Start to initialise a random layout and heat the system.');
+}
+
+/* ================================================================
+   GENETIC ALGORITHM
+================================================================ */
+let ga={}, gaTimer=null;
+function orderCrossover(p1,p2){
+  const n=p1.length; let a=Math.floor(Math.random()*n), b=Math.floor(Math.random()*n);
+  if(a>b)[a,b]=[b,a];
+  const child=new Array(n).fill(-1), taken=new Set();
+  for(let k=a;k<=b;k++){ child[k]=p1[k]; taken.add(p1[k]); }
+  let idx=(b+1)%n;
+  for(let k=0;k<n;k++){
+    const g=p2[(b+1+k)%n];
+    if(!taken.has(g)){ child[idx]=g; idx=(idx+1)%n; taken.add(g); }
+  }
+  return child;
+}
+function gaStart(){
+  gaStopPlay();
+  const locs=qapLocs(), pop=Math.max(6,+document.getElementById('ga-pop').value||30);
+  ga={locs,pop,gen:0,bench:qapBenchmark(locs,200),bestHist:[],avgHist:[],done:false};
+  ga.members=Array.from({length:pop},()=>{const p=randPerm(depts.length); return {p,c:qapCost(p,locs)};});
+  gaSortRecord();
+  ['ga-step','ga-play','ga-run'].forEach(id=>document.getElementById(id).disabled=false);
+  clearLog('ga-log','');
+  logGA(`Seeded ${pop} random layouts. Best cost ${Math.round(ga.members[0].c).toLocaleString()}, avg ${Math.round(gaAvg()).toLocaleString()}. Benchmark ${Math.round(ga.bench).toLocaleString()}.`,'hl');
+  gaRender();
+}
+function gaAvg(){ return ga.members.reduce((s,m)=>s+m.c,0)/ga.members.length; }
+function gaSortRecord(){
+  ga.members.sort((x,y)=>x.c-y.c);
+  ga.bestHist.push(ga.members[0].c);
+  ga.avgHist.push(gaAvg());
+}
+function tournament(k){
+  let best=null;
+  for(let t=0;t<k;t++){ const m=ga.members[Math.floor(Math.random()*ga.members.length)]; if(!best||m.c<best.c) best=m; }
+  return best;
+}
+function gaStep(){
+  if(ga.done) return;
+  const elite=Math.min(+document.getElementById('ga-elite').value||2, ga.members.length);
+  const mut=Math.min(1,Math.max(0,+document.getElementById('ga-mut').value||0.25));
+  const tk=Math.max(2,+document.getElementById('ga-tk').value||3);
+  const next=ga.members.slice(0,elite).map(m=>({p:[...m.p],c:m.c}));
+  while(next.length<ga.pop){
+    const child=orderCrossover(tournament(tk).p, tournament(tk).p);
+    if(Math.random()<mut){ const i=Math.floor(Math.random()*child.length),j=Math.floor(Math.random()*child.length); [child[i],child[j]]=[child[j],child[i]]; }
+    next.push({p:child,c:qapCost(child,ga.locs)});
+  }
+  ga.members=next; ga.gen++;
+  gaSortRecord();
+  logGA(`Gen ${ga.gen}: best ${Math.round(ga.members[0].c).toLocaleString()}, avg ${Math.round(gaAvg()).toLocaleString()}.`);
+  if(ga.gen>=8){
+    const recent=ga.bestHist.slice(-6);
+    if(Math.max(...recent)-Math.min(...recent)===0 && ga.members[0].c<=ga.bench+1e-6){
+      logGA('Converged — best cost stable and at/under the benchmark.','good');
+    }
+  }
+  gaRender();
+}
+function gaRun(N){ let g=0; while(g++<N&&!ga.done) gaStep(); gaFinalise(); }
+function gaFinalise(){
+  results.ga={cost:Math.round(ga.members[0].c),note:`pop ${ga.pop}, gen ${ga.gen}`};
+  buildResults();
+}
+function gaPlay(){
+  if(gaTimer){ gaStopPlay(); return; }
+  document.getElementById('ga-play').textContent='Pause ❚❚';
+  gaTimer=setInterval(()=>{ gaStep(); if(ga.gen>=120){ gaStopPlay(); gaFinalise(); } },220);
+}
+function gaStopPlay(){ if(gaTimer){clearInterval(gaTimer);gaTimer=null;} const b=document.getElementById('ga-play'); if(b)b.textContent='Auto-evolve ▶'; }
+function gaRender(){
+  if(!ga.locs) return;
+  renderQAP('ga-grid',ga.members[0].p,ga.locs);
+  document.getElementById('ga-gen').textContent=ga.gen;
+  document.getElementById('ga-best').textContent=Math.round(ga.members[0].c).toLocaleString();
+  document.getElementById('ga-avg').textContent=Math.round(gaAvg()).toLocaleString();
+  drawTraj('ga-traj',ga.bestHist,ga.avgHist,ga.bench);
+  // population bar chart
+  const svg=document.getElementById('ga-pop-svg'), W=420,H=120,pad=6;
+  const costs=ga.members.map(m=>m.c), lo=Math.min(...costs,ga.bench), hi=Math.max(...costs), span=Math.max(1,hi-lo);
+  const bw=Math.max(2,(W-2*pad)/costs.length-1);
+  let inner='';
+  costs.forEach((c,i)=>{
+    const h=8+((c-lo)/span)*(H-20), x=pad+i*(bw+1);
+    inner+=`<rect x="${x}" y="${H-h-4}" width="${bw}" height="${h}" fill="${i===0?'#2E7D5B':'#4A6FA5'}" fill-opacity="${i===0?1:0.6}"><title>cost ${Math.round(c).toLocaleString()}</title></rect>`;
+  });
+  svg.innerHTML=inner;
+}
+function gaReset(){
+  gaStopPlay(); ga={};
+  ['ga-step','ga-play','ga-run'].forEach(id=>{const e=document.getElementById(id); if(e)e.disabled=true;});
+  document.getElementById('ga-gen') && (document.getElementById('ga-gen').textContent='0');
+  ['ga-best','ga-avg'].forEach(id=>{const e=document.getElementById(id); if(e)e.textContent='—';});
+  ['ga-grid'].forEach(id=>{const e=document.getElementById(id); if(e)e.innerHTML='';});
+  ['ga-traj','ga-pop-svg'].forEach(id=>{const e=document.getElementById(id); if(e)e.innerHTML='';});
+  clearLog('ga-log','Press Start to seed a random population.');
+}
+
+/* ---- init ---- */
+loadDefaults();
+document.getElementById('co-show-pr').addEventListener('change',coRender);
+document.getElementById('co-practice').addEventListener('change',coRender);
+</script>
+</body>
+</html>
