@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLC IF–THEN Logic — Multi-Rule Scenarios</title>
+<title>PLC IFâ€“THEN Logic â€” Multi-Rule Scenarios</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -20,6 +20,47 @@
   .row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   label.scenario { font-size: 14px; color: #3e4c59; }
   select { padding: 6px 10px; border: 1px solid #cbd2d9; border-radius: 6px; font-size: 14px; background: #fff; }
+  button { font: inherit; }
+
+  /* Case briefing shown before students begin the live analysis */
+  .briefing {
+    border: 1px solid #b6d4fe; border-left: 5px solid #1c64f2;
+    border-radius: 10px; padding: 18px; background: #f5f9ff; margin-top: 16px;
+  }
+  .briefing h2 { font-size: 18px; margin: 0 0 6px; }
+  .briefing .case-summary { color: #3e4c59; margin: 0 0 14px; }
+  .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .brief-item { background: #fff; border: 1px solid #d9e7fb; border-radius: 8px; padding: 12px; }
+  .brief-item h3 { font-size: 13px; margin: 0 0 5px; color: #174ea6; }
+  .brief-item p, .brief-item ul, .brief-item ol { font-size: 13px; margin: 0; padding-left: 18px; }
+  .brief-item p { padding-left: 0; }
+  .brief-item li + li { margin-top: 4px; }
+  .brief-actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+  .primary-btn, .secondary-btn {
+    border-radius: 7px; padding: 8px 14px; cursor: pointer; font-weight: 650;
+  }
+  .primary-btn { border: 1px solid #1c64f2; background: #1c64f2; color: #fff; }
+  .primary-btn:hover, .primary-btn:focus-visible { background: #174ea6; }
+  .secondary-btn { border: 1px solid #cbd2d9; background: #fff; color: #3e4c59; }
+  .secondary-btn:hover, .secondary-btn:focus-visible { background: #f4f6f8; }
+  .brief-hint { font-size: 12px; color: #62707d; }
+  .activity[hidden], .briefing[hidden] { display: none; }
+  .activity-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 18px; }
+  .activity-head .section-title { margin: 0; }
+  .device-help { font-size: 12px; color: #62707d; text-align: center; margin-top: 3px; max-width: 190px; }
+  .rulewhy { font-size: 12px; color: #52606d; margin-top: 7px; padding-top: 7px; border-top: 1px dashed #d9e0e6; }
+  .analysis-guide {
+    margin-top: 18px; border: 1px solid #d9e0e6; border-radius: 10px;
+    padding: 14px 16px; background: #fafbfc;
+  }
+  .analysis-guide h3 { font-size: 14px; margin: 0 0 6px; }
+  .analysis-guide ol { font-size: 13px; margin: 0; padding-left: 20px; }
+  .analysis-guide li + li { margin-top: 4px; }
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    .panel { padding: 18px; }
+    .brief-grid { grid-template-columns: 1fr; }
+  }
 
   .section-title {
     font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
@@ -83,33 +124,50 @@
 </head>
 <body>
 <div class="panel">
-  <h1>PLC IF–THEN Logic — Multi-Rule Scenarios</h1>
+  <h1>PLC IFâ€“THEN Logic â€” Multi-Rule Scenarios</h1>
   <p class="sub">Adjust the inputs. The PLC runs every rule below on each scan and sets all the outputs.</p>
 
   <div class="row">
     <label class="scenario" for="scenario">Scenario:</label>
     <select id="scenario">
-      <option value="motor">Basic — Motor with E-Stop</option>
-      <option value="tank" selected>Water Tank — analog level control</option>
-      <option value="conveyor">Conveyor — safety interlocks</option>
-      <option value="hvac">HVAC — temperature control</option>
+      <option value="motor">Basic â€” Motor with E-Stop</option>
+      <option value="tank" selected>Water Tank â€” analog level control</option>
+      <option value="conveyor">Conveyor â€” safety interlocks</option>
+      <option value="hvac">HVAC â€” temperature control</option>
     </select>
   </div>
 
-  <div class="section-title">Inputs (field devices)</div>
-  <div class="inputs" id="inputs"></div>
+  <section class="briefing" id="briefing" aria-live="polite"></section>
 
-  <div class="section-title">Control rules (run together each scan)</div>
-  <div id="rules"></div>
+  <section class="activity" id="activity" hidden>
+    <div class="activity-head">
+      <div class="section-title">Inputs (field devices)</div>
+      <button type="button" class="secondary-btn" id="reviewCase">Review case</button>
+    </div>
+    <div class="inputs" id="inputs"></div>
 
-  <div class="section-title">Outputs</div>
-  <div class="outputs" id="outputs"></div>
+    <div class="section-title">Control rules (run together each scan)</div>
+    <div id="rules"></div>
 
-  <div class="legend">
-    <span class="cond true">green</span> = condition is currently true &nbsp;·&nbsp;
-    <span class="cond false">red</span> = condition is currently false
-  </div>
-  <div class="scan"><span class="dot"></span> PLC scanning continuously — reads inputs, evaluates every rule, updates outputs</div>
+    <div class="section-title">Outputs (controlled devices)</div>
+    <div class="outputs" id="outputs"></div>
+
+    <div class="analysis-guide">
+      <h3>Analysis routine</h3>
+      <ol>
+        <li>Predict which rule conditions will be true before changing an input.</li>
+        <li>Change one input at a time and compare the result with your prediction.</li>
+        <li>Explain why each output is ON or OFF using the Boolean operators AND, OR and NOT.</li>
+        <li>Test the boundary and safety conditions listed in the case briefing.</li>
+      </ol>
+    </div>
+
+    <div class="legend">
+      <span class="cond true">green</span> = condition is currently true &nbsp;Â·&nbsp;
+      <span class="cond false">red</span> = condition is currently false
+    </div>
+    <div class="scan"><span class="dot"></span> PLC scanning continuously â€” reads inputs, evaluates every rule, updates outputs</div>
+  </section>
 </div>
 
 <script>
@@ -133,15 +191,23 @@
      Rules are evaluated in order, so a later rule can read an earlier output. */
   const scenarios = {
     motor: {
+      title: "Case 1: Motor Start with Emergency Stop",
+      summary: "A small industrial motor may run only when an operator requests it and both stop devices are in a safe state.",
+      objective: "Determine how several permissive conditions combine to control one motor output.",
+      concepts: ["AND logic: every permissive must be true", "NOT logic: Stop and E-Stop must not be active", "Fail-safe thinking and safety interlocks"],
+      sequence: ["The operator switches Start ON.", "The PLC confirms Stop is not pressed.", "The PLC confirms the E-Stop is not activated.", "Only then does the motor output turn ON."],
+      safety: "An active Stop or E-Stop must prevent the motor from running, even if Start remains ON.",
+      challenge: "Predict the motor state for every combination of Start, Stop and E-Stop. Which inputs have priority?",
       inputs: [
-        { key: "start", label: "Start",  type: "digital", value: false },
-        { key: "stop",  label: "Stop",   type: "digital", value: false },
-        { key: "estop", label: "E-Stop", type: "digital", value: false }
+        { key: "start", label: "Start",  type: "digital", value: false, help: "Operator request to run the motor." },
+        { key: "stop",  label: "Stop",   type: "digital", value: false, help: "Normal command to stop the process." },
+        { key: "estop", label: "E-Stop", type: "digital", value: false, help: "Emergency safety device; ON means activated." }
       ],
-      outputs: [ { key: "motor", label: "Motor", kind: "machine" } ],
+      outputs: [ { key: "motor", label: "Motor", kind: "machine", help: "Energizes only when all three permissives are satisfied." } ],
       rules: [
         {
           output: "motor",
+          why: "This permissive rule uses AND, so one false condition is enough to keep the motor OFF.",
           evaluate: s => s.start && !s.stop && !s.estop,
           text: s => `<span class="kw">IF</span> Start ${onoff(s.start)}
             <span class="kw">AND</span> Stop ${notPressed(!s.stop)}
@@ -151,19 +217,27 @@
     },
 
     tank: {
+      title: "Case 2: Water Tank Level Control",
+      summary: "A fill pump adds water to a tank while two independent indicators warn operators about very high or very low levels.",
+      objective: "Analyze how digital commands and an analog sensor can drive several outputs at different thresholds.",
+      concepts: ["Analog comparisons and threshold values", "Independent rules evaluated in the same scan", "Boundary operators: <, â‰¥ and â‰¤"],
+      sequence: ["Start and Stop control whether filling is permitted.", "Below 90%, the pump may fill the tank.", "At 95% or above, the Full Lamp turns ON.", "At 15% or below, the Low-Level Alarm turns ON."],
+      safety: "Notice the 90â€“95% gap: the pump is already OFF before the Full Lamp turns ON. Discuss why this margin may be useful.",
+      challenge: "Test 15%, 16%, 89%, 90%, 94% and 95%. Record exactly where each output changes.",
       inputs: [
-        { key: "start", label: "Start", type: "digital", value: false },
-        { key: "stop",  label: "Stop",  type: "digital", value: false },
-        { key: "level", label: "Tank Level", type: "analog", unit: "%", min: 0, max: 100, step: 1, value: 40 }
+        { key: "start", label: "Start", type: "digital", value: false, help: "Enables the automatic filling request." },
+        { key: "stop",  label: "Stop",  type: "digital", value: false, help: "Prevents the pump from filling." },
+        { key: "level", label: "Tank Level", type: "analog", unit: "%", min: 0, max: 100, step: 1, value: 40, help: "Analog measurement from 0% (empty) to 100% (full)." }
       ],
       outputs: [
-        { key: "pump", label: "Fill Pump",       kind: "machine" },
-        { key: "full", label: "Full Lamp",       kind: "lamp" },
-        { key: "low",  label: "Low-Level Alarm", kind: "alarm" }
+        { key: "pump", label: "Fill Pump",       kind: "machine", help: "Adds water while filling is permitted and level is below 90%." },
+        { key: "full", label: "Full Lamp",       kind: "lamp", help: "Indicates a level of 95% or higher." },
+        { key: "low",  label: "Low-Level Alarm", kind: "alarm", help: "Warns when the level is 15% or lower." }
       ],
       rules: [
         {
           output: "pump",
+          why: "The pump needs an operator request, no Stop command, and enough free tank capacity.",
           evaluate: s => s.start && !s.stop && s.level < 90,
           text: s => `<span class="kw">IF</span> Start ${onoff(s.start)}
             <span class="kw">AND</span> Stop ${notPressed(!s.stop)}
@@ -171,11 +245,13 @@
         },
         {
           output: "full",
+          why: "This indicator is independent of Start and Stop; it reports the measured level.",
           evaluate: s => s.level >= 95,
           text: s => `<span class="kw">IF</span> ${comp("Level " + fmt(s.level, "%"), "&ge; 95%", s.level >= 95)}`
         },
         {
           output: "low",
+          why: "This alarm is also independent of pump commands and responds only to the sensor threshold.",
           evaluate: s => s.level <= 15,
           text: s => `<span class="kw">IF</span> ${comp("Level " + fmt(s.level, "%"), "&le; 15%", s.level <= 15)}`
         }
@@ -183,21 +259,29 @@
     },
 
     conveyor: {
+      title: "Case 3: Conveyor with Safety Interlocks",
+      summary: "A guarded conveyor transports objects. A sorting gate may operate only while the conveyor is safely running, and unsafe conditions create a fault.",
+      objective: "Trace interlocks, OR logic and a rule that depends on an output calculated by an earlier rule.",
+      concepts: ["Safety permissives for machine motion", "OR logic for multiple fault causes", "Dependency between rules and scan order"],
+      sequence: ["Rule 1 decides whether the conveyor motor can run.", "Rule 2 checks both the object sensor and the motor result.", "Rule 3 turns on the fault for an E-Stop or open guard."],
+      safety: "Opening the guard or activating E-Stop must stop the motor. The sorting gate must not activate when the belt is stopped.",
+      challenge: "Try to make the Sorting Gate turn ON while the motor is OFF. Explain why the program prevents it.",
       inputs: [
-        { key: "start",  label: "Start",          type: "digital", value: false },
-        { key: "stop",   label: "Stop",           type: "digital", value: false },
-        { key: "estop",  label: "E-Stop",         type: "digital", value: false },
-        { key: "guard",  label: "Guard Closed",   type: "digital", value: true },
-        { key: "object", label: "Object Detected",type: "digital", value: false }
+        { key: "start",  label: "Start",          type: "digital", value: false, help: "Operator request to run the belt." },
+        { key: "stop",   label: "Stop",           type: "digital", value: false, help: "Normal stop command." },
+        { key: "estop",  label: "E-Stop",         type: "digital", value: false, help: "Emergency stop; ON means activated." },
+        { key: "guard",  label: "Guard Closed",   type: "digital", value: true, help: "Safety switch confirming the machine guard is closed." },
+        { key: "object", label: "Object Detected",type: "digital", value: false, help: "Sensor at the sorting position." }
       ],
       outputs: [
-        { key: "motor", label: "Conveyor Motor", kind: "machine" },
-        { key: "gate",  label: "Sorting Gate",   kind: "machine" },
-        { key: "fault", label: "Fault Lamp",     kind: "alarm" }
+        { key: "motor", label: "Conveyor Motor", kind: "machine", help: "Moves the belt only when every safety permissive is true." },
+        { key: "gate",  label: "Sorting Gate",   kind: "machine", help: "Diverts an object only while the conveyor is running." },
+        { key: "fault", label: "Fault Lamp",     kind: "alarm", help: "Warns of either an active E-Stop or an open guard." }
       ],
       rules: [
         {
           output: "motor",
+          why: "All four conditions use AND; the guard is a required safety permissive.",
           evaluate: s => s.start && !s.stop && !s.estop && s.guard,
           text: s => `<span class="kw">IF</span> Start ${onoff(s.start)}
             <span class="kw">AND</span> Stop ${notPressed(!s.stop)}
@@ -206,12 +290,14 @@
         },
         {
           output: "gate",
+          why: "This rule reads the motor result from Rule 1, demonstrating why rule order can matter.",
           evaluate: (s, o) => s.object && o.motor,
           text: (s, o) => `<span class="kw">IF</span> Object ${onoff(s.object)}
             <span class="kw">AND</span> Conveyor ${running(o.motor)}`
         },
         {
           output: "fault",
+          why: "OR logic means either unsafe condition is sufficient to activate the fault.",
           evaluate: s => s.estop || !s.guard,
           text: s => `<span class="kw">IF</span> E-Stop ${pill(s.estop, s.estop ? "is activated" : "is not activated")}
             <span class="kw">OR</span> Guard ${pill(!s.guard, !s.guard ? "is open" : "is closed")}`
@@ -220,33 +306,43 @@
     },
 
     hvac: {
+      title: "Case 4: HVAC Temperature Control",
+      summary: "A heating and cooling system maintains room temperature near a setpoint while preventing both modes from operating together.",
+      objective: "Investigate calculated thresholds, a neutral deadband and output-dependent fan control.",
+      concepts: ["Setpoint-relative comparisons", "A Â±1Â°C deadband to avoid rapid switching", "Mutually exclusive heating and cooling outputs"],
+      sequence: ["Below setpoint âˆ’ 1Â°C, heating is requested.", "Above setpoint + 1Â°C, cooling is requested.", "Inside the deadband, neither mode runs.", "The fan runs whenever heating OR cooling is active."],
+      safety: "The separated thresholds prevent the heater and cooler from being ON at the same time in this simplified model.",
+      challenge: "For a 22Â°C setpoint, test 20.5Â°C, 21Â°C, 22Â°C, 23Â°C and 23.5Â°C. Pay attention to strict < and > comparisons.",
       inputs: [
-        { key: "enable",   label: "System Enable", type: "digital", value: true },
-        { key: "temp",     label: "Temperature",   type: "analog", unit: "°C", min: 10, max: 35, step: 0.5, value: 22 },
-        { key: "setpoint", label: "Setpoint",      type: "analog", unit: "°C", min: 16, max: 28, step: 0.5, value: 22 }
+        { key: "enable",   label: "System Enable", type: "digital", value: true, help: "Master permission for heating and cooling." },
+        { key: "temp",     label: "Temperature",   type: "analog", unit: "Â°C", min: 10, max: 35, step: 0.5, value: 22, help: "Current temperature measured by the room sensor." },
+        { key: "setpoint", label: "Setpoint",      type: "analog", unit: "Â°C", min: 16, max: 28, step: 0.5, value: 22, help: "Temperature the controller is trying to maintain." }
       ],
       outputs: [
-        { key: "heater", label: "Heater", kind: "heat" },
-        { key: "cooler", label: "Cooler", kind: "cool" },
-        { key: "fan",    label: "Fan",    kind: "machine" }
+        { key: "heater", label: "Heater", kind: "heat", help: "Adds heat when the room is more than 1Â°C below setpoint." },
+        { key: "cooler", label: "Cooler", kind: "cool", help: "Removes heat when the room is more than 1Â°C above setpoint." },
+        { key: "fan",    label: "Fan",    kind: "machine", help: "Moves air whenever heating or cooling is active." }
       ],
       rules: [
         {
           output: "heater",
+          why: "The heater uses the lower boundary of the deadband and also requires System Enable.",
           evaluate: s => s.enable && s.temp < s.setpoint - 1,
           text: s => `<span class="kw">IF</span> Enable ${onoff(s.enable)}
-            <span class="kw">AND</span> ${comp("Temp " + fmt(s.temp, "°C"),
-              "&lt; " + fmt(s.setpoint - 1, "°C") + " (setpoint − 1)", s.temp < s.setpoint - 1)}`
+            <span class="kw">AND</span> ${comp("Temp " + fmt(s.temp, "Â°C"),
+              "&lt; " + fmt(s.setpoint - 1, "Â°C") + " (setpoint âˆ’ 1)", s.temp < s.setpoint - 1)}`
         },
         {
           output: "cooler",
+          why: "The cooler uses the upper boundary, leaving a neutral region around the setpoint.",
           evaluate: s => s.enable && s.temp > s.setpoint + 1,
           text: s => `<span class="kw">IF</span> Enable ${onoff(s.enable)}
-            <span class="kw">AND</span> ${comp("Temp " + fmt(s.temp, "°C"),
-              "&gt; " + fmt(s.setpoint + 1, "°C") + " (setpoint + 1)", s.temp > s.setpoint + 1)}`
+            <span class="kw">AND</span> ${comp("Temp " + fmt(s.temp, "Â°C"),
+              "&gt; " + fmt(s.setpoint + 1, "Â°C") + " (setpoint + 1)", s.temp > s.setpoint + 1)}`
         },
         {
           output: "fan",
+          why: "The fan depends on the results of the first two rules and uses OR so either mode can start it.",
           evaluate: (s, o) => o.heater || o.cooler,
           text: (s, o) => `<span class="kw">IF</span> Heater ${pill(o.heater, o.heater ? "is ON" : "is OFF")}
             <span class="kw">OR</span> Cooler ${pill(o.cooler, o.cooler ? "is ON" : "is OFF")}`
@@ -258,9 +354,58 @@
   let current = "tank";
   let state = {};
 
+  const briefingEl = document.getElementById("briefing");
+  const activityEl = document.getElementById("activity");
   const inputsEl  = document.getElementById("inputs");
   const rulesEl   = document.getElementById("rules");
   const outputsEl = document.getElementById("outputs");
+
+  function listItems(items) {
+    return items.map(item => `<li>${item}</li>`).join("");
+  }
+
+  function showBriefing() {
+    const cfg = scenarios[current];
+    activityEl.hidden = true;
+    briefingEl.hidden = false;
+    briefingEl.innerHTML = `
+      <h2>${cfg.title}</h2>
+      <p class="case-summary">${cfg.summary}</p>
+      <div class="brief-grid">
+        <div class="brief-item">
+          <h3>Learning objective</h3>
+          <p>${cfg.objective}</p>
+        </div>
+        <div class="brief-item">
+          <h3>Key concepts</h3>
+          <ul>${listItems(cfg.concepts)}</ul>
+        </div>
+        <div class="brief-item">
+          <h3>How the system should operate</h3>
+          <ol>${listItems(cfg.sequence)}</ol>
+        </div>
+        <div class="brief-item">
+          <h3>Safety / design note</h3>
+          <p>${cfg.safety}</p>
+        </div>
+        <div class="brief-item" style="grid-column: 1 / -1">
+          <h3>Prediction challenge</h3>
+          <p>${cfg.challenge}</p>
+        </div>
+      </div>
+      <div class="brief-actions">
+        <button type="button" class="primary-btn" id="startAnalysis">Start analysis</button>
+        <span class="brief-hint">Read the case, make an initial prediction, then explore the live PLC logic.</span>
+      </div>`;
+    document.getElementById("startAnalysis").addEventListener("click", startAnalysis);
+  }
+
+  function startAnalysis() {
+    briefingEl.hidden = true;
+    activityEl.hidden = false;
+    buildInputs();
+    activityEl.querySelector(".activity-head").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   /* Build input controls (toggles for digital, sliders for analog) */
   function buildInputs() {
@@ -276,8 +421,9 @@
         wrap.className = "switch";
         wrap.innerHTML = `
           <div class="name">${inp.label}</div>
-          <button class="toggle ${inp.value ? "on" : ""}" aria-pressed="${inp.value}"></button>
-          <div class="state">${inp.value ? "ON" : "OFF"}</div>`;
+          <button type="button" class="toggle ${inp.value ? "on" : ""}" aria-label="Toggle ${inp.label}" aria-pressed="${inp.value}"></button>
+          <div class="state">${inp.value ? "ON" : "OFF"}</div>
+          <div class="device-help">${inp.help}</div>`;
         const btn = wrap.querySelector(".toggle");
         const lbl = wrap.querySelector(".state");
         btn.addEventListener("click", () => {
@@ -294,8 +440,9 @@
         wrap.className = "switch slider";
         wrap.innerHTML = `
           <div class="name">${inp.label}</div>
-          <input type="range" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${inp.value}">
-          <div class="val">${fmt(inp.value, inp.unit)}</div>`;
+          <input type="range" aria-label="${inp.label}" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${inp.value}">
+          <div class="val">${fmt(inp.value, inp.unit)}</div>
+          <div class="device-help">${inp.help}</div>`;
         const range = wrap.querySelector("input");
         const val   = wrap.querySelector(".val");
         range.addEventListener("input", () => {
@@ -340,6 +487,7 @@
             <span class="kw">THEN</span> ${outputLabel(rule.output)}
             ${active ? "<b>turns ON</b>" : "stays OFF"}
           </div>
+          <div class="rulewhy"><b>Why this rule matters:</b> ${rule.why}</div>
         </div>`;
     }).join("");
 
@@ -350,16 +498,18 @@
         <div>
           <div class="olabel">${o.label}</div>
           <div class="ostate">${out[o.key] ? "ON" : "OFF"}</div>
+          <div class="device-help" style="text-align:left">${o.help}</div>
         </div>
       </div>`).join("");
   }
 
   document.getElementById("scenario").addEventListener("change", e => {
     current = e.target.value;
-    buildInputs();
+    showBriefing();
   });
 
-  buildInputs();
+  document.getElementById("reviewCase").addEventListener("click", showBriefing);
+  showBriefing();
 </script>
 </body>
 </html>
