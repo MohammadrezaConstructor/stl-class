@@ -20,9 +20,18 @@
     --accent-soft:rgba(207,69,32,0.13);
     --ok:#2f7d5b;
     --shadow:0 1px 2px rgba(22,49,79,.06), 0 8px 30px rgba(22,49,79,.07);
+
+    /* layout constants — mirrored in JS, keep them in sync */
+    --stage-frac:0.56;   /* share of the wrap the figure column gets when wide */
   }
   *{box-sizing:border-box}
   html,body{margin:0}
+  html{
+    /* Reserve the scrollbar gutter permanently. Without this, the page getting
+       taller summons a scrollbar, which steals ~15px of width, which can push
+       the layout back across a breakpoint — the exact loop this file had. */
+    scrollbar-gutter:stable;
+  }
   body{
     background:var(--paper);
     color:var(--ink);
@@ -66,7 +75,7 @@
   }
 
   /* ---- body grid ----
-     Single column by default; JS adds data-w="wide" on .wrap when the
+     Single column by default; JS sets data-w="wide" on .wrap when the
      CONTAINER (not the viewport) is wide enough for two columns. */
   .grid{display:grid;grid-template-columns:1fr;gap:0}
   .wrap[data-w="wide"] .grid{grid-template-columns:minmax(0,1.28fr) minmax(0,1fr)}
@@ -247,8 +256,6 @@
      FIGURE LAYOUTS
      'wide'    : circle left, magnified inset right  (580 x 350)
      'compact' : circle top,  magnified inset below  (400 x 560)
-     Chosen from the MEASURED width of .stage, so it adapts inside
-     an iframe, a narrow column, or a full-width page alike.
   -------------------------------------------------------------*/
   const LAYOUTS = {
     wide:{
@@ -264,12 +271,7 @@
       halfChord:82, chordDx:28, apexDx:120, am:300
     }
   };
-  let L = LAYOUTS.wide, layoutName = "wide";
-
-  function pickLayout(){
-    const w = $("stage").clientWidth || 0;
-    return w < 430 ? "compact" : "wide";
-  }
+  let L = LAYOUTS.wide;
 
   // ---- geometry helpers ----
   function polar(cx, cy, R, deg){          // math angle, CCW from +x, SVG y flipped
@@ -481,22 +483,65 @@
 
   /* ============================================================
      RESPONSIVE PLUMBING
-     Measures the container, not the viewport, so the widget behaves
-     the same in an iframe, a sidebar, or a full-width page.
+
+     ONE measurement (the wrap's width) decides BOTH the column count
+     and the figure layout. The figure column's width is PREDICTED
+     arithmetically rather than measured, because measuring it after
+     switching the columns creates a cycle:
+        wide columns -> narrow stage -> tall figure -> taller page
+        -> scrollbar -> less width -> narrow columns -> wide stage
+        -> short figure -> no scrollbar -> back to the start.
+     A 30px dead-band on each threshold means no ~15px scrollbar can
+     ever flip a decision, so the loop cannot restart even if the host
+     page ignores scrollbar-gutter.
      ============================================================ */
+  const COL_BP   = 700;   // wrap width at which two columns appear
+  const FIG_BP   = 430;   // predicted stage width below which the figure stacks
+  const DEADBAND = 30;    // must clear a boundary by this much to switch back
+  const STAGE_FRAC = 0.56;// figure column's share of the wrap when two-up (1.28 / 2.28)
+  const STAGE_PAD  = 22;  // .stage horizontal padding
+
+  const cur = { wide:null, compact:null };
+
+  function decide(W){
+    // hysteresis: once in a state, require a clear margin to leave it
+    const wide = cur.wide
+      ? W >= COL_BP - DEADBAND
+      : W >= COL_BP;
+    const stage = (wide ? W*STAGE_FRAC : W) - STAGE_PAD;
+    const compact = cur.compact
+      ? stage < FIG_BP + DEADBAND
+      : stage < FIG_BP;
+    return {wide, compact};
+  }
+
+  let busy = false;
   function reflow(){
-    const wrap=$("wrap");
-    wrap.dataset.w = wrap.clientWidth >= 700 ? "wide" : "narrow";
-    const want = pickLayout();
-    if(want !== layoutName){
-      layoutName = want;
-      L = LAYOUTS[want];
+    const wrap = $("wrap");
+    const next = decide(wrap.clientWidth || 0);
+
+    if(next.wide !== cur.wide){
+      cur.wide = next.wide;
+      wrap.dataset.w = next.wide ? "wide" : "narrow";
+    }
+    if(next.compact !== cur.compact){
+      cur.compact = next.compact;
+      L = next.compact ? LAYOUTS.compact : LAYOUTS.wide;
       drawFig();
     }
   }
+
   if(window.ResizeObserver){
     let t=null;
-    new ResizeObserver(()=>{ clearTimeout(t); t=setTimeout(reflow,80); }).observe($("wrap"));
+    new ResizeObserver(()=>{
+      if(busy) return;                       // ignore echoes of our own writes
+      clearTimeout(t);
+      t=setTimeout(()=>{
+        busy=true;
+        reflow();
+        requestAnimationFrame(()=>{ busy=false; });
+      },80);
+    }).observe($("wrap"));
   }
   window.addEventListener("resize",reflow);
 
@@ -532,10 +577,9 @@
 
   $("spokesChk").addEventListener("change",update);
 
-  // init — layout first so the first draw uses the right geometry
+  // init — settle the layout first so the first draw uses the right geometry
   syncRangeFill($("nRange"));
   reflow();
-  L = LAYOUTS[layoutName = pickLayout()];
   update();
 })();
 </script>
