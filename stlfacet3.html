@@ -1,417 +1,1021 @@
-<!-- STL Facet Anatomy — compact / iframe-friendly build -->
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>STL Facet Anatomy</title>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#eef2f4">
+  <title>STL Facet Anatomy — Responsive</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --page: #eef2f4;
+      --page-glow: #f9fbfc;
+      --panel: #ffffff;
+      --panel-muted: #f5f8f9;
+      --ink: #17212b;
+      --ink-soft: #5f6d79;
+      --line: #d7e0e5;
+      --blue: #2d6f93;
+      --blue-deep: #204f6a;
+      --blue-wash: #e8f1f6;
+      --green: #277758;
+      --orange: #e87322;
+      --orange-deep: #a94e12;
+      --orange-wash: #fff0e5;
+      --shadow: 0 18px 48px rgba(32, 59, 74, 0.10);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --pane-height: clamp(370px, 58svh, 560px);
+    }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    * {
+      box-sizing: border-box;
+    }
 
-<style>
-  :root{
-    --bg:#eef1f5;
-    --panel:#ffffff;
-    --grid:#e3e8ee;
-    --line:#2f6f93;        /* blueprint */
-    --line-soft:#d6dde4;
-    --ink:#1f2933;
-    --ink-dim:#647281;
-    --kw:#1f6fb2;          /* STL keywords */
-    --num:#2c7a55;         /* coordinates */
-    --accent:#e07b1a;      /* redline / active facet */
-    --accent-dim:#b9701f;
-    --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
-    --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    html {
+      min-width: 0;
+      background: var(--page);
+      scrollbar-gutter: stable;
+    }
 
-    /* pane height — tweak this if you want a taller/shorter embed */
-    --pane-h:clamp(260px, 56vh, 520px);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  html{scrollbar-gutter:stable}     /* reserve the gutter so width can't jump */
-  body{
-    background:
-      radial-gradient(120% 90% at 50% -10%, #f7f9fb 0%, var(--bg) 60%);
-    color:var(--ink);
-    font-family:var(--sans);
-    overflow-x:hidden;              /* no stray horizontal scrollbar in the frame */
-    -webkit-text-size-adjust:100%;
-  }
-  /* fluid: fills whatever width the iframe gives it, up to 900px */
-  .wrap{width:100%;max-width:900px;margin:0 auto;padding:14px 12px 18px}
+    body {
+      min-width: 0;
+      min-height: 100svh;
+      margin: 0;
+      overflow-x: clip;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(80% 42% at 50% 0%, var(--page-glow) 0%, transparent 100%),
+        var(--page);
+      -webkit-text-size-adjust: 100%;
+    }
 
-  header{
-    display:flex;align-items:flex-end;justify-content:space-between;
-    gap:10px;flex-wrap:wrap;
-    border-bottom:1px solid var(--line-soft);
-    padding-bottom:10px;margin-bottom:12px;
-  }
-  .title{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 220px}
-  .eyebrow{
-    font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--line);
-  }
-  h1{margin:0;font-size:clamp(14px,3.4vw,18px);font-weight:600;letter-spacing:-.01em}
-  h1 b{color:var(--accent);font-weight:600}
-  .sub{color:var(--ink-dim);font-size:11px;max-width:46ch;line-height:1.45}
+    button {
+      font: inherit;
+    }
 
-  .shapes{display:flex;gap:5px;flex-wrap:wrap}
-  .shapes button{
-    font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;
-    color:var(--ink-dim);background:var(--panel);
-    border:1px solid var(--line-soft);border-radius:7px;
-    padding:6px 9px;cursor:pointer;transition:.15s;white-space:nowrap;
-  }
-  .shapes button:hover{color:var(--ink);border-color:var(--line)}
-  .shapes button[aria-pressed="true"]{
-    color:var(--accent);border-color:var(--accent);
-    background:rgba(224,123,26,.10);
-  }
+    .shell {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(22px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+    }
 
-  /* auto-fit: two columns when there's room, one column as soon as there isn't.
-     Pure CSS — JS never writes layout here, so there's no feedback loop. */
-  .grid{
-    display:grid;gap:10px;align-items:stretch;
-    grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));
-  }
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 22px;
+      padding: 8px 2px 18px;
+    }
 
-  .pane{
-    background:var(--panel);
-    border:1px solid var(--line-soft);
-    border-radius:10px;overflow:hidden;
-    display:flex;flex-direction:column;min-width:0;min-height:0;
-  }
-  .pane-head{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
-    padding:7px 10px;border-bottom:1px solid var(--line-soft);
-    font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--ink-dim);
-  }
-  .pane-head .meta{color:var(--line);text-transform:none;letter-spacing:.03em;white-space:nowrap}
+    .intro {
+      min-width: 0;
+    }
 
-  /* ---- code pane ---- */
-  #code{
-    font-family:var(--mono);font-size:10px;line-height:1.45;
-    overflow:auto;padding:6px 0;flex:1;height:var(--pane-h);
-  }
-  .solidline{padding:2px 10px;color:var(--ink-dim)}
-  .facet{
-    padding:5px 10px 5px 8px;border-left:3px solid transparent;
-    cursor:pointer;transition:background .12s,border-color .12s;
-    white-space:pre;
-  }
-  .facet:hover{background:rgba(47,111,147,.07)}
-  .facet.active{
-    background:rgba(224,123,26,.10);
-    border-left-color:var(--accent);
-  }
-  .facet .ln{display:block}
-  .indent1{padding-left:1.2em}
-  .indent2{padding-left:2.4em}
-  .kw{color:var(--kw)}
-  .num{color:var(--num)}
-  .fid{color:var(--accent-dim);user-select:none}
-  .facet.active .fid{color:var(--accent)}
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 9px;
+      color: var(--blue);
+      font-family: var(--mono);
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
 
-  /* ---- view pane ---- */
-  .viewport{position:relative;flex:1;height:var(--pane-h);min-width:0;background:
-    repeating-linear-gradient(0deg,transparent 0 23px,rgba(47,111,147,.05) 23px 24px),
-    repeating-linear-gradient(90deg,transparent 0 23px,rgba(47,111,147,.05) 23px 24px),
-    #f5f8fa;}
-  /* Belt-and-braces: even if the renderer ever fails to write a CSS size,
-     the canvas can no longer overflow its pane. */
-  .viewport canvas{display:block;width:100%;height:100%}
-  .readout{
-    position:absolute;left:9px;bottom:9px;
-    font-family:var(--mono);font-size:9.5px;line-height:1.45;
-    color:var(--ink-dim);pointer-events:none;
-    background:rgba(255,255,255,.82);border:1px solid var(--line-soft);
-    border-radius:7px;padding:6px 9px;backdrop-filter:blur(3px);
-    max-width:70%;
-  }
-  .readout .lbl{color:var(--line)}
-  .readout .hot{color:var(--accent)}
-  .hint{
-    position:absolute;right:9px;top:9px;
-    font-family:var(--mono);font-size:9px;letter-spacing:.04em;
-    color:var(--ink-dim);text-align:right;pointer-events:none;opacity:.8;
-  }
-  footer{
-    margin-top:10px;font-family:var(--mono);font-size:9.5px;
-    color:var(--ink-dim);display:flex;gap:12px;flex-wrap:wrap;
-  }
-  footer span b{color:var(--num);font-weight:400}
-  .swatch{display:inline-block;width:8px;height:8px;border-radius:2px;
-    vertical-align:middle;margin-right:4px}
+    .eyebrow::before {
+      width: 20px;
+      height: 2px;
+      border-radius: 99px;
+      background: var(--orange);
+      content: "";
+    }
 
-  /* very narrow frames: drop the non-essential chrome */
-  @media (max-width:420px){
-    .sub{display:none}
-    .hint{display:none}
-    footer span:last-child{display:none}
-  }
-</style>
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(1.65rem, 4.3vw, 3.2rem);
+      font-weight: 670;
+      letter-spacing: -0.045em;
+      line-height: 1.03;
+      text-wrap: balance;
+    }
 
-<div class="wrap">
-  <header>
-    <div class="title">
-      <div class="eyebrow">ASCII STL · mesh anatomy</div>
-      <h1>Every <b>facet</b> block is one triangle</h1>
-      <div class="sub">Click a block in the code to light its triangle — or click a triangle to find its block. Click again (or empty space) to clear. Drag to orbit.</div>
-    </div>
-    <div class="shapes" id="shapes">
-      <button data-shape="cube" aria-pressed="true">cube · 12</button>
-      <button data-shape="pyramid" aria-pressed="false">pyramid · 6</button>
-      <button data-shape="tetra" aria-pressed="false">tetra · 4</button>
-    </div>
-  </header>
+    h1 em {
+      color: var(--orange);
+      font-style: normal;
+    }
 
-  <div class="grid">
-    <section class="pane">
-      <div class="pane-head"><span>solid · ascii</span><span class="meta" id="codemeta">12 facets</span></div>
-      <div id="code"></div>
-    </section>
+    .lede {
+      max-width: 67ch;
+      margin: 11px 0 0;
+      color: var(--ink-soft);
+      font-size: clamp(0.83rem, 1.5vw, 0.96rem);
+      line-height: 1.55;
+    }
 
-    <section class="pane">
-      <div class="pane-head"><span>geometry</span><span class="meta">right-hand normals</span></div>
-      <div class="viewport" id="viewport">
-        <div class="hint">drag · orbit<br>scroll · zoom</div>
-        <div class="readout" id="readout"><span class="lbl">facet</span> — <span class="hot">click to inspect</span></div>
+    .shape-picker {
+      display: flex;
+      max-width: 100%;
+      padding: 4px;
+      gap: 3px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.76);
+      box-shadow: 0 6px 18px rgba(32, 79, 106, 0.06);
+      scrollbar-width: none;
+    }
+
+    .shape-picker::-webkit-scrollbar {
+      display: none;
+    }
+
+    .shape-picker button {
+      min-height: 38px;
+      padding: 7px 11px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--ink-soft);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 650;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      transition: color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+    }
+
+    .shape-picker button:hover {
+      color: var(--ink);
+      background: var(--panel-muted);
+    }
+
+    .shape-picker button:focus-visible,
+    .facet:focus-visible {
+      outline: 3px solid rgba(45, 111, 147, 0.28);
+      outline-offset: 1px;
+    }
+
+    .shape-picker button[aria-pressed="true"] {
+      color: var(--orange-deep);
+      background: var(--panel);
+      box-shadow: 0 2px 8px rgba(38, 54, 65, 0.12);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .pane {
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      flex-direction: column;
+      border: 1px solid rgba(179, 196, 205, 0.82);
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .pane-head {
+      display: flex;
+      min-height: 50px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink-soft);
+      background: linear-gradient(180deg, #ffffff, #fbfcfd);
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .pane-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--blue);
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap;
+    }
+
+    .pane-meta::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 4px var(--blue-wash);
+      content: "";
+    }
+
+    .code-pane {
+      height: var(--pane-height);
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: #bccbd3 transparent;
+      scrollbar-width: thin;
+      font-family: var(--mono);
+      font-size: clamp(0.58rem, 0.32vw + 0.5rem, 0.69rem);
+      line-height: 1.5;
+    }
+
+    .solid-line {
+      padding: 9px 13px;
+      color: var(--ink-soft);
+      white-space: pre;
+    }
+
+    .facet {
+      position: relative;
+      min-width: 0;
+      padding: 8px 13px 8px 11px;
+      overflow: hidden;
+      border: 0;
+      border-left: 3px solid transparent;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      outline: none;
+      white-space: pre;
+      transition: background 130ms ease, border-color 130ms ease;
+    }
+
+    .facet::after {
+      position: absolute;
+      inset: auto 12px 0 12px;
+      height: 1px;
+      background: #eef2f4;
+      content: "";
+    }
+
+    .facet:hover {
+      background: var(--blue-wash);
+    }
+
+    .facet.active {
+      border-left-color: var(--orange);
+      background: var(--orange-wash);
+    }
+
+    .facet.active::before {
+      position: absolute;
+      top: 12px;
+      right: 11px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 0 4px rgba(232, 115, 34, 0.12);
+      content: "";
+    }
+
+    .code-line {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+
+    .indent-1 {
+      padding-left: 1.15em;
+    }
+
+    .indent-2 {
+      padding-left: 2.3em;
+    }
+
+    .keyword {
+      color: var(--blue-deep);
+      font-weight: 650;
+    }
+
+    .number {
+      color: var(--green);
+    }
+
+    .facet-id {
+      color: #9a693f;
+      user-select: none;
+    }
+
+    .facet.active .facet-id {
+      color: var(--orange-deep);
+    }
+
+    .viewport {
+      position: relative;
+      height: var(--pane-height);
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.96), rgba(245, 249, 250, 0.80) 45%, transparent 68%),
+        repeating-linear-gradient(0deg, transparent 0 27px, rgba(45, 111, 147, 0.055) 27px 28px),
+        repeating-linear-gradient(90deg, transparent 0 27px, rgba(45, 111, 147, 0.055) 27px 28px),
+        #eef4f6;
+    }
+
+    .viewport::after {
+      position: absolute;
+      inset: 13px;
+      z-index: -1;
+      border: 1px solid rgba(45, 111, 147, 0.10);
+      border-radius: 11px;
+      content: "";
+      pointer-events: none;
+    }
+
+    .viewport canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    .view-hint,
+    .readout {
+      position: absolute;
+      z-index: 2;
+      border: 1px solid rgba(188, 203, 211, 0.9);
+      border-radius: 10px;
+      color: var(--ink-soft);
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 6px 16px rgba(34, 62, 76, 0.08);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      font-family: var(--mono);
+    }
+
+    .view-hint {
+      top: 12px;
+      right: 12px;
+      padding: 7px 9px;
+      font-size: 0.59rem;
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .readout {
+      bottom: 12px;
+      left: 12px;
+      max-width: calc(100% - 24px);
+      padding: 8px 10px;
+      font-size: 0.63rem;
+      line-height: 1.55;
+    }
+
+    .readout-label {
+      color: var(--blue);
+    }
+
+    .readout-hot {
+      color: var(--orange-deep);
+      font-weight: 700;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 9px 18px;
+      min-width: 0;
+      padding: 14px 3px 0;
+      color: var(--ink-soft);
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      line-height: 1.45;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .legend-item:last-child {
+      margin-left: auto;
+      white-space: normal;
+      text-align: right;
+    }
+
+    .swatch {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 3px;
+      background: var(--blue);
+    }
+
+    .swatch.active {
+      background: var(--orange);
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --pane-height: auto;
+      }
+
+      .shell {
+        padding-inline: max(12px, env(safe-area-inset-left));
+      }
+
+      .masthead {
+        grid-template-columns: 1fr;
+        align-items: start;
+        gap: 15px;
+      }
+
+      .shape-picker {
+        width: 100%;
+      }
+
+      .shape-picker button {
+        min-height: 44px;
+        flex: 1 0 auto;
+      }
+
+      .workspace {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .model-pane {
+        order: -1;
+      }
+
+      .viewport {
+        height: clamp(280px, 52svh, 390px);
+      }
+
+      .code-pane {
+        height: clamp(360px, 62svh, 500px);
+      }
+
+      .legend {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .legend-item:last-child {
+        width: 100%;
+        margin-left: 0;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .shell {
+        padding-top: 12px;
+      }
+
+      .masthead {
+        padding-bottom: 12px;
+      }
+
+      h1 {
+        font-size: clamp(1.55rem, 9vw, 2.2rem);
+      }
+
+      .lede {
+        margin-top: 9px;
+        font-size: 0.82rem;
+      }
+
+      .pane {
+        border-radius: var(--radius-md);
+        box-shadow: 0 12px 28px rgba(32, 59, 74, 0.09);
+      }
+
+      .pane-head {
+        min-height: 44px;
+        padding-inline: 11px;
+        font-size: 0.61rem;
+      }
+
+      .code-pane {
+        font-size: 0.57rem;
+      }
+
+      .solid-line {
+        padding-inline: 9px;
+      }
+
+      .facet {
+        padding: 7px 8px 7px 7px;
+      }
+
+      .view-hint {
+        display: none;
+      }
+    }
+
+    @media (max-width: 320px) {
+      .lede {
+        display: none;
+      }
+
+      .pane-meta::before,
+      .legend-item:last-child {
+        display: none;
+      }
+
+      .shape-picker button {
+        padding-inline: 8px;
+        font-size: 0.64rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="intro">
+        <div class="eyebrow">ASCII STL · mesh anatomy</div>
+        <h1>Every <em>facet</em> block is one triangle.</h1>
+        <p class="lede">Select code to locate its face, or tap the model to find the matching block. Drag to orbit, scroll or pinch to zoom, and tap empty space to clear.</p>
       </div>
-    </section>
-  </div>
 
-  <footer>
-    <span><span class="swatch" style="background:var(--line)"></span>face fill</span>
-    <span><span class="swatch" style="background:var(--accent)"></span>active facet</span>
-    <span>normal = <b>n̂</b> · vertices <b>counter-clockwise</b> from outside</span>
-  </footer>
-</div>
+      <div class="shape-picker" id="shape-picker" aria-label="Choose a mesh">
+        <button type="button" data-shape="cube" aria-pressed="true">cube · 12</button>
+        <button type="button" data-shape="pyramid" aria-pressed="false">pyramid · 6</button>
+        <button type="button" data-shape="tetra" aria-pressed="false">tetra · 4</button>
+      </div>
+    </header>
 
-<script>
-/* ----------------------------------------------------------------
-   Geometry definitions. Each shape returns a flat list of triangles:
-   [{a:[x,y,z], b:[...], c:[...]}]. Normals are computed from winding,
-   and winding is corrected so every normal points away from origin.
------------------------------------------------------------------*/
-function quad(p0,p1,p2,p3){ return [[p0,p1,p2],[p0,p2,p3]]; }
+    <div class="workspace">
+      <section class="pane code-card" aria-labelledby="code-title">
+        <div class="pane-head">
+          <span id="code-title">ASCII source</span>
+          <span class="pane-meta" id="code-meta">12 facets</span>
+        </div>
+        <div class="code-pane" id="code" aria-label="Interactive STL facet source"></div>
+      </section>
 
-function cubeTris(){
-  const v=[
-    [-1,-1,-1],[ 1,-1,-1],[ 1, 1,-1],[-1, 1,-1],  // back  z-
-    [-1,-1, 1],[ 1,-1, 1],[ 1, 1, 1],[-1, 1, 1],  // front z+
-  ];
-  const faces=[
-    [4,5,6,7], // +z
-    [1,0,3,2], // -z
-    [5,1,2,6], // +x
-    [0,4,7,3], // -x
-    [7,6,2,3], // +y
-    [0,1,5,4], // -y
-  ];
-  let t=[];
-  faces.forEach(f=>quad(v[f[0]],v[f[1]],v[f[2]],v[f[3]]).forEach(tr=>t.push(tr)));
-  return t.map(tr=>({a:tr[0],b:tr[1],c:tr[2]}));
-}
+      <section class="pane model-pane" aria-labelledby="model-title">
+        <div class="pane-head">
+          <span id="model-title">Geometry</span>
+          <span class="pane-meta">outward normals</span>
+        </div>
+        <div class="viewport" id="viewport">
+          <div class="view-hint">drag · orbit<br>scroll · zoom</div>
+          <div class="readout" id="readout" aria-live="polite">
+            <span class="readout-label">facet</span> —
+            <span class="readout-hot">tap to inspect</span>
+          </div>
+        </div>
+      </section>
+    </div>
 
-function pyramidTris(){
-  const ap=[0,1.35,0];
-  const b=[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]];
-  let t=[];
-  for(let i=0;i<4;i++){ t.push([ap,b[i],b[(i+1)%4]]); }      // 4 sides
-  quad(b[0],b[1],b[2],b[3]).forEach(tr=>t.push(tr));         // base (2)
-  return t.map(tr=>({a:tr[0],b:tr[1],c:tr[2]}));
-}
+    <footer class="legend" aria-label="Diagram legend">
+      <span class="legend-item"><span class="swatch"></span>mesh face</span>
+      <span class="legend-item"><span class="swatch active"></span>selected facet</span>
+      <span class="legend-item">normal = n̂ · vertices wind counter-clockwise from outside</span>
+    </footer>
+  </main>
 
-function tetraTris(){
-  const s=1.25;
-  const v=[[ s, s, s],[ s,-s,-s],[-s, s,-s],[-s,-s, s]];
-  const f=[[0,1,2],[0,3,1],[0,2,3],[1,3,2]];
-  return f.map(i=>({a:v[i[0]],b:v[i[1]],c:v[i[2]]}));
-}
+  <script>
+    (() => {
+      "use strict";
 
-const SHAPES={cube:cubeTris,pyramid:pyramidTris,tetra:tetraTris};
+      if (!window.THREE) {
+        document.getElementById("viewport").innerHTML =
+          '<div class="readout"><span class="readout-hot">3D library could not load.</span><br>Check the network connection and reload.</div>';
+        return;
+      }
 
-// vector helpers
-const sub=(p,q)=>[p[0]-q[0],p[1]-q[1],p[2]-q[2]];
-const cross=(u,w)=>[u[1]*w[2]-u[2]*w[1],u[2]*w[0]-u[0]*w[2],u[0]*w[1]-u[1]*w[0]];
-const dot=(u,w)=>u[0]*w[0]+u[1]*w[1]+u[2]*w[2];
-const len=u=>Math.hypot(u[0],u[1],u[2]);
-function normalize(u){const l=len(u)||1;return[u[0]/l,u[1]/l,u[2]/l];}
+      const quad = (p0, p1, p2, p3) => [[p0, p1, p2], [p0, p2, p3]];
 
-// build facet records with corrected winding + true normal
-function buildFacets(tris){
-  return tris.map(tr=>{
-    let {a,b,c}=tr;
-    let n=normalize(cross(sub(b,a),sub(c,a)));
-    const cen=[(a[0]+b[0]+c[0])/3,(a[1]+b[1]+c[1])/3,(a[2]+b[2]+c[2])/3];
-    if(dot(n,cen)<0){ const t=b;b=c;c=t; n=normalize(cross(sub(b,a),sub(c,a))); }
-    return {a,b,c,n};
-  });
-}
+      function cubeTriangles() {
+        const v = [
+          [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+          [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+        ];
+        const faces = [
+          [4, 5, 6, 7], [1, 0, 3, 2], [5, 1, 2, 6],
+          [0, 4, 7, 3], [7, 6, 2, 3], [0, 1, 5, 4]
+        ];
+        return faces.flatMap((face) =>
+          quad(v[face[0]], v[face[1]], v[face[2]], v[face[3]])
+        ).map(([a, b, c]) => ({ a, b, c }));
+      }
 
-/* ----------------------------------------------------------------
-   ASCII STL code panel
-   Precision adapts to available width so narrow frames don't need
-   a horizontal scrollbar.
------------------------------------------------------------------*/
-const codeEl=document.getElementById('code');
-const codeMeta=document.getElementById('codemeta');
+      function pyramidTriangles() {
+        const apex = [0, 1.35, 0];
+        const base = [[-1, -1, -1], [1, -1, -1], [1, -1, 1], [-1, -1, 1]];
+        const sides = base.map((point, index) => ({
+          a: apex,
+          b: point,
+          c: base[(index + 1) % base.length]
+        }));
+        const floor = quad(base[0], base[1], base[2], base[3])
+          .map(([a, b, c]) => ({ a, b, c }));
+        return [...sides, ...floor];
+      }
 
-let decimals=6, currentShape='cube';
-function pickDecimals(){
-  const w=codeEl.clientWidth||0;
-  if(!w) return decimals;                    // not laid out yet — keep current
-  return w<300 ? 2 : w<390 ? 3 : w<470 ? 4 : 6;
-}
-const fmt=x=>(x<0?'':' ')+x.toFixed(decimals);
+      function tetraTriangles() {
+        const s = 1.25;
+        const v = [[s, s, s], [s, -s, -s], [-s, s, -s], [-s, -s, s]];
+        return [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]]
+          .map(([a, b, c]) => ({ a: v[a], b: v[b], c: v[c] }));
+      }
 
-function renderCode(facets,name){
-  let html=`<div class="solidline">solid <span class="kw">${name}</span></div>`;
-  facets.forEach((f,i)=>{
-    const id=String(i).padStart(2,'0');
-    html+=`<div class="facet" data-i="${i}">`+
-      `<span class="ln"><span class="fid">/*${id}*/ </span><span class="kw">facet normal</span> <span class="num">${fmt(f.n[0])} ${fmt(f.n[1])} ${fmt(f.n[2])}</span></span>`+
-      `<span class="ln indent1"><span class="kw">outer loop</span></span>`+
-      `<span class="ln indent2"><span class="kw">vertex</span> <span class="num">${fmt(f.a[0])} ${fmt(f.a[1])} ${fmt(f.a[2])}</span></span>`+
-      `<span class="ln indent2"><span class="kw">vertex</span> <span class="num">${fmt(f.b[0])} ${fmt(f.b[1])} ${fmt(f.b[2])}</span></span>`+
-      `<span class="ln indent2"><span class="kw">vertex</span> <span class="num">${fmt(f.c[0])} ${fmt(f.c[1])} ${fmt(f.c[2])}</span></span>`+
-      `<span class="ln indent1"><span class="kw">endloop</span></span>`+
-      `<span class="ln"><span class="kw">endfacet</span></span>`+
-      `</div>`;
-  });
-  html+=`<div class="solidline">endsolid <span class="kw">${name}</span></div>`;
-  codeEl.innerHTML=html;
-  codeMeta.textContent=`${facets.length} facets`;
+      const shapes = {
+        cube: cubeTriangles,
+        pyramid: pyramidTriangles,
+        tetra: tetraTriangles
+      };
 
-  codeEl.querySelectorAll('.facet').forEach(el=>{
-    const i=+el.dataset.i;
-    el.addEventListener('click',()=>setActive(selected===i?-1:i,false));
-  });
-}
+      const subtract = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]];
+      const cross = (u, v) => [
+        u[1] * v[2] - u[2] * v[1],
+        u[2] * v[0] - u[0] * v[2],
+        u[0] * v[1] - u[1] * v[0]
+      ];
+      const dot = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+      const normalize = (v) => {
+        const length = Math.hypot(v[0], v[1], v[2]) || 1;
+        return v.map((value) => value / length);
+      };
 
-/* ----------------------------------------------------------------
-   Three.js viewport
------------------------------------------------------------------*/
-const vp=document.getElementById('viewport');
-const readout=document.getElementById('readout');
-const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-vp.appendChild(renderer.domElement);
+      function buildFacets(triangles) {
+        return triangles.map((triangle) => {
+          let { a, b, c } = triangle;
+          let normal = normalize(cross(subtract(b, a), subtract(c, a)));
+          const center = [
+            (a[0] + b[0] + c[0]) / 3,
+            (a[1] + b[1] + c[1]) / 3,
+            (a[2] + b[2] + c[2]) / 3
+          ];
 
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(42,1,0.1,100);
+          if (dot(normal, center) < 0) {
+            [b, c] = [c, b];
+            normal = normalize(cross(subtract(b, a), subtract(c, a)));
+          }
 
-// --- minimal self-contained orbit controller (no external dep) ---
-const orbit={az:0,pol:0,rad:6, azT:0,polT:0,radT:6, dragging:false, moved:false, lx:0,ly:0};
-(function initOrbit(){
-  const x=3.4,y=2.6,z=4.2;
-  orbit.rad=orbit.radT=Math.hypot(x,y,z);
-  orbit.pol=orbit.polT=Math.acos(y/orbit.rad);
-  orbit.az=orbit.azT=Math.atan2(x,z);
-})();
-function applyCamera(){
-  orbit.az+=(orbit.azT-orbit.az)*0.18;
-  orbit.pol+=(orbit.polT-orbit.pol)*0.18;
-  orbit.rad+=(orbit.radT-orbit.rad)*0.18;
-  const sp=Math.sin(orbit.pol);
-  camera.position.set(
-    orbit.rad*sp*Math.sin(orbit.az),
-    orbit.rad*Math.cos(orbit.pol),
-    orbit.rad*sp*Math.cos(orbit.az)
-  );
-  camera.lookAt(0,0,0);
-}
+          return { a, b, c, normal };
+        });
+      }
 
-scene.add(new THREE.AmbientLight(0x9fb0c0,0.95));
-const keyLight=new THREE.DirectionalLight(0xffffff,0.85);keyLight.position.set(5,6,4);scene.add(keyLight);
-const rimLight=new THREE.DirectionalLight(0x6a8296,0.5);rimLight.position.set(-4,-2,-5);scene.add(rimLight);
+      const codeElement = document.getElementById("code");
+      const codeMeta = document.getElementById("code-meta");
+      const viewport = document.getElementById("viewport");
+      const readout = document.getElementById("readout");
+      const shapePicker = document.getElementById("shape-picker");
 
-let group=new THREE.Group();scene.add(group);
-let meshes=[],edges=[];
-let facets=[];
-let selected=-1, pointerIn=false, hotFacet=-1;
+      let currentShape = "cube";
+      let currentFacets = [];
+      let selectedFacet = -1;
+      let decimals = 4;
 
-const COL_FILL=new THREE.Color(0x4a86ad);
-const COL_ACTIVE=new THREE.Color(0xe07b1a);
-const COL_EMIT_OFF=new THREE.Color(0x0a1820);
-const COL_EMIT_ON=new THREE.Color(0x7a4410);
+      function precisionFor(width) {
+        if (width < 330) return 2;
+        if (width < 440) return 3;
+        if (width < 570) return 4;
+        return 5;
+      }
 
-function clearGroup(){
-  meshes.forEach(m=>{m.geometry.dispose();m.material.dispose();});
-  edges.forEach(e=>{e.geometry.dispose();e.material.dispose();});
-  group.clear();meshes=[];edges=[];
-}
+      function formatNumber(value) {
+        const safe = Math.abs(value) < 1e-10 ? 0 : value;
+        return `${safe < 0 ? "" : " "}${safe.toFixed(decimals)}`;
+      }
 
-function buildScene(fs){
-  clearGroup();facets=fs;
-  fs.forEach((f,i)=>{
-    const g=new THREE.BufferGeometry();
-    const pos=new Float32Array([...f.a,...f.b,...f.c]);
-    g.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    g.computeVertexNormals();
-    const mat=new THREE.MeshStandardMaterial({
-      color:COL_FILL.clone(),emissive:COL_EMIT_OFF.clone(),
-      metalness:0.1,roughness:0.55,side:THREE.DoubleSide,
-      transparent:true,opacity:0.92,
-    });
-    const mesh=new THREE.Mesh(g,mat);mesh.userData.i=i;
-    group.add(mesh);meshes.push(mesh);
+      function renderCode() {
+        let html = `<div class="solid-line">solid <span class="keyword">${currentShape}</span></div>`;
 
-    const eg=new THREE.EdgesGeometry(g,1);
-    const em=new THREE.LineBasicMaterial({color:0x2f6f93,transparent:true,opacity:0.55});
-    const line=new THREE.LineSegments(eg,em);
-    group.add(line);edges.push(line);
-  });
-}
+        currentFacets.forEach((facet, index) => {
+          const id = String(index).padStart(2, "0");
+          const line = (content, className = "") =>
+            `<span class="code-line ${className}">${content}</span>`;
 
-function setActive(i,scrollCode){
-  selected=i;
-  meshes.forEach((m,k)=>{
-    const on=k===i;
-    m.material.color.copy(on?COL_ACTIVE:COL_FILL);
-    m.material.emissive.copy(on?COL_EMIT_ON:COL_EMIT_OFF);
-    m.material.opacity=on?1:0.92;
-    m.renderOrder=on?1:0;
-    edges[k].material.color.set(on?0xe07b1a:0x2f6f93);
-    edges[k].material.opacity=on?1:0.55;
-  });
-  codeEl.querySelectorAll('.facet').forEach(el=>{
-    const a=(+el.dataset.i===i);
-    el.classList.toggle('active',a);
-    // 'nearest' keeps the scroll inside the pane — it won't yank the host page
-    if(a&&scrollCode) el.scrollIntoView({block:'nearest',behavior:'smooth'});
-  });
-  if(i>=0){
-    const n=facets[i].n;
-    readout.innerHTML=`<span class="lbl">facet</span> <span class="hot">#${String(i).padStart(2,'0')}</span> <span class="lbl">(click to clear)</span><br>`+
-      `<span class="lbl">n̂</span> ${n.map(v=>v.toFixed(2)).join('  ')}`;
-  }else{
-    readout.innerHTML='<span class="lbl">facet</span> — <span class="hot">click to inspect</span>';
-  }
-}
+          html +=
+            `<div class="facet${selectedFacet === index ? " active" : ""}" ` +
+            `data-index="${index}" role="button" tabindex="0" aria-pressed="${selectedFacet === index}" ` +
+            `aria-label="Facet ${index}, select matching triangle">` +
+            line(`<span class="facet-id">/*${id}*/ </span><span class="keyword">facet normal</span> <span class="number">${facet.normal.map(formatNumber).join(" ")}</span>`) +
+            line('<span class="keyword">outer loop</span>', "indent-1") +
+            line(`<span class="keyword">vertex</span> <span class="number">${facet.a.map(formatNumber).join(" ")}</span>`, "indent-2") +
+            line(`<span class="keyword">vertex</span> <span class="number">${facet.b.map(formatNumber).join(" ")}</span>`, "indent-2") +
+            line(`<span class="keyword">vertex</span> <span class="number">${facet.c.map(formatNumber).join(" ")}</span>`, "indent-2") +
+            line('<span class="keyword">endloop</span>', "indent-1") +
+            line('<span class="keyword">endfacet</span>') +
+            "</div>";
+        });
 
-// raycasting
-const ray=new THREE.Raycaster();const mouse=new THREE.Vector2();
-function pick(e){
-  const r=renderer.domElement.getBoundingClientRect();
-  if(!r.width||!r.height) return -1;
-  mouse.x=((e.clientX-r.left)/r.width)*2-1;
-  mouse.y=-((e.clientY-r.top)/r.height)*2+1;
-  ray.setFromCamera(mouse,camera);
-  const hit=ray.intersectObjects(meshes,false);
-  return hit.length?hit[0].object.userData.i:-1;
-}
-function onMove(e){           // cursor feedback only — no selection change
-  hotFacet=pick(e);
-  renderer.domElement.style.cursor =
-    orbit.dragging ? 'grabbing' : (hotFacet>=0 ? 'pointer' : 'grab');
-}
-renderer.domElement.addEventListener('mousemove',onMove);
-renderer.domElement.addEventListener('mouseenter',()=>{pointerIn=true;});
-renderer.domElement.addEventListener('mouseleave',()=>{pointerIn=false;hotFacet=-1;});
-renderer.domElement.addEventListener('click',e=>{
-  if(orbit.moved)return;      // it was a drag, not a click
-  const i=pick(e);
-  setActive(i>=0 ? (selected===i?-1:i) : -1, true);  // facet toggles; empty space clears
-});
+        html += `<div class="solid-line">endsolid <span class="keyword">${currentShape}</span></div>`;
+        codeElement.innerHTML = html;
+        codeMeta.textContent = `${currentFacets.length} facets`;
 
-// drag to orbit
+        codeElement.querySelectorAll(".facet").forEach((element) => {
+          const choose = () => {
+            const index = Number(element.dataset.index);
+            setActive(selectedFacet === index ? -1 : index, false);
+          };
+          element.addEventListener("click", choose);
+          element.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              choose();
+            }
+          });
+        });
+      }
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.domElement.setAttribute("aria-label", "Interactive three-dimensional STL mesh");
+      viewport.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x6c8796, 1.28));
+
+      const keyLight = new THREE.DirectionalLight(0xffffff, 0.92);
+      keyLight.position.set(4, 6, 5);
+      scene.add(keyLight);
+
+      const rimLight = new THREE.DirectionalLight(0x78b6d5, 0.48);
+      rimLight.position.set(-4, 0, -5);
+      scene.add(rimLight);
+
+      let group = new THREE.Group();
+      let meshes = [];
+      let edgeLines = [];
+      scene.add(group);
+
+      const meshColor = new THREE.Color(0x3f83a8);
+      const activeColor = new THREE.Color(0xe87322);
+      const darkEmission = new THREE.Color(0x071016);
+      const activeEmission = new THREE.Color(0x6f310c);
+
+      function clearModel() {
+        meshes.forEach((mesh) => {
+          mesh.geometry.dispose();
+          mesh.material.dispose();
+        });
+        edgeLines.forEach((line) => {
+          line.geometry.dispose();
+          line.material.dispose();
+        });
+        group.clear();
+        meshes = [];
+        edgeLines = [];
+      }
+
+      function buildModel() {
+        clearModel();
+
+        currentFacets.forEach((facet, index) => {
+          const geometry = new THREE.BufferGeometry();
+          geometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(new Float32Array([...facet.a, ...facet.b, ...facet.c]), 3)
+          );
+          geometry.computeVertexNormals();
+
+          const material = new THREE.MeshStandardMaterial({
+            color: meshColor.clone(),
+            emissive: darkEmission.clone(),
+            metalness: 0.08,
+            roughness: 0.42,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.94
+          });
+
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.userData.facetIndex = index;
+          group.add(mesh);
+          meshes.push(mesh);
+
+          const edgeGeometry = new THREE.EdgesGeometry(geometry, 1);
+          const edgeMaterial = new THREE.LineBasicMaterial({
+            color: 0x1e5877,
+            transparent: true,
+            opacity: 0.68
+          });
+          const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+          group.add(edges);
+          edgeLines.push(edges);
+        });
+      }
+
+      function updateReadout(index) {
+        if (index < 0) {
+          readout.innerHTML =
+            '<span class="readout-label">facet</span> — <span class="readout-hot">tap to inspect</span>';
+          return;
+        }
+
+        const normal = currentFacets[index].normal.map((value) => value.toFixed(2)).join("  ");
+        readout.innerHTML =
+          `<span class="readout-label">facet</span> <span class="readout-hot">#${String(index).padStart(2, "0")}</span>` +
+          `<br><span class="readout-label">n̂</span> ${normal}`;
+      }
+
+      function setActive(index, scrollToCode) {
+        selectedFacet = index;
+
+        meshes.forEach((mesh, meshIndex) => {
+          const isActive = meshIndex === index;
+          mesh.material.color.copy(isActive ? activeColor : meshColor);
+          mesh.material.emissive.copy(isActive ? activeEmission : darkEmission);
+          mesh.material.opacity = isActive ? 1 : 0.94;
+          mesh.renderOrder = isActive ? 2 : 0;
+          edgeLines[meshIndex].material.color.set(isActive ? 0xe87322 : 0x1e5877);
+          edgeLines[meshIndex].material.opacity = isActive ? 1 : 0.68;
+        });
+
+        codeElement.querySelectorAll(".facet").forEach((element) => {
+          const isActive = Number(element.dataset.index) === index;
+          element.classList.toggle("active", isActive);
+          element.setAttribute("aria-pressed", String(isActive));
+          if (isActive && scrollToCode) {
+            element.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          }
+        });
+
+        updateReadout(index);
+      }
+
+      function loadShape(name) {
+        currentShape = name;
+        currentFacets = buildFacets(shapes[name]());
+        selectedFacet = -1;
+        renderCode();
+        buildModel();
+        updateReadout(-1);
+
+        shapePicker.querySelectorAll("button").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.shape === name));
+        });
+      }
+
+      shapePicker.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-shape]");
+        if (button && shapes[button.dataset.shape]) {
+          loadShape(button.dataset.shape);
+        }
+      });
+
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
+
+      function pickFacet(clientX, clientY) {
+        const bounds = renderer.domElement.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return -1;
+        pointer.x = ((clientX - bounds.left) / bounds.width) * 2 - 1;
+        pointer.y = -((clientY - bounds.top) / bounds.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+        const hit = raycaster.intersectObjects(meshes, false)[0];
+        return hit ? hit.object.userData.facetIndex : -1;
+      }
+
+      const orbit = {
+        azimuth: 0,
+        polar: 0,
+        radius: 6,
+        targetAzimuth: 0,
+        targetPolar: 0,
+        targetRadius: 6,
+        dragging: false,
+        moved: false,
+        pointerId: null,
+        lastX: 0,
+        lastY: 0
+      };
+
+      (() => {
+        const x = 3.4;
+        const y = 2.55;
+        const z = 4.25;
+        orbit.radius = orbit.targetRadius = Math.hypot(x, y, z);
+        orbit.polar = orbit.targetPolar = Math.acos(y / orbit.radius);
+        orbit.azimuth = orbit.targetAzimuth = Math.atan2(x, z);
+      })();
+
+      function applyCamera() {
+        orbit.azimuth += (orbit.targetAzimuth - orbit.azimuth) * 0.16;
+        orbit.polar += (orbit.targetPolar - orbit.polar) * 0.16;
+        orbit.radius += (orbit.targetRadius - orbit.radius) * 0.16;
+        const sine = Math.sin(orbit.polar);
+        camera.position.set(
+          orbit.radius * sine * Math.sin(orbit.azimuth),
+          orbit.radius * Math.cos(orbit.polar),
+          orbit.radius * sine * Math.cos(orbit.azimuth)
+        );
+        camera.lookAt(0, 0, 0);
+      }
+
+      renderer.domElement.addEventListener("pointerdown", (event) => {
+        orbit.dragging = true;
+        orbit.moved = false;
+        orbit.pointerId = event.pointerId;
+        orbit.lastX = event.clientX;
+        orbit.lastY = event.clientY;
+        renderer.domElement.setPointerCapture(event.pointerId);
+        renderer.domElement.style.cursor = "grabbing";
+      });
+
+      renderer.domElement.addEventListener("pointermove", (event) => {
+        if (!orbit.dragging || event.pointerId !== orbit.pointerId) {
+          const hoverIndex = pickFacet(event.clientX, event.clientY);
+          renderer.domElement.style.cursor = hoverIndex >= 0 ? "pointer" : "grab";
+          return;
+        }
+
+        const dx = event.clientX - orbit.lastX;
+        const dy = event.clientY - orbit.lastY;
+        if (Math.abs(dx) + Math.abs(dy) > 2) orbit.moved = true;
+        orbit.targetAzimuth -= dx * 0.008;
+        orbit.targetPolar = Math.max(0.18, Math.min(Math.PI - 0.18, orbit.targetPolar + dy * 0.008));
+        orbit.lastX = event.clientX;
+        orbit.lastY = event.clientY;
+      });
+
+      function finishPointer(event) {
+        if (!orbit.dragging || event.pointerId !== orbit.pointerId) return;
+        if (!orbit.moved) {
+          const index = pickFacet(event.clientX, event.clientY);
+          setActive(index >= 0 && selectedFacet !== index ? index : -1, true);
+        }
+        orbit.dragging = false;
+        orbit.pointerId = null;
+        renderer.domElement.style.cursor = "grab";
+      }
+
+      renderer.domElement.addEventListener("pointerup", finishPointer);
+      renderer.domElement.addEventListener("pointercancel", finishPointer);
+
+      renderer.domElement.addEventListener("wheel", (event) => {
+        event.preventDefault();
+        orbit.targetRadius = Math.max(3.2, Math.min(10, orbit.targetRadius + event.deltaY * 0.006));
+      }, { passive: false });
+
+      let renderedWidth = 0;
+      let renderedHeight = 0;
+      const resizeObserver = new ResizeObserver((entries) => {
+        const entry = entries[0];
+        const width = Math.max(1, Math.round(entry.contentRect.width));
+        const height = Math.max(1, Math.round(entry.contentRect.height));
+        if (width !== renderedWidth || height !== renderedHeight) {
+          renderedWidth = width;
+          renderedHeight = height;
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        }
+      });
+      resizeObserver.observe(viewport);
+
+      const codeResizeObserver = new ResizeObserver((entries) => {
+        const nextDecimals = precisionFor(entries[0].contentRect.width);
+        if (nextDecimals !== decimals) {
+          decimals = nextDecimals;
+          renderCode();
+        }
+      });
+      codeResizeObserver.observe(codeElement);
+
+      function animate() {
+        applyCamera();
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      loadShape("cube");
+      animate();
+    })();
+  </script>
+</body>
+</html>
