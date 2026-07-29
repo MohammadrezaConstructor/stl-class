@@ -22,6 +22,7 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
+  html{scrollbar-gutter:stable}   /* reserve the gutter so width can't jump a breakpoint */
   body{
     background:var(--bg);
     color:var(--text);
@@ -80,7 +81,8 @@
     min-height:0;
   }
   #view{position:relative;background:radial-gradient(120% 120% at 50% 0%,#0f1722,#070a0e);min-height:0;min-width:0;overflow:hidden}
-  #view canvas{display:block}
+  /* pinned so the canvas can never overflow its pane, whatever the pixel ratio */
+  #view canvas{display:block;width:100%;height:100%}
   #drophint{
     position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     font-family:var(--mono);font-size:13px;color:var(--cold);
@@ -229,6 +231,7 @@
       <button id="facetBtn" class="toggle" title="Highlight the triangles the plane cuts + the chord vertices"><span class="l-full">Cut facets</span><span class="l-min">Facets</span></button>
       <button id="allBtn" class="toggle" title="Show every layer stacked"><span class="l-full">Stack layers</span><span class="l-min">Stack</span></button>
       <button id="spinBtn" class="toggle" title="Auto-rotate view">Spin</button>
+      <button id="fitBtn" title="Re-frame the camera on the model">Fit</button>
     </div>
   </header>
 
@@ -390,7 +393,7 @@ function parseBinary(dv, triCount){
 }
 function parseAscii(buffer){
   const text=new TextDecoder().decode(buffer);
-  const re=/vertex\s+(-?[\d.eE+]+)\s+(-?[\d.eE+]+)\s+(-?[\d.eE+]+)/g;
+  const re=/vertex\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)/g;
   const verts=[]; let m;
   while((m=re.exec(text))) verts.push([+m[1],+m[2],+m[3]]);
   const tris=[];
@@ -478,12 +481,21 @@ let renderer,scene,camera,meshGroup,planeMesh,gridHelper,contourGroup,stackGroup
 let triangles=[], bounds=null, weld=0.01, currentZ=0, autoSpin=false, showStack=false;
 let showFacets=true, usingSTL=false, currentShape='torus', currentRes='coarse';
 
+// Zoom limits are derived from the model, not hard-coded — an STL may be in
+// millimetres, inches or metres, and fixed limits either trap the camera inside
+// a large part or shrink a small one to an invisible dot.
+let zoomMin=2, zoomMax=400;
+
 const orbit={target:new THREE.Vector3(),radius:14,theta:0.7,phi:1.05};
 
 function initThree(){
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
   viewEl.appendChild(renderer.domElement);
+
+  renderer.domElement.addEventListener('webglcontextlost',e=>{
+    e.preventDefault(); console.warn('WebGL context lost');
+  });
 
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,1,0.01,5000);
@@ -537,10 +549,21 @@ function bindControls(){
     orbit.phi=Math.max(0.08,Math.min(Math.PI-0.08,orbit.phi));
     lx=e.clientX; ly=e.clientY;
   });
+
   el.addEventListener('wheel',e=>{
-    e.preventDefault();
-    orbit.radius*=(1+e.deltaY*0.0012);
-    orbit.radius=Math.max(2,Math.min(400,orbit.radius));
+    // normalize across mouse wheels, trackpads and Firefox's line mode, then
+    // clamp so one trackpad flick can't slam the camera into a limit
+    let d=e.deltaY;
+    if(e.deltaMode===1)      d*=16;                    // lines -> px
+    else if(e.deltaMode===2) d*=viewEl.clientHeight;   // pages -> px
+    d=Math.max(-60,Math.min(60,d));
+
+    const before=orbit.radius;
+    orbit.radius=Math.max(zoomMin,Math.min(zoomMax,before*Math.exp(d*0.0015)));
+
+    // Only swallow the event if we actually zoomed. At either limit the wheel
+    // falls through to the page, so the user is never trapped unable to scroll.
+    if(orbit.radius!==before) e.preventDefault();
   },{passive:false});
 }
 
@@ -561,21 +584,49 @@ function animate(){
   renderer.render(scene,camera);
 }
 
+// Frame the camera on whatever model is loaded, and scale the zoom limits and
+// clip planes to it. Called on every load and by the Fit button.
+function frameCamera(){
+  if(!bounds) return;
+  const dim=Math.max(bounds.spanX,bounds.spanY,bounds.spanZ)||1;
+  zoomMin = dim*0.30;          // can't push the camera inside the part
+  zoomMax = dim*9;             // can't shrink it to an invisible dot
+  orbit.target.set(0,0,bounds.maxZ/2);
+  orbit.radius = dim*2.3;
+  camera.near = dim*0.002;     // a fixed 0.01/5000 clips very large or very small STLs
+  camera.far  = dim*40;
+  camera.updateProjectionMatrix();
+}
+
 /* ------------------------------------------------------------
    Layout: breakpoints come from the MEASURED width of #app, not
    the viewport, so the widget behaves the same in an iframe, a
-   narrow column, or a full-width page.
+   narrow column, or a full-width page. The dead-band means a
+   scrollbar appearing or vanishing can never flip a decision and
+   start a resize feedback loop.
 -------------------------------------------------------------*/
+let busy=false;
 function applyLayout(){
   const w=appEl.clientWidth||0;
-  appEl.dataset.w = w>=900 ? 'wide' : w>=700 ? 'mid' : 'narrow';
-  appEl.dataset.tiny = w<440 ? '1' : '0';
+  const cur=appEl.dataset.w||'';
+  const up=24;                             // must clear a boundary by this much to switch back
+  let next;
+  if(cur==='wide')      next = w>=900-up ? 'wide' : (w>=700    ? 'mid' : 'narrow');
+  else if(cur==='mid')  next = w>=900    ? 'wide' : (w>=700-up ? 'mid' : 'narrow');
+  else                  next = w>=900    ? 'wide' : (w>=700    ? 'mid' : 'narrow');
+  if(next!==cur) appEl.dataset.w=next;
+
+  const tiny = (appEl.dataset.tiny==='1') ? (w<440+up?'1':'0') : (w<440?'1':'0');
+  if(tiny!==appEl.dataset.tiny) appEl.dataset.tiny=tiny;
 }
 
 function resize(){
   const w=viewEl.clientWidth, h=viewEl.clientHeight;
   if(w>0 && h>0){
-    renderer.setSize(w,h);          // updateStyle:true — canvas box must match its bitmap
+    // updateStyle MUST stay on (the default). With it off, three.js sizes the
+    // canvas bitmap to w*pixelRatio but never writes a CSS size, so on HiDPI
+    // displays the canvas lays out at 2x its pane and overflows.
+    renderer.setSize(w,h);
     camera.aspect=w/h; camera.updateProjectionMatrix();
   }
   layoutPlanCanvas();
@@ -587,8 +638,13 @@ function resize(){
 if(window.ResizeObserver){
   let t=null;
   const ro=new ResizeObserver(()=>{
+    if(busy) return;                       // ignore echoes of our own writes
     clearTimeout(t);
-    t=setTimeout(()=>{ applyLayout(); resize(); },60);
+    t=setTimeout(()=>{
+      busy=true;
+      applyLayout();
+      requestAnimationFrame(()=>{ resize(); busy=false; });
+    },60);
   });
   ro.observe(appEl); ro.observe(viewEl); ro.observe(document.getElementById('plan'));
 }
@@ -619,4 +675,261 @@ function loadModel(tris,label){
     cx:0, cy:0,
     spanX:mxx-mnx, spanY:mxy-mny, spanZ:mxz-mnz
   };
-  weld=Math.max(1e-4,(bounds.spanX+bounds.
+  weld=Math.max(1e-4,(bounds.spanX+bounds.spanY)/2*0.002);
+
+  buildMeshDisplay();
+  frameCamera();
+
+  // size plane + grid
+  const pad=Math.max(bounds.spanX,bounds.spanY)*1.25 || 4;
+  planeMesh.scale.set(pad,pad,1);
+  gridHelper.scale.set(pad/10,1,pad/10);
+
+  // slider
+  const sl=document.getElementById('zSlider');
+  sl.min=0; sl.max=bounds.maxZ; sl.step=bounds.maxZ/500;
+  sl.value=bounds.maxZ*0.5;
+  setZ(+sl.value);
+
+  document.getElementById('fileName').textContent=label;
+  if(showStack) buildStack();
+}
+
+function buildMeshDisplay(){
+  meshGroup.clear();
+  const arr=new Float32Array(triangles.length*9);
+  for(let i=0;i<triangles.length;i++) arr.set(triangles[i],i*9);
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+  g.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({
+    color:C.steel,metalness:0.1,roughness:0.75,
+    transparent:true,opacity:0.16,side:THREE.DoubleSide,depthWrite:false
+  });
+  meshGroup.add(new THREE.Mesh(g,mat));
+  // Show EVERY triangle edge so the faceting is obvious. For very dense uploaded
+  // meshes fall back to a silhouette so we don't choke the GPU.
+  const wireGeo = triangles.length<=40000
+    ? new THREE.WireframeGeometry(g)
+    : new THREE.EdgesGeometry(g,20);
+  const wire=new THREE.LineSegments(
+    wireGeo,
+    new THREE.LineBasicMaterial({color:C.coldDim,transparent:true,opacity:0.55})
+  );
+  meshGroup.add(wire);
+}
+
+/* ============================================================
+   UPDATE THE ACTIVE SLICE
+   ============================================================ */
+let lastContours=[], lastSegCount=0, lastVertCount=0;
+
+function setZ(z){
+  currentZ=z;
+  const {segs,cutTris}=sliceAt(triangles,z);
+  const contours=buildContours(segs,weld);
+  lastContours=contours; lastSegCount=segs.length;
+
+  // ---- highlight the actual triangles the plane passes through ----
+  intersGroup.clear();
+  if(showFacets && cutTris.length){
+    const arr=new Float32Array(cutTris.length*9);
+    cutTris.forEach((ti,n)=>arr.set(triangles[ti],n*9));
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(arr,3));
+    g.computeVertexNormals();
+    intersGroup.add(new THREE.Mesh(g,new THREE.MeshBasicMaterial({
+      color:C.hot,transparent:true,opacity:0.18,side:THREE.DoubleSide,depthWrite:false})));
+    intersGroup.add(new THREE.LineSegments(new THREE.WireframeGeometry(g),
+      new THREE.LineBasicMaterial({color:C.hot,transparent:true,opacity:0.55})));
+  }
+
+  // ---- 3D contour lines: the toolpath, a chain of straight chords ----
+  contourGroup.clear();
+  const mat=new THREE.LineBasicMaterial({color:C.hot,depthTest:false,transparent:true});
+  for(const c of contours){
+    const pos=new Float32Array(c.length*3);
+    for(let i=0;i<c.length;i++){ pos[i*3]=c[i][0]; pos[i*3+1]=c[i][1]; pos[i*3+2]=z; }
+    const g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const line=new THREE.Line(g,mat); line.renderOrder=10;
+    contourGroup.add(line);
+  }
+
+  // ---- vertices: every point sits exactly where the plane crosses a triangle edge ----
+  vertGroup.clear();
+  const vset=new Map(), vk=p=>Math.round(p[0]/weld)+'|'+Math.round(p[1]/weld);
+  for(const s of segs){ vset.set(vk(s[0]),s[0]); vset.set(vk(s[1]),s[1]); }
+  lastVertCount=vset.size;
+  if(showFacets && vset.size){
+    const vpos=new Float32Array(vset.size*3); let n=0;
+    for(const p of vset.values()){ vpos[n*3]=p[0]; vpos[n*3+1]=p[1]; vpos[n*3+2]=z; n++; }
+    const vg=new THREE.BufferGeometry();
+    vg.setAttribute('position',new THREE.BufferAttribute(vpos,3));
+    const pts=new THREE.Points(vg,new THREE.PointsMaterial({
+      color:0xffe1b3,size:6.5,sizeAttenuation:false,depthTest:false}));
+    pts.renderOrder=12; vertGroup.add(pts);
+  }
+
+  planeMesh.position.z=z;
+
+  // ---- stats + readouts ----
+  const total=contours.reduce((s,c)=>s+contourLength(c),0);
+  document.getElementById('sZ').textContent=z.toFixed(2);
+  document.getElementById('sC').textContent=contours.length;
+  document.getElementById('sFac').textContent=cutTris.length;
+  document.getElementById('sS').textContent=segs.length;
+  document.getElementById('sV').textContent=vset.size;
+  document.getElementById('sL').textContent=total.toFixed(1);
+  document.getElementById('zLabel').textContent='Z '+z.toFixed(2);
+  document.getElementById('zReadout').textContent=z.toFixed(2)+' / '+bounds.maxZ.toFixed(2);
+  const sl=document.getElementById('zSlider');
+  sl.style.setProperty('--fill',(z/bounds.maxZ*100)+'%');
+
+  drawPlan();
+}
+
+/* ============================================================
+   STACK ALL LAYERS  (faint contours at their true heights)
+   ============================================================ */
+function buildStack(){
+  stackGroup.clear();
+  if(!showStack||!bounds) return;
+  const n=Math.max(2,Math.min(200,+document.getElementById('layerCount').value||32));
+  const mat=new THREE.LineBasicMaterial({color:C.cold,transparent:true,opacity:0.20});
+  for(let i=0;i<n;i++){
+    const z=(i+0.5)/n*bounds.maxZ;
+    const cs=buildContours(sliceAt(triangles,z).segs,weld);
+    for(const c of cs){
+      const pos=new Float32Array(c.length*3);
+      for(let j=0;j<c.length;j++){ pos[j*3]=c[j][0]; pos[j*3+1]=c[j][1]; pos[j*3+2]=z; }
+      const g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      stackGroup.add(new THREE.Line(g,mat));
+    }
+  }
+}
+
+/* ============================================================
+   TOP-DOWN BLUEPRINT (2D canvas)
+   ============================================================ */
+const planCanvas=document.getElementById('planCanvas');
+const pctx=planCanvas.getContext('2d');
+function layoutPlanCanvas(){
+  const r=document.getElementById('plan').getBoundingClientRect();
+  const dpr=Math.min(devicePixelRatio,2);
+  planCanvas.width=Math.max(1,Math.round(r.width*dpr));
+  planCanvas.height=Math.max(1,Math.round(r.height*dpr));
+  pctx.setTransform(dpr,0,0,dpr,0,0);
+}
+function drawPlan(){
+  if(!bounds) return;
+  const dpr=Math.min(devicePixelRatio,2);
+  const w=planCanvas.width/dpr;
+  const h=planCanvas.height/dpr;
+  pctx.clearRect(0,0,w,h);
+
+  // margin scales down with the panel so small panels still use their space
+  const m=Math.max(10,Math.min(26,Math.min(w,h)*0.09));
+  const spanX=bounds.spanX||1, spanY=bounds.spanY||1;
+  const scale=Math.min((w-2*m)/spanX,(h-2*m)/spanY);
+  const ox=w/2, oy=h/2;
+  const map=p=>[ ox+(p[0]-bounds.cx)*scale, oy-(p[1]-bounds.cy)*scale ];
+
+  // model bbox guide
+  pctx.strokeStyle='#22303b'; pctx.lineWidth=1;
+  const bb0=map([bounds.minX,bounds.minY]), bb1=map([bounds.maxX,bounds.maxY]);
+  pctx.strokeRect(Math.min(bb0[0],bb1[0]),Math.min(bb0[1],bb1[1]),
+                  Math.abs(bb1[0]-bb0[0]),Math.abs(bb1[1]-bb0[1]));
+  // crosshair
+  pctx.strokeStyle='#1a2630';
+  pctx.beginPath(); pctx.moveTo(ox-7,oy); pctx.lineTo(ox+7,oy);
+  pctx.moveTo(ox,oy-7); pctx.lineTo(ox,oy+7); pctx.stroke();
+
+  if(!lastContours.length){
+    pctx.fillStyle='#5b6c79'; pctx.font='12px ui-monospace,monospace';
+    pctx.textAlign='center';
+    pctx.fillText('no intersection at this height',ox,oy);
+    pctx.textAlign='left';
+    return;
+  }
+  // fill (faint) + stroke each toolpath (each straight segment = one triangle cut)
+  for(const c of lastContours){
+    pctx.beginPath();
+    c.forEach((p,i)=>{ const q=map(p); i?pctx.lineTo(q[0],q[1]):pctx.moveTo(q[0],q[1]); });
+    if(c.closed) pctx.closePath();
+    pctx.fillStyle='rgba(255,158,61,0.06)'; if(c.closed) pctx.fill();
+    pctx.strokeStyle='#ff9e3d'; pctx.lineWidth=1.6; pctx.stroke();
+  }
+  // vertices: every point lands where the plane crossed a triangle edge.
+  const dotR = w<260 ? 1.8 : 2.2;
+  if(showFacets){
+    pctx.fillStyle='#ffe1b3';
+    for(const c of lastContours){
+      const end = c.closed ? c.length-1 : c.length; // last point repeats the first on closed loops
+      for(let i=0;i<end;i++){ const q=map(c[i]); pctx.beginPath(); pctx.arc(q[0],q[1],dotR,0,7); pctx.fill(); }
+    }
+  } else {
+    pctx.fillStyle='#ffd9a8';
+    for(const c of lastContours){ const q=map(c[0]); pctx.beginPath(); pctx.arc(q[0],q[1],dotR+0.4,0,7); pctx.fill(); }
+  }
+}
+
+/* ============================================================
+   UI WIRING
+   ============================================================ */
+document.getElementById('zSlider').addEventListener('input',e=>setZ(+e.target.value));
+
+function rebuildDemo(){
+  usingSTL=false;
+  const g=makeShape(currentShape,currentRes);
+  loadModel(geomTriangles(g),'demo: '+currentShape+' ('+currentRes+')');
+}
+document.getElementById('shape').addEventListener('change',e=>{
+  currentShape=e.target.value; rebuildDemo();
+});
+document.getElementById('res').addEventListener('change',e=>{
+  currentRes=e.target.value;
+  if(usingSTL){ e.target.value=currentRes; return; } // resolution only governs demo meshes
+  rebuildDemo();
+});
+document.getElementById('facetBtn').addEventListener('click',e=>{
+  showFacets=!showFacets; e.currentTarget.classList.toggle('on',showFacets);
+  setZ(currentZ);
+});
+document.getElementById('layerCount').addEventListener('change',()=>{ if(showStack) buildStack(); });
+document.getElementById('allBtn').addEventListener('click',e=>{
+  showStack=!showStack; e.currentTarget.classList.toggle('on',showStack);
+  if(showStack) buildStack(); else stackGroup.clear();
+});
+document.getElementById('spinBtn').addEventListener('click',e=>{
+  autoSpin=!autoSpin; e.currentTarget.classList.toggle('on',autoSpin);
+});
+document.getElementById('fitBtn').addEventListener('click',frameCamera);
+document.getElementById('stlInput').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(f) readSTLFile(f);
+  e.target.value='';                      // allow re-loading the same file
+});
+function readSTLFile(f){
+  const r=new FileReader();
+  r.onload=()=>{ try{ usingSTL=true; loadModel(parseSTL(r.result),f.name); if(showStack) buildStack(); }
+                 catch(err){ alert('Could not parse STL: '+err.message);} };
+  r.readAsArrayBuffer(f);
+}
+// drag & drop
+viewEl.addEventListener('dragover',e=>{e.preventDefault();viewEl.classList.add('drag');});
+viewEl.addEventListener('dragleave',()=>viewEl.classList.remove('drag'));
+viewEl.addEventListener('drop',e=>{
+  e.preventDefault(); viewEl.classList.remove('drag');
+  const f=e.dataTransfer.files[0]; if(f) readSTLFile(f);
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+initThree();
+document.getElementById('facetBtn').classList.toggle('on',showFacets);
+loadModel(geomTriangles(makeShape(currentShape,currentRes)),'demo: '+currentShape+' ('+currentRes+')');
+</script>
+</body>
+</html>
