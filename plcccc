@@ -1,0 +1,1344 @@
+ <!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Rung Ladder Logic Studio</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#eef2f6;--paper:#fff;--ink:#1f2933;--muted:#687684;--line:#d9e0e6;
+  --blue:#1c64f2;--blue2:#174ea6;--blueSoft:#eff5ff;
+  --green:#2f9e44;--greenSoft:#edf9f0;--red:#c92a2a;--redSoft:#fff2f2;
+  --amber:#f59f00;--amberSoft:#fff8e6;--purple:#6741d9;--purpleSoft:#f4f0ff;
+  --rail:#263746;--wire:#687887;--shadow:0 16px 44px rgba(28,42,56,.09)
+}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:radial-gradient(circle at 10% 0%,rgba(28,100,242,.08),transparent 36rem),var(--bg);
+  color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5
+}
+button,select,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:1500px;margin:0 auto;padding:16px}
+.shell{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+header{
+  padding:20px 24px 17px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#fff,#f6f9ff);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap
+}
+h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
+.sub{font-size:14px;color:var(--muted);margin:0;max-width:900px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;min-width:390px}
+.stat{border:1px solid var(--line);border-radius:9px;background:#fff;padding:7px 9px;text-align:center}
+.stat b{display:block;font-size:16px}
+.stat span{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+.topbar,.programbar{padding:11px 22px;border-bottom:1px solid var(--line);background:#fbfcfd;display;justify-content;gap:12px;align-items;flex-wrap}.tabs,.actions,.picker{display;gap:7px;align-items;flex-wrap}.tab,.ghost,.primary,.secondary,.tiny{border:1px solid #cbd2d9;border-radius:8px;background:#fff;color(--ink);font-weight:700}.tab,.ghost,.primary,.secondary{min-height:38px;padding:0 12px;font-size:13px}.tiny{font-size:10px;padding:4px 7px}.tab.active,.ghost.active{background(--blueSoft);border-color:#9bb8ff;color(--blue2)}.primary{background(--blue);border-color(--blue);color:#fff}.danger{color(--red)}.status{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#e9eef3;color:#66737f}.status.good{background:#d3f9d8;color:#2b8a3e}.status.warn{background:#fff3bf;color:#8a6200}.status.bad{background:#ffe3e3;color:#c92a2a}select{border:1px solid #cbd2d9;border-radius:8px;padding:8px 10px;background:#fff;color(--ink)}label{font-size:13px;font-weight:700;color:#425466}.level{font-size:10px;font-weight:800;border-radius:999px;padding:4px 7px;background(--purpleSoft);color(--purple)}
+
+.bridge{display;grid-template-columns(5,1fr);gap:7px;padding:12px 22px;border-bottom:1px solid var(--line)}.bridge div{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;text-align;padding:8px;font-size:11px;color(--muted)}.bridge b{display;color(--blue);font-size:12px}
+
+.content{padding:18px 22px 24px}.notegrid{display;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.note{border-radius:9px;padding:10px 12px;font-size:12px}.note.teacher{border:1px solid #cfe0ff;background:#f7faff;color:#425466}.note.student{border:1px solid #e1d8ff;background:#faf8ff;color:#5a4d7d}
+
+.section-title{display;justify-content;align-items;gap:10px;text-transform;letter-spacing:.06em;font-size:11px;color:#7b8794;margin:0 0 9px}.section-title small{text-transform;letter-spacing:0;font-size:10px}.inputs{display;gap:9px;flex-wrap;margin-bottom:10px}.device{border:1px solid var(--line);border-radius:9px;background:#fafbfc;padding:9px 11px;min-width:132px}.device .name{font-size:12px;font-weight:700;margin-bottom:6px}.toggle{width:52px;height:28px;border:0;border-radius:14px;background:#c4cdd5;position;padding:0}.toggle::after{content:"";position;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s}.toggle.on{background(--green)}.toggle.on::after{transform(24px)}.state{font-size:10px;color(--muted);margin-top:4px}.device.analog{min-width:210px}.device input{width:100%}.value{font-size:11px;font-weight:800;color(--blue);margin-top:3px}.presetrow{display;gap:6px;flex-wrap;margin-bottom:14px}.presetrow button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 8px;font-size:10px}
+
+.scenario{border:1px solid var(--line);border-radius:10px;background:#fbfcfd;padding:12px 13px;margin-bottom:14px}.scenario h2{font-size:16px;margin:0 0 3px}.scenario p{font-size:12px;color(--muted);margin:0}.rule-list{display;gap:6px;margin-top:9px}.rule{border-left:4px solid #b8c2cc;background:#fff;border-radius:0 7px 7px 0;padding:8px 9px;font-size:12px}.rule.active{border-left-color(--green);background(--greenSoft)}.kw{font-weight:800;color(--blue)}.cond{display;padding:1px 5px;border-radius:4px;font-weight:700}.cond.true{background:#d3f9d8;color:#2b8a3e}.cond.false{background:#ffe3e3;color:#c92a2a}
+
+.main-grid{display;grid-template-columns(620px,1.35fr) minmax(310px,.65fr);gap:13px;align-items}.panel{border:1px solid var(--line);border-radius:11px;background:#fff;overflow}.panelhead{padding:10px 12px;border-bottom:1px solid var(--line);background:#fbfcfd;display;justify-content;gap:9px;align-items}.panelhead h3{font-size:13px;margin:0}.panelbody{padding:12px}
+
+.program{position;padding:8px 0}.program::before,.program::after{content:"";position;top:0;bottom:0;width:7px;background(--rail);border-radius:2px}.program::before{left:8px}.program::after{right:8px}.rung{position;display;grid-template-columns:34px 1fr 34px;align-items;min-height:112px;padding:3px 0}.rung-num{text-align;font-size:10px;font-weight:800;color:#7b8794}.rung-wire{position;min-height:106px;display;align-items}.rung-wire::before{content:"";position;left:0;right:0;top:50%;height:3px;background(--wire);transform(-50%)}.rung-wire.powered::before{background(--green);box-shadow:0 0 8px rgba(47,158,68,.35)}.rung-content{position;z-index:2;width:100%;display;justify-content;align-items;gap:10px;padding:0 12px}.element{min-width:78px;text-align;background:#fff;color:#263746;position}.element .tag{display;font-size:10px;font-weight:800;color:#536473;margin-bottom:2px}.symbol{font-family:"Courier New",monospace;font-weight:800;font-size:17px;white-space}.element.on{color(--green)}.element.off{color(--red)}.compare{border:2px solid #778592;border-radius:6px;padding:6px 7px;min-width:110px;font-size:11px;font-weight:800;background:#fff}.compare.on{border-color(--green);background(--greenSoft)}.compare.off{border-color:#e2aaaa;background(--redSoft)}.branch{min-width:190px;border-left:2px solid var(--wire);border-right:2px solid var(--wire);background:#fff;padding:2px 0}.branch-row{min-height:38px;display;align-items;justify-content;position}.branch-row::before{content:"";position;left:0;right:0;top:50%;height:2px;background(--wire);z-index:-1}.branch-row.on::before{background(--green)}
+
+.slotwrap{border:2px dashed #8fb2ff;border-radius:8px;padding:5px;background:#f8fbff;min-width:96px;position}.slotwrap.correct{border-color:#8dd49d;background:#f4fbf5}.slotwrap.incorrect{border-color:#efabab;background:#fff6f6}.slotlabel{position;top:-9px;left:5px;background:#fff;padding:0 3px;font-size:8px;font-weight:800;color(--blue2)}.replace{margin-top:4px;border:1px solid #b9cdf8;border-radius:5px;background:#fff;color(--blue2);font-size:9px;font-weight:800;padding:3px 5px}
+
+.rung-tools{display;gap:5px;justify-content;margin:0 38px 4px;flex-wrap}.rung-tools button{font-size:9px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:#fff}
+
+.side-stack{display;gap:11px}.output-grid{display;gap:7px}.out{display;align-items;justify-content;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 9px}.outmeta{display;align-items;gap:8px}.lamp{width:25px;height:25px;border-radius:50%;background:#d2d6db;border:3px solid #b4bcc4}.lamp.on{background(--green);border-color:#2b8a3e;box-shadow:0 0 11px rgba(47,158,68,.5)}.out strong{font-size:11px}.out small{display;color(--muted);font-size:9px}.valpill{font-size:9px;font-weight:800;border-radius:999px;padding:3px 5px;background:#eef1f4;color:#687684}.valpill.on{background:#d3f9d8;color:#2b8a3e}
+
+.test-summary{display;gap:7px}.metric{display;justify-content;gap:8px;font-size:11px;padding-bottom:6px;border-bottom:1px solid var(--line)}.metric b.good{color(--green)}.metric b.bad{color(--red)}.feedback{border-radius:8px;padding:9px 10px;font-size:11px;font-weight:700}.feedback.neutral{background:#f2f5f7;color:#65727d}.feedback.good{background(--greenSoft);color:#287638}.feedback.bad{background(--redSoft);color(--red)}
+
+.hints{display;gap:6px}.hint{border-left:4px solid #d4dbe2;background:#fbfcfd;border-radius:0 7px 7px 0;padding:7px 8px;font-size:10px;color:#5e6b77}.hint.revealed{border-left-color(--amber);background(--amberSoft);color:#705415}
+
+.palette{position;inset:0;background(24,36,48,.44);display;place-items;padding:18px;z-index:60}.palette.hide{display}.palette-box{width(760px,96vw);max-height:82vh;overflow;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow(--shadow)}.palette-head{padding:12px 14px;border-bottom:1px solid var(--line);display;justify-content;align-items}.palette-head h3{font-size:14px;margin:0}.palette-grid{display;grid-template-columns(3,1fr);gap:8px;padding:12px}.choice{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;text-align}.choice.choice b{display;font-size:12px}.choice span{font-size:10px;color(--muted)}
+
+.toolbox{border-top:1px solid var(--line);padding:16px 22px;background:#fbfcfd}.tool-row{display;gap:7px;flex-wrap}.tool-row button{border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px 9px;font-size:11px;font-weight:700}
+
+.bank{border-top:1px solid var(--line);padding:17px 22px;background:#fbfcfd}.bank-grid{display;grid-template-columns(3,1fr);gap:9px}.bank-card{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;cursor}.bank-card.bank-card.active{border-color(--blue);box-shadow 0 0 0 1px var(--blue)}.bank-card b{font-size:12px}.bank-card p{font-size:10px;color(--muted);margin:3px 0 6px}.tags{display;gap:4px;flex-wrap}.tags span{font-size:8px;font-weight:800;background:#eef2f6;border-radius:999px;padding:2px 5px;color:#61707d}
+
+.footer{padding:12px 22px;border-top:1px solid var(--line);font-size:10px;color:#7b8794;display;justify-content;gap:8px;flex-wrap}.hide{display!important}
+
+@media(max-width:1100px){.main-grid{grid-template-columns:1fr}.bank-grid{grid-template-columns(2,1fr)}}@media(max-width:760px){.app{padding:8px}.stats{min-width:100%;grid-template-columns(4,1fr)}.bridge{grid-template-columns(2,1fr)}.notegrid{grid-template-columns:1fr}.bank-grid{grid-template-columns:1fr}.palette-grid{grid-template-columns:1fr}header,.topbar,.programbar,.bridge,.content,.toolbox,.bank,.footer{padding-left:14px;padding-right:14px}}
+
+/* Enhanced classroom features */.scan-focus{outline:3px solid rgba(28,100,242,.35);outline-offset:-3px;background(90deg,rgba(28,100,242,.05),transparent 75%);border-radius:8px;}.scan-focus .rung-num{color(--blue)}.scan-inspector{display;gap:7px}.scan-line{border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:#fbfcfd;font-size:10px;color:#536473}.scan-line b{color(--blue2)}.trace-list{display;gap:5px;margin-top:6px}.trace-item{display;justify-content;gap:8px;padding:5px 7px;border-radius:6px;background:#f3f5f7;font-size:10px}.trace-item.true{background(--greenSoft);color:#287638}.trace-item.false{background(--redSoft);color(--red)}.history-actions{display;gap:5px;flex-wrap}.history-actions button{opacity:.45;cursor}.test-details{border-top:1px solid var(--line);padding:18px 22px;background:#fff}.test-toolbar{display;gap:7px;flex-wrap;align-items;margin-bottom:10px}.test-table-wrap{overflow;border:1px solid var(--line);border-radius:9px;background:#fff}.test-table{width:100%;border-collapse;font-size:10px;min-width:760px}.test-table th,.test-table td{padding:7px 8px;border-bottom:1px solid var(--line);text-align;white-space}.test-table th{background:#f7f9fb;color:#52606d;font-size:9px;text-transform;letter-spacing:.04em}.test-table tr.pass td{color(--green);font-weight:800}.test-table tr.fail{background:#fff9f9}.test-table tr.fail td{color(--red);font-weight:800}.empty-tests{padding:18px;text-align;color(--muted);font-size:11px}.prediction-panel{border-top:1px solid var(--line);padding:18px 22px;background:#fbfcfd}.prediction-box{border:1px solid #cfe0ff;border-radius:11px;background:#fff;padding:13px;display;grid-template-columns(220px,1fr) minmax(260px,1fr);gap:14px}.prediction-box h3{font-size:14px;margin:0 0 4px}.prediction-box p{font-size:11px;color(--muted);margin:0 0 8px}.prediction-inputs{display;gap:5px;flex-wrap}.pred-chip{border:1px solid var(--line);border-radius:999px;padding:4px 7px;font-size:10px;background:#f8fafb}.pred-output-list{display;gap:6px}.pred-output{display;justify-content;gap:8px;align-items;border:1px solid var(--line);border-radius:8px;padding:7px 8px}.pred-output button{min-width:58px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:4px 7px;font-size:10px;font-weight:800}.pred-output button.on{background(--greenSoft);border-color:#9fd8ac;color:#287638}.prediction-result{min-height:18px;font-size:11px;font-weight:800;margin-top:8px}.rung-comment{margin:-1px 40px 8px;padding:6px 8px;border-left:3px solid #cbd6e0;background:#f9fbfc;border-radius:0 7px 7px 0;font-size:10px;color:#61707d}.workspace-tools{border-top:1px solid var(--line);padding:15px 22px;background(180deg,#fff,#fbfcfd)}.workspace-row{display;justify-content;gap:10px;align-items;flex-wrap}.save-status{font-size:10px;color(--muted)}.coverage-note{font-size:10px;color(--muted)}@media(max-width:800px){.prediction-box{grid-template-columns:1fr}}
+
+/* Iframe-ready layout and deterministic ladder placement /html,body{width:100%;min-width:0}body{overflow-x}.app{width:100%;min-width:0}.shell{min-width:0}.main-grid>{min-width:0}.panelbody{min-width:0}
+
+/* The ladder program owns horizontal scrolling when the host iframe is narrow. /.program{overflow-x;overflow-y;padding:10px 0 12px;scrollbar-gutter;overscroll-behavior-x;}/ Replace the old program-level rails. Each rung draws aligned rail segments sothe geometry remains correct while the program scrolls horizontally. /.program::before,.program::after{display}.rung{--rung-label:74px;--rung-tail:26px;position;grid-template-columns(--rung-label) minmax(700px,1fr) var(--rung-tail);min-width:800px;min-height:116px;padding:4px 0;}.rung::before,.rung::after{content:"";position;top:-5px;bottom:-5px;width:6px;background(--rail);border-radius:2px;z-index:4;pointer-events;}.rung::before{left(var(--rung-label) - 3px)}.rung::after{right(var(--rung-tail) - 3px)}.rung-num{padding:0 10px 0 6px;line-height:1.25;text-align;overflow;text-overflow;}.rung-num span{display;font-size:9px;font-weight:700;color(--muted);white-space}.rung-wire{min-height:108px;padding:0;overflow;}.rung-wire::before{left:0;right:0}.rung-content{--logic-cols:6;display;grid-template-columns(var(--logic-cols),minmax(92px,1fr)) minmax(112px,.92fr);grid-auto-flow;align-items;justify-items;gap:0;width:100%;min-width(var(--logic-cols) * 92px + 112px);padding:0 8px;}.rung-item{grid-row:1;position;z-index:2;min-width:0;width:100%;justify-self;}.element.rung-item{min-width:0;width:100%;padding:0 6px;}.element.coil-element{min-width:104px;justify-self;padding-left:8px;padding-right:8px;}.element .tag{max-width:100%;overflow;text-overflow;white-space;}.slotwrap.rung-item{width(100% - 10px);margin:0 5px;min-width:0;}.slotwrap .element{width:100%;min-width:0}.slotwrap>.branch{width:100%;min-width:0}.slotwrap>div[style="display: flex"]{width:100%;min-width:0;justify-content}.compare.rung-item{min-width:0;width(100% - 10px);margin:0 5px}.branch.rung-item{min-width:0;width(100% - 12px);margin:0 6px;}.branch-row{min-height:42px}.branch-row>.element{width(100% - 28px);min-width:0;padding-left:5px;padding-right:5px;}.branch-row>.slotwrap{width(100% - 24px);min-width:0}.rung-tools{margin-left:74px;margin-right:26px}.rung-comment{margin-left:74px;margin-right:26px}
+
+/* Medium embedded widths: keep the ladder usable while stacking the inspector. */@media(max-width:1180px){.main-grid{grid-template-columns(0,1fr)}.side-stack{grid-template-columns(2,minmax(0,1fr));align-items}.side-stack>.panel{grid-column:1/-1}}@media(max-width:820px){.side-stack{grid-template-columns:1fr}.side-stack>.panel.notegrid{grid-template-columns:1fr}.stats{min-width:0;width:100%;grid-template-columns(4,minmax(0,1fr))}.bridge{grid-template-columns(2,minmax(0,1fr))}.topbar,.programbar{align-items}.tabs,.actions,.picker{max-width:100%}}@media(max-width:560px){.bridge{grid-template-columns:1fr 1fr}.stats{grid-template-columns(2,minmax(0,1fr))}.tab,.ghost,.primary,.secondary{min-height:34px;padding:0 9px;font-size:11px}select{max-width:100%;font-size:11px}}
+
+/* Embedded presentation. The page still scrolls normally inside a fixed-heightiframe, while a host can optionally listen to the resize postMessage below. */html.embedded body{background:#fff}html.embedded .app{max-width;padding:0}html.embedded .shell{border:0;border-radius:0;box-shadow}html.embedded header{padding:14px 16px 12px;gap:10px}html.embedded h1{font-size:20px}html.embedded .sub{font-size:12px;max-width:780px}html.embedded .stats{min-width:300px}html.embedded .topbar,html.embedded .programbar{padding:8px 14px}html.embedded .bridge{padding:8px 14px}html.embedded .content{padding:14px}html.embedded .workspace-tools,html.embedded .toolbox,html.embedded .test-details,html.embedded .prediction-panel,html.embedded .bank{padding:14px}html.embedded .footer{padding:10px 14px}@media(max-width:900px){html.embedded header{display;grid-template-columns:1fr}html.embedded .stats{min-width:0;width:100%}}
+
+</style>
+</head>
+<body>
+<div class="app"><div class="shell">
+<header>
+  <div>
+    <h1>Multi-Rung Ladder Logic Studio</h1>
+    <p class="sub">Translate complete IF–THEN programs into interacting ladder rungs. Solve guided slots, repair incorrect programs, or build and test your own multi-rung solution.</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="rungCount">0</b><span>Rungs</span></div>
+    <div class="stat"><b id="solvedCount">0</b><span>Solved</span></div>
+    <div class="stat"><b id="testCount">0</b><span>Tests</span></div>
+    <div class="stat"><b id="passRate">—</b><span>Behavior</span></div>
+  </div>
+</header>
+
+<div class="topbar">
+  <div class="tabs">
+    <button class="tab active" data-mode="learn">Learn</button>
+    <button class="tab" data-mode="solve">Solve</button>
+    <button class="tab" data-mode="repair">Repair</button>
+    <button class="tab" data-mode="build">Build freely</button>
+  </div>
+  <div class="actions">
+    <button id="undoBtn" class="secondary" disabled>↶ Undo</button>
+    <button id="redoBtn" class="secondary" disabled>↷ Redo</button>
+    <button id="resetInputs" class="secondary">Reset inputs</button>
+    <button id="resetProgram" class="secondary">Reset program</button>
+    <button id="runTests" class="primary">Run behavior tests</button>
+  </div>
+</div>
+
+<div class="bridge">
+  <div><b>IF</b>contact / compare</div>
+  <div><b>AND</b>series path</div>
+  <div><b>OR</b>parallel branch</div>
+  <div><b>THEN</b>coil</div>
+  <div><b>PROGRAM</b>multiple scanned rungs</div>
+</div>
+
+<div class="programbar">
+  <div class="picker">
+    <label for="programSelect">Program:</label>
+    <select id="programSelect"></select>
+    <span id="difficulty" class="level">Core</span>
+  </div>
+  <div class="actions">
+    <button id="scanStepBtn" class="secondary">Step scan</button>
+    <button id="scanCycleBtn" class="secondary">Full scan</button>
+    <button id="autoScanBtn" class="secondary">▶ Auto scan</button>
+    <button id="prevProgram" class="secondary">← Previous</button>
+    <button id="nextProgram" class="secondary">Next →</button>
+    <span id="modeStatus" class="status">Learn mode</span>
+  </div>
+</div>
+
+<div class="content">
+  <div class="notegrid">
+    <div id="teacherNote" class="note teacher"></div>
+    <div id="studentGoal" class="note student"></div>
+  </div>
+
+  <div class="section-title"><span>1. Inputs</span><small>Change the field states and watch all rungs scan together</small></div>
+  <div id="inputs" class="inputs"></div>
+  <div id="presets" class="presetrow"></div>
+
+  <div class="scenario">
+    <h2 id="programTitle"></h2>
+    <p id="programScenario"></p>
+    <div id="ruleList" class="rule-list"></div>
+  </div>
+
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panelhead">
+        <h3 id="programHeading">Ladder program</h3>
+        <div class="actions">
+          <span id="scanStatus" class="status">Program scanned</span>
+          <button id="checkStructure" class="primary hide">Check guided solution</button>
+        </div>
+      </div>
+      <div class="panelbody">
+        <div id="ladderProgram" class="program"></div>
+        <div id="feedback" class="feedback neutral">In Learn mode, inspect how each IF–THEN rule maps to its own rung.</div>
+      </div>
+    </div>
+
+<div class="side-stack">
+  <div class="panel">
+    <div class="panelhead"><h3>Outputs and internal bits</h3><span class="status">live</span></div>
+    <div class="panelbody"><div id="outputs" class="output-grid"></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panelhead"><h3>Behavior test summary</h3><span id="behaviorStatus" class="status">not tested</span></div>
+    <div class="panelbody">
+      <div class="test-summary">
+        <div class="metric"><span>Test cases</span><b id="testedCases">0</b></div>
+        <div class="metric"><span>Passed</span><b id="passedCases">0</b></div>
+        <div class="metric"><span>Failed</span><b id="failedCases">0</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panelhead"><h3>Scan inspector</h3><span id="scanInspectorStatus" class="status">ready</span></div>
+    <div class="panelbody">
+      <div id="scanInspector" class="scan-inspector">
+        <div class="scan-line">Use <b>Step scan</b> to inspect one rung at a time.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panelhead"><h3>Hints</h3><button id="hintBtn" class="tiny">Reveal next</button></div>
+    <div class="panelbody"><div id="hints" class="hints"></div></div>
+  </div>
+</div>
+
+  </div>
+</div>
+
+<section class="workspace-tools">
+  <div class="workspace-row">
+    <div>
+      <div class="section-title" style="margin-bottom:5px"><span>Student workspace</span><small>Save, restore, or transfer a program</small></div>
+      <div class="history-actions">
+        <button id="saveWorkBtn" class="secondary">Save work</button>
+        <button id="loadWorkBtn" class="secondary">Restore saved</button>
+        <button id="exportBtn" class="secondary">Export JSON</button>
+        <button id="importBtn" class="secondary">Import JSON</button>
+        <input id="importFile" type="file" accept=".json,application/json" class="hide">
+      </div>
+    </div>
+    <span id="saveStatus" class="save-status">No workspace action yet.</span>
+  </div>
+</section>
+
+<section id="builderToolbox" class="toolbox hide">
+  <div class="section-title"><span>Flexible builder toolbox</span><small>Add or edit rungs; behavior tests allow logically equivalent solutions</small></div>
+  <div class="tool-row">
+    <button data-add="NO">＋ NO contact</button>
+    <button data-add="NC">＋ NC contact</button>
+    <button data-add="PAR">＋ OR branch</button>
+    <button data-add="CMP">＋ comparison</button>
+    <button data-add="COIL">＋ coil</button>
+    <button id="addRung">＋ Add rung</button>
+  </div>
+</section>
+
+<section class="test-details">
+  <div class="section-title"><span>Detailed behavior tests</span><small>See exactly which states pass or fail</small></div>
+  <div class="test-toolbar">
+    <button id="runDefinedTests" class="primary">Run lesson tests</button>
+    <button id="runCoverageTests" class="secondary">Generate broader coverage</button>
+    <span id="coverageNote" class="coverage-note">Coverage combines digital truth-table states with sampled analog thresholds.</span>
+  </div>
+  <div id="testDetails" class="test-table-wrap">
+    <div class="empty-tests">Run a test suite to see detailed expected-versus-student results.</div>
+  </div>
+</section>
+
+<section class="prediction-panel">
+  <div class="section-title"><span>Prediction challenge</span><small>Predict outputs before revealing the scan result</small></div>
+  <div class="prediction-box">
+    <div>
+      <h3 id="predictionTitle">New operating-state challenge</h3>
+      <p>Generate a state, predict each output, then check your answer.</p>
+      <div id="predictionInputs" class="prediction-inputs"></div>
+      <div class="actions" style="margin-top:9px">
+        <button id="newPredictionBtn" class="secondary">New state</button>
+        <button id="checkPredictionBtn" class="primary">Check prediction</button>
+      </div>
+      <div id="predictionResult" class="prediction-result"></div>
+    </div>
+    <div id="predictionOutputs" class="pred-output-list"></div>
+  </div>
+</section>
+
+<section class="bank">
+  <div class="section-title"><span>Multi-rung program bank</span><small>Progress from independent outputs to interaction, memory, and sequencing</small></div>
+  <div id="bankGrid" class="bank-grid"></div>
+</section>
+
+<div class="footer">
+  <span>Behavior tests check the complete program, not only the current input state.</span>
+  <span>Educational simulator only — not for controlling real machinery.</span>
+</div>
+</div></div>
+
+<div id="palette" class="palette hide" role="dialog" aria-modal="true">
+  <div class="palette-box">
+    <div class="palette-head">
+      <h3 id="paletteTitle">Choose replacement</h3>
+      <button id="closePalette" class="secondary">Close</button>
+    </div>
+    <div id="paletteGrid" class="palette-grid"></div>
+  </div>
+</div>
+
+<script>
+const NO=(v,label)=>({kind:"contact",var:v,label,type:"NO"});
+const NC=(v,label)=>({kind:"contact",var:v,label,type:"NC"});
+const CMP=(v,label,op,value,unit="")=>({kind:"compare",var:v,label,op,value,unit});
+const DYN=(left,right,offset,label,op)=>({kind:"dynamic",left,right,offset,label,op});
+const COIL=(v,label)=>({kind:"coil",var:v,label});
+const SERIES=(items)=>({kind:"group",mode:"series",items});
+const PAR=(items)=>({kind:"group",mode:"parallel",items});
+const RUNG=(name,logic)=>({name,logic});
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function fmt(v,u=""){const n=Math.round(v*10)/10;return (Number.isInteger(n)?n:n.toFixed(1))+u}
+function pill(ok,text){return `<span class="cond ${ok?"true":"false"}">${text}</span>`}
+function deepEqual(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+
+const programs=[
+{
+ id:"tank",title:"Tank control — three outputs",difficulty:"Core",
+ tags:["3 rungs","comparisons","independent outputs"],
+ scenario:"A tank has a fill pump, full lamp, and low-level alarm. Each IF–THEN rule becomes its own rung and all rungs run every scan.",
+ teacher:"Use this first multi-rung example to establish that the PLC scans every rung. Ask which outputs can be ON simultaneously.",
+ goal:"Translate three independent rules into three independent rungs and choose the correct comparison directions.",
+ inputs:[
+  {key:"X0",label:"Start X0",type:"digital",value:false},
+  {key:"X1",label:"Stop X1",type:"digital",value:false},
+  {key:"LEVEL",label:"Tank level",type:"analog",unit:"%",min:0,max:100,step:1,value:40}
+ ],
+ outputs:[
+  {key:"Y0",label:"Fill Pump Y0"},{key:"Y1",label:"Full Lamp Y1"},{key:"Y2",label:"Low Alarm Y2"}
+ ],
+ presets:[
+  {label:"Ready to fill",values:{X0:true,X1:false,LEVEL:40}},
+  {label:"Pump cutoff",values:{X0:true,X1:false,LEVEL:92}},
+  {label:"Tank full",values:{X0:false,X1:false,LEVEL:97}},
+  {label:"Low level",values:{X0:false,X1:false,LEVEL:10}}
+ ],
+ rules:[
+  {text:(s,m)=>`<span class="kw">IF</span> X0 ${pill(s.X0,s.X0?"ON":"OFF")} <span class="kw">AND</span> NOT X1 ${pill(!s.X1,s.X1?"false":"true")} <span class="kw">AND</span> ${pill(s.LEVEL<90,"Level < 90%")} <span class="kw">THEN</span> Y0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> ${pill(s.LEVEL>=95,"Level ≥ 95%")} <span class="kw">THEN</span> Y1 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> ${pill(s.LEVEL<=15,"Level ≤ 15%")} <span class="kw">THEN</span> Y2 ON`}
+ ],
+ correct:[
+  RUNG("Fill Pump",SERIES([NO("X0","Start"),NC("X1","Stop"),CMP("LEVEL","Level","<",90,"%"),COIL("Y0","Pump")])),
+  RUNG("Full Lamp",SERIES([CMP("LEVEL","Level",">=",95,"%"),COIL("Y1","Full")])),
+  RUNG("Low Alarm",SERIES([CMP("LEVEL","Level","<=",15,"%"),COIL("Y2","Low Alarm")]))
+ ],
+ puzzle:[
+  RUNG("Fill Pump",SERIES([NO("X0","Start"),{slot:"a"}, {slot:"b"}, COIL("Y0","Pump")])),
+  RUNG("Full Lamp",SERIES([{slot:"c"},COIL("Y1","Full")])),
+  RUNG("Low Alarm",SERIES([{slot:"d"},COIL("Y2","Low Alarm")]))
+ ],
+ slots:{
+  a:{prompt:"Rung 1: choose Stop permissive",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")]},
+  b:{prompt:"Rung 1: choose pump level comparison",correct:CMP("LEVEL","Level","<",90,"%"),choices:[CMP("LEVEL","Level","<",90,"%"),CMP("LEVEL","Level",">=",90,"%"),CMP("LEVEL","Level","<=",15,"%")]},
+  c:{prompt:"Rung 2: choose full-level comparison",correct:CMP("LEVEL","Level",">=",95,"%"),choices:[CMP("LEVEL","Level",">=",95,"%"),CMP("LEVEL","Level","<",95,"%"),CMP("LEVEL","Level","<=",15,"%")]},
+  d:{prompt:"Rung 3: choose low-level comparison",correct:CMP("LEVEL","Level","<=",15,"%"),choices:[CMP("LEVEL","Level","<=",15,"%"),CMP("LEVEL","Level",">=",15,"%"),CMP("LEVEL","Level","<",90,"%")]}
+ },
+ hints:["Each output has its own rung.","Stop is a NOT condition: use NC X1.","Check the direction of each level comparison.","The program may have more than one output ON at the same time."],
+ tests:[
+  {X0:false,X1:false,LEVEL:40},{X0:true,X1:false,LEVEL:40},{X0:true,X1:true,LEVEL:40},
+  {X0:true,X1:false,LEVEL:92},{X0:false,X1:false,LEVEL:97},{X0:false,X1:false,LEVEL:10}
+ ]
+},
+{
+ id:"conveyor",title:"Conveyor cell — motor, gate, and fault",difficulty:"Core",
+ tags:["3 rungs","output contact","OR branch"],
+ scenario:"The conveyor motor runs only under safe conditions. A sorting gate needs an object and a running motor. A fault lamp turns on for E-Stop OR an open guard.",
+ teacher:"This program demonstrates rung interaction: the gate rung reads Y0, which was set by the motor rung earlier in the scan.",
+ goal:"Understand series permissives, output-state contacts, and OR branches across multiple rungs.",
+ inputs:[
+  {key:"X0",label:"Start X0",type:"digital",value:false},
+  {key:"X1",label:"Stop X1",type:"digital",value:false},
+  {key:"X2",label:"Object X2",type:"digital",value:false},
+  {key:"X3",label:"E-Stop X3",type:"digital",value:false},
+  {key:"X4",label:"Guard Closed X4",type:"digital",value:true}
+ ],
+ outputs:[
+  {key:"Y0",label:"Motor Y0"},{key:"Y1",label:"Gate Y1"},{key:"Y2",label:"Fault Y2"}
+ ],
+ presets:[
+  {label:"Ready",values:{X0:false,X1:false,X2:false,X3:false,X4:true}},
+  {label:"Run",values:{X0:true,X1:false,X2:false,X3:false,X4:true}},
+  {label:"Sort object",values:{X0:true,X1:false,X2:true,X3:false,X4:true}},
+  {label:"Guard fault",values:{X0:false,X1:false,X2:false,X3:false,X4:false}}
+ ],
+ rules:[
+  {text:(s,m)=>`<span class="kw">IF</span> Start ${pill(s.X0,s.X0?"ON":"OFF")} <span class="kw">AND</span> NOT Stop <span class="kw">AND</span> NOT E-Stop <span class="kw">AND</span> Guard Closed <span class="kw">THEN</span> Y0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Object ${pill(s.X2,s.X2?"detected":"clear")} <span class="kw">AND</span> Motor Y0 ${pill(!!m.Y0,m.Y0?"ON":"OFF")} <span class="kw">THEN</span> Y1 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> E-Stop ${pill(s.X3,s.X3?"active":"clear")} <span class="kw">OR</span> Guard Open ${pill(!s.X4,!s.X4?"true":"false")} <span class="kw">THEN</span> Y2 ON`}
+ ],
+ correct:[
+  RUNG("Motor",SERIES([NO("X0","Start"),NC("X1","Stop"),NC("X3","E-Stop"),NO("X4","Guard"),COIL("Y0","Motor")])),
+  RUNG("Sorting Gate",SERIES([NO("X2","Object"),NO("Y0","Motor Y0"),COIL("Y1","Gate")])),
+  RUNG("Fault",SERIES([PAR([NO("X3","E-Stop"),NC("X4","Guard")]),COIL("Y2","Fault")]))
+ ],
+ puzzle:[
+  RUNG("Motor",SERIES([NO("X0","Start"),{slot:"a"},{slot:"b"},NO("X4","Guard"),COIL("Y0","Motor")])),
+  RUNG("Sorting Gate",SERIES([NO("X2","Object"),{slot:"c"},COIL("Y1","Gate")])),
+  RUNG("Fault",SERIES([{slot:"d"},COIL("Y2","Fault")]))
+ ],
+ slots:{
+  a:{prompt:"Motor rung: choose Stop condition",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")]},
+  b:{prompt:"Motor rung: choose E-Stop condition",correct:NC("X3","E-Stop"),choices:[NO("X3","E-Stop"),NC("X3","E-Stop"),NC("X4","Guard")]},
+  c:{prompt:"Gate rung: choose motor-running contact",correct:NO("Y0","Motor Y0"),choices:[NO("Y0","Motor Y0"),NC("Y0","Motor Y0"),COIL("Y0","Motor")]},
+  d:{prompt:"Fault rung: choose OR structure",correct:PAR([NO("X3","E-Stop"),NC("X4","Guard")]),choices:[
+    SERIES([NO("X3","E-Stop"),NC("X4","Guard")]),
+    PAR([NO("X3","E-Stop"),NC("X4","Guard")]),
+    PAR([NC("X3","E-Stop"),NO("X4","Guard")])
+  ]}
+ },
+ hints:["The motor rung is all AND logic: a series path.","The gate rung may use Y0 as a contact.","The fault rule contains OR: use parallel paths.","Rung order matters here because the gate reads Y0."],
+ tests:[
+  {X0:false,X1:false,X2:false,X3:false,X4:true},
+  {X0:true,X1:false,X2:false,X3:false,X4:true},
+  {X0:true,X1:false,X2:true,X3:false,X4:true},
+  {X0:true,X1:true,X2:true,X3:false,X4:true},
+  {X0:true,X1:false,X2:true,X3:true,X4:true},
+  {X0:false,X1:false,X2:false,X3:false,X4:false}
+ ]
+},
+{
+ id:"hvac",title:"HVAC — heater, cooler, and fan",difficulty:"Core",
+ tags:["3 rungs","comparisons","output OR"],
+ scenario:"The heater and cooler respond to temperature relative to a setpoint. The fan runs whenever either heating or cooling is active.",
+ teacher:"Use this to show that comparison blocks are Boolean conditions and that the fan rung can read two previous outputs through a parallel branch.",
+ goal:"Build two comparison rungs and one OR rung based on output states.",
+ inputs:[
+  {key:"X0",label:"Enable X0",type:"digital",value:true},
+  {key:"TEMP",label:"Temperature",type:"analog",unit:"°C",min:10,max:35,step:.5,value:22},
+  {key:"SP",label:"Setpoint",type:"analog",unit:"°C",min:16,max:28,step:.5,value:22}
+ ],
+ outputs:[{key:"Y0",label:"Heater Y0"},{key:"Y1",label:"Cooler Y1"},{key:"Y2",label:"Fan Y2"}],
+ presets:[
+  {label:"Balanced",values:{X0:true,TEMP:22,SP:22}},
+  {label:"Heating",values:{X0:true,TEMP:19,SP:22}},
+  {label:"Cooling",values:{X0:true,TEMP:25,SP:22}},
+  {label:"Disabled",values:{X0:false,TEMP:25,SP:22}}
+ ],
+ rules:[
+  {text:(s,m)=>`<span class="kw">IF</span> Enable <span class="kw">AND</span> ${pill(s.TEMP<s.SP-1,"Temp < SP − 1")} <span class="kw">THEN</span> Heater Y0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Enable <span class="kw">AND</span> ${pill(s.TEMP>s.SP+1,"Temp > SP + 1")} <span class="kw">THEN</span> Cooler Y1 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Heater Y0 ${pill(!!m.Y0,m.Y0?"ON":"OFF")} <span class="kw">OR</span> Cooler Y1 ${pill(!!m.Y1,m.Y1?"ON":"OFF")} <span class="kw">THEN</span> Fan Y2 ON`}
+ ],
+ correct:[
+  RUNG("Heater",SERIES([NO("X0","Enable"),DYN("TEMP","SP",-1,"Temp < SP−1","<"),COIL("Y0","Heater")])),
+  RUNG("Cooler",SERIES([NO("X0","Enable"),DYN("TEMP","SP",1,"Temp > SP+1",">"),COIL("Y1","Cooler")])),
+  RUNG("Fan",SERIES([PAR([NO("Y0","Heater"),NO("Y1","Cooler")]),COIL("Y2","Fan")]))
+ ],
+ puzzle:[
+  RUNG("Heater",SERIES([NO("X0","Enable"),{slot:"a"},COIL("Y0","Heater")])),
+  RUNG("Cooler",SERIES([NO("X0","Enable"),{slot:"b"},COIL("Y1","Cooler")])),
+  RUNG("Fan",SERIES([{slot:"c"},COIL("Y2","Fan")]))
+ ],
+ slots:{
+  a:{prompt:"Heater rung: choose heating comparison",correct:DYN("TEMP","SP",-1,"Temp < SP−1","<"),choices:[
+    DYN("TEMP","SP",-1,"Temp < SP−1","<"),DYN("TEMP","SP",1,"Temp > SP+1",">"),DYN("TEMP","SP",0,"Temp > SP",">")
+  ]},
+  b:{prompt:"Cooler rung: choose cooling comparison",correct:DYN("TEMP","SP",1,"Temp > SP+1",">"),choices:[
+    DYN("TEMP","SP",-1,"Temp < SP−1","<"),DYN("TEMP","SP",1,"Temp > SP+1",">"),DYN("TEMP","SP",0,"Temp < SP","<")
+  ]},
+  c:{prompt:"Fan rung: choose Heater OR Cooler structure",correct:PAR([NO("Y0","Heater"),NO("Y1","Cooler")]),choices:[
+    SERIES([NO("Y0","Heater"),NO("Y1","Cooler")]),
+    PAR([NO("Y0","Heater"),NO("Y1","Cooler")]),
+    PAR([NC("Y0","Heater"),NC("Y1","Cooler")])
+  ]}
+ },
+ hints:["Comparison blocks behave like Boolean conditions.","Heating and cooling each have their own rung.","The fan is Y0 OR Y1, so use a parallel branch.","Output bits may be used as contacts."],
+ tests:[
+  {X0:true,TEMP:22,SP:22},{X0:true,TEMP:19,SP:22},{X0:true,TEMP:25,SP:22},
+  {X0:false,TEMP:19,SP:22},{X0:false,TEMP:25,SP:22},{X0:true,TEMP:21,SP:22}
+ ]
+},
+{
+ id:"motorpair",title:"Forward / reverse motor interlock",difficulty:"Extension",
+ tags:["2 rungs","interlock","output NC"],
+ scenario:"Forward and reverse coils must never energize together. Each rung blocks itself when the opposite output is active.",
+ teacher:"This is a classic two-rung interaction exercise. Ask students to explain the role of each NC output contact.",
+ goal:"Build symmetric interlock rungs using the opposite output as an NC permissive.",
+ inputs:[
+  {key:"X0",label:"Forward request X0",type:"digital",value:false},
+  {key:"X1",label:"Reverse request X1",type:"digital",value:false}
+ ],
+ outputs:[{key:"Y0",label:"Forward Y0"},{key:"Y1",label:"Reverse Y1"}],
+ presets:[
+  {label:"Idle",values:{X0:false,X1:false}},
+  {label:"Forward",values:{X0:true,X1:false}},
+  {label:"Reverse",values:{X0:false,X1:true}},
+  {label:"Both requests",values:{X0:true,X1:true}}
+ ],
+ rules:[
+  {text:(s,m)=>`<span class="kw">IF</span> Forward X0 <span class="kw">AND</span> NOT Reverse Y1 <span class="kw">THEN</span> Forward Y0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Reverse X1 <span class="kw">AND</span> NOT Forward Y0 <span class="kw">THEN</span> Reverse Y1 ON`}
+ ],
+ correct:[
+  RUNG("Forward",SERIES([NO("X0","Forward Req"),NC("Y1","Reverse Y1"),COIL("Y0","Forward")])),
+  RUNG("Reverse",SERIES([NO("X1","Reverse Req"),NC("Y0","Forward Y0"),COIL("Y1","Reverse")]))
+ ],
+ puzzle:[
+  RUNG("Forward",SERIES([NO("X0","Forward Req"),{slot:"a"},COIL("Y0","Forward")])),
+  RUNG("Reverse",SERIES([NO("X1","Reverse Req"),{slot:"b"},COIL("Y1","Reverse")]))
+ ],
+ slots:{
+  a:{prompt:"Forward rung: choose reverse interlock",correct:NC("Y1","Reverse Y1"),choices:[NO("Y1","Reverse Y1"),NC("Y1","Reverse Y1"),NC("Y0","Forward Y0")]},
+  b:{prompt:"Reverse rung: choose forward interlock",correct:NC("Y0","Forward Y0"),choices:[NO("Y0","Forward Y0"),NC("Y0","Forward Y0"),NC("Y1","Reverse Y1")]}
+ },
+ hints:["Each direction needs its own rung.","The forward rung checks that reverse is OFF.","The reverse rung checks that forward is OFF.","The interlock contacts are NC output contacts."],
+ tests:[
+  {X0:false,X1:false},{X0:true,X1:false},{X0:false,X1:true},{X0:true,X1:true}
+ ]
+},
+{
+ id:"sealstatus",title:"Seal-in motor with running lamp",difficulty:"Extension",
+ tags:["2 rungs","memory","output contact"],
+ scenario:"Start latches Motor Y0 through its own holding contact. Stop releases the latch. A second rung turns on running lamp Y1 whenever Y0 is on.",
+ teacher:"This program introduces memory plus a dependent status rung. Use step-by-step input changes to demonstrate persistence.",
+ goal:"Understand a holding branch and a second rung that monitors the latched output.",
+ inputs:[
+  {key:"X0",label:"Start X0",type:"digital",value:false},
+  {key:"X1",label:"Stop X1",type:"digital",value:false}
+ ],
+ outputs:[{key:"Y0",label:"Motor Y0"},{key:"Y1",label:"Running Lamp Y1"}],
+ presets:[
+  {label:"Ready",values:{X0:false,X1:false}},
+  {label:"Press Start",values:{X0:true,X1:false}},
+  {label:"Release Start",values:{X0:false,X1:false}},
+  {label:"Press Stop",values:{X0:false,X1:true}}
+ ],
+ rules:[
+  {text:(s,m)=>`<span class="kw">IF</span> (Start X0 <span class="kw">OR</span> Motor Y0 was ON) <span class="kw">AND</span> NOT Stop X1 <span class="kw">THEN</span> Motor Y0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Motor Y0 ${pill(!!m.Y0,m.Y0?"ON":"OFF")} <span class="kw">THEN</span> Running Lamp Y1 ON`}
+ ],
+ correct:[
+  RUNG("Motor Seal-in",SERIES([PAR([NO("X0","Start"),NO("Y0","Hold Y0")]),NC("X1","Stop"),COIL("Y0","Motor")])),
+  RUNG("Running Lamp",SERIES([NO("Y0","Motor Y0"),COIL("Y1","Run Lamp")]))
+ ],
+ puzzle:[
+  RUNG("Motor Seal-in",SERIES([{slot:"a"},{slot:"b"},COIL("Y0","Motor")])),
+  RUNG("Running Lamp",SERIES([{slot:"c"},COIL("Y1","Run Lamp")]))
+ ],
+ slots:{
+  a:{prompt:"Seal-in rung: choose holding structure",correct:PAR([NO("X0","Start"),NO("Y0","Hold Y0")]),choices:[
+    SERIES([NO("X0","Start"),NO("Y0","Hold Y0")]),
+    PAR([NO("X0","Start"),NO("Y0","Hold Y0")]),
+    PAR([NO("X0","Start"),NC("Y0","Hold Y0")])
+  ]},
+  b:{prompt:"Seal-in rung: choose Stop permissive",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")]},
+  c:{prompt:"Lamp rung: choose running-state contact",correct:NO("Y0","Motor Y0"),choices:[NO("Y0","Motor Y0"),NC("Y0","Motor Y0"),NO("X0","Start")]}
+ },
+ hints:["The first rung needs memory: X0 OR Y0.","OR becomes a parallel branch.","The Stop condition is NC X1.","The lamp rung simply reads Y0 as an NO contact."],
+ tests:[
+  {sequence:[{X0:false,X1:false},{X0:true,X1:false},{X0:false,X1:false}]},
+  {sequence:[{X0:true,X1:false},{X0:false,X1:false},{X0:false,X1:true}]}
+ ]
+},
+{
+ id:"sequence",title:"Three-stage process sequence",difficulty:"Advanced",
+ tags:["6 rungs","internal bits","sequence"],
+ scenario:"A simplified batch process uses internal step bits M0, M1, and M2: Start sets Fill step, Full sensor advances to Mix, Timer Done advances to Drain, and Empty ends the cycle.",
+ teacher:"This is a conceptual sequence example using internal bits as state. It is intentionally simplified for teaching state transitions.",
+ goal:"See how several rungs and internal bits can represent process stages.",
+ inputs:[
+  {key:"X0",label:"Start X0",type:"digital",value:false},
+  {key:"X1",label:"Full X1",type:"digital",value:false},
+  {key:"X2",label:"Timer Done X2",type:"digital",value:false},
+  {key:"X3",label:"Empty X3",type:"digital",value:false}
+ ],
+ outputs:[
+  {key:"M0",label:"Fill Step M0",internal:true},
+  {key:"M1",label:"Mix Step M1",internal:true},
+  {key:"M2",label:"Drain Step M2",internal:true},
+  {key:"Y0",label:"Fill Valve Y0"},
+  {key:"Y1",label:"Mixer Y1"},
+  {key:"Y2",label:"Drain Valve Y2"}
+ ],
+ presets:[
+  {label:"Idle",values:{X0:false,X1:false,X2:false,X3:false}},
+  {label:"Start",values:{X0:true,X1:false,X2:false,X3:false}},
+  {label:"Full",values:{X0:false,X1:true,X2:false,X3:false}},
+  {label:"Timer done",values:{X0:false,X1:false,X2:true,X3:false}},
+  {label:"Empty",values:{X0:false,X1:false,X2:false,X3:true}}
+ ],
+ rules:[
+  {text:(s,m)=>`<span class="kw">IF</span> Start X0 <span class="kw">OR</span> Fill step M0, <span class="kw">AND</span> NOT Full X1 <span class="kw">THEN</span> M0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Full X1 <span class="kw">OR</span> Mix step M1, <span class="kw">AND</span> NOT Timer Done X2 <span class="kw">THEN</span> M1 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Timer Done X2 <span class="kw">OR</span> Drain step M2, <span class="kw">AND</span> NOT Empty X3 <span class="kw">THEN</span> M2 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Fill step M0 <span class="kw">THEN</span> Fill Valve Y0 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Mix step M1 <span class="kw">THEN</span> Mixer Y1 ON`},
+  {text:(s,m)=>`<span class="kw">IF</span> Drain step M2 <span class="kw">THEN</span> Drain Valve Y2 ON`}
+ ],
+ correct:[
+  RUNG("Fill Step",SERIES([PAR([NO("X0","Start"),NO("M0","Hold M0")]),NC("X1","Full"),COIL("M0","Fill Step")])),
+  RUNG("Mix Step",SERIES([PAR([NO("X1","Full"),NO("M1","Hold M1")]),NC("X2","Timer Done"),COIL("M1","Mix Step")])),
+  RUNG("Drain Step",SERIES([PAR([NO("X2","Timer Done"),NO("M2","Hold M2")]),NC("X3","Empty"),COIL("M2","Drain Step")])),
+  RUNG("Fill Valve",SERIES([NO("M0","Fill Step M0"),COIL("Y0","Fill Valve")])),
+  RUNG("Mixer",SERIES([NO("M1","Mix Step M1"),COIL("Y1","Mixer")])),
+  RUNG("Drain Valve",SERIES([NO("M2","Drain Step M2"),COIL("Y2","Drain Valve")]))
+ ],
+ puzzle:[
+  RUNG("Fill Step",SERIES([{slot:"a"},NC("X1","Full"),COIL("M0","Fill Step")])),
+  RUNG("Mix Step",SERIES([{slot:"b"},NC("X2","Timer Done"),COIL("M1","Mix Step")])),
+  RUNG("Drain Step",SERIES([{slot:"c"},NC("X3","Empty"),COIL("M2","Drain Step")])),
+  RUNG("Fill Valve",SERIES([{slot:"d"},COIL("Y0","Fill Valve")])),
+  RUNG("Mixer",SERIES([{slot:"e"},COIL("Y1","Mixer")])),
+  RUNG("Drain Valve",SERIES([{slot:"f"},COIL("Y2","Drain Valve")]))
+ ],
+ slots:{
+  a:{prompt:"Fill step: choose start/hold branch",correct:PAR([NO("X0","Start"),NO("M0","Hold M0")]),choices:[
+    SERIES([NO("X0","Start"),NO("M0","Hold M0")]),PAR([NO("X0","Start"),NO("M0","Hold M0")]),PAR([NO("X0","Start"),NC("M0","Hold M0")])
+  ]},
+  b:{prompt:"Mix step: choose full/hold branch",correct:PAR([NO("X1","Full"),NO("M1","Hold M1")]),choices:[
+    SERIES([NO("X1","Full"),NO("M1","Hold M1")]),PAR([NO("X1","Full"),NO("M1","Hold M1")]),PAR([NC("X1","Full"),NO("M1","Hold M1")])
+  ]},
+  c:{prompt:"Drain step: choose timer/hold branch",correct:PAR([NO("X2","Timer Done"),NO("M2","Hold M2")]),choices:[
+    SERIES([NO("X2","Timer Done"),NO("M2","Hold M2")]),PAR([NO("X2","Timer Done"),NO("M2","Hold M2")]),PAR([NC("X2","Timer Done"),NO("M2","Hold M2")])
+  ]},
+  d:{prompt:"Fill output rung: choose Fill Step contact",correct:NO("M0","Fill Step M0"),choices:[NO("M0","Fill Step M0"),NC("M0","Fill Step M0"),NO("M1","Mix Step M1")]},
+  e:{prompt:"Mixer output rung: choose Mix Step contact",correct:NO("M1","Mix Step M1"),choices:[NO("M1","Mix Step M1"),NC("M1","Mix Step M1"),NO("M2","Drain Step M2")]},
+  f:{prompt:"Drain output rung: choose Drain Step contact",correct:NO("M2","Drain Step M2"),choices:[NO("M2","Drain Step M2"),NC("M2","Drain Step M2"),NO("M0","Fill Step M0")]}
+ },
+ hints:["Each stage uses a start condition OR its own holding bit.","Each stage has an NC transition condition that ends it.","The last three rungs map M0, M1, and M2 to their physical outputs.","Internal M bits can behave like output bits in logic.","This is a simplified teaching sequence, not a complete production sequence controller."],
+ tests:[
+  {sequence:[{X0:false,X1:false,X2:false,X3:false},{X0:true,X1:false,X2:false,X3:false},{X0:false,X1:false,X2:false,X3:false}]},
+  {sequence:[{X0:true,X1:false,X2:false,X3:false},{X0:false,X1:true,X2:false,X3:false},{X0:false,X1:false,X2:true,X3:false},{X0:false,X1:false,X2:false,X3:true}]}
+ ]
+}
+];
+
+let currentIndex=0,mode="learn",state={},targetMemoryState={},studentMemoryState={},studentProgram=[],slotSelections={},activeEdit=null,hintCount=0;
+let testRuns=0,solved=new Set(JSON.parse(localStorage.getItem("multiRungSolved")||"[]"));
+let historyStack=[],redoStack=[],manualScanIndex=-1,manualScanMem={},autoScanTimer=null,lastTestDetails=[];
+let predictionState=null,predictionAnswers={};
+const $=id=>document.getElementById(id);
+
+function current(){return programs[currentIndex]}
+
+function buildSelect(){
+ $("programSelect").innerHTML=programs.map((p,i)=>`<option value="${i}">${i+1} — ${p.title}</option>`).join("");
+ $("programSelect").value=currentIndex;
+}
+
+function loadProgram(i){
+ currentIndex=Math.max(0,Math.min(programs.length-1,i));
+ const p=current();
+ $("programSelect").value=currentIndex;
+ $("difficulty").textContent=p.difficulty;
+ $("programTitle").textContent=p.title;
+ $("programScenario").textContent=p.scenario;
+ $("teacherNote").innerHTML="<b>Teacher note:</b> "+p.teacher;
+ $("studentGoal").innerHTML="<b>Student goal:</b> "+p.goal;
+ $("prevProgram").disabled=currentIndex===0;
+ $("nextProgram").disabled=currentIndex===programs.length-1;
+ resetInputs();
+ resetProgramForMode();
+ renderBank();
+ renderHints();
+ updateStats();
+ newPredictionChallenge();
+}
+
+function resetInputs(){
+ resetManualScan();
+ const p=current();
+ state={};targetMemoryState={};studentMemoryState={};
+ p.inputs.forEach(i=>state[i.key]=i.value);
+ p.outputs.forEach(o=>{targetMemoryState[o.key]=false;studentMemoryState[o.key]=false});
+ renderInputs();
+ scanAndRender();
+}
+
+function resetProgramForMode(){
+ const p=current();
+ slotSelections={};hintCount=0;
+ if(mode==="learn"){
+   studentProgram=clone(p.correct);
+ }else if(mode==="solve"){
+   studentProgram=clone(p.puzzle);
+   Object.keys(p.slots).forEach(id=>slotSelections[id]={kind:"blank",label:"Choose"});
+ }else if(mode==="repair"){
+   studentProgram=clone(p.puzzle);
+   Object.entries(p.slots).forEach(([id,s])=>slotSelections[id]=clone(s.choices[s.choices.length-1]));
+ }else{
+   studentProgram=clone(p.correct);
+ }
+ renderHints();
+ predictionState=null;predictionAnswers={};
+ manualScanIndex=-1;manualScanMem={};
+ current().outputs.forEach(o=>manualScanMem[o.key]=false);
+ historyStack=[];redoStack=[];updateHistoryButtons();
+ scanAndRender();
+}
+
+function renderInputs(){
+ const p=current();
+ $("inputs").innerHTML="";
+ p.inputs.forEach(inp=>{
+   const w=document.createElement("div");w.className="device "+(inp.type==="analog"?"analog":"");
+   if(inp.type==="digital"){
+     w.innerHTML=`<div class="name">${inp.label}</div><button class="toggle ${state[inp.key]?"on":""}" aria-pressed="${state[inp.key]}"></button><div class="state">${state[inp.key]?"ON":"OFF"}</div>`;
+     const b=w.querySelector("button"),s=w.querySelector(".state");
+     b.onclick=()=>{state[inp.key]=!state[inp.key];b.classList.toggle("on",state[inp.key]);b.setAttribute("aria-pressed",state[inp.key]);s.textContent=state[inp.key]?"ON":"OFF";scanAndRender()};
+   }else{
+     w.innerHTML=`<div class="name">${inp.label}</div><input type="range" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${state[inp.key]}"><div class="value">${fmt(state[inp.key],inp.unit)}</div>`;
+     const r=w.querySelector("input"),v=w.querySelector(".value");
+     r.oninput=()=>{state[inp.key]=parseFloat(r.value);v.textContent=fmt(state[inp.key],inp.unit);scanAndRender()};
+   }
+   $("inputs").appendChild(w);
+ });
+ $("presets").innerHTML="<span style='font-size:10px;color:#7b8794;align-self:center'>Try:</span>";
+ p.presets.forEach(pr=>{
+   const b=document.createElement("button");b.textContent=pr.label;
+   b.onclick=()=>{Object.assign(state,pr.values);renderInputs();scanAndRender()};
+   $("presets").appendChild(b);
+ });
+}
+
+function resolve(node){
+ if(node&&node.slot)return slotSelections[node.slot]||{kind:"blank",label:"Choose"};
+ return node;
+}
+
+function nodeValue(node,mem,inputs){
+ node=resolve(node);
+ if(!node)return false;
+ if(node.kind==="blank")return false;
+ if(node.kind==="contact"){
+   const source=node.var in inputs?inputs:mem;
+   const v=!!source[node.var];
+   return node.type==="NO"?v:!v;
+ }
+ if(node.kind==="compare"){
+   const v=inputs[node.var];
+   if(node.op==="<")return v<node.value;if(node.op==="<=")return v<=node.value;
+   if(node.op===">")return v>node.value;if(node.op===">=")return v>=node.value;
+ }
+ if(node.kind==="dynamic"){
+   const l=inputs[node.left],r=inputs[node.right]+node.offset;
+   return node.op===">"?l>r:l<r;
+ }
+ if(node.kind==="group"){
+   if(node.mode==="series")return node.items.filter(x=>resolve(x).kind!=="coil").every(x=>nodeValue(x,mem,inputs));
+   if(node.mode==="parallel")return node.items.some(x=>nodeValue(x,mem,inputs));
+ }
+ return true;
+}
+
+function coilOf(logic){
+ const n=resolve(logic);
+ if(!n)return null;
+ if(n.kind==="coil")return n;
+ if(n.kind==="group"){
+   for(let i=n.items.length-1;i>=0;i--){const c=coilOf(n.items[i]);if(c)return c}
+ }
+ return null;
+}
+
+function executeProgram(program,inputs,initialMem={}){
+ const mem={...initialMem};
+ current().outputs.forEach(o=>{if(!(o.key in mem))mem[o.key]=false});
+ const rungStates=[];
+ program.forEach(r=>{
+   const on=nodeValue(r.logic,mem,inputs);
+   const c=coilOf(r.logic);
+   if(c)mem[c.var]=on;
+   rungStates.push(on);
+ });
+ return {mem,rungStates};
+}
+
+function scanAndRender(){
+ const target=executeProgram(current().correct,state,targetMemoryState);
+ const student=executeProgram(studentProgram,state,studentMemoryState);
+ targetMemoryState={...target.mem};
+ studentMemoryState={...student.mem};
+ renderRules(target.mem);
+ renderProgram(student.rungStates,student.mem);
+ renderOutputs(target.mem,student.mem);
+ $("scanStatus").textContent="Program scanned";
+ $("scanStatus").className="status good";
+ updateStats();
+}
+
+function renderRules(targetMem){
+ const p=current();
+ $("ruleList").innerHTML=p.rules.map((r,i)=>{
+   const active=targetMem[p.correct[i]&&coilOf(p.correct[i].logic)?.var]||false;
+   return `<div class="rule ${active?"active":""}"><b>Rule ${i+1}.</b> ${r.text(state,targetMem)}</div>`;
+ }).join("");
+}
+
+function topNodeSpan(node){
+ node=resolve(node);
+ if(!node)return 1;
+ if(node.kind==="group"&&node.mode==="series"){
+   return Math.max(1,node.items.reduce((sum,item)=>sum+topNodeSpan(item),0));
+ }
+ if(node.kind==="group"&&node.mode==="parallel"){
+   return Math.max(2,...node.items.map(item=>topNodeSpan(item)));
+ }
+ return 1;
+}
+
+function renderProgram(rungStates,studentMem){
+ $("ladderProgram").innerHTML="";
+ const programLogicCols=Math.max(6,...studentProgram.map(r=>{
+   const logic=resolve(r.logic);
+   const items=logic.kind==="group"&&logic.mode==="series"?logic.items:[logic];
+   return items.filter(n=>resolve(n)?.kind!=="coil").reduce((sum,n)=>sum+topNodeSpan(n),0);
+ }));
+ const programMinWidth=Math.max(800,74+26+(programLogicCols*98)+124);
+ studentProgram.forEach((r,i)=>{
+   if(mode==="build"){
+     const tools=document.createElement("div");tools.className="rung-tools";
+     tools.innerHTML=`<button data-rung-add="${i}">＋ condition</button><button data-rung-note="${i}">Comment</button><button data-rung-dup="${i}">Duplicate</button><button data-rung-up="${i}">↑</button><button data-rung-down="${i}">↓</button><button data-rung-del="${i}" class="danger">Delete rung</button>`;
+     $("ladderProgram").appendChild(tools);
+   }
+
+   const row=document.createElement("div");
+   row.className="rung "+(manualScanIndex===i?"scan-focus":"");
+   row.innerHTML=`<div class="rung-num">${String(i+1).padStart(2,"0")}<span>${r.name||"Rung"}</span></div>`;
+
+   const wire=document.createElement("div");
+   wire.className="rung-wire "+(rungStates[i]?"powered":"");
+   const content=document.createElement("div");
+   content.className="rung-content";
+
+   const logic=resolve(r.logic);
+   const items=logic.kind==="group"&&logic.mode==="series"?logic.items:[logic];
+   const logicCols=programLogicCols;
+   content.style.setProperty("--logic-cols",logicCols);
+   row.style.minWidth=`${programMinWidth}px`;
+
+   let nextCol=1;
+   items.forEach((n,j)=>{
+     const resolved=resolve(n);
+     const nodeEl=renderNode(n,i,j,studentMem);
+     nodeEl.classList.add("rung-item");
+
+     if(resolved?.kind==="coil"){
+       nodeEl.classList.add("coil-element");
+       nodeEl.style.gridColumn=String(logicCols+1);
+     }else{
+       const span=topNodeSpan(n);
+       const safeStart=Math.min(nextCol,Math.max(1,logicCols-span+1));
+       nodeEl.style.gridColumn=`${safeStart} / span ${span}`;
+       nextCol=safeStart+span;
+     }
+     content.appendChild(nodeEl);
+   });
+
+   wire.appendChild(content);
+   row.appendChild(wire);
+   row.appendChild(document.createElement("div"));
+   $("ladderProgram").appendChild(row);
+
+   if(r.comment){
+     const note=document.createElement("div");note.className="rung-comment";note.textContent=r.comment;
+     $("ladderProgram").appendChild(note);
+   }
+ });
+ bindRungTools();
+ $("rungCount").textContent=studentProgram.length;
+}
+
+function renderNode(node,rungIndex,itemIndex,studentMem){
+ if(node&&node.slot){
+   const w=document.createElement("div");w.className="slotwrap";w.dataset.slot=node.slot;
+   const lab=document.createElement("span");lab.className="slotlabel";lab.textContent="REPLACEABLE";w.appendChild(lab);
+   w.appendChild(renderNode(resolve(node),rungIndex,itemIndex,studentMem));
+   const b=document.createElement("button");b.className="replace";b.textContent="Replace";
+   b.onclick=()=>openSlotPalette(node.slot);w.appendChild(b);return w;
+ }
+ node=resolve(node);
+ if(node.kind==="blank"){
+   const e=document.createElement("div");e.className="element";e.innerHTML=`<span class="tag">EMPTY</span><span class="symbol">— ? —</span>`;return e;
+ }
+ if(node.kind==="contact"){
+   const on=nodeValue(node,studentMem,state);const e=document.createElement("div");e.className="element "+(on?"on":"off");
+   e.innerHTML=`<span class="tag">${node.label}</span><span class="symbol">${node.type==="NO"?"—| |—":"—|/|—"}</span>${mode==="build"?`<button class="replace" data-edit="${rungIndex}:${itemIndex}">Edit</button><button class="replace danger" data-delete="${rungIndex}:${itemIndex}">Delete</button>`:""}`;
+   return e;
+ }
+ if(node.kind==="coil"){
+   const e=document.createElement("div");e.className="element";e.innerHTML=`<span class="tag">${node.label}</span><span class="symbol">—( )—</span>${mode==="build"?`<button class="replace" data-edit="${rungIndex}:${itemIndex}">Edit</button><button class="replace danger" data-delete="${rungIndex}:${itemIndex}">Delete</button>`:""}`;return e;
+ }
+ if(node.kind==="compare"){
+   const on=nodeValue(node,studentMem,state);const e=document.createElement("div");e.className="element compare "+(on?"on":"off");
+   e.innerHTML=`<span class="tag">${node.label}</span>${fmt(state[node.var],node.unit)} ${node.op.replace("<=","≤").replace(">=","≥")} ${fmt(node.value,node.unit)}${mode==="build"?`<br><button class="replace" data-edit="${rungIndex}:${itemIndex}">Edit</button><button class="replace danger" data-delete="${rungIndex}:${itemIndex}">Delete</button>`:""}`;return e;
+ }
+ if(node.kind==="dynamic"){
+   const on=nodeValue(node,studentMem,state);const e=document.createElement("div");e.className="element compare "+(on?"on":"off");
+   e.innerHTML=`<span class="tag">${node.label}</span>${fmt(state[node.left],"°C")} ${node.op} ${fmt(state[node.right]+node.offset,"°C")}${mode==="build"?`<br><button class="replace" data-edit="${rungIndex}:${itemIndex}">Edit</button><button class="replace danger" data-delete="${rungIndex}:${itemIndex}">Delete</button>`:""}`;return e;
+ }
+ if(node.kind==="group"){
+   if(node.mode==="parallel"){
+     const b=document.createElement("div");b.className="branch";
+     node.items.forEach(sub=>{const row=document.createElement("div");row.className="branch-row "+(nodeValue(sub,studentMem,state)?"on":"");row.appendChild(renderNode(sub,rungIndex,itemIndex,studentMem));b.appendChild(row)});
+     if(mode==="build"){const edit=document.createElement("button");edit.className="replace";edit.dataset.edit=`${rungIndex}:${itemIndex}`;edit.textContent="Edit branch";b.appendChild(edit);const del=document.createElement("button");del.className="replace danger";del.dataset.delete=`${rungIndex}:${itemIndex}`;del.textContent="Delete";b.appendChild(del)}
+     return b;
+   }
+   const g=document.createElement("div");g.style.display="flex";g.style.gap="8px";g.style.alignItems="center";
+   node.items.forEach(sub=>g.appendChild(renderNode(sub,rungIndex,itemIndex,studentMem)));return g;
+ }
+ const e=document.createElement("div");e.textContent="?";return e;
+}
+
+function renderOutputs(targetMem,studentMem){
+ $("outputs").innerHTML=current().outputs.map(o=>{
+   const t=!!targetMem[o.key],s=!!studentMem[o.key],same=t===s;
+   return `<div class="out"><div class="outmeta"><div class="lamp ${t?"on":""}"></div><div><strong>${o.label}</strong><small>Target ${t?"ON":"OFF"} · Student ${s?"ON":"OFF"}</small></div></div><span class="valpill ${same?"on":""}">${same?"MATCH":"DIFF"}</span></div>`;
+ }).join("");
+}
+
+function openSlotPalette(id){
+ const s=current().slots[id];activeEdit={type:"slot",id};
+ $("paletteTitle").textContent=s.prompt;
+ renderPaletteChoices(s.choices);
+}
+function openEditPalette(rungIndex,itemIndex){
+ activeEdit={type:"edit",rungIndex,itemIndex};
+ $("paletteTitle").textContent="Replace this program element";
+ renderPaletteChoices(allPaletteChoices());
+}
+function openAddPalette(rungIndex,filter="ANY"){
+ activeEdit={type:"add",rungIndex};
+ $("paletteTitle").textContent="Add a program element";
+ let choices=filter==="COIL"?current().outputs.map(o=>COIL(o.key,o.label)):conditionChoices();
+ if(filter==="NO")choices=choices.filter(c=>c.kind==="contact"&&c.type==="NO");
+ if(filter==="NC")choices=choices.filter(c=>c.kind==="contact"&&c.type==="NC");
+ if(filter==="PAR")choices=choices.filter(c=>c.kind==="group"&&c.mode==="parallel");
+ if(filter==="CMP")choices=choices.filter(c=>c.kind==="compare"||c.kind==="dynamic");
+ renderPaletteChoices(choices);
+}
+function renderPaletteChoices(choices){
+ $("paletteGrid").innerHTML="";
+ choices.forEach(c=>{
+   const b=document.createElement("button");b.className="choice";
+   b.innerHTML=`<b>${choiceTitle(c)}</b><span>${choiceDescription(c)}</span>`;
+   b.onclick=()=>applyChoice(c);$("paletteGrid").appendChild(b);
+ });
+ $("palette").classList.remove("hide");
+}
+function applyChoice(c){
+ pushHistory();
+ if(activeEdit.type==="slot")slotSelections[activeEdit.id]=clone(c);
+ if(activeEdit.type==="edit"){
+   const r=studentProgram[activeEdit.rungIndex],logic=r.logic;
+   const items=logic.kind==="group"&&logic.mode==="series"?logic.items:[logic];
+   items[activeEdit.itemIndex]=clone(c);
+   if(!(logic.kind==="group"&&logic.mode==="series"))r.logic=clone(c);
+ }
+ if(activeEdit.type==="add"){
+   const r=studentProgram[activeEdit.rungIndex];
+   if(!(r.logic.kind==="group"&&r.logic.mode==="series"))r.logic=SERIES([r.logic]);
+   const items=r.logic.items;const coilIndex=items.findIndex(x=>resolve(x).kind==="coil");
+   items.splice(coilIndex<0?items.length:coilIndex,0,clone(c));
+ }
+ closePalette();scanAndRender();
+}
+function closePalette(){$("palette").classList.add("hide");activeEdit=null}
+
+function conditionChoices(){
+ const p=current(),keys=p.inputs.map(i=>i.key),outs=p.outputs.map(o=>o.key);
+ const choices=[];
+ keys.forEach(k=>{const label=k;choices.push(NO(k,label),NC(k,label))});
+ outs.forEach(k=>{choices.push(NO(k,k),NC(k,k))});
+ p.inputs.filter(i=>i.type==="analog").forEach(i=>{
+   choices.push(CMP(i.key,i.label,"<",i.key==="LEVEL"?90:20,i.unit||""));
+   choices.push(CMP(i.key,i.label,">=",i.key==="LEVEL"?95:25,i.unit||""));
+ });
+ if(keys.length>=2)choices.push(PAR([NO(keys[0],keys[0]),NO(keys[1],keys[1])]));
+ return choices;
+}
+function allPaletteChoices(){return [...conditionChoices(),...current().outputs.map(o=>COIL(o.key,o.label))]}
+
+function choiceTitle(n){
+ if(n.kind==="contact")return `${n.type} ${n.label}`;
+ if(n.kind==="coil")return `Coil ${n.label}`;
+ if(n.kind==="compare")return `${n.label} ${n.op.replace("<=","≤").replace(">=","≥")} ${n.value}${n.unit}`;
+ if(n.kind==="dynamic")return n.label;
+ if(n.kind==="group")return n.mode==="parallel"?"Parallel OR branch":"Series AND group";
+ return "Element";
+}
+function choiceDescription(n){
+ if(n.kind==="contact")return n.type==="NO"?"True while bit is ON":"True while bit is OFF";
+ if(n.kind==="coil")return "Writes an output or internal bit";
+ if(n.kind==="compare"||n.kind==="dynamic")return "Boolean comparison instruction";
+ if(n.kind==="group")return n.mode==="parallel"?"Any path may pass power":"All conditions must pass power";
+ return "";
+}
+
+function checkStructure(){
+ let ok=true;
+ Object.entries(current().slots).forEach(([id,s])=>{
+   const same=deepEqual(slotSelections[id],s.correct);const el=document.querySelector(`[data-slot="${id}"]`);
+   if(el){el.classList.remove("correct","incorrect");el.classList.add(same?"correct":"incorrect")}if(!same)ok=false;
+ });
+ $("feedback").className="feedback "+(ok?"good":"bad");
+ $("feedback").textContent=ok?"Correct guided structure. Now run behavior tests to verify the entire program.":"Some guided slots are still wrong. Use the red outlines and hints to revise them.";
+ if(ok){solved.add(current().id);localStorage.setItem("multiRungSolved",JSON.stringify([...solved]));updateStats()}
+}
+
+function evaluateTestSuite(tests){
+ const p=current(),details=[];let passed=0,total=0;
+ tests.forEach((test,index)=>{
+   if(test.sequence){
+     let targetMem={},studentMem={};p.outputs.forEach(o=>{targetMem[o.key]=false;studentMem[o.key]=false});
+     let seqPass=true;const steps=[];
+     test.sequence.forEach((inp,stepIndex)=>{
+       const t=executeProgram(p.correct,inp,targetMem);targetMem=t.mem;
+       const st=executeProgram(studentProgram,inp,studentMem);studentMem=st.mem;
+       const outputRows=p.outputs.map(o=>({key:o.key,target:!!targetMem[o.key],student:!!studentMem[o.key]}));
+       if(outputRows.some(x=>x.target!==x.student))seqPass=false;
+       steps.push({inputs:{...inp},outputs:outputRows,stepIndex});
+     });
+     details.push({type:"sequence",index,pass:seqPass,steps});
+     total++;if(seqPass)passed++;
+   }else{
+     const t=executeProgram(p.correct,test,{}).mem;
+     const st=executeProgram(studentProgram,test,{}).mem;
+     const outputs=p.outputs.map(o=>({key:o.key,target:!!t[o.key],student:!!st[o.key]}));
+     const pass=outputs.every(x=>x.target===x.student);
+     details.push({type:"state",index,pass,inputs:{...test},outputs});
+     total++;if(pass)passed++;
+   }
+ });
+ return {passed,total,failed:total-passed,details};
+}
+
+function applyTestSummary(result,label="test suite"){
+ testRuns++;
+ lastTestDetails=result.details;
+ const rate=Math.round(result.passed/Math.max(1,result.total)*100);
+ $("testedCases").textContent=result.total;$("passedCases").textContent=result.passed;$("failedCases").textContent=result.failed;
+ $("behaviorStatus").textContent=result.failed===0?"all tests pass":`${result.failed} failed`;
+ $("behaviorStatus").className="status "+(result.failed===0?"good":"bad");
+ $("passRate").textContent=rate+"%";
+ $("feedback").className="feedback "+(result.failed===0?"good":"bad");
+ $("feedback").textContent=result.failed===0
+   ?`Excellent: the student program matches the target across the ${label}.`
+   :`The program failed ${result.failed} of ${result.total} cases. Open the detailed table below to inspect the mismatches.`;
+ renderTestDetails(result.details);
+ updateStats();
+}
+
+function runBehaviorTests(){
+ applyTestSummary(evaluateTestSuite(current().tests),"lesson test suite");
+}
+
+function renderTestDetails(details){
+ if(!details.length){$("testDetails").innerHTML='<div class="empty-tests">No test results yet.</div>';return}
+ const rows=[];
+ details.forEach((d,caseIndex)=>{
+   if(d.type==="sequence"){
+     d.steps.forEach((step,stepIndex)=>{
+       const inputs=Object.entries(step.inputs).map(([k,v])=>`${k}=${formatTestValue(v)}`).join(", ");
+       const expected=step.outputs.map(x=>`${x.key}:${x.target?1:0}`).join(" ");
+       const actual=step.outputs.map(x=>`${x.key}:${x.student?1:0}`).join(" ");
+       const pass=step.outputs.every(x=>x.target===x.student);
+       rows.push(`<tr class="${pass?"pass":"fail"}"><td>S${caseIndex+1}.${stepIndex+1}</td><td>${inputs}</td><td>${expected}</td><td>${actual}</td><td>${pass?"PASS":"FAIL"}</td></tr>`);
+     });
+   }else{
+     const inputs=Object.entries(d.inputs).map(([k,v])=>`${k}=${formatTestValue(v)}`).join(", ");
+     const expected=d.outputs.map(x=>`${x.key}:${x.target?1:0}`).join(" ");
+     const actual=d.outputs.map(x=>`${x.key}:${x.student?1:0}`).join(" ");
+     rows.push(`<tr class="${d.pass?"pass":"fail"}"><td>${caseIndex+1}</td><td>${inputs}</td><td>${expected}</td><td>${actual}</td><td>${d.pass?"PASS":"FAIL"}</td></tr>`);
+   }
+ });
+ $("testDetails").innerHTML=`<table class="test-table"><thead><tr><th>Case</th><th>Inputs</th><th>Expected</th><th>Student</th><th>Result</th></tr></thead><tbody>${rows.join("")}</tbody></table>`;
+}
+
+function formatTestValue(v){return typeof v==="boolean"?(v?"ON":"OFF"):v}
+
+function collectAnalogThresholds(node,map={}){
+ node=resolve(node);if(!node)return map;
+ if(node.kind==="compare"){
+   if(!map[node.var])map[node.var]=new Set();
+   map[node.var].add(node.value);
+ }
+ if(node.kind==="dynamic"){
+   if(!map[node.left])map[node.left]=new Set();
+   const base=state[node.right]??0;map[node.left].add(base+node.offset);
+ }
+ if(node.kind==="group")node.items.forEach(n=>collectAnalogThresholds(n,map));
+ return map;
+}
+
+function generateCoverageTests(){
+ const p=current();
+ const digital=p.inputs.filter(i=>i.type==="digital");
+ const analog=p.inputs.filter(i=>i.type==="analog");
+ const maxDigital=Math.min(1<<digital.length,64);
+ const thresholdMap={};p.correct.forEach(r=>collectAnalogThresholds(r.logic,thresholdMap));
+ const analogScenarios=[{}];
+ analog.forEach(inp=>{
+   const vals=new Set([inp.min,inp.value,inp.max]);
+   (thresholdMap[inp.key]||[]).forEach(v=>{vals.add(v);vals.add(Math.max(inp.min,v-(inp.step||1)));vals.add(Math.min(inp.max,v+(inp.step||1)))});
+   const arr=[...vals].filter(v=>Number.isFinite(v)).sort((a,b)=>a-b).slice(0,8);
+   arr.forEach(v=>analogScenarios.push({[inp.key]:v}));
+ });
+ const tests=[];
+ for(let mask=0;mask<maxDigital;mask++){
+   const base={};
+   digital.forEach((inp,i)=>base[inp.key]=Boolean(mask&(1<<i)));
+   if(!analog.length){tests.push(base);continue}
+   analogScenarios.forEach(sample=>{
+     const full={...base};
+     analog.forEach(inp=>full[inp.key]=sample[inp.key]??inp.value);
+     tests.push(full);
+   });
+ }
+ return tests.slice(0,128);
+}
+
+function runCoverageTests(){
+ const tests=generateCoverageTests();
+ $("coverageNote").textContent=`Generated ${tests.length} coverage cases for this program.`;
+ applyTestSummary(evaluateTestSuite(tests),"generated coverage suite");
+}
+
+
+function historySnapshot(){
+ return {studentProgram:clone(studentProgram),slotSelections:clone(slotSelections)};
+}
+function pushHistory(){
+ historyStack.push(historySnapshot());
+ if(historyStack.length>60)historyStack.shift();
+ redoStack=[];updateHistoryButtons();
+}
+function restoreSnapshot(snap){
+ studentProgram=clone(snap.studentProgram);slotSelections=clone(snap.slotSelections);
+ manualScanIndex=-1;scanAndRender();updateHistoryButtons();
+}
+function undo(){
+ if(!historyStack.length)return;
+ redoStack.push(historySnapshot());
+ restoreSnapshot(historyStack.pop());
+}
+function redo(){
+ if(!redoStack.length)return;
+ historyStack.push(historySnapshot());
+ restoreSnapshot(redoStack.pop());
+}
+function updateHistoryButtons(){
+ $("undoBtn").disabled=!historyStack.length;
+ $("redoBtn").disabled=!redoStack.length;
+}
+
+function resetManualScan(){
+ manualScanIndex=-1;manualScanMem={};
+ current().outputs.forEach(o=>manualScanMem[o.key]=false);
+ $("scanInspectorStatus").textContent="ready";
+ $("scanInspectorStatus").className="status";
+ $("scanInspector").innerHTML='<div class="scan-line">Use <b>Step scan</b> to inspect one rung at a time.</div>';
+}
+function describeNode(node,mem,inputs,items=[]){
+ node=resolve(node);if(!node)return items;
+ if(node.kind==="contact"){
+   items.push({label:`${node.type} ${node.label}`,value:nodeValue(node,mem,inputs)});return items;
+ }
+ if(node.kind==="compare"||node.kind==="dynamic"){
+   items.push({label:choiceTitle(node),value:nodeValue(node,mem,inputs)});return items;
+ }
+ if(node.kind==="group"){
+   if(node.mode==="parallel")items.push({label:"Parallel OR branch",value:nodeValue(node,mem,inputs)});
+   node.items.forEach(n=>describeNode(n,mem,inputs,items));return items;
+ }
+ return items;
+}
+function stepScan(){
+ if(!studentProgram.length)return;
+ if(manualScanIndex<0||manualScanIndex>=studentProgram.length-1){
+   if(manualScanIndex>=studentProgram.length-1)resetManualScan();
+   manualScanIndex=0;
+ }else manualScanIndex++;
+ const rung=studentProgram[manualScanIndex];
+ const on=nodeValue(rung.logic,manualScanMem,state);
+ const coil=coilOf(rung.logic);
+ if(coil)manualScanMem[coil.var]=on;
+ const trace=describeNode(rung.logic,manualScanMem,state,[]);
+ $("scanInspectorStatus").textContent=`rung ${manualScanIndex+1}/${studentProgram.length}`;
+ $("scanInspectorStatus").className="status warn";
+ $("scanInspector").innerHTML=`<div class="scan-line"><b>${rung.name||"Rung "+(manualScanIndex+1)}</b><br>Rung result: ${on?"TRUE / energized":"FALSE / not energized"}${coil?`<br>Writes ${coil.var} = ${on?1:0}`:""}</div><div class="trace-list">${trace.map(t=>`<div class="trace-item ${t.value?"true":"false"}"><span>${t.label}</span><b>${t.value?"TRUE":"FALSE"}</b></div>`).join("")}</div>`;
+ const student=executeProgram(studentProgram,state,studentMemoryState);
+ renderProgram(student.rungStates,student.mem);
+}
+function fullManualScan(){
+ resetManualScan();
+ for(let i=0;i<studentProgram.length;i++)stepScan();
+ $("scanInspectorStatus").textContent="cycle complete";
+ $("scanInspectorStatus").className="status good";
+}
+function toggleAutoScan(){
+ if(autoScanTimer){
+   clearInterval(autoScanTimer);autoScanTimer=null;
+   $("autoScanBtn").textContent="▶ Auto scan";return;
+ }
+ resetManualScan();$("autoScanBtn").textContent="■ Stop auto";
+ autoScanTimer=setInterval(stepScan,700);
+}
+
+function workspaceKey(){return `ladderWorkspace:${current().id}`}
+function saveWork(){
+ const data={version:2,programId:current().id,mode,studentProgram,slotSelections,savedAt:new Date().toISOString()};
+ localStorage.setItem(workspaceKey(),JSON.stringify(data));
+ $("saveStatus").textContent="Saved in this browser.";
+}
+function loadWork(){
+ const raw=localStorage.getItem(workspaceKey());
+ if(!raw){$("saveStatus").textContent="No saved work for this program.";return}
+ try{
+   const data=JSON.parse(raw);pushHistory();
+   studentProgram=clone(data.studentProgram||studentProgram);slotSelections=clone(data.slotSelections||slotSelections);
+   scanAndRender();$("saveStatus").textContent="Saved work restored.";
+ }catch(e){$("saveStatus").textContent="Saved data could not be read."}
+}
+function exportProgram(){
+ const data={version:2,programId:current().id,title:current().title,studentProgram,slotSelections};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download=`${current().id}-student-program.json`;a.click();URL.revokeObjectURL(a.href);
+ $("saveStatus").textContent="Program JSON exported.";
+}
+function importProgramFile(file){
+ const reader=new FileReader();
+ reader.onload=()=>{
+   try{
+     const data=JSON.parse(reader.result);pushHistory();
+     if(!Array.isArray(data.studentProgram))throw new Error("Missing studentProgram");
+     studentProgram=clone(data.studentProgram);slotSelections=clone(data.slotSelections||{});
+     scanAndRender();$("saveStatus").textContent="Program JSON imported.";
+   }catch(e){$("saveStatus").textContent="Import failed: invalid program JSON."}
+ };
+ reader.readAsText(file);
+}
+
+function newPredictionChallenge(){
+ const pool=generateCoverageTests();
+ predictionState=clone(pool[Math.floor(Math.random()*pool.length)]||state);
+ predictionAnswers={};current().outputs.forEach(o=>predictionAnswers[o.key]=false);
+ $("predictionInputs").innerHTML=Object.entries(predictionState).map(([k,v])=>`<span class="pred-chip">${k} = ${formatTestValue(v)}</span>`).join("");
+ renderPredictionOutputs();
+ $("predictionResult").textContent="";
+}
+function renderPredictionOutputs(){
+ $("predictionOutputs").innerHTML=current().outputs.map(o=>`<div class="pred-output"><span>${o.label}</span><button data-pred-output="${o.key}" class="${predictionAnswers[o.key]?"on":""}">${predictionAnswers[o.key]?"ON":"OFF"}</button></div>`).join("");
+ document.querySelectorAll("[data-pred-output]").forEach(b=>b.onclick=()=>{const k=b.dataset.predOutput;predictionAnswers[k]=!predictionAnswers[k];renderPredictionOutputs()});
+}
+function checkPrediction(){
+ if(!predictionState)newPredictionChallenge();
+ const target=executeProgram(current().correct,predictionState,{}).mem;
+ const wrong=current().outputs.filter(o=>!!predictionAnswers[o.key]!==!!target[o.key]);
+ $("predictionResult").textContent=wrong.length
+  ?`Review: ${wrong.map(o=>o.key).join(", ")} ${wrong.length===1?"does":"do"} not match the target scan.`
+  :"Correct prediction. Every output matches the target program.";
+ $("predictionResult").style.color=wrong.length?"var(--red)":"var(--green)";
+}
+
+function renderHints(){
+ $("hints").innerHTML=current().hints.map((h,i)=>`<div class="hint ${i<hintCount?"revealed":""}">${i<hintCount?h:"Hint "+(i+1)+" hidden"}</div>`).join("");
+}
+function revealHint(){if(hintCount<current().hints.length){hintCount++;renderHints()}}
+
+function setMode(m){
+ if(autoScanTimer){clearInterval(autoScanTimer);autoScanTimer=null;$("autoScanBtn").textContent="▶ Auto scan"}
+ resetManualScan();
+ mode=m;document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));
+ $("modeStatus").textContent=m==="learn"?"Learn mode":m==="solve"?"Solve mode":m==="repair"?"Repair mode":"Free builder";
+ $("checkStructure").classList.toggle("hide",m==="learn"||m==="build");
+ $("builderToolbox").classList.toggle("hide",m!=="build");
+ $("programHeading").textContent=m==="build"?"Student-built multi-rung program":m==="learn"?"Correct ladder program":"Guided multi-rung program";
+ $("feedback").className="feedback neutral";
+ $("feedback").textContent=m==="learn"?"Inspect how each IF–THEN rule maps to a rung and how later rungs may read earlier outputs.":m==="solve"?"Fill the missing ladder elements across all rungs, then check structure and behavior.":m==="repair"?"Several elements are intentionally wrong. Repair the whole program.":"Edit, add, remove, duplicate, and reorder rungs. Behavior tests accept logically equivalent programs.";
+ resetInputs();resetProgramForMode();updateStats();
+}
+
+function bindRungTools(){
+ if(mode!=="build")return;
+ document.querySelectorAll("[data-rung-add]").forEach(b=>b.onclick=()=>openAddPalette(Number(b.dataset.rungAdd)));
+ document.querySelectorAll("[data-rung-note]").forEach(b=>b.onclick=()=>{const i=Number(b.dataset.rungNote);const text=prompt("Rung comment / purpose:",studentProgram[i].comment||"");if(text!==null){pushHistory();studentProgram[i].comment=text.trim();scanAndRender()}});
+ document.querySelectorAll("[data-rung-dup]").forEach(b=>b.onclick=()=>{pushHistory();const i=Number(b.dataset.rungDup);studentProgram.splice(i+1,0,clone(studentProgram[i]));scanAndRender()});
+ document.querySelectorAll("[data-rung-del]").forEach(b=>b.onclick=()=>{pushHistory();const i=Number(b.dataset.rungDel);if(studentProgram.length>1)studentProgram.splice(i,1);scanAndRender()});
+ document.querySelectorAll("[data-rung-up]").forEach(b=>b.onclick=()=>{pushHistory();const i=Number(b.dataset.rungUp);if(i>0)[studentProgram[i-1],studentProgram[i]]=[studentProgram[i],studentProgram[i-1]];scanAndRender()});
+ document.querySelectorAll("[data-rung-down]").forEach(b=>b.onclick=()=>{pushHistory();const i=Number(b.dataset.rungDown);if(i<studentProgram.length-1)[studentProgram[i+1],studentProgram[i]]=[studentProgram[i],studentProgram[i+1]];scanAndRender()});
+ document.querySelectorAll("[data-edit]").forEach(b=>{b.onclick=()=>{const [r,i]=b.dataset.edit.split(":").map(Number);openEditPalette(r,i)}});
+ document.querySelectorAll("[data-delete]").forEach(b=>{b.onclick=()=>{pushHistory();const [r,i]=b.dataset.delete.split(":").map(Number);const logic=studentProgram[r].logic;if(logic.kind==="group"&&logic.mode==="series")logic.items.splice(i,1);else studentProgram[r].logic=SERIES([]);scanAndRender()}});
+}
+
+function addNewRung(){
+ pushHistory();
+ const out=current().outputs[0];
+ studentProgram.push(RUNG("New Rung",SERIES([NO(current().inputs[0].key,current().inputs[0].key),COIL(out.key,out.label)])));
+ scanAndRender();
+}
+
+function updateStats(){
+ $("solvedCount").textContent=solved.size;
+ $("testCount").textContent=testRuns;
+ $("rungCount").textContent=studentProgram.length||0;
+}
+
+function renderBank(){
+ $("bankGrid").innerHTML=programs.map((p,i)=>`<div class="bank-card ${i===currentIndex?"active":""}" data-bank="${i}"><b>${i+1}. ${p.title}</b><p>${p.scenario}</p><div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div></div>`).join("");
+ document.querySelectorAll("[data-bank]").forEach(c=>c.onclick=()=>loadProgram(Number(c.dataset.bank)));
+}
+
+$("undoBtn").onclick=undo;
+$("redoBtn").onclick=redo;
+$("scanStepBtn").onclick=stepScan;
+$("scanCycleBtn").onclick=fullManualScan;
+$("autoScanBtn").onclick=toggleAutoScan;
+$("saveWorkBtn").onclick=saveWork;
+$("loadWorkBtn").onclick=loadWork;
+$("exportBtn").onclick=exportProgram;
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=e=>{if(e.target.files&&e.target.files[0])importProgramFile(e.target.files[0]);e.target.value=""};
+$("runDefinedTests").onclick=runBehaviorTests;
+$("runCoverageTests").onclick=runCoverageTests;
+$("newPredictionBtn").onclick=newPredictionChallenge;
+$("checkPredictionBtn").onclick=checkPrediction;
+document.addEventListener("keydown",e=>{
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();e.shiftKey?redo():undo()}
+ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"){e.preventDefault();redo()}
+});
+$("closePalette").onclick=closePalette;
+$("palette").onclick=e=>{if(e.target===$("palette"))closePalette()};
+$("checkStructure").onclick=checkStructure;
+$("runTests").onclick=runBehaviorTests;
+$("hintBtn").onclick=revealHint;
+$("resetInputs").onclick=resetInputs;
+$("resetProgram").onclick=resetProgramForMode;
+$("prevProgram").onclick=()=>loadProgram(currentIndex-1);
+$("nextProgram").onclick=()=>loadProgram(currentIndex+1);
+$("programSelect").onchange=e=>loadProgram(Number(e.target.value));
+$("addRung").onclick=addNewRung;
+document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{if(studentProgram.length)openAddPalette(studentProgram.length-1,b.dataset.add)});
+
+
+// Iframe integration: compact embedded styling plus optional parent auto-resize.
+(function initEmbedMode(){
+ const embedded=window.self!==window.top;
+ if(!embedded)return;
+ document.documentElement.classList.add("embedded");
+ let raf=0;
+ const notifyParent=()=>{
+   cancelAnimationFrame(raf);
+   raf=requestAnimationFrame(()=>{
+     const height=Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+     window.parent.postMessage({type:"ladder-studio:resize",height},"*");
+   });
+ };
+ window.addEventListener("load",notifyParent);
+ window.addEventListener("resize",notifyParent);
+ if("ResizeObserver" in window)new ResizeObserver(notifyParent).observe(document.body);
+ setTimeout(notifyParent,0);
+})();
+
+buildSelect();
+loadProgram(0);
+setMode("learn");
+</script>
+
+</body>
+</html>
