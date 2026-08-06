@@ -1,0 +1,2042 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Ladder Logic Teaching Studio</title>
+  <style>
+    :root{
+      --ink:#142033;--muted:#5a687a;--line:#cbd5df;--paper:#fff;--page:#eef2f6;
+      --navy:#13314d;--blue:#1468a8;--blue-soft:#eaf4fc;--green:#08785a;--green-soft:#e7f6f0;
+      --amber:#9b5700;--amber-soft:#fff4d8;--purple:#6741a5;--purple-soft:#f1ebfa;
+      --red:#b3261e;--red-soft:#fff0ee;--off:#68788a;--radius:14px;--shadow:0 8px 24px rgba(19,49,77,.08);
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:var(--page);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,
+      BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45;overflow-x:hidden
+    }
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+      outline:3px solid rgba(20,104,168,.3);outline-offset:2px
+    }
+    .studio{width:min(980px,100%);margin:0 auto;background:var(--paper)}
+    .header{background:var(--navy);color:#fff;padding:16px clamp(12px,3vw,24px)}
+    .header-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,380px);gap:18px;align-items:end}
+    .eyebrow{margin:0 0 3px;color:#8fdac3;text-transform:uppercase;letter-spacing:.11em;font-size:.72rem;font-weight:800}
+    h1{margin:0;font-size:clamp(1.25rem,3vw,1.72rem);line-height:1.17}
+    .header p:last-child{margin:4px 0 0;color:#d6e5ef;font-size:.86rem}
+    .lesson-picker label{display:block;margin-bottom:5px;font-size:.74rem;font-weight:800;color:#d6e5ef}
+    .lesson-picker select{width:100%;min-height:42px;border:1px solid #7aa2bf;border-radius:9px;padding:7px 10px;color:var(--ink);background:#fff;font-weight:700}
+    .progress-strip{display:grid;grid-template-columns:repeat(7,1fr);background:#d5dee7;border-bottom:1px solid #b8c5d1}
+    .progress-step{
+      position:relative;border:0;border-right:1px solid #d3dce5;background:#f5f7fa;color:#56667a;
+      min-height:44px;padding:6px 4px;font-size:.71rem;font-weight:800
+    }
+    .progress-step:last-child{border-right:0}
+    .progress-step.active{background:#fff;color:var(--blue);box-shadow:inset 0 -4px 0 var(--blue)}
+    .progress-step.done::before{content:"✓ ";color:var(--green)}
+    main{padding:16px clamp(10px,2.6vw,24px) 42px}
+    .lesson-head{margin-bottom:12px}
+    .lesson-headline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    h2{margin:0;color:var(--navy);font-size:clamp(1.12rem,2.8vw,1.48rem);line-height:1.25}
+    .level{flex:none;border-radius:999px;background:var(--purple-soft);color:var(--purple);padding:4px 8px;font-size:.68rem;font-weight:800}
+    .lesson-head p{margin:4px 0 0;color:var(--muted);font-size:.86rem;max-width:80ch}
+    .concept-bridge{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:#fff}
+    .concept-bridge summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;cursor:pointer;color:var(--navy);font-size:.86rem;font-weight:900;background:#f7fafc}
+    .concept-bridge summary::after{content:"Open vocabulary guide";font-size:.68rem;color:var(--blue);font-weight:800}
+    .concept-bridge[open] summary::after{content:"Close guide"}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;padding:10px 13px 13px;border-top:1px solid #dce4ec}
+    .concept-card{border-left:4px solid var(--blue);border-radius:8px;background:var(--blue-soft);padding:8px 9px;font-size:.73rem;color:#42556b}
+    .concept-card:nth-child(3n+2){border-color:var(--green);background:var(--green-soft)}
+    .concept-card:nth-child(3n){border-color:var(--purple);background:var(--purple-soft)}
+    .concept-card b{display:block;margin-bottom:2px;color:var(--navy);font-size:.76rem}
+    .logic-path-note{display:flex;gap:8px;align-items:flex-start;margin:0 13px 9px;padding:8px 9px;border-left:4px solid var(--green);border-radius:8px;background:var(--green-soft);color:#175c49;font-size:.73rem}
+    .logic-path-note b{white-space:nowrap}
+    .top-teaching{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:12px}
+    .task,.coach{border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);padding:13px}
+    .task{border-top:5px solid var(--blue)}
+    .coach{border-top:5px solid var(--amber)}
+    .kicker{display:flex;gap:7px;align-items:center;margin:0 0 6px;text-transform:uppercase;letter-spacing:.07em;font-size:.7rem;font-weight:900}
+    .task .kicker{color:var(--blue)}.coach .kicker{color:var(--amber)}
+    .kicker-num{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:currentColor}
+    .kicker-num span{color:#fff;font-size:.7rem}
+    .task h3,.coach h3{margin:0 0 5px;font-size:.96rem;line-height:1.32;color:var(--navy)}
+    .task p,.coach p{margin:0;color:#44546a;font-size:.82rem}
+    .task ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}
+    .task li{display:flex;gap:7px;font-size:.76rem;color:#526278}
+    .task li::before{content:"✓";color:var(--green);font-weight:900}
+    .question-meta{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:5px;font-size:.7rem;color:#6b5520}
+    .question-options{display:grid;gap:6px;margin-top:8px}
+    .question-option{
+      min-height:38px;border:1px solid #b9c6d3;border-radius:9px;background:#fff;color:#2f4056;
+      padding:7px 9px;text-align:left;font-size:.78rem
+    }
+    .question-option:hover{border-color:var(--blue);background:var(--blue-soft)}
+    .question-option.chosen{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+    .question-option.correct{border-color:var(--green);background:var(--green-soft);color:#075b45}
+    .question-option.wrong{border-color:var(--red);background:var(--red-soft);color:#842018}
+    .coach-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .btn{
+      min-height:38px;border:1px solid #9eafc0;border-radius:9px;background:#fff;color:#33475e;
+      padding:6px 10px;font-size:.77rem;font-weight:800
+    }
+    .btn:hover{border-color:var(--blue);color:var(--blue);background:#f5faff}
+    .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+    .btn.primary:hover{background:#0d558b}
+    .btn.ghost{border-color:transparent;background:transparent}
+    .btn:disabled{opacity:.48;cursor:not-allowed}
+    .feedback{margin-top:8px;border-left:4px solid #8798aa;border-radius:8px;background:#f2f5f8;padding:8px 9px;color:#43546a;font-size:.76rem}
+    .feedback.good{border-color:var(--green);background:var(--green-soft);color:#075b45}
+    .feedback.bad{border-color:var(--red);background:var(--red-soft);color:#842018}
+    .feedback.hint{border-color:var(--amber);background:var(--amber-soft);color:#714409}
+    .connection{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+    .section-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:11px 13px 8px}
+    .section-head h3{margin:0;color:var(--navy);font-size:.98rem}
+    .section-head p{margin:2px 0 0;color:var(--muted);font-size:.76rem}
+    .connection-body{display:grid;grid-template-columns:minmax(230px,.9fr) minmax(0,1.1fr);border-top:1px solid #dce4ec}
+    .machine{min-height:232px;background:#f5f8fb;padding:10px;border-right:1px solid #dce4ec;display:grid;grid-template-rows:1fr auto}
+    .machine svg{width:100%;height:194px;display:block}
+    .machine-caption{margin:4px 0 0;text-align:center;color:#4f6074;font-size:.75rem}
+    .data-side{padding:11px;min-width:0}
+    .data-chain{display:grid;gap:7px}
+    .chain-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;align-items:start}
+    .chain-label{padding-top:7px;text-transform:uppercase;letter-spacing:.06em;font-size:.65rem;font-weight:900;color:#607185}
+    .chain-value{border-left:4px solid #a5b4c3;background:#f5f7fa;border-radius:7px;padding:6px 8px;min-width:0}
+    .chain-value.read{border-color:var(--blue);background:var(--blue-soft)}
+    .chain-value.logic{border-color:var(--green);background:var(--green-soft)}
+    .chain-value.write{border-color:var(--purple);background:var(--purple-soft)}
+    .chain-value b{display:block;font-size:.76rem;color:#2d4057}
+    .chain-value span{display:block;font-size:.71rem;color:#53657a;overflow-wrap:anywhere}
+    .scan-cycle{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px}
+    .scan-phase{text-align:center;border:1px solid #d1dae4;border-radius:8px;padding:6px 4px;font-size:.65rem;color:#56677b}
+    .scan-phase b{display:block;color:var(--navy);font-size:.7rem}
+    .scan-phase.active{border-color:var(--blue);background:var(--blue-soft);color:#1c557e}
+    .controls{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+    .scenario-buttons{display:flex;gap:6px;flex-wrap:wrap;padding:0 13px 10px}
+    .scenario-buttons button{min-height:32px;border:1px solid #b9c6d2;border-radius:999px;background:#fff;padding:4px 9px;font-size:.72rem;color:#42546a}
+    .scenario-buttons button.active,.scenario-buttons button:hover{border-color:var(--blue);background:var(--blue-soft);color:#0e588f}
+    .input-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px;padding:0 13px 13px}
+    .input-control{border-top:1px solid #d8e0e8;padding-top:8px;min-width:0}
+    .input-name{display:flex;justify-content:space-between;gap:7px;align-items:flex-start;font-size:.76rem;font-weight:800;color:#34465c}
+    .io-badge{flex:none;border-radius:999px;background:var(--blue-soft);color:#0c5d98;padding:2px 6px;font-size:.6rem;font-weight:900;text-transform:uppercase}
+    .tagline{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;color:#66778b;margin-top:2px}
+    .toggle{width:100%;min-height:36px;margin-top:6px;border:1px solid #aab8c7;border-radius:8px;background:#edf1f5;color:#536477;font-weight:800;font-size:.74rem}
+    .toggle.on{background:var(--green);border-color:var(--green);color:#fff}
+    .range-row{display:grid;grid-template-columns:minmax(70px,1fr) 62px;gap:6px;margin-top:6px;align-items:center}
+    input[type=range]{width:100%;accent-color:var(--blue)}
+    .number{width:100%;min-height:34px;border:1px solid #adbac7;border-radius:7px;padding:4px;text-align:center}
+    .time-controls{display:flex;gap:6px;flex-wrap:wrap;padding:0 13px 12px}
+    .time-readout{align-self:center;margin-left:auto;color:#4d6076;font-size:.75rem;font-weight:800}
+    .state-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:5px;padding:0 13px 12px}
+    .state-step{border:1px solid #cbd5df;border-radius:8px;padding:6px 3px;text-align:center;font-size:.65rem;color:#607185}
+    .state-step.active{background:var(--green-soft);border-color:var(--green);color:#076249;font-weight:900}
+    .ladder-panel{border:1px solid #abbccc;border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+    .ladder-toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:9px 13px;border-top:1px solid #dce4ec;border-bottom:1px solid #d4dee7;background:#f7f9fb}
+    .toolbar-spacer{flex:1}
+    .statusline{font-size:.7rem;color:#586a7f}
+    .rung-tabs{display:flex;gap:5px;flex-wrap:wrap;padding:8px 13px;border-bottom:1px solid #dce4ec}
+    .rung-tab{min-height:32px;border:1px solid #b7c4d1;border-radius:8px;background:#fff;padding:4px 8px;color:#44566c;font-size:.68rem;font-weight:800}
+    .rung-tab.active{border-color:var(--blue);background:var(--blue-soft);color:#0c5c96}
+    .rung-list{padding:9px 13px 13px}
+    .ladder-network-window{overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid #c8d3de;border-radius:10px;background:#fff}
+    .ladder-network{min-width:max(304px,calc(98px * var(--max-nodes) + 104px));background:#fff}
+    .rung{border:0;border-bottom:1px solid #dbe3eb;border-radius:0;overflow:visible;scroll-margin-top:10px}
+    .rung:last-child{border-bottom:0}
+    .rung.selected{background:linear-gradient(90deg,rgba(20,104,168,.055),transparent 75%)}
+    .rung-center{min-width:0;display:grid;grid-template-rows:30px 94px 26px}
+    .rung-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:5px 9px 0;background:transparent;border:0}
+    .rung-head button{border:0;background:transparent;padding:0;text-align:left;color:#2d4057;font-size:.73rem;font-weight:900}
+    .rung-result{font-size:.67rem;font-weight:900;color:#67788b}
+    .rung-result.true{color:var(--green)}
+    .rung-canvas{
+      height:150px;position:relative;
+      display:grid;grid-template-columns:24px minmax(0,1fr) 24px;background:#fff
+    }
+    .rung.selected .rung-canvas{background:transparent}
+    .rail{width:6px;height:calc(100% + 1px);background:var(--navy);justify-self:center;margin-bottom:-1px}
+    .path{position:relative;display:flex;align-items:center;justify-content:space-around;gap:0;padding:0 7px}
+    .path::before{content:"";position:absolute;left:0;right:0;top:47px;height:3px;background:#8292a3}
+    .path.hot::before{background:var(--green);height:4px}
+    .instruction{
+      position:relative;z-index:2;min-width:94px;max-width:126px;min-height:88px;border:0;
+      border-radius:7px;background:transparent;padding:2px 4px;color:#2f4259;text-align:center
+    }
+    .instruction:hover .inst-symbol,.instruction.selected .inst-symbol{color:var(--blue);filter:drop-shadow(0 0 2px rgba(20,104,168,.34))}
+    .instruction.selected .inst-label,.instruction.scan .inst-label{color:var(--blue)}
+    .instruction.scan .inst-symbol{color:var(--blue);filter:drop-shadow(0 0 4px rgba(20,104,168,.5))}
+    .inst-label{height:24px;display:grid;place-items:end center;font-size:.69rem;font-weight:800;line-height:1.1}
+    .inst-symbol{position:relative;height:38px;display:grid;place-items:center;color:#31475e;background:#fff;padding:0}
+    .instruction.true .inst-symbol{color:var(--green)}
+    .inst-tag{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--blue);font-size:.63rem;font-weight:900;white-space:nowrap}
+    .inst-value{display:block;font-size:.61rem;color:#65768a;margin-top:1px;white-space:nowrap}
+    .instruction.true .inst-value{color:var(--green);font-weight:800}
+    .contact-symbol{position:relative;width:100%;max-width:88px;height:30px}
+    .contact-symbol::before,.contact-symbol::after{content:"";position:absolute;top:2px;bottom:2px;width:4px;background:currentColor;border-radius:2px}
+    .contact-symbol::before{left:calc(50% - 12px)}.contact-symbol::after{right:calc(50% - 12px)}
+    .contact-symbol span::before,.contact-symbol span::after{content:"";position:absolute;top:14px;height:3px;background:currentColor;width:calc(50% - 12px)}
+    .contact-symbol span::before{left:0}.contact-symbol span::after{right:0}
+    .contact-symbol.nc i{position:absolute;left:calc(50% - 19px);top:13px;width:38px;height:3px;background:currentColor;transform:rotate(-48deg);border-radius:2px}
+    .coil-drawing{display:block;width:100%;max-width:88px;height:38px;overflow:visible}
+    .coil-drawing path{fill:none;stroke:currentColor;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+    .box-symbol{position:relative;min-width:66px;border:3px solid currentColor;border-radius:5px;padding:5px 4px;font-size:.68rem;font-weight:900;background:#fff}
+    .box-symbol::before,.box-symbol::after{content:"";position:absolute;top:50%;width:15px;height:3px;background:currentColor;transform:translateY(-50%)}
+    .box-symbol::before{right:100%}.box-symbol::after{left:100%}
+    .parallel{position:relative;z-index:2;min-width:174px;height:88px;display:grid;grid-template-rows:1fr 1fr;gap:2px;padding:1px 17px;background:#fff}
+    .parallel::before,.parallel::after{
+      content:"";position:absolute;top:13px;bottom:13px;width:10px;color:#788a9c;
+      background:linear-gradient(to bottom,transparent calc(50% - 1.5px),currentColor calc(50% - 1.5px),currentColor calc(50% + 1.5px),transparent calc(50% + 1.5px))
+    }
+    .parallel::before{left:0;border-right:3px solid currentColor}.parallel::after{right:0;border-left:3px solid currentColor}
+    .parallel.true::before,.parallel.true::after{color:var(--green)}
+    .parallel-row{position:relative;display:grid;place-items:center}
+    .parallel-row::before{content:"";position:absolute;left:-8px;right:-8px;top:50%;height:3px;background:#8292a3}
+    .parallel-row.true::before{background:var(--green)}
+    .parallel .instruction{min-width:94px;min-height:42px;height:42px;padding:0 3px;display:grid;grid-template-columns:1fr 34px 1fr;align-items:center}
+    .parallel .inst-label{height:auto;display:block;font-size:.6rem;text-align:right}
+    .parallel .inst-symbol{height:30px;padding-inline:2px}
+    .parallel .contact-symbol{transform:scale(.7)}
+    .parallel .inst-tag{font-size:.58rem;text-align:left}
+    .parallel .inst-value{display:none}
+    .slot{
+      position:relative;z-index:2;min-width:108px;min-height:64px;border:2px dashed var(--amber);
+      border-radius:8px;background:var(--amber-soft);color:#6f430a;padding:5px;font-size:.7rem;font-weight:800
+    }
+    .slot:hover{background:#ffe9b2}
+    .rung-note{padding:3px 9px 5px;color:#596a7f;font-size:.69rem}
+    .selected-detail{border-top:1px solid #d7e0e9;background:#f8fafc;padding:9px 13px;min-height:62px}
+    .detail-line{display:grid;grid-template-columns:85px minmax(0,1fr);gap:7px;font-size:.73rem;margin:2px 0}
+    .detail-line b{color:#31465d}.detail-line span{color:#526479}
+    .reader{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden}
+    .reader-body{border-top:1px solid #dce4ec;padding:10px 13px}
+    .reader-progress{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:9px}
+    .reader-dot{height:6px;border-radius:99px;background:#d9e0e7}
+    .reader-dot.done{background:var(--green)}.reader-dot.current{background:var(--blue)}
+    .reader-question{margin:0 0 5px;color:#2e4158;font-size:.85rem;font-weight:800}
+    .reader-help{margin:0;color:#607185;font-size:.72rem}
+    .reader-answer{margin-top:8px;border-left:4px solid var(--green);background:var(--green-soft);border-radius:8px;padding:8px;color:#075b45;font-size:.74rem}
+    .reader-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .outputs-tests{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:10px;margin-bottom:12px}
+    .outputs,.tests{border:1px solid var(--line);border-radius:var(--radius);padding:11px}
+    .mini-title{margin:0 0 7px;color:var(--navy);font-size:.87rem}
+    .output-list{display:grid;gap:6px}
+    .output{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:7px;align-items:center;border-bottom:1px solid #e0e6ed;padding:5px 0}
+    .output:last-child{border-bottom:0}
+    .led{width:13px;height:13px;border-radius:50%;background:#9aa7b5}
+    .output.on .led{background:var(--green);box-shadow:0 0 0 4px rgba(8,120,90,.12)}
+    .output-name{font-size:.72rem;color:#405269}
+    .output-name b{display:block;color:#2e4158}
+    .output-value{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.67rem;font-weight:900;color:#68798c}
+    .output.on .output-value{color:var(--green)}
+    .test-summary{font-size:.73rem;color:#536479;margin-bottom:7px}
+    .test-result{margin-top:8px}
+    .test-cases{display:grid;gap:5px;margin-top:7px}
+    .test-case{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;font-size:.69rem;color:#4c5f74}
+    .test-case.pass::before{content:"✓";color:var(--green);font-weight:900}
+    .test-case.fail::before{content:"✕";color:var(--red);font-weight:900}
+    .test-case.fail{color:#842018}
+    .misconception{border-left:5px solid var(--red);background:var(--red-soft);border-radius:9px;padding:9px 10px;margin-bottom:12px}
+    .misconception b{display:block;color:#842018;font-size:.75rem}
+    .misconception p{margin:2px 0 0;color:#6f302a;font-size:.72rem}
+    details{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+    summary{cursor:pointer;padding:10px 12px;color:var(--navy);font-size:.8rem;font-weight:800}
+    .reference{border-top:1px solid #dce4ec;padding:10px 12px}
+    .reference-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px}
+    .reference-item{font-size:.69rem;color:#506278}
+    .reference-item b{display:block;color:#2d4158;font-size:.73rem}
+    .choice-layer{position:fixed;inset:0;background:rgba(11,28,45,.6);display:grid;place-items:center;padding:12px;z-index:50}
+    .choice-layer[hidden]{display:none}
+    .choice-dialog{width:min(620px,100%);max-height:86vh;overflow:auto;border-radius:15px;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.34)}
+    .choice-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:13px;border-bottom:1px solid #d8e0e8}
+    .choice-head h3{margin:0;color:var(--navy);font-size:.94rem}
+    .choice-head p{margin:3px 0 0;color:#607185;font-size:.72rem}
+    .close{width:36px;min-height:36px;border:0;border-radius:8px;background:#edf1f5;color:#405269;font-size:1.05rem;font-weight:900}
+    .choices{display:grid;gap:7px;padding:11px}
+    .choice{
+      min-height:72px;border:1px solid #b8c5d2;border-radius:9px;background:#fff;padding:8px;text-align:left;color:#31455c
+    }
+    .choice:hover{border-color:var(--blue);background:#f5faff}
+    .choice b{display:block;font-size:.78rem}.choice span{font-size:.7rem;color:#617286}
+    .choice-feedback{margin:0 11px 11px}
+    .footer{margin-top:12px;text-align:center;color:#738196;font-size:.67rem}
+    @media(max-width:700px){
+      .header-row{grid-template-columns:1fr}
+      .top-teaching,.connection-body,.outputs-tests{grid-template-columns:1fr}
+      .machine{border-right:0;border-bottom:1px solid #dce4ec;min-height:200px}
+      .machine svg{height:170px}
+      .lesson-headline{align-items:flex-start}
+    }
+    @media(max-width:500px){
+      .progress-step{font-size:.61rem;padding:5px 2px}.progress-step span{display:none}
+      .top-teaching{gap:8px}.task,.coach{padding:11px}
+      .section-head{padding-inline:10px}
+      .data-side{padding:9px}
+      .chain-row{grid-template-columns:74px minmax(0,1fr)}
+      .scan-cycle{gap:3px}
+      .input-grid{grid-template-columns:1fr}
+      .toolbar-spacer{display:none}.statusline{width:100%}
+      .rung-list,.rung-tabs{padding-inline:9px}
+      .ladder-network{min-width:max(272px,calc(84px * var(--max-nodes) + 104px))}
+      .state-strip{grid-template-columns:repeat(auto-fit,minmax(64px,1fr))}
+      .reader-progress{gap:2px}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    @media print{
+      body{background:#fff}.studio{width:100%}.progress-strip,.coach-actions,.ladder-toolbar,.scenario-buttons,.time-controls,.choice-layer{display:none!important}
+      .task,.coach{box-shadow:none}.ladder-network{min-width:0}
+    }
+  
+    .course-constraint{border:2px solid #1468a8;border-radius:14px;background:#f5faff;padding:12px 14px;margin-bottom:12px}
+    .course-constraint h3{margin:0 0 4px;color:#13314d;font-size:.98rem}
+    .course-constraint p{margin:3px 0;color:#44566c;font-size:.78rem}
+    .course-sequence{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .course-chip{border:1px solid #b7c4d1;border-radius:999px;padding:4px 8px;background:#fff;color:#56677a;font-size:.68rem;font-weight:800}
+    .course-chip.active{border-color:#1468a8;background:#eaf4fc;color:#0c5c96}
+    .course-chip.done{border-color:#08785a;background:#e7f6f0;color:#075b45}
+    .course-chip.locked{opacity:.55}
+    .course-requirement{margin-top:8px;border-left:4px solid #9b5700;background:#fff4d8;border-radius:8px;padding:7px 9px;color:#714409;font-size:.72rem}
+    .progress-step:disabled{cursor:not-allowed;opacity:.48}
+    
+</style>
+</head>
+<body>
+<div class="studio">
+  <header class="header">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Session 2 · From IF–THEN to sequential control</p>
+        <h1>Ladder Logic Teaching Studio</h1>
+        <p>See what the machine does, what the PLC stores, what each instruction asks, and what every rung writes.</p>
+      </div>
+      <div class="lesson-picker">
+        <label for="lessonSelect">Choose a learning case</label>
+        <select id="lessonSelect"></select>
+      </div>
+    </div>
+  </header>
+  <nav class="progress-strip" id="progressStrip" aria-label="Learning progression"></nav>
+
+  <main>
+
+    <section class="course-constraint" id="courseConstraint" aria-label="Required course sequence">
+      <h3 id="courseConstraintTitle"></h3>
+      <p id="courseConstraintIntro"></p>
+      <div class="course-sequence" id="courseSequence"></div>
+      <div class="course-requirement" id="courseRequirement"></div>
+    </section>
+    <section class="lesson-head">
+      <div class="lesson-headline">
+        <h2 id="lessonTitle"></h2>
+        <span class="level" id="lessonLevel"></span>
+      </div>
+      <p id="lessonScenario"></p>
+    </section>
+
+    <details class="concept-bridge" id="conceptBridge" open>
+      <summary>Keep these PLC words separate</summary>
+      <div class="concept-grid">
+        <div class="concept-card"><b>Physical device</b>A real sensor, switch, motor or valve installed on the machine.</div>
+        <div class="concept-card"><b>Bit and tag</b>A bit stores 0 or 1. A tag is the meaningful name used to identify that data.</div>
+        <div class="concept-card"><b>Condition</b>A requirement that can be true or false, such as “the guard is closed.”</div>
+        <div class="concept-card"><b>Contact instruction</b>Software that reads a Boolean bit and returns a true-or-false test result.</div>
+        <div class="concept-card"><b>Rung result</b>The final true-or-false answer obtained after the PLC evaluates the rung.</div>
+        <div class="concept-card"><b>Coil instruction</b>Software that writes the rung result to a Boolean bit. It is not automatically the physical motor or valve.</div>
+      </div>
+    </details>
+
+    <section class="top-teaching" aria-label="Task and Coach">
+      <article class="task">
+        <p class="kicker"><span class="kicker-num"><span>1</span></span>Task</p>
+        <h3 id="taskTitle"></h3>
+        <p id="taskText"></p>
+        <ul id="taskChecks"></ul>
+      </article>
+      <article class="coach">
+        <div class="question-meta"><span class="kicker"><span class="kicker-num"><span>2</span></span>Coach</span><span id="questionCount"></span></div>
+        <h3 id="questionText"></h3>
+        <p id="questionContext"></p>
+        <div class="question-options" id="questionOptions"></div>
+        <div class="coach-actions">
+          <button class="btn" type="button" id="questionHint">Hint</button>
+          <button class="btn primary" type="button" id="questionCheck">Check answer</button>
+          <button class="btn" type="button" id="questionNext" disabled>Next question</button>
+        </div>
+        <div id="questionFeedback" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <section class="connection" aria-labelledby="connectionHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="connectionHeading">Machine ↔ PLC connection</h3>
+          <p>The machine creates signals; PLC data and instructions represent them.</p>
+        </div>
+      </div>
+      <div class="connection-body">
+        <div class="machine">
+          <div id="machineVisual" role="img"></div>
+          <p class="machine-caption" id="machineCaption"></p>
+        </div>
+        <div class="data-side">
+          <div class="data-chain" id="dataChain"></div>
+          <div class="scan-cycle" aria-label="PLC scan cycle">
+            <div class="scan-phase active" id="phaseRead"><b>1 · READ</b>input image</div>
+            <div class="scan-phase" id="phaseSolve"><b>2 · SOLVE</b>program order</div>
+            <div class="scan-phase" id="phaseWrite"><b>3 · UPDATE</b>physical outputs</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls" aria-labelledby="conditionsHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="conditionsHeading">Set the conditions</h3>
+          <p>Every change runs one scan. Time-based cases also provide a controlled time step.</p>
+        </div>
+        <button class="btn ghost" type="button" id="resetLesson">Reset</button>
+      </div>
+      <div class="scenario-buttons" id="scenarioButtons"></div>
+      <div class="input-grid" id="inputGrid"></div>
+      <div class="time-controls" id="timeControls" hidden>
+        <button class="btn primary" type="button" id="advanceHalf">Advance 0.5 s</button>
+        <button class="btn" type="button" id="advanceOne">Advance 1.0 s</button>
+        <button class="btn" type="button" id="runToEvent">Run to next event</button>
+        <span class="time-readout" id="timeReadout"></span>
+      </div>
+      <div class="state-strip" id="stateStrip" hidden></div>
+    </section>
+
+    <section class="ladder-panel" aria-labelledby="ladderHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="ladderHeading">Ladder program</h3>
+          <p>Click an instruction to see exactly what it reads, tests, or writes.</p>
+        </div>
+      </div>
+      <div class="logic-path-note"><b>Green path = TRUE logic.</b><span>It is a visualization only. No water or electrical power flows through the software diagram; the CPU is evaluating stored data and instructions.</span></div>
+      <div class="ladder-toolbar">
+        <button class="btn primary" type="button" id="fullScan">Run full scan</button>
+        <button class="btn" type="button" id="stepInstruction">Step one instruction</button>
+        <button class="btn" type="button" id="restartScan">Restart trace</button>
+        <button class="btn" type="button" id="toggleBuild">Guided build</button>
+        <span class="toolbar-spacer"></span>
+        <span class="statusline" id="scanStatus" aria-live="polite"></span>
+      </div>
+      <div class="rung-tabs" id="rungTabs" hidden></div>
+      <div class="rung-list" id="rungList"></div>
+      <div class="selected-detail" id="instructionDetail"></div>
+    </section>
+
+    <section class="reader" aria-labelledby="readerHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="readerHeading">Seven-question rung reader</h3>
+          <p>Use the same method for every rung instead of guessing from its shape.</p>
+        </div>
+      </div>
+      <div class="reader-body">
+        <div class="reader-progress" id="readerProgress"></div>
+        <p class="reader-question" id="readerQuestion"></p>
+        <p class="reader-help" id="readerHelp"></p>
+        <div id="readerAnswer"></div>
+        <div class="reader-actions">
+          <button class="btn primary" type="button" id="revealReader">Reveal answer</button>
+          <button class="btn" type="button" id="prevReader">Previous</button>
+          <button class="btn" type="button" id="nextReader">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="outputs-tests">
+      <article class="outputs">
+        <h3 class="mini-title">PLC data after the scan</h3>
+        <div class="output-list" id="outputList"></div>
+      </article>
+      <article class="tests">
+        <h3 class="mini-title">Prove the behavior</h3>
+        <p class="test-summary" id="testSummary"></p>
+        <button class="btn primary" type="button" id="runTests">Run reference tests</button>
+        <div class="test-result" id="testResult" aria-live="polite"></div>
+      </article>
+    </section>
+
+    <aside class="misconception">
+      <b>Common beginner misunderstanding</b>
+      <p id="misconceptionText"></p>
+    </aside>
+
+    <details>
+      <summary>Symbol and data reference</summary>
+      <div class="reference"><div class="reference-grid" id="referenceGrid"></div></div>
+    </details>
+    <details>
+      <summary>Why this matters in a real machine</summary>
+      <div class="reference" id="realWorldNote"></div>
+    </details>
+
+    <p class="footer">Educational model: software contact tests, ordinary coils, holding circuits, set/reset memory, rising-edge detection and non-retentive TON timing. Real safety functions require appropriate safety-rated hardware or a safety controller, standards and validation.</p>
+  </main>
+</div>
+
+<div class="choice-layer" id="choiceLayer" hidden>
+  <section class="choice-dialog" role="dialog" aria-modal="true" aria-labelledby="choiceTitle">
+    <div class="choice-head">
+      <div><h3 id="choiceTitle">Choose the missing instruction</h3><p id="choicePrompt"></p></div>
+      <button class="close" id="closeChoice" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="choices" id="choiceList"></div>
+    <div class="choice-feedback" id="choiceFeedback" aria-live="polite"></div>
+  </section>
+</div>
+
+<script>
+  "use strict";
+  const $=id=>document.getElementById(id);
+  const esc=value=>String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  const clone=value=>JSON.parse(JSON.stringify(value));
+  const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const C=(tag,label,type="NO")=>({kind:"contact",tag,label,type});
+  const G=(mode,items)=>({kind:"group",mode,items});
+  const A=(kind,tag,label,extra={})=>({kind,tag,label,...extra});
+  const R=(name,statement,conditions,action,group="All rungs")=>({name,statement,conditions,action,group});
+  const SLOT=id=>({kind:"slot",id});
+
+  const COURSE_ALLOWED=[4,5,6];
+  const COURSE_TITLE='Session 8 constrained production-cell programming';
+  const COURSE_INTRO='The diagnostic cascade lesson must be completed before the four-stage sequence; the busy-cell lesson unlocks only after the base sequence is complete.';
+  const COURSE_STORAGE='plc-s8-constrained-progress-v1';
+  let courseCorrect={};
+  function loadCourseProgress(){try{courseCorrect=JSON.parse(localStorage.getItem(COURSE_STORAGE)||"{}")||{}}catch(_){courseCorrect={}}}
+  function saveCourseProgress(){try{localStorage.setItem(COURSE_STORAGE,JSON.stringify(courseCorrect))}catch(_){}}
+  function lessonQuestionsComplete(index){const l=lessons[index];return l.questions.every((_,qi)=>courseCorrect[l.id]?.[qi]===true)}
+  function lessonComplete(index){const l=lessons[index];return lessonQuestionsComplete(index)&&passedTests[l.id]===true}
+  function allowedPosition(index){return COURSE_ALLOWED.indexOf(index)}
+  function lessonUnlocked(index){const pos=allowedPosition(index);if(pos<0)return false;if(pos===0)return true;return lessonComplete(COURSE_ALLOWED[pos-1])}
+  function renderCourseControl(){
+    $("courseConstraintTitle").textContent=COURSE_TITLE;
+    $("courseConstraintIntro").textContent=COURSE_INTRO;
+    $("courseSequence").innerHTML=COURSE_ALLOWED.map((idx,pos)=>{const done=lessonComplete(idx), unlocked=lessonUnlocked(idx);return `<span class="course-chip ${idx===lessonIndex?"active":""} ${done?"done":""} ${!unlocked?"locked":""}">${pos+1} · ${esc(lessons[idx].short)}${done?" ✓":!unlocked?" · locked":""}</span>`}).join("");
+    const qDone=lessonQuestionsComplete(lessonIndex), testsDone=passedTests[current().id]===true;
+    $("courseRequirement").innerHTML=`<b>Required before the next lesson unlocks:</b> all coach questions correct (${qDone?"complete":"incomplete"}) and all reference tests passed (${testsDone?"complete":"incomplete"}).`;
+  }
+
+  const lessons=[
+    {
+      id:"signal",short:"Signal path",title:"1 · From a box sensor to a motor command",level:"Foundation",
+      scenario:"A physical photoelectric sensor detects a box. The input module stores the signal as the SENSOR bit; an N.O. contact instruction tests that bit; an ordinary coil writes the MOTOR command bit.",
+      taskTitle:"Trace one complete IF–THEN rule through the machine and PLC.",
+      task:"Change the box sensor and explain every representation of that one event—from field voltage to the MOTOR command.",
+      checks:["Name the physical device, tag, value, instruction and output command separately.","State what the contact reads and what the coil writes.","Explain why MOTOR = 1 is a command, not proof of motion."],
+      inputs:[{tag:"SENSOR",address:"%I0.1",label:"Box sensor",value:false}],
+      data:[{tag:"MOTOR",address:"%Q0.0",label:"Conveyor motor command",type:"output"}],
+      presets:[{label:"No box",values:{SENSOR:false}},{label:"Box present",values:{SENSOR:true}}],
+      program:[R("Detect box","IF SENSOR is ON, THEN MOTOR command is ON",[C("SENSOR","Box detected")],A("coil","MOTOR","Motor command"))],
+      puzzle:[R("Detect box","IF SENSOR is ON, THEN MOTOR command is ON",[SLOT("a")],A("coil","MOTOR","Motor command"))],
+      slots:{a:{prompt:"The rung must be true when SENSOR = 1.",correct:C("SENSOR","Box detected"),choices:[C("SENSOR","Box detected"),C("SENSOR","No box","NC"),C("MOTOR","Motor command")]}},
+      questions:[
+        {q:"What does the SENSOR contact instruction actually read?",context:"Separate the physical photoelectric sensor from the program instruction.",options:["The box itself","The stored SENSOR bit","The MOTOR output terminal"],answer:1,hint:"The input module first converts the electrical signal into stored PLC data.",why:"Correct: the physical sensor creates an electrical signal; the contact instruction reads the stored SENSOR bit."},
+        {q:"SENSOR = 1. What will the ordinary MOTOR coil write?",context:"The contact is N.O. and therefore true when its bit is 1.",options:["MOTOR = 0","MOTOR = 1","No value until the next day"],answer:1,hint:"Contacts read; coils write the rung result.",why:"The contact test is true, so the rung result is true and the ordinary coil writes MOTOR = 1."},
+        {q:"Does MOTOR = 1 prove the conveyor is physically moving?",context:"Think about the difference between command and feedback.",options:["Yes, always","Only if the sensor is N.C.","No; a feedback input would be required"],answer:2,hint:"A failed contactor or tripped overload can prevent motion even with a valid command.",why:"MOTOR = 1 proves only that the PLC issued a command. Real motion needs a separate feedback signal."}
+      ],
+      tests:[
+        {name:"No box",steps:[{inputs:{SENSOR:false},dt:0}],expect:{MOTOR:false}},
+        {name:"Box detected",steps:[{inputs:{SENSOR:true},dt:0}],expect:{MOTOR:true}}
+      ],
+      misconception:"The ladder contact is not the physical sensor, and the ladder coil is not the physical motor. They are software instructions that read and write PLC data.",
+      real:"The output command normally energizes a starter or contactor circuit. A motor-running auxiliary contact, current sensor or speed sensor is needed if the PLC must confirm that the motor actually moved."
+    },
+    {
+      id:"logic",short:"AND / OR / NOT",title:"2 · Combine AND, OR and NOT on one rung",level:"Foundation",
+      scenario:"A press solenoid may operate only with the guard closed and no fault. The operator may request it from either the foot switch or the panel button.",
+      taskTitle:"Build one safe Boolean path without bypassing a permissive.",
+      task:"Translate GUARD AND (FOOT OR PANEL) AND NOT FAULT into series contacts and one parallel branch.",
+      checks:["Use series for requirements that must all be true.","Use a parallel branch only for the alternative triggers.","Use an N.C. software test of FAULT to require FAULT = 0."],
+      inputs:[
+        {tag:"GUARD",address:"%I0.0",label:"Guard closed",value:true},
+        {tag:"FOOT",address:"%I0.1",label:"Foot switch",value:false},
+        {tag:"PANEL",address:"%I0.2",label:"Panel button",value:false},
+        {tag:"FAULT",address:"%I0.3",label:"Fault active",value:false}
+      ],
+      data:[{tag:"PRESS",address:"%Q0.0",label:"Press solenoid command",type:"output"}],
+      presets:[
+        {label:"Safe idle",values:{GUARD:true,FOOT:false,PANEL:false,FAULT:false}},
+        {label:"Foot request",values:{GUARD:true,FOOT:true,PANEL:false,FAULT:false}},
+        {label:"Panel request",values:{GUARD:true,FOOT:false,PANEL:true,FAULT:false}},
+        {label:"Faulted",values:{GUARD:true,FOOT:true,PANEL:false,FAULT:true}}
+      ],
+      program:[R("Press command","GUARD AND (FOOT OR PANEL) AND NOT FAULT → PRESS",[C("GUARD","Guard closed"),G("parallel",[C("FOOT","Foot"),C("PANEL","Panel")]),C("FAULT","No fault","NC")],A("coil","PRESS","Press solenoid"))],
+      puzzle:[R("Press command","GUARD AND (FOOT OR PANEL) AND NOT FAULT → PRESS",[C("GUARD","Guard closed"),SLOT("a"),SLOT("b")],A("coil","PRESS","Press solenoid"))],
+      slots:{
+        a:{prompt:"FOOT and PANEL are alternatives: either one may request the press.",correct:G("parallel",[C("FOOT","Foot"),C("PANEL","Panel")]),choices:[G("parallel",[C("FOOT","Foot"),C("PANEL","Panel")]),G("series",[C("FOOT","Foot"),C("PANEL","Panel")]),G("parallel",[C("GUARD","Guard"),C("FAULT","Fault")])]},
+        b:{prompt:"The path must pass only while FAULT = 0.",correct:C("FAULT","No fault","NC"),choices:[C("FAULT","Fault","NO"),C("FAULT","No fault","NC"),C("GUARD","Guard","NC")]}
+      },
+      questions:[
+        {q:"Which ladder structure represents FOOT OR PANEL?",context:"Either trigger is allowed to complete that part of the path.",options:["Series contacts","Parallel branches","Two output coils"],answer:1,hint:"Imagine two alternative routes between the same left and right points.",why:"Parallel branches implement OR because either complete branch can continue the logical path."},
+        {q:"FAULT = 0. What result does an N.C. FAULT instruction return?",context:"N.C. is a software test for zero.",options:["TRUE","FALSE","Analog"],answer:0,hint:"An N.C. instruction asks: is this addressed bit OFF?",why:"The N.C. test is true while FAULT = 0. It becomes false when FAULT = 1."},
+        {q:"Where must the GUARD contact be placed?",context:"The guard must not be bypassed by either trigger.",options:["In series with the whole branch","Only beside FOOT","On a parallel path around everything"],answer:0,hint:"Every possible route to the coil must pass through GUARD.",why:"GUARD belongs in series with the complete request branch so neither FOOT nor PANEL can bypass it."}
+      ],
+      tests:[
+        {name:"Foot request",steps:[{inputs:{GUARD:true,FOOT:true,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:true}},
+        {name:"Panel request",steps:[{inputs:{GUARD:true,FOOT:false,PANEL:true,FAULT:false},dt:0}],expect:{PRESS:true}},
+        {name:"No request",steps:[{inputs:{GUARD:true,FOOT:false,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:false}},
+        {name:"Guard open",steps:[{inputs:{GUARD:false,FOOT:true,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:false}},
+        {name:"Fault active",steps:[{inputs:{GUARD:true,FOOT:true,PANEL:false,FAULT:true},dt:0}],expect:{PRESS:false}}
+      ],
+      misconception:"Normally open and normally closed describe how the instruction tests a stored bit. They do not, by themselves, describe the mechanical construction of the field device.",
+      real:"A teaching rung can show the Boolean requirement, but a real hazardous press needs a validated safety system. A standard PLC program is not a substitute for the required safety hardware and risk assessment."
+    },
+    {
+      id:"holding",short:"Holding circuit",title:"3 · Keep a momentary Start command ON",level:"Core",
+      scenario:"A momentary Start push button creates a run request. A holding contact reads the same RUN_REQUEST bit written by the ordinary coil, so the request remains ON after the button is released. Healthy stop, guard and overload conditions can break the hold.",
+      taskTitle:"Trace a holding circuit scan by scan.",
+      task:"Press Start, release it, then interrupt STOP_OK, GUARD_OK or OL_OK. Explain which instruction reads each bit, which coil writes RUN_REQUEST and why the motor command remains separate.",
+      checks:["State that the physical buttons and switches are hardware, not contact instructions.","Explain that the RUN_REQUEST coil writes the same bit that the holding contact reads on the following scan.","Use healthy-state tags so every required permissive must equal 1."],
+      inputs:[
+        {tag:"START_PB",address:"%I0.0",label:"Start push button",value:false,onText:"1 · Pressed",offText:"0 · Released"},
+        {tag:"STOP_OK",address:"%I0.1",label:"Stop circuit healthy",value:true,onText:"1 · Healthy / button released",offText:"0 · Stop pressed / circuit open"},
+        {tag:"GUARD_OK",address:"%I0.2",label:"Guard circuit healthy",value:true,onText:"1 · Guard closed",offText:"0 · Guard open"},
+        {tag:"OL_OK",address:"%I0.3",label:"Overload circuit healthy",value:true,onText:"1 · Overload healthy",offText:"0 · Overload tripped"}
+      ],
+      data:[
+        {tag:"RUN_REQUEST",address:"%M0.0",label:"Stored run request",type:"internal"},
+        {tag:"M1",address:"%Q0.0",label:"Conveyor motor command",type:"output"},
+        {tag:"RUN_LAMP",address:"%Q0.1",label:"Run-request indicator",type:"output"}
+      ],
+      presets:[
+        {label:"1 · Ready",values:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true}},
+        {label:"2 · Press Start",values:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true}},
+        {label:"3 · Release Start",values:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true}},
+        {label:"4 · Press Stop",values:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true}},
+        {label:"Open guard",values:{START_PB:false,STOP_OK:true,GUARD_OK:false,OL_OK:true}},
+        {label:"Trip overload",values:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:false}}
+      ],
+      program:[
+        R("Hold run request","STOP_OK AND GUARD_OK AND OL_OK AND (START_PB OR RUN_REQUEST) → RUN_REQUEST",[
+          C("STOP_OK","Stop circuit healthy"),
+          C("GUARD_OK","Guard circuit healthy"),
+          C("OL_OK","Overload healthy"),
+          G("parallel",[C("START_PB","Start push button"),C("RUN_REQUEST","Holding contact")])
+        ],A("coil","RUN_REQUEST","Run-request coil")),
+        R("Motor command","RUN_REQUEST → M1",[C("RUN_REQUEST","Stored run request")],A("coil","M1","Conveyor motor command")),
+        R("Run indication","RUN_REQUEST → RUN_LAMP",[C("RUN_REQUEST","Stored run request")],A("coil","RUN_LAMP","Run-request lamp"))
+      ],
+      puzzle:[
+        R("Hold run request","STOP_OK AND GUARD_OK AND OL_OK AND (START_PB OR RUN_REQUEST) → RUN_REQUEST",[
+          C("STOP_OK","Stop circuit healthy"),C("GUARD_OK","Guard circuit healthy"),C("OL_OK","Overload healthy"),SLOT("a")
+        ],A("coil","RUN_REQUEST","Run-request coil")),
+        R("Motor command","RUN_REQUEST → M1",[SLOT("b")],A("coil","M1","Conveyor motor command")),
+        R("Run indication","RUN_REQUEST → RUN_LAMP",[C("RUN_REQUEST","Stored run request")],A("coil","RUN_LAMP","Run-request lamp"))
+      ],
+      slots:{
+        a:{prompt:"The upper path starts the request; the lower path keeps it true after Start is released.",correct:G("parallel",[C("START_PB","Start push button"),C("RUN_REQUEST","Holding contact")]),choices:[G("parallel",[C("START_PB","Start push button"),C("RUN_REQUEST","Holding contact")]),G("series",[C("START_PB","Start push button"),C("RUN_REQUEST","Holding contact")]),G("parallel",[C("START_PB","Start push button"),C("STOP_OK","Stop circuit healthy")])]},
+        b:{prompt:"The physical motor command must follow the stored run request, not the momentary Start button.",correct:C("RUN_REQUEST","Stored run request"),choices:[C("RUN_REQUEST","Stored run request"),C("START_PB","Start push button"),C("STOP_OK","Stop circuit healthy","NC")]}
+      },
+      holding:true,
+      questions:[
+        {q:"What happens on the first scan while Start is pressed?",context:"All three healthy permissive bits are 1 and START_PB becomes 1.",options:["The upper branch becomes true and the ordinary coil writes RUN_REQUEST = 1","The physical Start button becomes a software coil","RUN_REQUEST remains 0 until a timer finishes"],answer:0,hint:"Follow STOP_OK, GUARD_OK, OL_OK and the upper Start branch to the coil.",why:"The required permissives and the Start branch are true, so the rung result is true and the ordinary coil writes RUN_REQUEST = 1."},
+        {q:"Why does RUN_REQUEST stay 1 after Start is released?",context:"Look at what the lower branch reads on the following scan.",options:["The coil secretly tells the contact to close","The holding contact reads the same RUN_REQUEST bit that the coil wrote in the previous scan","The physical Start button remains electrically pressed"],answer:1,hint:"The coil writes data; the holding contact reads that stored data on the next scan.",why:"After START_PB returns to 0, the RUN_REQUEST contact reads 1 and provides the alternative true path. The coil continues writing RUN_REQUEST = 1."},
+        {q:"Why is STOP_OK shown as an N.O. software test?",context:"The physical Stop button is commonly wired with normally closed hardware contacts, but the tag is defined as a healthy-state bit.",options:["Because STOP_OK must equal 1 while the stop circuit is healthy","Because all physical N.C. switches require N.C. ladder tests","Because the PLC ignores physical wiring"],answer:0,hint:"The ladder instruction is selected according to the meaning of the stored bit.",why:"STOP_OK = 1 means the healthy condition is present. An N.O. software test asks whether that healthy bit equals 1."},
+        {q:"What occurs when STOP_OK changes to 0?",context:"STOP_OK is in series before both holding branches.",options:["The complete rung becomes false and the coil writes RUN_REQUEST = 0","Only the Start branch is affected","The motor remains commanded on forever"],answer:0,hint:"Every possible path to the coil must pass through STOP_OK.",why:"STOP_OK = 0 breaks the complete logical path. The ordinary coil writes RUN_REQUEST = 0; the motor and lamp rungs then also become false."}
+      ],
+      tests:[
+        {name:"Start and release holds",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:true,M1:true,RUN_LAMP:true}},
+        {name:"Stop breaks the hold",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false,RUN_LAMP:false}},
+        {name:"Guard opening stops",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:false,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false}},
+        {name:"Overload trip stops",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:false},dt:0}],expect:{RUN_REQUEST:false,M1:false}},
+        {name:"Restoring healthy inputs does not restart",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false}}
+      ],
+      misconception:"The RUN_REQUEST coil does not send a separate message to its contact. The coil and contact use the same PLC bit: the coil writes RUN_REQUEST; the holding contact reads RUN_REQUEST on the following scan.",
+      real:"The holding rung stores an operating request, while M1 is a separate physical output command. Real emergency-stop, guard and overload protection must use the required safety-rated hardware or safety controller and must not rely only on an ordinary PLC program."
+    },
+    {
+      id:"timer",short:"TON timer",title:"4 · Warn for three seconds before starting",level:"Core",
+      scenario:"When ST becomes active, a horn sounds for three seconds. The conveyor starts only after the timer reaches its preset.",
+      taskTitle:"Use one timer’s done bit in both logical senses.",
+      task:"Enable T_WARN directly from ST. Use N.C. T_WARN.Q for the horn and N.O. T_WARN.Q for the motor.",
+      checks:["Distinguish timer enable, elapsed time and done bit.","Predict behavior at 2.9 s and 3.0 s.","Explain why the timer must not be enabled from HORN."],
+      inputs:[{tag:"ST",address:"%I0.0",label:"Process enable",value:false}],
+      data:[
+        {tag:"T_WARN.ET",address:"timer data",label:"Warning elapsed time",type:"timer",numeric:true},
+        {tag:"T_WARN.Q",address:"timer status",label:"Warning done bit",type:"status"},
+        {tag:"HORN",address:"%Q0.0",label:"Warning horn",type:"output"},
+        {tag:"M1",address:"%Q0.1",label:"Conveyor 1 command",type:"output"}
+      ],
+      presets:[{label:"Disabled",values:{ST:false}},{label:"Start warning",values:{ST:true}}],
+      program:[
+        R("Warning timer","ST → TON T_WARN (3.0 s)",[C("ST","Enable")],A("timer","T_WARN","TON 3.0 s",{preset:3})),
+        R("Sound horn","ST AND NOT T_WARN.Q → HORN",[C("ST","Enable"),C("T_WARN.Q","Timer incomplete","NC")],A("coil","HORN","Warning horn")),
+        R("Start conveyor","ST AND T_WARN.Q → M1",[C("ST","Enable"),C("T_WARN.Q","Timer done")],A("coil","M1","Conveyor 1"))
+      ],
+      puzzle:[
+        R("Warning timer","ST → TON T_WARN (3.0 s)",[SLOT("a")],A("timer","T_WARN","TON 3.0 s",{preset:3})),
+        R("Sound horn","ST AND NOT T_WARN.Q → HORN",[C("ST","Enable"),SLOT("b")],A("coil","HORN","Warning horn")),
+        R("Start conveyor","ST AND T_WARN.Q → M1",[C("ST","Enable"),SLOT("c")],A("coil","M1","Conveyor 1"))
+      ],
+      slots:{
+        a:{prompt:"The timer must remain enabled for the complete warning interval.",correct:C("ST","Enable"),choices:[C("ST","Enable"),C("HORN","Horn"),C("T_WARN.Q","Done")]},
+        b:{prompt:"The horn is active while the timer is incomplete.",correct:C("T_WARN.Q","Timer incomplete","NC"),choices:[C("T_WARN.Q","Timer done"),C("T_WARN.Q","Timer incomplete","NC"),C("ST","Enable","NC")]},
+        c:{prompt:"The conveyor starts after the timer is complete.",correct:C("T_WARN.Q","Timer done"),choices:[C("T_WARN.Q","Timer done"),C("T_WARN.Q","Timer incomplete","NC"),C("HORN","Horn")]}
+      },
+      timer:true,
+      questions:[
+        {q:"At T_WARN.ET = 2.9 s, what is T_WARN.Q?",context:"The preset is 3.0 seconds.",options:["0 / not done","1 / done","2.9 / analog"],answer:0,hint:"Q changes only when elapsed time reaches the preset.",why:"At 2.9 seconds the preset has not been reached, so Q remains 0."},
+        {q:"Which contact sense keeps HORN on before the preset?",context:"The horn must run while Q = 0.",options:["N.O. T_WARN.Q","N.C. T_WARN.Q","N.O. M1"],answer:1,hint:"An N.C. instruction is true while its referenced bit is zero.",why:"N.C. T_WARN.Q is true while Q = 0 and becomes false when the timer completes."},
+        {q:"Why should T_WARN be enabled from ST rather than HORN?",context:"HORN turns off when the timer becomes done.",options:["To avoid the timer immediately losing its enable and resetting","Because timers cannot read outputs","To make Q analog"],answer:0,hint:"A standard TON resets ET and Q when its enabling path becomes false.",why:"If HORN enabled the timer, HORN turning off at completion would remove the timer enable, reset Q and destabilize the logic."}
+      ],
+      tests:[
+        {name:"Disabled reset",steps:[{inputs:{ST:false},dt:0}],expect:{HORN:false,M1:false,"T_WARN.Q":false,"T_WARN.ET":0}},
+        {name:"Warning interval",steps:[{inputs:{ST:true},dt:2.5}],expect:{HORN:true,M1:false,"T_WARN.Q":false}},
+        {name:"Preset reached",steps:[{inputs:{ST:true},dt:3}],expect:{HORN:false,M1:true,"T_WARN.Q":true}},
+        {name:"Disable resets TON",steps:[{inputs:{ST:true},dt:3},{inputs:{ST:false},dt:0}],expect:{HORN:false,M1:false,"T_WARN.Q":false,"T_WARN.ET":0}}
+      ],
+      misconception:"A TON is not simply a delayed coil. It has an enabling condition, accumulated elapsed time and a done status bit that later instructions can read.",
+      real:"A standard non-retentive TON resets elapsed time and Q when its enable goes false. Confirm the exact timer semantics of the PLC platform used in the course."
+    },
+    {
+      id:"cascade",short:"Why stages matter",title:"5 · Diagnose the output-cascade failure",level:"Diagnostic",
+      scenario:"A compact but unreliable design enables a loading timer from the temporary gate output. When the positioning timer completes, the gate drops and the loading timer loses its enable.",
+      taskTitle:"Observe the failure, identify the disappearing condition, then repair the design.",
+      task:"Run the flawed program past 2 seconds. Then replace the temporary GT-based enable with the stored STEP_LOAD stage.",
+      checks:["Locate the exact scan where TRL resets.","Explain why a temporary physical output is poor stage memory.","Use an internal stage bit to separate memory from action."],
+      inputs:[{tag:"ST",address:"%I0.0",label:"Process enable",value:false}],
+      data:[
+        {tag:"STEP_LOAD",address:"%M0.1",label:"Stored loading stage",type:"internal"},
+        {tag:"TRO.ET",address:"timer data",label:"Position elapsed",type:"timer",numeric:true},
+        {tag:"TRO.Q",address:"timer status",label:"Position done",type:"status"},
+        {tag:"TRL.ET",address:"timer data",label:"Load elapsed",type:"timer",numeric:true},
+        {tag:"TRL.Q",address:"timer status",label:"Load done",type:"status"},
+        {tag:"GT",address:"%Q0.0",label:"Gate command",type:"output"},
+        {tag:"RL",address:"%Q0.1",label:"Robot load command",type:"output"}
+      ],
+      presets:[{label:"Stopped",values:{ST:false}},{label:"Run flawed design",values:{ST:true}}],
+      program:[
+        R("Position timer","ST → TON TRO (2.0 s)",[C("ST","Enable")],A("timer","TRO","TON 2.0 s",{preset:2}),"Flawed cascade"),
+        R("Gate output","ST AND NOT TRO.Q → GT",[C("ST","Enable"),C("TRO.Q","Position incomplete","NC")],A("coil","GT","Gate"),"Flawed cascade"),
+        R("Loading timer — flawed","GT → TON TRL (5.0 s)",[C("GT","Gate output")],A("timer","TRL","TON 5.0 s",{preset:5}),"Flawed cascade"),
+        R("Loading command","TRL.Q → RL",[C("TRL.Q","Loading done")],A("coil","RL","Robot load"),"Flawed cascade"),
+        R("Store loading stage","ST AND TRO.Q → SET STEP_LOAD",[C("ST","Enable"),C("TRO.Q","Position done")],A("set","STEP_LOAD","Set loading"),"State-based repair"),
+        R("Loading timer — repaired","STEP_LOAD → TON TRL (5.0 s)",[C("STEP_LOAD","Loading stage")],A("timer","TRL","TON 5.0 s",{preset:5}),"State-based repair"),
+        R("Robot loads while incomplete","STEP_LOAD AND NOT TRL.Q → RL",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading incomplete","NC")],A("coil","RL","Robot load"),"State-based repair")
+      ],
+      puzzle:[
+        R("Position timer","ST → TON TRO (2.0 s)",[C("ST","Enable")],A("timer","TRO","TON 2.0 s",{preset:2}),"Flawed cascade"),
+        R("Gate output","ST AND NOT TRO.Q → GT",[C("ST","Enable"),C("TRO.Q","Position incomplete","NC")],A("coil","GT","Gate"),"Flawed cascade"),
+        R("Loading timer — flawed","GT → TON TRL (5.0 s)",[C("GT","Gate output")],A("timer","TRL","TON 5.0 s",{preset:5}),"Flawed cascade"),
+        R("Loading command","TRL.Q → RL",[C("TRL.Q","Loading done")],A("coil","RL","Robot load"),"Flawed cascade"),
+        R("Store loading stage","ST AND TRO.Q → SET STEP_LOAD",[C("ST","Enable"),C("TRO.Q","Position done")],A("set","STEP_LOAD","Set loading"),"State-based repair"),
+        R("Loading timer — repaired","STEP_LOAD → TON TRL (5.0 s)",[SLOT("a")],A("timer","TRL","TON 5.0 s",{preset:5}),"State-based repair"),
+        R("Robot loads while incomplete","STEP_LOAD AND NOT TRL.Q → RL",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading incomplete","NC")],A("coil","RL","Robot load"),"State-based repair")
+      ],
+      slots:{a:{prompt:"The repaired timer needs a condition that remains true for the full loading stage.",correct:C("STEP_LOAD","Loading stage"),choices:[C("GT","Gate output"),C("STEP_LOAD","Loading stage"),C("TRO.Q","Position incomplete","NC")]}},
+      timer:true,groups:["Flawed cascade","State-based repair"],
+      questions:[
+        {q:"What happens to GT when TRO reaches 2.0 seconds?",context:"GT is controlled through N.C. TRO.Q.",options:["GT turns off","GT latches on","GT becomes a timer"],answer:0,hint:"TRO.Q changes from 0 to 1, so its N.C. instruction changes from true to false.",why:"TRO.Q = 1 opens the N.C. software path, so the ordinary GT coil writes 0."},
+        {q:"Why can the GT-enabled loading timer never finish?",context:"A non-retentive TON needs a continuously true enable.",options:["GT disappears when positioning completes, so TRL resets","TRL has no preset","Output tags cannot be read"],answer:0,hint:"Watch the input of the loading timer at the exact moment GT drops.",why:"The gate command is temporary. When GT becomes 0, the timer’s enable is false and ET/Q reset."},
+        {q:"What is the purpose of STEP_LOAD?",context:"Separate process memory from physical action.",options:["It stores that loading is the active stage","It is a physical limit switch","It directly proves robot motion"],answer:0,hint:"An internal M bit can remain true even after the gate output turns off.",why:"STEP_LOAD explicitly remembers the current process stage, allowing the timer and output logic to depend on stable state."}
+      ],
+      tests:[
+        {name:"Flawed cascade stalls",variant:"flawed",steps:[{inputs:{ST:true},dt:7}],expect:{RL:false,"TRL.Q":false}},
+        {name:"Repaired loading persists",variant:"repaired",steps:[{inputs:{ST:true},dt:2},{inputs:{ST:true},dt:5}],expect:{"STEP_LOAD":true,"TRL.Q":true}}
+      ],
+      misconception:"A physical output command is not reliable sequence memory. It may turn off at the very transition that the next timer or operation needs.",
+      real:"Use internal stage/state bits to represent the process. Derive physical outputs from those states, and document the transition and reset conditions for every stage."
+    },
+    {
+      id:"sequence",short:"Production sequence",title:"6 · Trace the four-stage production cell",level:"Sequence",
+      scenario:"A detected part moves through positioning, robot loading, CNC machining and unloading. Internal stage bits remember the active state; timer done bits create transitions.",
+      taskTitle:"Connect the state table, timer data, transition rungs and physical actions.",
+      task:"Start one part, advance time to each event and use the rung groups to explain why exactly one stage is active.",
+      checks:["Trace NEW_PART from a rising sensor edge.","Name the timer, output and transition for each stage.","Verify stop reset and persistent-sensor rearm behavior."],
+      inputs:[
+        {tag:"ST",address:"%I0.0",label:"Process enable",value:false},
+        {tag:"SN",address:"%I0.1",label:"Part sensor",value:false}
+      ],
+      data:[
+        {tag:"NEW_PART",address:"%M0.0",label:"One-scan arrival pulse",type:"status"},
+        {tag:"STEP_POS",address:"%M0.1",label:"Positioning stage",type:"internal"},
+        {tag:"STEP_LOAD",address:"%M0.2",label:"Robot-loading stage",type:"internal"},
+        {tag:"STEP_CNC",address:"%M0.3",label:"CNC stage",type:"internal"},
+        {tag:"STEP_UNLOAD",address:"%M0.4",label:"Unloading stage",type:"internal"},
+        {tag:"TRO.ET",address:"timer data",label:"Position timer",type:"timer",numeric:true},
+        {tag:"TRO.Q",address:"timer status",label:"Position done bit",type:"status"},
+        {tag:"TRL.ET",address:"timer data",label:"Loading timer",type:"timer",numeric:true},
+        {tag:"TRL.Q",address:"timer status",label:"Loading done bit",type:"status"},
+        {tag:"TRCNC.ET",address:"timer data",label:"CNC timer",type:"timer",numeric:true},
+        {tag:"TRCNC.Q",address:"timer status",label:"CNC done bit",type:"status"},
+        {tag:"TRU.ET",address:"timer data",label:"Unload timer",type:"timer",numeric:true},
+        {tag:"TRU.Q",address:"timer status",label:"Unload done bit",type:"status"},
+        {tag:"GT",address:"%Q0.0",label:"Gate command",type:"output"},
+        {tag:"RL",address:"%Q0.1",label:"Robot load command",type:"output"},
+        {tag:"CNS",address:"%Q0.2",label:"CNC command",type:"output"},
+        {tag:"RU",address:"%Q0.3",label:"Robot unload command",type:"output"},
+        {tag:"M1",address:"%Q0.4",label:"Conveyor 1 command",type:"output"},
+        {tag:"M2",address:"%Q0.5",label:"Conveyor 2 command",type:"output"}
+      ],
+      presets:[
+        {label:"Stopped",values:{ST:false,SN:false}},
+        {label:"Enable cell",values:{ST:true,SN:false}},
+        {label:"New part edge",values:{ST:true,SN:true}},
+        {label:"Rearm sensor",values:{ST:true,SN:false}}
+      ],
+      program:[
+        R("New-part pulse","Rising edge of ST AND SN → NEW_PART",[C("ST","Enable"),C("SN","Part sensor")],A("edge","NEW_PART","Rising edge"),"Start / stop"),
+        R("Start positioning","ST AND NEW_PART AND cell idle → SET STEP_POS",[C("ST","Enable"),C("NEW_PART","New part"),G("series",[C("STEP_POS","Not positioning","NC"),C("STEP_LOAD","Not loading","NC"),C("STEP_CNC","Not CNC","NC"),C("STEP_UNLOAD","Not unloading","NC")])],A("set","STEP_POS","Set positioning"),"Start / stop"),
+        R("Master stop reset","NOT ST → RESET all stage bits",[C("ST","Enable","NC")],A("resetAll","STAGES","Reset stages"),"Start / stop"),
+        R("Position timer","STEP_POS → TON TRO (2 s)",[C("STEP_POS","Position stage")],A("timer","TRO","TON 2 s",{preset:2}),"Position"),
+        R("Gate action","STEP_POS AND NOT TRO.Q → GT",[C("STEP_POS","Position stage"),C("TRO.Q","Position incomplete","NC")],A("coil","GT","Gate"),"Position"),
+        R("Position → Load","STEP_POS AND TRO.Q → SET STEP_LOAD",[C("STEP_POS","Position stage"),C("TRO.Q","Position done")],A("set","STEP_LOAD","Set loading"),"Position"),
+        R("Leave Position","STEP_POS AND TRO.Q → RESET STEP_POS",[C("STEP_POS","Position stage"),C("TRO.Q","Position done")],A("reset","STEP_POS","Reset positioning"),"Position"),
+        R("Loading timer","STEP_LOAD → TON TRL (5 s)",[C("STEP_LOAD","Loading stage")],A("timer","TRL","TON 5 s",{preset:5}),"Load"),
+        R("Robot loading","STEP_LOAD AND NOT TRL.Q → RL",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading incomplete","NC")],A("coil","RL","Robot load"),"Load"),
+        R("Load → CNC","STEP_LOAD AND TRL.Q → SET STEP_CNC",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading done")],A("set","STEP_CNC","Set CNC"),"Load"),
+        R("Leave Load","STEP_LOAD AND TRL.Q → RESET STEP_LOAD",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading done")],A("reset","STEP_LOAD","Reset loading"),"Load"),
+        R("CNC timer","STEP_CNC → TON TRCNC (10 s)",[C("STEP_CNC","CNC stage")],A("timer","TRCNC","TON 10 s",{preset:10}),"CNC"),
+        R("CNC action","STEP_CNC AND NOT TRCNC.Q → CNS",[C("STEP_CNC","CNC stage"),C("TRCNC.Q","CNC incomplete","NC")],A("coil","CNS","CNC command"),"CNC"),
+        R("CNC → Unload","STEP_CNC AND TRCNC.Q → SET STEP_UNLOAD",[C("STEP_CNC","CNC stage"),C("TRCNC.Q","CNC done")],A("set","STEP_UNLOAD","Set unload"),"CNC"),
+        R("Leave CNC","STEP_CNC AND TRCNC.Q → RESET STEP_CNC",[C("STEP_CNC","CNC stage"),C("TRCNC.Q","CNC done")],A("reset","STEP_CNC","Reset CNC"),"CNC"),
+        R("Unload timer","STEP_UNLOAD → TON TRU (3 s)",[C("STEP_UNLOAD","Unload stage")],A("timer","TRU","TON 3 s",{preset:3}),"Unload"),
+        R("Robot unloading","STEP_UNLOAD AND NOT TRU.Q → RU",[C("STEP_UNLOAD","Unload stage"),C("TRU.Q","Unload incomplete","NC")],A("coil","RU","Robot unload"),"Unload"),
+        R("Conveyor 2","STEP_UNLOAD AND NOT TRU.Q → M2",[C("STEP_UNLOAD","Unload stage"),C("TRU.Q","Unload incomplete","NC")],A("coil","M2","Conveyor 2"),"Unload"),
+        R("Return idle","STEP_UNLOAD AND TRU.Q → RESET STEP_UNLOAD",[C("STEP_UNLOAD","Unload stage"),C("TRU.Q","Unload done")],A("reset","STEP_UNLOAD","Reset unload"),"Unload"),
+        R("Conveyor 1","ST → M1",[C("ST","Enable")],A("coil","M1","Conveyor 1"),"Outputs")
+      ],
+      puzzle:null,slots:{},timer:true,sequence:true,groups:["Start / stop","Position","Load","CNC","Unload","Outputs"],
+      questions:[
+        {q:"Why is NEW_PART a one-scan rising-edge pulse instead of the level of SN?",context:"The same part may keep the sensor on for many scans.",options:["To prevent repeated cycles while SN stays 1","To make SN analog","To reset every timer"],answer:0,hint:"A level remains true; an edge marks one new event.",why:"The pulse occurs only on the 0→1 transition, so one persistent sensor signal cannot repeatedly restart the sequence."},
+        {q:"Which data creates the transition from positioning to loading?",context:"STEP_POS enables TRO.",options:["TRO.Q","GT","M1"],answer:0,hint:"The timer done bit becomes 1 at the positioning preset.",why:"TRO.Q sets STEP_LOAD and resets STEP_POS. The physical gate output is an action, not the stored transition memory."},
+        {q:"What should turning ST off during any stage do?",context:"Outputs are derived from stored stage bits.",options:["Reset every stage and turn commands off","Pause and resume the same stage automatically","Only stop Conveyor 1"],answer:0,hint:"Look for the master reset rung group.",why:"NOT ST resets all stage bits. Timer enables and stage-derived outputs then become false, producing a predictable stop."},
+        {q:"Why should only one STEP bit be active?",context:"Each stage represents one mutually exclusive process state.",options:["To prevent conflicting actions and make the state diagnosable","Because the PLC has only one memory bit","To make timers analog"],answer:0,hint:"Two active stages can command incompatible actuators.",why:"Mutual exclusion prevents overlapping actions and makes the state strip a trustworthy diagnostic view."}
+      ],
+      tests:[
+        {name:"Normal 2–5–10–3 s cycle",special:"normal"},
+        {name:"Stop resets every stage",special:"stop"},
+        {name:"Persistent SN does not retrigger",special:"persistent"}
+      ],
+      misconception:"Do not use temporary physical outputs as the only memory of a process stage. Store the state explicitly, then derive timers and outputs from that state.",
+      real:"The exact same-scan result depends on rung order and the PLC platform’s instruction semantics. Organize the program into clear groups for input conditioning, transitions, timers and outputs, and verify behavior through simulation."
+    },
+    {
+      id:"busycell",short:"Busy-cell arrivals",title:"7 · Handle a new part while the cell is busy",level:"Applied sequence",
+      scenario:"Part 08 asks for two extensions: stop Conveyor 1 when a new part arrives during loading, CNC or unloading; and, when the arrival occurs during CNC, move the new part directly to Conveyor 2 without CNC processing. This teaching model uses one waiting bit for arrivals during robot-busy stages and one parallel bypass state while the CNC is working.",
+      taskTitle:"Preserve the arrival event, stop the infeed and choose WAIT or BYPASS.",
+      task:"Jump to LOAD, CNC or UNLOAD, create one new sensor edge and trace the arrival-handling rungs. Compare what is stored, which conveyor stops and whether the new part waits or bypasses the CNC.",
+      checks:["Show that NEW_PART is a one-scan event, while PART_WAITING and BYPASS_ACTIVE are stored states.","Verify M1 turns off in the same scan as a busy arrival.","Explain why an arrival during CNC can bypass immediately, but arrivals during loading or unloading must wait."],
+      inputs:[
+        {tag:"ST",address:"%I0.0",label:"Process enable",value:false,onText:"1 · Cell enabled",offText:"0 · Cell stopped"},
+        {tag:"SN",address:"%I0.1",label:"New-part sensor",value:false,onText:"1 · Part at sensor",offText:"0 · Sensor clear"}
+      ],
+      data:[
+        {tag:"NEW_PART",address:"%M1.0",label:"One-scan arrival pulse",type:"status"},
+        {tag:"CELL_BUSY",address:"%M1.1",label:"Load, CNC or unload active",type:"status"},
+        {tag:"PART_WAITING",address:"%M1.2",label:"One stored waiting part",type:"internal"},
+        {tag:"START_WAITING",address:"%M1.3",label:"One-scan release of waiting part",type:"status"},
+        {tag:"BYPASS_ACTIVE",address:"%M1.4",label:"Direct-to-Conveyor-2 transfer",type:"internal"},
+        {tag:"INFEED_HOLD",address:"%M1.5",label:"Stop Conveyor 1 request",type:"status"},
+        {tag:"STEP_POS",address:"%M0.1",label:"Positioning stage",type:"internal"},
+        {tag:"STEP_LOAD",address:"%M0.2",label:"Robot-loading stage",type:"internal"},
+        {tag:"STEP_CNC",address:"%M0.3",label:"CNC stage",type:"internal"},
+        {tag:"STEP_UNLOAD",address:"%M0.4",label:"Main-part unloading stage",type:"internal"},
+        {tag:"TRO.ET",address:"timer data",label:"Position timer",type:"timer",numeric:true},
+        {tag:"TRO.Q",address:"timer status",label:"Position done",type:"status"},
+        {tag:"TRL.ET",address:"timer data",label:"Loading timer",type:"timer",numeric:true},
+        {tag:"TRL.Q",address:"timer status",label:"Loading done",type:"status"},
+        {tag:"TRCNC.ET",address:"timer data",label:"CNC timer",type:"timer",numeric:true},
+        {tag:"TRCNC.Q",address:"timer status",label:"CNC done",type:"status"},
+        {tag:"TRU.ET",address:"timer data",label:"Unload timer",type:"timer",numeric:true},
+        {tag:"TRU.Q",address:"timer status",label:"Unload done",type:"status"},
+        {tag:"TBYPASS.ET",address:"timer data",label:"Bypass-transfer timer",type:"timer",numeric:true},
+        {tag:"TBYPASS.Q",address:"timer status",label:"Bypass complete",type:"status"},
+        {tag:"GT",address:"%Q0.0",label:"Gate command",type:"output"},
+        {tag:"RL",address:"%Q0.1",label:"Robot load command",type:"output"},
+        {tag:"CNS",address:"%Q0.2",label:"CNC command",type:"output"},
+        {tag:"RU",address:"%Q0.3",label:"Robot transfer/unload command",type:"output"},
+        {tag:"M1",address:"%Q0.4",label:"Conveyor 1 command",type:"output"},
+        {tag:"M2",address:"%Q0.5",label:"Conveyor 2 command",type:"output"}
+      ],
+      presets:[
+        {label:"Reset / stopped",values:{ST:false,SN:false}},
+        {label:"Jump to LOAD",special:"setup_load"},
+        {label:"Jump to CNC",special:"setup_cnc"},
+        {label:"Jump to UNLOAD",special:"setup_unload"},
+        {label:"Clear sensor",values:{SN:false}}
+      ],
+      program:[
+        R("New-part pulse","Rising edge of ST AND SN → NEW_PART",[C("ST","Enable"),C("SN","Part sensor")],A("edge","NEW_PART","Rising edge"),"Arrival logic"),
+        R("Busy status","STEP_LOAD OR STEP_CNC OR STEP_UNLOAD → CELL_BUSY",[G("parallel",[C("STEP_LOAD","Loading"),C("STEP_CNC","CNC"),C("STEP_UNLOAD","Unloading")])],A("coil","CELL_BUSY","Busy status"),"Arrival logic"),
+        R("Start an idle arrival","ST AND NEW_PART AND main cell idle AND NOT BYPASS_ACTIVE → SET STEP_POS",[C("ST","Enable"),C("NEW_PART","New part"),G("series",[C("STEP_POS","Not positioning","NC"),C("STEP_LOAD","Not loading","NC"),C("STEP_CNC","Not CNC","NC"),C("STEP_UNLOAD","Not unloading","NC")]),C("BYPASS_ACTIVE","No bypass","NC")],A("set","STEP_POS","Set positioning"),"Arrival logic"),
+        R("Store a waiting part","NEW_PART AND (STEP_LOAD OR STEP_UNLOAD) AND NOT PART_WAITING → SET PART_WAITING",[C("NEW_PART","New part"),G("parallel",[C("STEP_LOAD","Robot loading"),C("STEP_UNLOAD","Robot unloading")]),C("PART_WAITING","Waiting slot free","NC")],A("set","PART_WAITING","Store waiting part"),"Arrival logic"),
+        R("Start CNC bypass","NEW_PART AND STEP_CNC AND NOT BYPASS_ACTIVE → SET BYPASS_ACTIVE",[C("NEW_PART","New part"),C("STEP_CNC","CNC working"),C("BYPASS_ACTIVE","No bypass active","NC")],A("set","BYPASS_ACTIVE","Start bypass"),"Arrival logic"),
+        R("Release waiting part","ST AND PART_WAITING AND main cell idle AND NOT BYPASS_ACTIVE → START_WAITING",[C("ST","Enable"),C("PART_WAITING","Part waiting"),G("series",[C("STEP_POS","Not positioning","NC"),C("STEP_LOAD","Not loading","NC"),C("STEP_CNC","Not CNC","NC"),C("STEP_UNLOAD","Not unloading","NC")]),C("BYPASS_ACTIVE","No bypass","NC")],A("coil","START_WAITING","Release pulse"),"Arrival logic"),
+        R("Start waiting cycle","START_WAITING → SET STEP_POS",[C("START_WAITING","Release waiting part")],A("set","STEP_POS","Set positioning"),"Arrival logic"),
+        R("Consume waiting memory","START_WAITING → RESET PART_WAITING",[C("START_WAITING","Release waiting part")],A("reset","PART_WAITING","Clear waiting slot"),"Arrival logic"),
+        R("Infeed hold","SN AND (CELL_BUSY OR PART_WAITING OR BYPASS_ACTIVE) → INFEED_HOLD",[C("SN","Part at sensor"),G("parallel",[C("CELL_BUSY","Cell busy"),C("PART_WAITING","Part waiting"),C("BYPASS_ACTIVE","Bypass active")])],A("coil","INFEED_HOLD","Stop infeed request"),"Arrival logic"),
+        R("Master stop reset","NOT ST → RESET main stages and arrival memory",[C("ST","Enable","NC")],A("resetAll","CELL_STATE","Reset cell",{tags:["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","PART_WAITING","BYPASS_ACTIVE"]}),"Arrival logic"),
+
+        R("Position timer","STEP_POS → TON TRO (2 s)",[C("STEP_POS","Position stage")],A("timer","TRO","TON 2 s",{preset:2}),"Position"),
+        R("Gate action","STEP_POS AND NOT TRO.Q → GT",[C("STEP_POS","Position stage"),C("TRO.Q","Position incomplete","NC")],A("coil","GT","Gate"),"Position"),
+        R("Position → Load","STEP_POS AND TRO.Q → SET STEP_LOAD",[C("STEP_POS","Position stage"),C("TRO.Q","Position done")],A("set","STEP_LOAD","Set loading"),"Position"),
+        R("Leave Position","STEP_POS AND TRO.Q → RESET STEP_POS",[C("STEP_POS","Position stage"),C("TRO.Q","Position done")],A("reset","STEP_POS","Reset positioning"),"Position"),
+
+        R("Loading timer","STEP_LOAD → TON TRL (5 s)",[C("STEP_LOAD","Loading stage")],A("timer","TRL","TON 5 s",{preset:5}),"Load"),
+        R("Robot loading","STEP_LOAD AND NOT TRL.Q → RL",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading incomplete","NC")],A("coil","RL","Robot load"),"Load"),
+        R("Load → CNC","STEP_LOAD AND TRL.Q → SET STEP_CNC",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading done")],A("set","STEP_CNC","Set CNC"),"Load"),
+        R("Leave Load","STEP_LOAD AND TRL.Q → RESET STEP_LOAD",[C("STEP_LOAD","Loading stage"),C("TRL.Q","Loading done")],A("reset","STEP_LOAD","Reset loading"),"Load"),
+
+        R("CNC timer","STEP_CNC → TON TRCNC (10 s)",[C("STEP_CNC","CNC stage")],A("timer","TRCNC","TON 10 s",{preset:10}),"CNC"),
+        R("CNC action","STEP_CNC AND NOT TRCNC.Q → CNS",[C("STEP_CNC","CNC stage"),C("TRCNC.Q","CNC incomplete","NC")],A("coil","CNS","CNC command"),"CNC"),
+        R("CNC → Unload","STEP_CNC AND TRCNC.Q → SET STEP_UNLOAD",[C("STEP_CNC","CNC stage"),C("TRCNC.Q","CNC done")],A("set","STEP_UNLOAD","Set unload"),"CNC"),
+        R("Leave CNC","STEP_CNC AND TRCNC.Q → RESET STEP_CNC",[C("STEP_CNC","CNC stage"),C("TRCNC.Q","CNC done")],A("reset","STEP_CNC","Reset CNC"),"CNC"),
+
+        R("Unload timer","STEP_UNLOAD → TON TRU (3 s)",[C("STEP_UNLOAD","Unload stage")],A("timer","TRU","TON 3 s",{preset:3}),"Unload"),
+        R("Return idle","STEP_UNLOAD AND TRU.Q → RESET STEP_UNLOAD",[C("STEP_UNLOAD","Unload stage"),C("TRU.Q","Unload done")],A("reset","STEP_UNLOAD","Reset unload"),"Unload"),
+
+        R("Bypass timer","BYPASS_ACTIVE → TON TBYPASS (3 s)",[C("BYPASS_ACTIVE","Bypass active")],A("timer","TBYPASS","TON 3 s",{preset:3}),"CNC bypass"),
+        R("Finish bypass","BYPASS_ACTIVE AND TBYPASS.Q → RESET BYPASS_ACTIVE",[C("BYPASS_ACTIVE","Bypass active"),C("TBYPASS.Q","Bypass done")],A("reset","BYPASS_ACTIVE","End bypass"),"CNC bypass"),
+
+        R("Robot transfer / unload","(STEP_UNLOAD AND NOT TRU.Q) OR (BYPASS_ACTIVE AND NOT TBYPASS.Q) → RU",[G("parallel",[G("series",[C("STEP_UNLOAD","Main unload"),C("TRU.Q","Unload incomplete","NC")]),G("series",[C("BYPASS_ACTIVE","Bypass"),C("TBYPASS.Q","Bypass incomplete","NC")])])],A("coil","RU","Robot transfer"),"Outputs"),
+        R("Conveyor 2","(STEP_UNLOAD AND NOT TRU.Q) OR (BYPASS_ACTIVE AND NOT TBYPASS.Q) → M2",[G("parallel",[G("series",[C("STEP_UNLOAD","Main unload"),C("TRU.Q","Unload incomplete","NC")]),G("series",[C("BYPASS_ACTIVE","Bypass"),C("TBYPASS.Q","Bypass incomplete","NC")])])],A("coil","M2","Conveyor 2"),"Outputs"),
+        R("Conveyor 1","ST AND NOT INFEED_HOLD → M1",[C("ST","Enable"),C("INFEED_HOLD","No infeed hold","NC")],A("coil","M1","Conveyor 1"),"Outputs")
+      ],
+      puzzle:null,slots:{},timer:true,sequence:true,busyExtension:true,groups:["Arrival logic","Position","Load","CNC","Unload","CNC bypass","Outputs"],
+      questions:[
+        {q:"A new part arrives while the robot is loading. What must the program do?",context:"The robot is not free to bypass the new part immediately.",options:["Store PART_WAITING and stop M1","Start a second CNC timer immediately","Ignore the sensor until the current cycle ends"],answer:0,hint:"The arrival pulse lasts one scan, so a stored bit is needed to remember it.",why:"PART_WAITING preserves one arrival while INFEED_HOLD stops Conveyor 1. When the main cell returns idle, START_WAITING begins the next normal cycle."},
+        {q:"A new part arrives while STEP_CNC = 1. Which path handles it?",context:"The exercise says to load that new part onto Conveyor 2 and skip its CNC operation.",options:["PART_WAITING only","BYPASS_ACTIVE with RU and M2","Reset the current STEP_CNC"],answer:1,hint:"The current part remains in the CNC; the new part takes a separate transfer path.",why:"BYPASS_ACTIVE enables a three-second robot transfer to Conveyor 2 while the original CNC stage continues."},
+        {q:"Why is CELL_BUSY an ordinary-coil status bit rather than a retained SET bit?",context:"It should describe what the main-stage bits mean right now.",options:["It must follow LOAD OR CNC OR UNLOAD every scan","It has to remember a past busy condition forever","It represents a physical switch"],answer:0,hint:"Status should clear automatically when its source conditions clear.",why:"The ordinary coil recalculates CELL_BUSY every scan from the current stage bits."},
+        {q:"What limitation comes from using one Boolean PART_WAITING bit?",context:"A Boolean bit can remember only yes or no.",options:["The model can buffer only one waiting arrival","The timer can count only one second","The CNC cannot be stopped"],answer:0,hint:"It is a one-place queue, not a counter or FIFO.",why:"A second arrival while PART_WAITING is already 1 cannot be represented separately. A real multi-part buffer needs a counter, queue or additional tracking data."}
+      ],
+      tests:[
+        {name:"Arrival during loading is stored and later released",special:"busy_load"},
+        {name:"Arrival during CNC bypasses to Conveyor 2",special:"busy_cnc"},
+        {name:"Arrival during unloading is stored and later released",special:"busy_unload"},
+        {name:"Stop clears both main and auxiliary states",special:"busy_stop"}
+      ],
+      misconception:"BUSY, PART_WAITING and BYPASS_ACTIVE are not physical devices. They are program states. The main stage and the bypass state may be active at the same time because the bypass is an explicitly modeled parallel activity, not a second main process stage.",
+      real:"The slide exercise states the required behavior but does not define queue capacity, robot travel time, confirmation sensors or resource conflicts. This teaching implementation assumes one waiting place, a robot that is free during CNC, and a three-second bypass transfer. A real design must add pickup/drop confirmation, jam handling, robot arbitration, capacity limits and validated safety functions."
+    }
+  ];
+
+  let lessonIndex=0;
+  let inputs={};
+  let mem={};
+  let time=0;
+  let scanNo=0;
+  let selectedRung=0;
+  let selectedInstruction=null;
+  let traceEvents=[];
+  let traceIndex=-1;
+  let readerIndex=0;
+  let readerRevealed=false;
+  let questionIndex=0;
+  let questionChoice=null;
+  let questionChecked=false;
+  let questionHint=false;
+  let selections={};
+  let activeSlot=null;
+  let activeGroup="All rungs";
+  let lastRungResults=[];
+  let lastRungTraces=[];
+  let completedQuestions={};
+  let passedTests={};
+  let prevEdge={};
+  let programVariant="repaired";
+  let buildMode=false;
+
+  function current(){return lessons[lessonIndex]}
+  function value(tag,readMem=mem){
+    if(Object.prototype.hasOwnProperty.call(inputs,tag))return inputs[tag];
+    return readMem[tag]??false;
+  }
+  function address(tag){
+    return current().inputs.find(x=>x.tag===tag)?.address||current().data.find(x=>x.tag===tag)?.address||"program data";
+  }
+  function label(tag){
+    return current().inputs.find(x=>x.tag===tag)?.label||current().data.find(x=>x.tag===tag)?.label||tag;
+  }
+  function blankMemory(lesson=current()){
+    const out={};
+    lesson.data.forEach(d=>out[d.tag]=d.numeric?0:false);
+    ["T_WARN","TRO","TRL","TRCNC","TRU"].forEach(t=>{
+      if(lesson.data.some(d=>d.tag===`${t}.ET`||d.tag===`${t}.Q`)){
+        out[`${t}.ET`]=0;out[`${t}.Q`]=false;
+      }
+    });
+    return out;
+  }
+  function resolve(node){
+    if(node?.kind==="slot")return selections[current().id]?.[node.id]||node;
+    if(node?.kind==="group")return {...node,items:node.items.map(resolve)};
+    return node;
+  }
+  function testNode(node,readMem=mem,events=null,path=""){
+    node=resolve(node);
+    if(!node||node.kind==="slot"){
+      events?.push({type:"test",path,node,result:false,raw:null,detail:"Missing instruction returns FALSE"});
+      return false;
+    }
+    if(node.kind==="contact"){
+      const raw=!!value(node.tag,readMem);
+      const result=node.type==="NC"?!raw:raw;
+      events?.push({type:"test",path,node,result,raw,detail:`${node.type==="NC"?"N.C.":"N.O."} software test ${node.tag} reads ${raw?1:0} → ${result?"TRUE":"FALSE"}`});
+      return result;
+    }
+    if(node.kind==="group"){
+      const results=node.items.map((item,i)=>testNode(item,readMem,events,`${path}${i+1}.`));
+      const result=node.mode==="parallel"?results.some(Boolean):results.every(Boolean);
+      events?.push({type:"combine",path,node,result,detail:`${node.mode==="parallel"?"OR":"AND"} combines ${results.map(x=>x?"T":"F").join(node.mode==="parallel"?" OR ":" AND ")} → ${result?"TRUE":"FALSE"}`});
+      return result;
+    }
+    return false;
+  }
+
+  function programBase(lesson=current()){
+    if(buildMode&&lesson.puzzle)return lesson.puzzle;
+    return lesson.program;
+  }
+  function executionProgram(lesson=current()){
+    const base=programBase(lesson);
+    if(lesson.id!=="cascade")return base.map((r,index)=>({...r,_index:index}));
+    const allowed=programVariant==="flawed"
+      ?new Set(["Flawed cascade"])
+      :new Set(["Flawed cascade","State-based repair"]);
+    return base.map((r,index)=>({...r,_index:index})).filter((r,index)=>{
+      if(programVariant==="flawed")return r.group==="Flawed cascade";
+      return [0,1,4,5,6].includes(r._index);
+    });
+  }
+  function displayedProgram(){
+    const base=programBase().map((r,index)=>({...r,_index:index}));
+    if(current().id==="cascade"){
+      return base.filter(r=>r.group===activeGroup);
+    }
+    if(current().groups&&activeGroup!=="All rungs")return base.filter(r=>r.group===activeGroup);
+    return base;
+  }
+
+  function applyAction(action,result,working,startMem,dt,events,rungName){
+    action=resolve(action);
+    if(!action||action.kind==="slot"){
+      events.push({type:"write",node:action,result:false,detail:"Missing right-side instruction: nothing is written"});
+      return;
+    }
+    if(action.kind==="coil"){
+      working[action.tag]=!!result;
+      events.push({type:"write",node:action,result:!!result,detail:`Ordinary coil writes ${action.tag} = ${result?1:0}`});
+    }else if(action.kind==="set"){
+      if(result)working[action.tag]=true;
+      events.push({type:"write",node:action,result,detail:result?`SET writes ${action.tag} = 1; it stays stored until reset`:`SET condition is false; ${action.tag} keeps its previous value`});
+    }else if(action.kind==="reset"){
+      if(result)working[action.tag]=false;
+      events.push({type:"write",node:action,result,detail:result?`RESET writes ${action.tag} = 0`:`RESET condition is false; ${action.tag} keeps its previous value`});
+    }else if(action.kind==="resetAll"){
+      const resetTags=action.tags||["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"];
+      if(result)resetTags.forEach(tag=>working[tag]=false);
+      events.push({type:"write",node:action,result,detail:result?`Master reset clears ${resetTags.join(", ")}`:"Master reset is inactive"});
+    }else if(action.kind==="edge"){
+      const previous=!!prevEdge[action.tag];
+      const pulse=!!result&&!previous;
+      working[action.tag]=pulse;
+      prevEdge[action.tag]=!!result;
+      events.push({type:"write",node:action,result:pulse,detail:`Rising-edge instruction: current=${result?1:0}, previous=${previous?1:0} → ${action.tag}=${pulse?1:0} for this scan`});
+    }else if(action.kind==="timer"){
+      const etTag=`${action.tag}.ET`,qTag=`${action.tag}.Q`;
+      const startEnabled=testNodeForStart(rungName,startMem);
+      if(result){
+        const add=startEnabled?dt:0;
+        working[etTag]=Math.min(action.preset,Number(working[etTag]||0)+add);
+        if(working[etTag]+1e-9>=action.preset)working[etTag]=action.preset;
+        working[qTag]=working[etTag]>=action.preset;
+      }else{
+        working[etTag]=0;working[qTag]=false;
+      }
+      events.push({type:"write",node:action,result:!!working[qTag],detail:result
+        ?`TON enabled: ${etTag}=${formatNumber(working[etTag])} s / ${action.preset} s; ${qTag}=${working[qTag]?1:0}`
+        :`TON disabled: ${etTag}=0 and ${qTag}=0`});
+    }
+  }
+
+  function testNodeForStart(rungName,startMem){
+    const rung=executionProgram().find(r=>r.name===rungName);
+    return rung?testNode(G("series",rung.conditions),startMem,null):false;
+  }
+
+  function executeScan(dt=0,commit=true){
+    const program=executionProgram();
+    const startMem={...mem};
+    const working={...mem};
+    const results=[];
+    const traces=[];
+    program.forEach(rung=>{
+      const events=[];
+      const before={...working};
+      const result=testNode(G("series",rung.conditions),working,events);
+      events.push({type:"rung",node:null,result,detail:`Rung result = ${result?"TRUE":"FALSE"}`});
+      applyAction(rung.action,result,working,startMem,dt,events,rung.name);
+      results.push({index:rung._index,result});
+      traces.push({index:rung._index,name:rung.name,result,events,before,after:{...working}});
+    });
+    if(commit){
+      mem=working;time+=dt;scanNo++;
+      lastRungResults=results;lastRungTraces=traces;
+      traceEvents=traces.flatMap(trace=>trace.events.map((event,i)=>({...event,rungIndex:trace.index,rungName:trace.name,eventIndex:i})));
+      traceIndex=-1;
+    }
+    return {mem:working,results,traces};
+  }
+
+  function resetState(){
+    const lesson=current();
+    inputs={};lesson.inputs.forEach(input=>inputs[input.tag]=input.value);
+    mem=blankMemory(lesson);
+    time=0;scanNo=0;selectedRung=0;selectedInstruction=null;traceEvents=[];traceIndex=-1;
+    readerIndex=0;readerRevealed=false;questionIndex=0;questionChoice=null;questionChecked=false;questionHint=false;
+    activeGroup=lesson.groups?.[0]||"All rungs";
+    programVariant=lesson.id==="cascade"?"flawed":"repaired";
+    buildMode=false;prevEdge={};
+    executeScan(0,true);
+  }
+
+  function formatNumber(number){
+    const n=Math.round(Number(number)*10)/10;
+    return Number.isInteger(n)?String(n):n.toFixed(1);
+  }
+
+  function instructionResult(node,readMem=mem){
+    return testNode(node,readMem,null);
+  }
+
+  function setInputs(values){
+    Object.assign(inputs,values);
+    executeScan(0,true);
+    setScanPhase("write");
+    $("scanStatus").textContent=`Scan ${scanNo} complete after input change`;
+    renderAll();
+  }
+
+  function advanceTime(dt){
+    if(!current().timer)return;
+    const steps=Math.max(1,Math.round(dt/.1));
+    const slice=dt/steps;
+    for(let i=0;i<steps;i++)executeScan(slice,true);
+    $("scanStatus").textContent=`Advanced ${formatNumber(dt)} s · scan ${scanNo}`;
+    renderAll();
+  }
+
+  function runToNextEvent(){
+    const before=eventSignature();
+    for(let i=0;i<300;i++){
+      executeScan(.1,true);
+      if(eventSignature()!==before)break;
+    }
+    $("scanStatus").textContent=`Advanced to the next state/output change · t=${formatNumber(time)} s`;
+    renderAll();
+  }
+
+  function eventSignature(){
+    const tags=current().data.filter(d=>d.type==="output"||d.type==="internal"||d.type==="status").map(d=>`${d.tag}:${mem[d.tag]}`);
+    return tags.join("|");
+  }
+
+  function initializeLesson(index){
+    if(!COURSE_ALLOWED.includes(index)||!lessonUnlocked(index)){
+      const fallback=[...COURSE_ALLOWED].reverse().find(i=>lessonUnlocked(i))??COURSE_ALLOWED[0];
+      index=fallback;
+    }
+    lessonIndex=index;
+    if(!selections[current().id])selections[current().id]={};
+    resetState();
+    $("lessonSelect").value=lessonIndex;
+    renderStatic();
+    renderAll();
+    $("scanStatus").textContent="Initial input read and program scan complete";
+    postHeight();
+  }
+
+  function renderStatic(){
+    const lesson=current();
+    $("lessonTitle").textContent=lesson.title;
+    $("lessonLevel").textContent=lesson.level;
+    $("lessonScenario").textContent=lesson.scenario;
+    $("taskTitle").textContent=lesson.taskTitle;
+    $("taskText").textContent=lesson.task;
+    $("taskChecks").innerHTML=lesson.checks.map(item=>`<li>${esc(item)}</li>`).join("");
+    $("misconceptionText").textContent=lesson.misconception;
+    $("realWorldNote").innerHTML=`<p style="margin:0;color:#506278;font-size:.74rem">${esc(lesson.real)}</p>`;
+    $("timeControls").hidden=!lesson.timer;
+    $("stateStrip").hidden=!(lesson.sequence||lesson.holding);
+    $("rungTabs").hidden=!lesson.groups;
+    $("toggleBuild").hidden=!lesson.puzzle;
+    $("toggleBuild").textContent=buildMode?"Show worked program":"Guided build";
+    $("conceptBridge").open=lessonIndex<=2;
+    renderProgress();
+    renderQuestions();
+    renderScenarios();
+    renderInputs();
+    renderReference();
+    renderGroups();
+  }
+
+  function renderAll(){
+    renderScenarios();
+    renderInputs();
+    renderMachine();
+    renderDataChain();
+    renderLadder();
+    renderInstructionDetail();
+    renderReader();
+    renderOutputs();
+    renderTime();
+    renderStateStrip();
+    postHeight();
+  }
+
+  function renderProgress(){
+    $("progressStrip").style.gridTemplateColumns=`repeat(${COURSE_ALLOWED.length},1fr)`;
+    $("progressStrip").innerHTML=COURSE_ALLOWED.map((index,pos)=>{
+      const lesson=lessons[index],done=lessonComplete(index),unlocked=lessonUnlocked(index);
+      return `<button type="button" class="progress-step ${index===lessonIndex?"active":""} ${done?"done":""}" data-lesson="${index}" ${unlocked?"":"disabled"}>
+        ${pos+1}<span> · ${esc(lesson.short)}</span>
+      </button>`;
+    }).join("");
+    renderCourseControl();
+  }
+
+  function renderQuestions(){
+    const lesson=current(),question=lesson.questions[questionIndex];
+    $("questionCount").textContent=`Question ${questionIndex+1} of ${lesson.questions.length}`;
+    $("questionText").textContent=question.q;
+    $("questionContext").textContent=question.context;
+    $("questionOptions").innerHTML=question.options.map((option,index)=>{
+      let cls="question-option";
+      if(questionChoice===index)cls+=" chosen";
+      if(questionChecked&&index===question.answer)cls+=" correct";
+      if(questionChecked&&questionChoice===index&&index!==question.answer)cls+=" wrong";
+      return `<button type="button" class="${cls}" data-question-choice="${index}" ${questionChecked?"disabled":""}>${esc(option)}</button>`;
+    }).join("");
+    $("questionCheck").disabled=questionChoice===null||questionChecked;
+    $("questionNext").disabled=!questionChecked;
+    $("questionNext").textContent=questionIndex===lesson.questions.length-1?"Restart questions":"Next question";
+    if(questionChecked){
+      const good=questionChoice===question.answer;
+      $("questionFeedback").innerHTML=`<div class="feedback ${good?"good":"bad"}"><b>${good?"Correct.":"Not quite."}</b> ${esc(question.why)}</div>`;
+    }else if(questionHint){
+      $("questionFeedback").innerHTML=`<div class="feedback hint"><b>Hint:</b> ${esc(question.hint)}</div>`;
+    }else{
+      $("questionFeedback").innerHTML="";
+    }
+  }
+
+  function checkQuestion(){
+    if(questionChoice===null)return;
+    questionChecked=true;
+    const lesson=current();
+    if(questionChoice===lesson.questions[questionIndex].answer){
+      completedQuestions[lesson.id]=Math.max(completedQuestions[lesson.id]||0,questionIndex+1);
+      if(!courseCorrect[lesson.id])courseCorrect[lesson.id]={};
+      courseCorrect[lesson.id][questionIndex]=true;
+      saveCourseProgress();
+    }
+    renderQuestions();renderProgress();buildLessonSelect();saveProgress();postHeight();
+  }
+
+  function nextQuestion(){
+    questionIndex=(questionIndex+1)%current().questions.length;
+    questionChoice=null;questionChecked=false;questionHint=false;renderQuestions();postHeight();
+  }
+
+  function renderScenarios(){
+    $("scenarioButtons").innerHTML=current().presets.map((preset,index)=>{
+      const active=preset.values?Object.entries(preset.values).every(([tag,val])=>inputs[tag]===val):false;
+      return `<button type="button" class="${active?"active":""}" data-preset="${index}">${esc(preset.label)}</button>`;
+    }).join("");
+  }
+
+  function runModelTime(dt){
+    const steps=Math.max(1,Math.round(dt/.1));
+    for(let i=0;i<steps;i++)executeScan(dt/steps,true);
+  }
+
+  function setupBusyStage(stage){
+    resetState();
+    Object.assign(inputs,{ST:true,SN:false});executeScan(0,true);
+    Object.assign(inputs,{ST:true,SN:true});executeScan(0,true);
+    Object.assign(inputs,{ST:true,SN:false});executeScan(0,true);
+    if(stage==="load")runModelTime(2.1);
+    if(stage==="cnc")runModelTime(7.2);
+    if(stage==="unload")runModelTime(17.3);
+    setScanPhase("write");
+    $("scanStatus").textContent=`Prepared ${stage.toUpperCase()} stage · create a new SN edge to test the busy-arrival logic`;
+    renderStatic();renderAll();
+  }
+
+  function applyPreset(preset){
+    if(!preset)return;
+    if(preset.special?.startsWith("setup_")){
+      setupBusyStage(preset.special.replace("setup_",""));
+      return;
+    }
+    setInputs(preset.values||{});
+  }
+
+  function renderInputs(){
+    $("inputGrid").innerHTML=current().inputs.map(input=>{
+      const on=!!inputs[input.tag];
+      if(input.analog){
+        return `<div class="input-control">
+          <div class="input-name"><span>${esc(input.label)}</span><span class="io-badge">physical input</span></div>
+          <div class="tagline">${esc(input.tag)} · ${esc(input.address)}</div>
+          <div class="range-row"><input type="range" data-range="${esc(input.tag)}" min="${input.min}" max="${input.max}" step="${input.step}" value="${inputs[input.tag]}"><input class="number" data-number="${esc(input.tag)}" type="number" min="${input.min}" max="${input.max}" step="${input.step}" value="${inputs[input.tag]}"></div>
+        </div>`;
+      }
+      const onText=input.onText||"1 · ON / active";
+      const offText=input.offText||"0 · OFF / inactive";
+      return `<div class="input-control">
+        <div class="input-name"><span>${esc(input.label)}</span><span class="io-badge">physical input</span></div>
+        <div class="tagline">${esc(input.tag)} · ${esc(input.address)}</div>
+        <button class="toggle ${on?"on":""}" type="button" role="switch" aria-checked="${on}" data-toggle="${esc(input.tag)}">${esc(on?onText:offText)}</button>
+      </div>`;
+    }).join("");
+  }
+
+  function renderTime(){
+    if(!current().timer)return;
+    const timers=current().data.filter(d=>d.type==="timer");
+    const readings=timers.map(d=>`${d.tag}=${formatNumber(mem[d.tag]||0)} s`).join(" · ");
+    $("timeReadout").textContent=`t=${formatNumber(time)} s${readings?` · ${readings}`:""}`;
+  }
+
+  function renderStateStrip(){
+    const lesson=current();
+    if(lesson.holding){
+      const healthy=!!inputs.STOP_OK&&!!inputs.GUARD_OK&&!!inputs.OL_OK;
+      const states=[
+        ["1 · READY",healthy&&!inputs.START_PB&&!mem.RUN_REQUEST],
+        ["2 · START PRESSED",healthy&&!!inputs.START_PB&&!!mem.RUN_REQUEST],
+        ["3 · HELD ON",healthy&&!inputs.START_PB&&!!mem.RUN_REQUEST],
+        ["4 · STOPPED / RESET",!healthy]
+      ];
+      $("stateStrip").innerHTML=states.map(([name,active])=>`<div class="state-step ${active?"active":""}">${esc(name)}</div>`).join("");
+      return;
+    }
+    if(!lesson.sequence)return;
+    if(lesson.busyExtension){
+      const mainIdle=!["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>mem[tag]);
+      const states=[
+        ["IDLE",mainIdle&&!mem.BYPASS_ACTIVE],
+        ["POSITION",!!mem.STEP_POS],["LOAD",!!mem.STEP_LOAD],["CNC",!!mem.STEP_CNC],["UNLOAD",!!mem.STEP_UNLOAD],
+        ["BYPASS",!!mem.BYPASS_ACTIVE],["WAITING",!!mem.PART_WAITING],["M1 HOLD",!!mem.INFEED_HOLD]
+      ];
+      $("stateStrip").innerHTML=states.map(([name,active])=>`<div class="state-step ${active?"active":""}">${esc(name)}</div>`).join("");
+      return;
+    }
+    const states=[
+      ["IDLE",!["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>mem[tag])],
+      ["POSITION",!!mem.STEP_POS],["LOAD",!!mem.STEP_LOAD],["CNC",!!mem.STEP_CNC],["UNLOAD",!!mem.STEP_UNLOAD]
+    ];
+    $("stateStrip").innerHTML=states.map(([name,active])=>`<div class="state-step ${active?"active":""}">${esc(name)}</div>`).join("");
+  }
+
+  function renderDataChain(){
+    const lesson=current();
+    const physical=lesson.inputs.map(i=>{
+      const state=inputs[i.tag]?(i.onText||"ON"):(i.offText||"OFF");
+      return `${i.label}: ${String(state).replace(/^\d\s*·\s*/,"")}`;
+    }).join(" · ");
+    const stored=lesson.inputs.map(i=>`${i.tag}=${inputs[i.tag]?1:0}`).join(" · ");
+    const activeTrace=lastRungTraces.find(x=>x.index===selectedRung)||lastRungTraces[0];
+    const tests=(activeTrace?.events||[]).filter(e=>e.type==="test").map(e=>e.detail).slice(0,4).join("; ")||"Select or run a rung to see its tests.";
+    const rungResults=lastRungResults.map(r=>`R${r.index+1}=${r.result?"T":"F"}`).join(" · ")||"No rung result yet";
+    const internal=lesson.data.filter(d=>["internal","status"].includes(d.type)&&!d.numeric).map(d=>`${d.tag}=${mem[d.tag]?1:0}`).join(" · ")||"No internal/status bit listed";
+    const outputs=lesson.data.filter(d=>d.type==="output").map(d=>`${d.tag}=${mem[d.tag]?1:0}`).join(" · ")||"No physical output command listed";
+    $("dataChain").innerHTML=`
+      <div class="chain-row"><div class="chain-label">Field hardware</div><div class="chain-value"><b>${esc(physical)}</b><span>Real switches and sensors create electrical input signals.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Input image</div><div class="chain-value read"><b>${esc(stored)}</b><span>The program reads stored bits, not the hardware directly.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Instruction tests</div><div class="chain-value logic"><b>${esc(tests)}</b><span>Contacts are software tests that return TRUE or FALSE.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Rung / memory</div><div class="chain-value logic"><b>${esc(rungResults)}</b><span>${esc(internal)}. Later rungs can read data written above them in the same scan.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Output commands</div><div class="chain-value write"><b>${esc(outputs)}</b><span>An output value is a command. Separate feedback is required to prove physical motion.</span></div></div>`;
+  }
+
+  function renderMachine(){
+    const id=current().id;
+    const on=tag=>!!mem[tag],input=tag=>!!inputs[tag];
+    let svg="",caption="";
+    if(id==="signal"){
+      svg=`<svg viewBox="0 0 390 190" aria-hidden="true">
+        <rect x="26" y="93" width="326" height="28" rx="14" fill="#5a6d80"/>
+        <circle cx="76" cy="132" r="18" fill="#aeb9c4" stroke="#40546a" stroke-width="4"/><circle cx="292" cy="132" r="18" fill="#aeb9c4" stroke="#40546a" stroke-width="4"/>
+        <rect x="${input("SENSOR")?168:70}" y="61" width="38" height="31" rx="4" fill="#e8993d" stroke="#7a4914" stroke-width="3"/>
+        <rect x="155" y="22" width="64" height="25" rx="5" fill="${input("SENSOR")?"#e7f6f0":"#edf1f5"}" stroke="${input("SENSOR")?"#08785a":"#718397"}" stroke-width="3"/>
+        <path d="M187 47v14" stroke="${input("SENSOR")?"#08785a":"#718397"}" stroke-width="4"/>
+        <circle cx="356" cy="107" r="25" fill="${on("MOTOR")?"#e7f6f0":"#dce3ea"}" stroke="${on("MOTOR")?"#08785a":"#4d6278"}" stroke-width="4"/>
+        <text x="356" y="115" text-anchor="middle" font-size="22" font-weight="900" fill="#31465d">M</text>
+        <text x="187" y="17" text-anchor="middle" font-size="11" font-weight="800" fill="#3c5168">BOX SENSOR</text>
+        <text x="356" y="151" text-anchor="middle" font-size="11" font-weight="850" fill="#3c5168">MOTOR ${on("MOTOR")?"CMD ON":"CMD OFF"}</text>
+      </svg>`;
+      caption=`The sensor is ${input("SENSOR")?"detecting a box":"clear"}; the PLC motor command is ${on("MOTOR")?"ON":"OFF"}.`;
+    }else if(id==="logic"){
+      svg=`<svg viewBox="0 0 390 190" aria-hidden="true">
+        <rect x="110" y="34" width="170" height="125" rx="8" fill="#f8fafc" stroke="#40546a" stroke-width="5"/>
+        <path d="M195 34v125" stroke="${input("GUARD")?"#08785a":"#b3261e"}" stroke-width="9" stroke-dasharray="${input("GUARD")?"0":"12 8"}"/>
+        <circle cx="55" cy="64" r="25" fill="${input("FOOT")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="55" y="69" text-anchor="middle" font-size="10" font-weight="900" fill="#34485f">FOOT</text>
+        <circle cx="55" cy="132" r="25" fill="${input("PANEL")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="55" y="137" text-anchor="middle" font-size="10" font-weight="900" fill="#34485f">PANEL</text>
+        <rect x="306" y="70" width="58" height="52" rx="8" fill="${on("PRESS")?"#e7f6f0":"#dce3ea"}" stroke="${on("PRESS")?"#08785a":"#40546a"}" stroke-width="4"/>
+        <path d="M320 96h30" stroke="#34485f" stroke-width="8"/>
+        <circle cx="335" cy="24" r="15" fill="${input("FAULT")?"#dc5348":"#dce3ea"}" stroke="#5a6d80" stroke-width="3"/>
+        <text x="335" y="51" text-anchor="middle" font-size="10" font-weight="850" fill="#3c5168">FAULT ${input("FAULT")?"1":"0"}</text>
+        <text x="195" y="177" text-anchor="middle" font-size="11" font-weight="850" fill="${input("GUARD")?"#08785a":"#b3261e"}">GUARD ${input("GUARD")?"CLOSED":"OPEN"}</text>
+      </svg>`;
+      caption=`Guard ${input("GUARD")?"closed":"open"}, request ${input("FOOT")||input("PANEL")?"present":"absent"}, fault ${input("FAULT")?"active":"clear"} → PRESS=${on("PRESS")?1:0}.`;
+    }else if(id==="holding"){
+      const healthy=input("STOP_OK")&&input("GUARD_OK")&&input("OL_OK");
+      svg=`<svg viewBox="0 0 430 190" aria-hidden="true">
+        <circle cx="48" cy="47" r="24" fill="${input("START_PB")?"#08785a":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="48" y="51" text-anchor="middle" font-size="9" font-weight="900" fill="${input("START_PB")?"#fff":"#34485f"}">START</text>
+        <circle cx="48" cy="118" r="24" fill="${input("STOP_OK")?"#e7f6f0":"#dc5348"}" stroke="#40546a" stroke-width="3"/><text x="48" y="122" text-anchor="middle" font-size="9" font-weight="900" fill="${input("STOP_OK")?"#075b45":"#fff"}">STOP OK</text>
+        <rect x="90" y="23" width="108" height="124" rx="12" fill="${healthy?"#f7fafc":"#fff0ee"}" stroke="${healthy?"#5a6d80":"#b3261e"}" stroke-width="3"/>
+        <text x="144" y="46" text-anchor="middle" font-size="10" font-weight="850" fill="#43576d">PERMISSIVES</text>
+        <text x="144" y="72" text-anchor="middle" font-size="10" font-weight="800" fill="${input("STOP_OK")?"#08785a":"#b3261e"}">STOP_OK=${input("STOP_OK")?1:0}</text>
+        <text x="144" y="96" text-anchor="middle" font-size="10" font-weight="800" fill="${input("GUARD_OK")?"#08785a":"#b3261e"}">GUARD_OK=${input("GUARD_OK")?1:0}</text>
+        <text x="144" y="120" text-anchor="middle" font-size="10" font-weight="800" fill="${input("OL_OK")?"#08785a":"#b3261e"}">OL_OK=${input("OL_OK")?1:0}</text>
+        <rect x="218" y="38" width="116" height="92" rx="13" fill="${on("RUN_REQUEST")?"#e7f6f0":"#edf1f5"}" stroke="${on("RUN_REQUEST")?"#08785a":"#5a6d80"}" stroke-width="4"/>
+        <text x="276" y="63" text-anchor="middle" font-size="10" font-weight="800" fill="#43576d">STORED BIT</text>
+        <text x="276" y="90" text-anchor="middle" font-size="13" font-weight="950" fill="${on("RUN_REQUEST")?"#08785a":"#516479"}">RUN_REQUEST=${on("RUN_REQUEST")?1:0}</text>
+        <text x="276" y="113" text-anchor="middle" font-size="9" font-weight="750" fill="#5b6d81">coil writes · contact reads</text>
+        <path d="M334 84h32" stroke="${on("M1")?"#08785a":"#8292a3"}" stroke-width="5"/>
+        <circle cx="394" cy="84" r="29" fill="${on("M1")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="4"/><text x="394" y="91" text-anchor="middle" font-size="18" font-weight="900" fill="#34485f">M1</text>
+        <circle cx="394" cy="144" r="15" fill="${on("RUN_LAMP")?"#58c28d":"#aeb8c3"}" stroke="#40546a" stroke-width="3"/><text x="367" y="174" font-size="9" font-weight="800" fill="#43576d">RUN LAMP</text>
+      </svg>`;
+      caption=`START_PB=${input("START_PB")?1:0}; healthy permissives=${healthy?1:0}; RUN_REQUEST=${on("RUN_REQUEST")?1:0}; motor command M1=${on("M1")?1:0}.`;
+    }else if(id==="timer"){
+      const et=Number(mem["T_WARN.ET"]||0),pct=Math.min(1,et/3);
+      svg=`<svg viewBox="0 0 390 190" aria-hidden="true">
+        <rect x="36" y="45" width="92" height="92" rx="12" fill="${input("ST")?"#eaf4fc":"#edf1f5"}" stroke="#40546a" stroke-width="4"/><text x="82" y="82" text-anchor="middle" font-size="11" font-weight="800" fill="#43576d">ENABLE ST</text><text x="82" y="109" text-anchor="middle" font-size="22" font-weight="950" fill="${input("ST")?"#1468a8":"#607185"}">${input("ST")?1:0}</text>
+        <rect x="151" y="45" width="102" height="92" rx="12" fill="#fff" stroke="#40546a" stroke-width="4"/>
+        <rect x="163" y="105" width="78" height="15" rx="7" fill="#dce3ea"/><rect x="163" y="105" width="${78*pct}" height="15" rx="7" fill="#1468a8"/>
+        <text x="202" y="71" text-anchor="middle" font-size="12" font-weight="900" fill="#34485f">TON T_WARN</text><text x="202" y="94" text-anchor="middle" font-size="16" font-weight="950" fill="#1468a8">${formatNumber(et)} / 3.0 s</text>
+        <circle cx="307" cy="65" r="23" fill="${on("HORN")?"#f6c64d":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="307" y="100" text-anchor="middle" font-size="10" font-weight="850" fill="#43576d">HORN ${on("HORN")?"ON":"OFF"}</text>
+        <circle cx="307" cy="135" r="23" fill="${on("M1")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="307" y="142" text-anchor="middle" font-size="18" font-weight="900" fill="#34485f">M1</text>
+      </svg>`;
+      caption=`Timer ET=${formatNumber(et)} s, Q=${on("T_WARN.Q")?1:0}; horn ${on("HORN")?"on":"off"}; conveyor ${on("M1")?"on":"off"}.`;
+    }else if(id==="cascade"){
+      const tro=Number(mem["TRO.ET"]||0),trl=Number(mem["TRL.ET"]||0);
+      svg=`<svg viewBox="0 0 390 190" aria-hidden="true">
+        <rect x="24" y="34" width="94" height="50" rx="9" fill="${on("GT")?"#e7f6f0":"#edf1f5"}" stroke="#40546a" stroke-width="3"/><text x="71" y="56" text-anchor="middle" font-size="10" font-weight="800" fill="#43576d">GATE GT</text><text x="71" y="73" text-anchor="middle" font-size="14" font-weight="950" fill="${on("GT")?"#08785a":"#607185"}">${on("GT")?"ON":"OFF"}</text>
+        <path d="M118 59h52" stroke="#8292a3" stroke-width="4"/><text x="144" y="49" text-anchor="middle" font-size="9" font-weight="800" fill="#5b6d81">flawed enable</text>
+        <rect x="170" y="34" width="92" height="50" rx="9" fill="#fff" stroke="#40546a" stroke-width="3"/><text x="216" y="56" text-anchor="middle" font-size="10" font-weight="800" fill="#43576d">TRL TIMER</text><text x="216" y="73" text-anchor="middle" font-size="13" font-weight="950" fill="#1468a8">${formatNumber(trl)} / 5 s</text>
+        <rect x="24" y="113" width="94" height="50" rx="9" fill="${on("STEP_LOAD")?"#e7f6f0":"#edf1f5"}" stroke="${on("STEP_LOAD")?"#08785a":"#40546a"}" stroke-width="3"/><text x="71" y="135" text-anchor="middle" font-size="10" font-weight="800" fill="#43576d">STEP_LOAD</text><text x="71" y="152" text-anchor="middle" font-size="14" font-weight="950" fill="${on("STEP_LOAD")?"#08785a":"#607185"}">${on("STEP_LOAD")?1:0}</text>
+        <path d="M118 138h52" stroke="${on("STEP_LOAD")?"#08785a":"#8292a3"}" stroke-width="4"/><text x="144" y="128" text-anchor="middle" font-size="9" font-weight="800" fill="#5b6d81">stable enable</text>
+        <circle cx="324" cy="99" r="34" fill="${on("RL")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="4"/><text x="324" y="94" text-anchor="middle" font-size="10" font-weight="800" fill="#43576d">ROBOT LOAD</text><text x="324" y="113" text-anchor="middle" font-size="14" font-weight="950" fill="${on("RL")?"#08785a":"#607185"}">RL=${on("RL")?1:0}</text>
+        <text x="216" y="18" text-anchor="middle" font-size="10" font-weight="800" fill="#43576d">TRO=${formatNumber(tro)} s · TRO.Q=${on("TRO.Q")?1:0}</text>
+      </svg>`;
+      caption=programVariant==="flawed"
+        ?`Flawed view: GT=${on("GT")?1:0}; when GT drops, TRL resets to ${formatNumber(trl)} s.`
+        :`Repaired view: STEP_LOAD=${on("STEP_LOAD")?1:0} keeps the loading logic enabled independently of GT.`;
+    }else if(id==="busycell"){
+      const active=mem.STEP_POS?"POSITION":mem.STEP_LOAD?"LOAD":mem.STEP_CNC?"CNC":mem.STEP_UNLOAD?"UNLOAD":"IDLE";
+      const mainX=active==="POSITION"?132:active==="LOAD"?196:active==="CNC"?262:active==="UNLOAD"?342:42;
+      const newPartVisible=input("SN")||on("PART_WAITING")||on("BYPASS_ACTIVE");
+      const newX=on("BYPASS_ACTIVE")?330:input("SN")||on("PART_WAITING")?79:42;
+      svg=`<svg viewBox="0 0 470 205" aria-hidden="true">
+        <rect x="18" y="126" width="170" height="24" rx="12" fill="${on("M1")?"#08785a":"#596d80"}"/><rect x="310" y="126" width="142" height="24" rx="12" fill="${on("M2")?"#08785a":"#596d80"}"/>
+        <rect x="232" y="51" width="78" height="99" rx="8" fill="${on("CNS")?"#e7f6f0":"#e5eaf0"}" stroke="#40546a" stroke-width="4"/><text x="271" y="94" text-anchor="middle" font-size="12" font-weight="900" fill="#34485f">CNC</text><text x="271" y="116" text-anchor="middle" font-size="10" font-weight="850" fill="${on("CNS")?"#08785a":"#607185"}">${on("CNS")?"WORKING":"IDLE"}</text>
+        <path d="M195 45v72" stroke="${on("RL")||on("RU")?"#08785a":"#718397"}" stroke-width="8"/><path d="M195 81l40 25" stroke="${on("RL")||on("RU")?"#08785a":"#718397"}" stroke-width="8"/><circle cx="195" cy="40" r="16" fill="#dce3ea" stroke="#40546a" stroke-width="3"/>
+        <path d="M149 88v56" stroke="${on("GT")?"#08785a":"#506479"}" stroke-width="9"/>
+        ${active!=="IDLE"?`<rect x="${mainX}" y="108" width="29" height="17" rx="3" fill="#e8993d" stroke="#7a4914" stroke-width="2"/>`:""}
+        ${newPartVisible?`<rect x="${newX}" y="82" width="27" height="16" rx="3" fill="#f2c14e" stroke="#7a5c10" stroke-width="2"/>`:""}
+        <circle cx="80" cy="76" r="15" fill="${input("SN")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="80" y="53" text-anchor="middle" font-size="9" font-weight="850" fill="#43576d">SN=${input("SN")?1:0}</text>
+        <rect x="12" y="9" width="106" height="25" rx="12" fill="${on("CELL_BUSY")?"#fff4d8":"#edf1f5"}" stroke="${on("CELL_BUSY")?"#9b5700":"#718397"}"/><text x="65" y="26" text-anchor="middle" font-size="9" font-weight="900" fill="${on("CELL_BUSY")?"#8a4e00":"#536477"}">CELL_BUSY=${on("CELL_BUSY")?1:0}</text>
+        <rect x="126" y="9" width="112" height="25" rx="12" fill="${on("PART_WAITING")?"#f1ebfa":"#edf1f5"}" stroke="${on("PART_WAITING")?"#6741a5":"#718397"}"/><text x="182" y="26" text-anchor="middle" font-size="9" font-weight="900" fill="${on("PART_WAITING")?"#6741a5":"#536477"}">WAITING=${on("PART_WAITING")?1:0}</text>
+        <rect x="246" y="9" width="120" height="25" rx="12" fill="${on("BYPASS_ACTIVE")?"#eaf4fc":"#edf1f5"}" stroke="${on("BYPASS_ACTIVE")?"#1468a8":"#718397"}"/><text x="306" y="26" text-anchor="middle" font-size="9" font-weight="900" fill="${on("BYPASS_ACTIVE")?"#1468a8":"#536477"}">BYPASS=${on("BYPASS_ACTIVE")?1:0}</text>
+        <rect x="374" y="9" width="86" height="25" rx="12" fill="${on("INFEED_HOLD")?"#fff0ee":"#edf1f5"}" stroke="${on("INFEED_HOLD")?"#b3261e":"#718397"}"/><text x="417" y="26" text-anchor="middle" font-size="9" font-weight="900" fill="${on("INFEED_HOLD")?"#b3261e":"#536477"}">M1 HOLD=${on("INFEED_HOLD")?1:0}</text>
+        <text x="92" y="171" text-anchor="middle" font-size="10" font-weight="850" fill="#43576d">M1 ${on("M1")?"ON":"OFF"}</text><text x="381" y="171" text-anchor="middle" font-size="10" font-weight="850" fill="#43576d">M2 ${on("M2")?"ON":"OFF"}</text>
+        <text x="235" y="193" text-anchor="middle" font-size="10" font-weight="900" fill="#43576d">MAIN: ${active} · AUXILIARY: ${on("BYPASS_ACTIVE")?"CNC BYPASS":on("PART_WAITING")?"PART WAITING":"NONE"}</text>
+      </svg>`;
+      caption=`Main stage ${active}; CELL_BUSY=${on("CELL_BUSY")?1:0}; waiting=${on("PART_WAITING")?1:0}; bypass=${on("BYPASS_ACTIVE")?1:0}; M1=${on("M1")?1:0}; RU=${on("RU")?1:0}; M2=${on("M2")?1:0}.`;
+    }else{
+      const active=mem.STEP_POS?"POSITION":mem.STEP_LOAD?"LOAD":mem.STEP_CNC?"CNC":mem.STEP_UNLOAD?"UNLOAD":"IDLE";
+      const partX=active==="POSITION"?132:active==="LOAD"?195:active==="CNC"?260:active==="UNLOAD"?324:input("SN")?78:40;
+      svg=`<svg viewBox="0 0 430 190" aria-hidden="true">
+        <rect x="18" y="118" width="155" height="24" rx="12" fill="#596d80"/><rect x="288" y="118" width="122" height="24" rx="12" fill="#596d80"/>
+        <rect x="226" y="50" width="73" height="91" rx="8" fill="${on("CNS")?"#e7f6f0":"#e5eaf0"}" stroke="#40546a" stroke-width="4"/><text x="262" y="91" text-anchor="middle" font-size="12" font-weight="900" fill="#34485f">CNC</text>
+        <path d="M185 45v66" stroke="${on("RL")||on("RU")?"#08785a":"#718397"}" stroke-width="8"/><path d="M185 78l35 22" stroke="${on("RL")||on("RU")?"#08785a":"#718397"}" stroke-width="8"/><circle cx="185" cy="41" r="16" fill="#dce3ea" stroke="#40546a" stroke-width="3"/>
+        <path d="M142 83v52" stroke="${on("GT")?"#08785a":"#506479"}" stroke-width="9"/>
+        <rect x="${partX}" y="101" width="30" height="17" rx="3" fill="#e8993d" stroke="#7a4914" stroke-width="2"/>
+        <circle cx="75" cy="82" r="15" fill="${input("SN")?"#e7f6f0":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="75" y="59" text-anchor="middle" font-size="9" font-weight="850" fill="#43576d">SN=${input("SN")?1:0}</text>
+        <text x="80" y="160" text-anchor="middle" font-size="10" font-weight="850" fill="#43576d">M1 ${on("M1")?"ON":"OFF"}</text><text x="350" y="160" text-anchor="middle" font-size="10" font-weight="850" fill="#43576d">M2 ${on("M2")?"ON":"OFF"}</text>
+        <rect x="137" y="8" width="156" height="26" rx="13" fill="#e7f6f0" stroke="#08785a" stroke-width="2"/><text x="215" y="26" text-anchor="middle" font-size="12" font-weight="950" fill="#08785a">${active}</text>
+      </svg>`;
+      caption=`Active state: ${active}. Actions: ${["GT","RL","CNS","RU","M1","M2"].filter(tag=>on(tag)).join(", ")||"none"}.`;
+    }
+    $("machineVisual").innerHTML=svg;
+    $("machineVisual").setAttribute("aria-label",caption);
+    $("machineCaption").textContent=caption;
+  }
+
+  let instructionMap={};
+  function renderGroups(){
+    if(!current().groups)return;
+    $("rungTabs").innerHTML=current().groups.map(group=>`<button type="button" class="rung-tab ${activeGroup===group?"active":""}" data-group="${esc(group)}">${esc(group)}</button>`).join("");
+  }
+
+  function renderLadder(){
+    instructionMap={};
+    const program=displayedProgram();
+    const widthScores=program.map(rung=>rung.conditions.reduce((sum,node)=>sum+(resolve(node)?.kind==="group"&&resolve(node).mode==="parallel"?2:1),0)+1);
+    const maxNodes=Math.max(2,...widthScores);
+    const rows=program.map((rung,rowIndex)=>{
+      const result=lastRungResults.find(x=>x.index===rung._index)?.result||false;
+      const trace=lastRungTraces.find(x=>x.index===rung._index);
+      const readMem=trace?.before||mem;
+      const pathHot=result?"hot":"";
+      return `<article class="rung ${selectedRung===rung._index?"selected":""}" id="rung-${rung._index}">
+        <div class="rung-canvas">
+          <div class="rail" aria-hidden="true"></div>
+          <div class="rung-center">
+            <div class="rung-head">
+              <button type="button" data-select-rung="${rung._index}">Rung ${rung._index+1} · ${esc(rung.name)}</button>
+              <span class="rung-result ${result?"true":""}">${result?"TRUE path":"FALSE path"}</span>
+            </div>
+            <div class="path ${pathHot}">
+              ${rung.conditions.map((node,index)=>renderCondition(node,rung._index,`c${index}`,readMem)).join("")}
+              ${renderAction(rung.action,rung._index,result)}
+            </div>
+            <div class="rung-note">${esc(rung.statement)}</div>
+          </div>
+          <div class="rail" aria-hidden="true"></div>
+        </div>
+      </article>`;
+    }).join("");
+    $("rungList").innerHTML=program.length
+      ?`<div class="ladder-network-window"><div class="ladder-network" style="--max-nodes:${maxNodes}">${rows}</div></div>`
+      :'<div class="feedback">No rungs are available in this group.</div>';
+  }
+
+  function renderCondition(raw,rungIndex,path,readMem){
+    const node=resolve(raw);
+    if(!node||node.kind==="slot"){
+      const slotId=node?.id||raw.id;
+      return `<button type="button" class="slot" data-slot="${esc(slotId)}">Missing instruction<br><span class="tagline">choose from evidence</span></button>`;
+    }
+    if(node.kind==="contact")return renderContact(node,rungIndex,path,readMem,false);
+    if(node.kind==="group"&&node.mode==="parallel"){
+      const result=testNode(node,readMem,null);
+      return `<div class="parallel ${result?"true":""}" aria-label="Parallel OR branch">
+        ${node.items.map((item,index)=>{
+          const resolved=resolve(item),itemResult=testNode(resolved,readMem,null);
+          return `<div class="parallel-row ${itemResult?"true":""}">${resolved.kind==="contact"?renderContact(resolved,rungIndex,`${path}.${index}`,readMem,true):renderGroupBox(resolved,rungIndex,`${path}.${index}`,readMem)}</div>`;
+        }).join("")}
+      </div>`;
+    }
+    return renderGroupBox(node,rungIndex,path,readMem);
+  }
+
+  function registerInstruction(node,rungIndex,path,role,result,raw){
+    const id=`i-${rungIndex}-${path.replaceAll(".","-")}`;
+    instructionMap[id]={node,rungIndex,path,role,result,raw};
+    return id;
+  }
+
+  function renderContact(node,rungIndex,path,readMem,compact){
+    const raw=!!value(node.tag,readMem),result=node.type==="NC"?!raw:raw;
+    const id=registerInstruction(node,rungIndex,path,"read",result,raw);
+    const selected=selectedInstruction===id,scan=traceIndex>=0&&traceEvents[traceIndex]?.rungIndex===rungIndex&&traceMatchesNode(traceEvents[traceIndex],node);
+    return `<button type="button" class="instruction ${result?"true":""} ${selected?"selected":""} ${scan?"scan":""}" data-inst="${id}" aria-label="${esc(`${node.type==="NC"?"Normally closed":"Normally open"} software test ${node.tag}, reads ${raw?1:0}, ${result?"true":"false"}`)}">
+      <span class="inst-label">${esc(node.label)}</span>
+      <span class="inst-symbol"><span class="contact-symbol ${node.type==="NC"?"nc":""}"><span></span>${node.type==="NC"?"<i></i>":""}</span></span>
+      <span class="inst-tag">${node.type==="NC"?"N.C. TEST":"N.O. TEST"} · ${esc(node.tag)}</span>
+      <span class="inst-value">reads ${raw?1:0} → ${result?"TRUE":"FALSE"}</span>
+    </button>`;
+  }
+
+  function renderGroupBox(node,rungIndex,path,readMem){
+    const result=testNode(node,readMem,null);
+    const id=registerInstruction(node,rungIndex,path,"combine",result,null);
+    const selected=selectedInstruction===id;
+    const count=node.items?.length||0;
+    return `<button type="button" class="instruction ${result?"true":""} ${selected?"selected":""}" data-inst="${id}">
+      <span class="inst-label">${node.mode==="series"?"All required":"Alternative paths"}</span>
+      <span class="inst-symbol"><span class="box-symbol">${node.mode==="series"?"AND":"OR"} × ${count}</span></span>
+      <span class="inst-tag">GROUP</span>
+      <span class="inst-value">${result?"TRUE":"FALSE"}</span>
+    </button>`;
+  }
+
+  function renderAction(raw,rungIndex,rungResult){
+    const action=resolve(raw);
+    if(!action||action.kind==="slot"){
+      const slotId=action?.id||raw.id;
+      return `<button type="button" class="slot" data-slot="${esc(slotId)}">Missing right-side instruction<br><span class="tagline">choose write action</span></button>`;
+    }
+    const result=action.kind==="coil"?!!mem[action.tag]:rungResult;
+    const id=registerInstruction(action,rungIndex,"action","write",result,mem[action.tag]);
+    const selected=selectedInstruction===id,scan=traceIndex>=0&&traceEvents[traceIndex]?.rungIndex===rungIndex&&traceMatchesNode(traceEvents[traceIndex],action);
+    let symbol,tagText,valueText;
+    if(action.kind==="coil"){
+      symbol='<svg class="coil-drawing" viewBox="0 0 88 38" role="img" aria-label="Output coil"><path d="M1 19H25 M63 19H87 M37 5Q23 19 37 33 M51 5Q65 19 51 33"></path></svg>';tagText=`COIL · ${action.tag}`;valueText=`writes ${mem[action.tag]?1:0}`;
+    }else if(action.kind==="timer"){
+      symbol=`<span class="box-symbol">TON<br>${action.preset}s</span>`;tagText=action.tag;valueText=`ET=${formatNumber(mem[`${action.tag}.ET`]||0)} · Q=${mem[`${action.tag}.Q`]?1:0}`;
+    }else if(action.kind==="edge"){
+      symbol='<span class="box-symbol">R_TRIG</span>';tagText=action.tag;valueText=`pulse=${mem[action.tag]?1:0}`;
+    }else if(action.kind==="resetAll"){
+      symbol='<span class="box-symbol">RESET</span>';tagText="ALL STAGES";valueText=rungResult?"operates":"inactive";
+    }else{
+      symbol=`<span class="box-symbol">${action.kind.toUpperCase()}</span>`;tagText=action.tag;valueText=rungResult?"operates":"inactive";
+    }
+    return `<button type="button" class="instruction ${result?"true":""} ${selected?"selected":""} ${scan?"scan":""}" data-inst="${id}">
+      <span class="inst-label">${esc(action.label)}</span><span class="inst-symbol">${symbol}</span><span class="inst-tag">${esc(tagText)}</span><span class="inst-value">${esc(valueText)}</span>
+    </button>`;
+  }
+
+  function traceMatchesNode(event,node){
+    if(!event?.node||!node)return false;
+    if(event.node.kind!==node.kind)return false;
+    if(node.tag)return event.node.tag===node.tag;
+    return event.node.mode===node.mode;
+  }
+
+  function renderInstructionDetail(){
+    let item=selectedInstruction?instructionMap[selectedInstruction]:null;
+    if(!item){
+      const rung=programBase()[selectedRung]||displayedProgram()[0];
+      if(rung){
+        const node=resolve(rung.conditions[0]);
+        const id=Object.keys(instructionMap).find(key=>instructionMap[key].rungIndex===rung._index||instructionMap[key].rungIndex===selectedRung);
+        item=id?instructionMap[id]:null;
+      }
+    }
+    if(!item){
+      $("instructionDetail").innerHTML='<div class="detail-line"><b>Instruction</b><span>Select a rung instruction to inspect it.</span></div>';return;
+    }
+    const node=item.node;
+    let asks="",effect="";
+    if(node.kind==="contact"){
+      asks=node.type==="NC"?`Is ${node.tag} equal to 0?`:`Is ${node.tag} equal to 1?`;
+      effect=`It reads ${item.raw?1:0} and returns ${item.result?"TRUE":"FALSE"}. It does not change the tag.`;
+    }else if(node.kind==="group"){
+      asks=node.mode==="parallel"?"Is at least one branch TRUE?":"Are all required tests TRUE?";
+      effect=`The group combines Boolean results and returns ${item.result?"TRUE":"FALSE"}.`;
+    }else if(node.kind==="coil"){
+      asks="What is the final rung result?";
+      effect=`An ordinary coil writes ${node.tag}=${mem[node.tag]?1:0} on every scan.`;
+    }else if(node.kind==="set"){
+      asks="Is the rung TRUE now?";
+      effect=item.result?`SET stores ${node.tag}=1 until a reset clears it.`:`SET does nothing; ${node.tag} keeps its prior value.`;
+    }else if(node.kind==="reset"||node.kind==="resetAll"){
+      asks="Is the reset condition TRUE?";
+      effect=item.result?"The addressed stored state is cleared.":"The reset does not operate.";
+    }else if(node.kind==="timer"){
+      asks="Is the timer enable path TRUE, and for how long?";
+      effect=`ET=${formatNumber(mem[`${node.tag}.ET`]||0)} s; preset=${node.preset} s; Q=${mem[`${node.tag}.Q`]?1:0}.`;
+    }else if(node.kind==="edge"){
+      asks="Did the enabling logic change from 0 to 1?";
+      effect=`The one-scan pulse ${node.tag} is ${mem[node.tag]?1:0}.`;
+    }
+    $("instructionDetail").innerHTML=`
+      <div class="detail-line"><b>Software role</b><span>${item.role==="read"?"READS stored PLC data":item.role==="combine"?"COMBINES instruction results":"WRITES or updates PLC data"}</span></div>
+      <div class="detail-line"><b>Question asked</b><span>${esc(asks)}</span></div>
+      <div class="detail-line"><b>This scan</b><span>${esc(effect)}</span></div>`;
+  }
+
+  const readerPrompts=[
+    ["1 · Identify the tags","Which input, output, internal or status data appears on this rung?"],
+    ["2 · Find current values","Which referenced tags are 0, 1 or numeric during this scan?"],
+    ["3 · Interpret instructions","What stored value makes each contact or comparison TRUE?"],
+    ["4 · Follow the structure","Which requirements are in series, and which alternatives are in parallel?"],
+    ["5 · Determine the rung result","Is there a complete TRUE path from the left rail to the right-side instruction?"],
+    ["6 · Apply the right-side instruction","Which bit is written, timer enabled, memory set or memory reset?"],
+    ["7 · Connect it to the scan","Can later rungs use the new value, and when does a physical output update?"]
+  ];
+
+  function selectedRungData(){
+    return programBase()[selectedRung]||displayedProgram()[0]||programBase()[0];
+  }
+  function collectTags(node,out=new Set()){
+    node=resolve(node);
+    if(!node)return out;
+    if(node.tag)out.add(node.tag);
+    if(node.kind==="group")node.items.forEach(item=>collectTags(item,out));
+    return out;
+  }
+  function readerAnswerFor(index){
+    const rung=selectedRungData();
+    if(!rung)return "Select a rung first.";
+    const trace=lastRungTraces.find(x=>x.index===selectedRung);
+    const before=trace?.before||mem;
+    const tags=[...rung.conditions.reduce((set,node)=>collectTags(node,set),new Set())];
+    if(rung.action?.tag&&!["timer","resetAll"].includes(rung.action.kind))tags.push(rung.action.tag);
+    if(index===0)return tags.length?tags.map(tag=>`${tag} (${label(tag)})`).join("; "):"No resolved tag is available yet.";
+    if(index===1)return tags.map(tag=>`${tag}=${typeof value(tag,before)==="number"?formatNumber(value(tag,before)):value(tag,before)?1:0}`).join("; ");
+    if(index===2){
+      const events=[];rung.conditions.forEach(node=>testNode(node,before,events));
+      return events.filter(e=>e.type==="test").map(e=>e.detail).join("; ")||"Fill the missing instruction first.";
+    }
+    if(index===3)return structureSentence(rung.conditions);
+    const result=lastRungResults.find(x=>x.index===selectedRung)?.result||false;
+    if(index===4)return `The rung result is ${result?"TRUE":"FALSE"} because ${trace?.events.find(e=>e.type==="combine")?.detail||structureSentence(rung.conditions)}.`;
+    if(index===5)return actionSentence(resolve(rung.action),result);
+    return rung.action?.kind==="coil"&&/^%Q/.test(address(rung.action.tag))
+      ?`Later rungs may read ${rung.action.tag} during this program scan. The physical output channel changes at the output-update phase.`
+      :`Later rungs may read values written above them during the same program scan; the external machine sees output commands after output update.`;
+  }
+
+  function structureSentence(conditions){
+    return conditions.map(node=>{
+      node=resolve(node);
+      if(node.kind==="group")return `(${node.items.map(item=>item.tag||item.label||"instruction").join(node.mode==="parallel"?" OR ":" AND ")})`;
+      return node.tag||"missing";
+    }).join(" AND ");
+  }
+  function actionSentence(action,result){
+    if(!action||action.kind==="slot")return "The right-side instruction is missing.";
+    if(action.kind==="coil")return `The ordinary coil writes ${action.tag}=${result?1:0}.`;
+    if(action.kind==="set")return result?`SET stores ${action.tag}=1.`:`SET does not operate; ${action.tag} keeps its previous value.`;
+    if(action.kind==="reset")return result?`RESET stores ${action.tag}=0.`:`RESET does not operate.`;
+    if(action.kind==="resetAll")return result?`The master reset clears ${(action.tags||["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"]).join(", ")}.`:"The master reset does not operate.";
+    if(action.kind==="timer")return result?`TON ${action.tag} is enabled; ET accumulates toward ${action.preset} s.`:`TON ${action.tag} is disabled and resets ET/Q.`;
+    if(action.kind==="edge")return `R_TRIG evaluates the 0→1 transition and writes ${action.tag}=${mem[action.tag]?1:0} for this scan.`;
+    return "";
+  }
+
+  function renderReader(){
+    $("readerProgress").innerHTML=readerPrompts.map((_,index)=>`<span class="reader-dot ${index<readerIndex?"done":index===readerIndex?"current":""}"></span>`).join("");
+    $("readerQuestion").textContent=readerPrompts[readerIndex][0];
+    $("readerHelp").textContent=readerPrompts[readerIndex][1];
+    $("readerAnswer").innerHTML=readerRevealed?`<div class="reader-answer">${esc(readerAnswerFor(readerIndex))}</div>`:"";
+    $("prevReader").disabled=readerIndex===0;
+    $("nextReader").disabled=readerIndex===readerPrompts.length-1;
+  }
+
+  function renderOutputs(){
+    const data=current().data;
+    $("outputList").innerHTML=data.map(item=>{
+      const isNumber=item.numeric,raw=mem[item.tag]??(isNumber?0:false);
+      const on=isNumber?Number(raw)>0:!!raw;
+      return `<div class="output ${on?"on":""}">
+        <span class="led"></span>
+        <span class="output-name"><b>${esc(item.label)}</b>${esc(item.type)} · ${esc(item.address)}</span>
+        <span class="output-value">${esc(item.tag)}=${isNumber?formatNumber(raw):raw?1:0}${isNumber?"s":""}</span>
+      </div>`;
+    }).join("");
+    $("testSummary").textContent=current().busyExtension?`${current().tests.length} checks cover busy arrivals during loading, CNC and unloading, plus stop reset.`:`${current().tests.length} checks cover normal operation${current().sequence?", stop reset and persistent-sensor behavior":", boundaries and failure conditions"}.`;
+  }
+
+  function renderReference(){
+    const items=[
+      ["Physical device","Creates or receives an electrical field signal. It is not a ladder instruction."],
+      ["Input image","Stored snapshot of input channels captured at the beginning of the scan."],
+      ["Condition","A process or program requirement that can be evaluated as TRUE or FALSE."],
+      ["N.O. software test","A contact instruction that reads a Boolean tag and is TRUE when the bit is 1."],
+      ["N.C. software test","A contact instruction that reads a Boolean tag and is TRUE when the bit is 0."],
+      ["Rung result","The final TRUE/FALSE answer after the PLC evaluates all paths on one rung."],
+      ["Ordinary coil","A software instruction that writes the rung result to a bit every scan."],
+      ["Holding circuit","An ordinary coil writes a bit that a parallel contact reads on the following scan, maintaining the request after a momentary Start signal ends."],
+      ["SET / RESET","Separate memory instructions: SET stores 1; RESET later stores 0. They are not required for a basic holding circuit."],
+      ["TON timer","Accumulates ET while enabled; Q becomes 1 at the preset; resets when disabled."],
+      ["Stage bit","Internal Boolean memory naming the active process step."],
+      ["Busy status","A recalculated Boolean summary of currently active operations; it should normally follow its source conditions every scan."],
+      ["Waiting bit","One Boolean storage place that remembers one pending part. More capacity requires a counter, FIFO or part-tracking structure."],
+      ["Auxiliary state","A parallel activity such as CNC bypass that may coexist with one main sequence stage when resources and interlocks allow it."]
+    ];
+    $("referenceGrid").innerHTML=items.map(([title,text])=>`<div class="reference-item"><b>${esc(title)}</b>${esc(text)}</div>`).join("");
+  }
+
+  function runtimeSnapshot(){
+    return {
+      inputs:{...inputs},mem:{...mem},time,scanNo,selectedRung,selectedInstruction,traceEvents:[...traceEvents],
+      traceIndex,readerIndex,readerRevealed,activeGroup,lastRungResults:clone(lastRungResults),
+      lastRungTraces:clone(lastRungTraces),prevEdge:{...prevEdge},programVariant,buildMode
+    };
+  }
+  function restoreRuntime(s){
+    inputs=s.inputs;mem=s.mem;time=s.time;scanNo=s.scanNo;selectedRung=s.selectedRung;selectedInstruction=s.selectedInstruction;
+    traceEvents=s.traceEvents;traceIndex=s.traceIndex;readerIndex=s.readerIndex;readerRevealed=s.readerRevealed;activeGroup=s.activeGroup;
+    lastRungResults=s.lastRungResults;lastRungTraces=s.lastRungTraces;prevEdge=s.prevEdge;programVariant=s.programVariant;buildMode=s.buildMode;
+  }
+  function isolatedReset(){
+    inputs={};current().inputs.forEach(input=>inputs[input.tag]=input.value);
+    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};lastRungResults=[];lastRungTraces=[];
+  }
+  function isolatedStep(step){
+    Object.assign(inputs,step.inputs||{});
+    const dt=Number(step.dt||0);
+    if(dt>0){
+      const slices=Math.max(1,Math.round(dt/.1));
+      for(let i=0;i<slices;i++)executeScan(dt/slices,true);
+    }else executeScan(0,true);
+  }
+  function matchesExpected(expect){
+    return Object.entries(expect).every(([tag,want])=>{
+      const got=mem[tag];
+      return typeof want==="number"?Math.abs(Number(got)-want)<.001:!!got===!!want;
+    });
+  }
+  function mismatchText(expect){
+    return Object.entries(expect).filter(([tag,want])=>{
+      const got=mem[tag];return typeof want==="number"?Math.abs(Number(got)-want)>=.001:!!got!==!!want;
+    }).map(([tag,want])=>`${tag}: expected ${typeof want==="number"?want:want?1:0}, got ${typeof mem[tag]==="number"?formatNumber(mem[tag]):mem[tag]?1:0}`).join("; ");
+  }
+
+  function runSpecialTest(kind){
+    isolatedReset();programVariant="repaired";buildMode=false;
+
+    function startBaseCycleTo(stage){
+      isolatedStep({inputs:{ST:true,SN:false}});
+      isolatedStep({inputs:{ST:true,SN:true}});
+      isolatedStep({inputs:{ST:true,SN:false}});
+      if(stage==="load")isolatedStep({inputs:{ST:true,SN:false},dt:2.1});
+      if(stage==="cnc")isolatedStep({inputs:{ST:true,SN:false},dt:7.2});
+      if(stage==="unload")isolatedStep({inputs:{ST:true,SN:false},dt:17.3});
+    }
+
+    if(kind==="busy_load"){
+      startBaseCycleTo("load");
+      const atLoad=!!mem.STEP_LOAD;
+      isolatedStep({inputs:{ST:true,SN:true}});
+      const captured=!!mem.PART_WAITING&&!!mem.INFEED_HOLD&&!mem.M1&&!mem.BYPASS_ACTIVE;
+      isolatedStep({inputs:{ST:true,SN:false}});
+      isolatedStep({inputs:{ST:true,SN:false},dt:18.5});
+      const released=!!mem.STEP_POS&&!mem.PART_WAITING;
+      return {pass:atLoad&&captured&&released,detail:atLoad&&captured&&released?"Arrival stored, M1 stopped, and waiting part began a later normal cycle":"Loading-arrival capture, hold or release behavior was missing"};
+    }
+    if(kind==="busy_cnc"){
+      startBaseCycleTo("cnc");
+      const atCnc=!!mem.STEP_CNC&&!!mem.CNS;
+      isolatedStep({inputs:{ST:true,SN:true}});
+      const bypassStarted=!!mem.BYPASS_ACTIVE&&!!mem.INFEED_HOLD&&!mem.M1&&!!mem.RU&&!!mem.M2&&!mem.PART_WAITING;
+      isolatedStep({inputs:{ST:true,SN:false},dt:3.1});
+      const bypassFinished=!mem.BYPASS_ACTIVE&&!!mem.STEP_CNC&&!mem.RU&&!mem.M2;
+      return {pass:atCnc&&bypassStarted&&bypassFinished,detail:atCnc&&bypassStarted&&bypassFinished?"New part bypassed to Conveyor 2 while the original CNC stage continued":"CNC-arrival bypass did not start, finish or preserve the main CNC stage"};
+    }
+    if(kind==="busy_unload"){
+      startBaseCycleTo("unload");
+      const atUnload=!!mem.STEP_UNLOAD&&!!mem.RU;
+      isolatedStep({inputs:{ST:true,SN:true}});
+      const captured=!!mem.PART_WAITING&&!!mem.INFEED_HOLD&&!mem.M1&&!mem.BYPASS_ACTIVE;
+      isolatedStep({inputs:{ST:true,SN:false},dt:3.4});
+      const released=!!mem.STEP_POS&&!mem.PART_WAITING;
+      return {pass:atUnload&&captured&&released,detail:atUnload&&captured&&released?"Arrival waited through unload and then entered positioning":"Unload-arrival capture or later release was missing"};
+    }
+    if(kind==="busy_stop"){
+      startBaseCycleTo("cnc");
+      isolatedStep({inputs:{ST:true,SN:true}});
+      isolatedStep({inputs:{ST:false,SN:true}});
+      const tags=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","PART_WAITING","BYPASS_ACTIVE","GT","RL","CNS","RU","M1","M2"];
+      const pass=tags.every(tag=>!mem[tag]);
+      return {pass,detail:pass?"Stop cleared main stages, waiting/bypass memory and every output command":"Still active: "+tags.filter(tag=>mem[tag]).join(", ")};
+    }
+
+    if(kind==="normal"){
+      isolatedStep({inputs:{ST:true,SN:false}});
+      isolatedStep({inputs:{ST:true,SN:true}});
+      isolatedStep({inputs:{ST:true,SN:true},dt:2.1});
+      const load=!!mem.STEP_LOAD&&!!mem.RL;
+      isolatedStep({inputs:{ST:true,SN:true},dt:5.1});
+      const cnc=!!mem.STEP_CNC&&!!mem.CNS;
+      isolatedStep({inputs:{ST:true,SN:true},dt:10.1});
+      const unload=!!mem.STEP_UNLOAD&&!!mem.RU&&!!mem.M2;
+      isolatedStep({inputs:{ST:true,SN:true},dt:3.1});
+      const idle=!mem.STEP_POS&&!mem.STEP_LOAD&&!mem.STEP_CNC&&!mem.STEP_UNLOAD&&!mem.GT&&!mem.RL&&!mem.CNS&&!mem.RU&&!mem.M2;
+      return {pass:load&&cnc&&unload&&idle,detail:load&&cnc&&unload&&idle?"Position → Load → CNC → Unload → Idle observed":"One or more stage actions or transitions were missing"};
+    }
+    if(kind==="stop"){
+      isolatedStep({inputs:{ST:true,SN:false}});
+      isolatedStep({inputs:{ST:true,SN:true}});
+      isolatedStep({inputs:{ST:true,SN:true},dt:3});
+      isolatedStep({inputs:{ST:false,SN:true}});
+      const tags=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","GT","RL","CNS","RU","M1","M2"];
+      const pass=tags.every(tag=>!mem[tag]);
+      return {pass,detail:pass?"All stage bits and output commands cleared":"Still active: "+tags.filter(tag=>mem[tag]).join(", ")};
+    }
+    isolatedStep({inputs:{ST:true,SN:false}});
+    isolatedStep({inputs:{ST:true,SN:true}});
+    isolatedStep({inputs:{ST:true,SN:true},dt:20.5});
+    for(let i=0;i<10;i++)isolatedStep({inputs:{ST:true,SN:true},dt:.2});
+    const stages=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"];
+    const pass=stages.every(tag=>!mem[tag])&&!mem.NEW_PART;
+    return {pass,detail:pass?"Cell remained idle while the same SN signal stayed at 1":"Persistent sensor retriggered a cycle"};
+  }
+
+  function runReferenceTests(){
+    const snapshot=runtimeSnapshot();
+    const reports=[];
+    for(const test of current().tests){
+      let report;
+      if(test.special){
+        report=runSpecialTest(test.special);
+      }else{
+        isolatedReset();
+        if(test.variant)programVariant=test.variant;
+        for(const step of test.steps)isolatedStep(step);
+        const pass=matchesExpected(test.expect);
+        report={pass,detail:pass?"Expected PLC data observed":mismatchText(test.expect)};
+      }
+      reports.push({name:test.name,...report});
+    }
+    restoreRuntime(snapshot);
+    const allPass=reports.every(r=>r.pass);
+    passedTests[current().id]=allPass;
+    $("testResult").innerHTML=`<div class="feedback ${allPass?"good":"bad"}"><b>${allPass?"All tests passed.":`${reports.filter(r=>!r.pass).length} test(s) failed.`}</b> ${allPass?"The current program matches every checked behavior.":"Use the first failing case to identify which rung writes the wrong value."}</div>
+      <div class="test-cases">${reports.map(r=>`<div class="test-case ${r.pass?"pass":"fail"}"><span><b>${esc(r.name)}:</b> ${esc(r.detail)}</span></div>`).join("")}</div>`;
+    renderProgress();buildLessonSelect();saveProgress();postHeight();
+  }
+
+  function stepInstruction(){
+    if(!traceEvents.length)executeScan(0,true);
+    traceIndex=(traceIndex+1)%traceEvents.length;
+    const event=traceEvents[traceIndex];
+    selectedRung=event.rungIndex;
+    const rung=programBase()[selectedRung];
+    if(current().groups&&rung?.group!==activeGroup){
+      activeGroup=rung.group;renderGroups();
+    }
+    setScanPhase("solve");
+    $("scanStatus").textContent=`Rung ${selectedRung+1} · ${event.detail}`;
+    renderLadder();renderInstructionDetail();renderReader();
+    document.getElementById(`rung-${selectedRung}`)?.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+
+  function setScanPhase(phase){
+    ["phaseRead","phaseSolve","phaseWrite"].forEach(id=>$(id).classList.remove("active"));
+    $(phase==="read"?"phaseRead":phase==="write"?"phaseWrite":"phaseSolve").classList.add("active");
+  }
+
+  function toggleBuild(){
+    buildMode=!buildMode;
+    if(current().id==="cascade"&&buildMode){
+      activeGroup="State-based repair";programVariant="repaired";
+    }
+    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};
+    executeScan(0,true);
+    selectedRung=displayedProgram()[0]?._index||0;
+    selectedInstruction=null;renderStatic();renderAll();
+    $("scanStatus").textContent=buildMode?"Guided build active · fill the amber gaps":"Worked program restored";
+  }
+
+  function openChoice(slotId){
+    const slot=current().slots[slotId];
+    if(!slot)return;
+    activeSlot=slotId;
+    $("choicePrompt").textContent=slot.prompt;
+    $("choiceFeedback").innerHTML="";
+    $("choiceList").innerHTML=slot.choices.map((choice,index)=>`<button type="button" class="choice" data-choice="${index}"><b>${esc(describe(choice))}</b><span>${esc(choiceMeaning(choice))}</span></button>`).join("");
+    $("choiceLayer").hidden=false;document.body.style.overflow="hidden";$("closeChoice").focus();
+  }
+  function closeChoice(){
+    $("choiceLayer").hidden=true;document.body.style.overflow="";activeSlot=null;
+  }
+  function chooseInstruction(index){
+    const slot=current().slots[activeSlot],choice=clone(slot.choices[index]);
+    selections[current().id][activeSlot]=choice;
+    const correct=same(choice,slot.correct);
+    $("choiceFeedback").innerHTML=`<div class="feedback ${correct?"good":"bad"}"><b>${correct?"Correct connection.":"Re-read the requirement."}</b> ${esc(correct?choiceMeaning(choice):slot.prompt)}</div>`;
+    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};executeScan(0,true);renderAll();saveProgress();
+    if(correct)setTimeout(closeChoice,500);
+  }
+  function describe(node){
+    if(!node)return "Missing instruction";
+    if(node.kind==="contact")return `${node.type==="NC"?"N.C. software test":"N.O. software test"} ${node.tag} — ${node.label}`;
+    if(node.kind==="group")return node.items.map(describe).join(node.mode==="parallel"?" OR ":" AND ");
+    if(node.kind==="coil")return `Ordinary coil ${node.tag}`;
+    if(node.kind==="set")return `SET ${node.tag}`;
+    if(node.kind==="reset")return `RESET ${node.tag}`;
+    if(node.kind==="timer")return `TON ${node.tag}, ${node.preset} s`;
+    return node.label||node.kind;
+  }
+  function choiceMeaning(node){
+    if(node.kind==="contact")return node.type==="NC"?`Returns TRUE when ${node.tag}=0.`:`Returns TRUE when ${node.tag}=1.`;
+    if(node.kind==="group")return node.mode==="parallel"?"Parallel paths implement OR.":"Series instructions implement AND.";
+    if(node.kind==="coil")return "Writes the current rung result every scan; does not remember.";
+    if(node.kind==="set")return "Stores 1 when the rung is true and keeps it until reset.";
+    if(node.kind==="reset")return "Stores 0 when the rung is true.";
+    return "";
+  }
+
+  function saveProgress(){
+    try{localStorage.setItem("ladderTeachingStudioProgress",JSON.stringify({completedQuestions,passedTests,selections}))}catch(_){}
+  }
+  function loadProgress(){
+    try{
+      const saved=JSON.parse(localStorage.getItem("ladderTeachingStudioProgress")||"{}");
+      completedQuestions=saved.completedQuestions||{};passedTests=saved.passedTests||{};selections=saved.selections||{};
+    }catch(_){}
+  }
+  function postHeight(){
+    requestAnimationFrame(()=>{try{parent.postMessage({type:"ladder-teaching-studio:resize",height:document.documentElement.scrollHeight},"*")}catch(_){}});
+  }
+
+  document.addEventListener("click",event=>{
+    const lesson=event.target.closest("[data-lesson]");
+    if(lesson){const idx=Number(lesson.dataset.lesson);if(lessonUnlocked(idx))initializeLesson(idx);return}
+    const choice=event.target.closest("[data-question-choice]");
+    if(choice&&!questionChecked){questionChoice=Number(choice.dataset.questionChoice);renderQuestions();return}
+    const preset=event.target.closest("[data-preset]");
+    if(preset){applyPreset(current().presets[Number(preset.dataset.preset)]);return}
+    const toggle=event.target.closest("[data-toggle]");
+    if(toggle){setInputs({[toggle.dataset.toggle]:!inputs[toggle.dataset.toggle]});return}
+    const group=event.target.closest("[data-group]");
+    if(group){
+      activeGroup=group.dataset.group;
+      if(current().id==="cascade")programVariant=activeGroup==="Flawed cascade"?"flawed":"repaired";
+      const first=displayedProgram()[0];if(first)selectedRung=first._index;
+      mem=blankMemory(current());time=0;scanNo=0;prevEdge={};executeScan(0,true);
+      selectedInstruction=null;traceIndex=-1;renderGroups();renderAll();return;
+    }
+    const rung=event.target.closest("[data-select-rung]");
+    if(rung){selectedRung=Number(rung.dataset.selectRung);selectedInstruction=null;readerIndex=0;readerRevealed=false;renderLadder();renderInstructionDetail();renderReader();return}
+    const inst=event.target.closest("[data-inst]");
+    if(inst){selectedInstruction=inst.dataset.inst;selectedRung=instructionMap[selectedInstruction].rungIndex;renderLadder();renderInstructionDetail();renderReader();return}
+    const slot=event.target.closest("[data-slot]");
+    if(slot){openChoice(slot.dataset.slot);return}
+    const paletteChoice=event.target.closest("[data-choice]");
+    if(paletteChoice){chooseInstruction(Number(paletteChoice.dataset.choice));return}
+  });
+
+  document.addEventListener("input",event=>{
+    if(event.target.matches("[data-range],[data-number]")){
+      const tag=event.target.dataset.range||event.target.dataset.number;
+      const config=current().inputs.find(input=>input.tag===tag);
+      let next=Number(event.target.value);
+      if(!Number.isFinite(next))return;
+      next=Math.max(config.min,Math.min(config.max,next));
+      setInputs({[tag]:next});
+    }
+  });
+
+  document.addEventListener("keydown",event=>{
+    if(event.key==="Escape"&&!$("choiceLayer").hidden)closeChoice();
+  });
+  $("lessonSelect").addEventListener("change",event=>initializeLesson(Number(event.target.value)));
+  $("questionHint").addEventListener("click",()=>{questionHint=true;renderQuestions();postHeight()});
+  $("questionCheck").addEventListener("click",checkQuestion);
+  $("questionNext").addEventListener("click",nextQuestion);
+  $("resetLesson").addEventListener("click",()=>{resetState();renderStatic();renderAll();$("scanStatus").textContent="Lesson reset"});
+  $("advanceHalf").addEventListener("click",()=>advanceTime(.5));
+  $("advanceOne").addEventListener("click",()=>advanceTime(1));
+  $("runToEvent").addEventListener("click",runToNextEvent);
+  $("fullScan").addEventListener("click",()=>{executeScan(0,true);setScanPhase("write");renderAll();$("scanStatus").textContent=`Scan ${scanNo} complete · output image ready for update`});
+  $("stepInstruction").addEventListener("click",stepInstruction);
+  $("restartScan").addEventListener("click",()=>{traceIndex=-1;setScanPhase("read");renderLadder();$("scanStatus").textContent="Trace restarted at input read"});
+  $("toggleBuild").addEventListener("click",toggleBuild);
+  $("revealReader").addEventListener("click",()=>{readerRevealed=true;renderReader();postHeight()});
+  $("prevReader").addEventListener("click",()=>{readerIndex=Math.max(0,readerIndex-1);readerRevealed=false;renderReader();postHeight()});
+  $("nextReader").addEventListener("click",()=>{readerIndex=Math.min(readerPrompts.length-1,readerIndex+1);readerRevealed=false;renderReader();postHeight()});
+  $("runTests").addEventListener("click",runReferenceTests);
+  $("closeChoice").addEventListener("click",closeChoice);
+  $("choiceLayer").addEventListener("click",event=>{if(event.target===$("choiceLayer"))closeChoice()});
+  window.addEventListener("resize",postHeight);
+  if("ResizeObserver" in window)new ResizeObserver(postHeight).observe(document.body);
+
+  function buildLessonSelect(){
+    $("lessonSelect").innerHTML=COURSE_ALLOWED.map((index,pos)=>{const lesson=lessons[index],unlocked=lessonUnlocked(index);return `<option value="${index}" ${unlocked?"":"disabled"}>${pos+1} · ${esc(lesson.short)} — ${esc(lesson.title.replace(/^\d+\s*·\s*/,""))}${unlocked?"":" · locked"}</option>`}).join("");
+    $("lessonSelect").value=String(lessonIndex);
+  }
+  loadProgress();
+  loadCourseProgress();
+  buildLessonSelect();
+  initializeLesson(COURSE_ALLOWED[0]);
+</script>
+</body>
+</html>
