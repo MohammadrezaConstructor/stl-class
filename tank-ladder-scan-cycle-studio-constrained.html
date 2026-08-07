@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Tank Ladder & Scan-Cycle Studio</title>
+<style>
+:root{
+  --ink:#142033;--muted:#5e6e80;--navy:#12334f;--blue:#126ca8;--blue-soft:#eaf5fc;
+  --green:#08785a;--green-soft:#e8f7f1;--amber:#9a5a00;--amber-soft:#fff4d8;
+  --red:#b3261e;--red-soft:#fff0ee;--purple:#6844a3;--purple-soft:#f2edfa;
+  --line:#cbd6e1;--page:#edf2f6;--paper:#fff;--shadow:0 8px 26px rgba(18,51,79,.08);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.45}
+button,input{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid rgba(18,108,168,.28);outline-offset:2px}
+.app{width:min(1180px,100%);margin:0 auto;background:var(--paper);min-height:100vh}
+header{background:var(--navy);color:#fff;padding:18px clamp(14px,3vw,28px)}
+.eyebrow{margin:0 0 4px;color:#8fe0c8;text-transform:uppercase;letter-spacing:.11em;font-size:.72rem;font-weight:900}
+h1{margin:0;font-size:clamp(1.35rem,3vw,2rem);line-height:1.16}
+header p:last-child{margin:5px 0 0;color:#d8e7f1;max-width:90ch;font-size:.9rem}
+.progress{display:grid;grid-template-columns:repeat(5,1fr);background:#d9e2ea;border-bottom:1px solid #b9c6d2}
+.progress button{border:0;border-right:1px solid #d1dae3;background:#f5f7f9;color:#5b6c7e;padding:8px 4px;min-height:46px;font-size:.69rem;font-weight:900}
+.progress button:last-child{border-right:0}.progress button.active{background:#fff;color:var(--blue);box-shadow:inset 0 -4px 0 var(--blue)}
+main{padding:16px clamp(10px,2.5vw,24px) 44px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:12px}
+.card{border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:11px 13px 8px;border-bottom:1px solid #dce4eb;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-head h2,.card-head h3{margin:0;color:var(--navy);line-height:1.24}.card-head h2{font-size:1.05rem}.card-head h3{font-size:.96rem}
+.card-head p{margin:2px 0 0;color:var(--muted);font-size:.75rem}.card-body{padding:12px 13px}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;background:var(--blue-soft);color:#0d5d94;font-size:.66rem;font-weight:900;white-space:nowrap}
+.badge.green{background:var(--green-soft);color:#076047}.badge.amber{background:var(--amber-soft);color:#714409}.badge.red{background:var(--red-soft);color:#842018}
+.note{border-left:5px solid var(--amber);background:var(--amber-soft);border-radius:9px;padding:9px 10px;color:#69420c;font-size:.75rem;margin-bottom:12px}
+.note b{display:block;margin-bottom:2px}.danger-note{border-color:var(--red);background:var(--red-soft);color:#722b25}
+.rules{display:grid;gap:7px}.rule{border:1px solid #d8e1e9;border-radius:10px;padding:8px 9px;background:#fbfcfd}.rule b{display:block;color:#2c4259;font-size:.77rem}.rule span{display:block;color:#586b7f;font-size:.72rem;margin-top:2px}
+.tank-layout{display:grid;grid-template-columns:minmax(250px,.9fr) minmax(0,1.1fr);gap:12px}
+.tank-visual{background:#f5f8fb;border:1px solid #d7e0e8;border-radius:12px;padding:10px;min-height:360px;display:grid;grid-template-rows:1fr auto;align-items:center}
+.tank-svg{width:100%;height:300px;display:block}.caption{text-align:center;color:#536579;font-size:.72rem;margin:5px 0 0}
+.data-chain{display:grid;gap:7px}.chain{display:grid;grid-template-columns:104px minmax(0,1fr);gap:8px;align-items:start}.chain-label{text-transform:uppercase;letter-spacing:.06em;font-size:.63rem;font-weight:900;color:#65778a;padding-top:6px}.chain-value{border-left:4px solid #a6b5c4;background:#f4f7fa;border-radius:8px;padding:6px 8px;min-width:0}.chain-value.read{border-color:var(--blue);background:var(--blue-soft)}.chain-value.logic{border-color:var(--green);background:var(--green-soft)}.chain-value.write{border-color:var(--purple);background:var(--purple-soft)}
+.chain-value b{display:block;font-size:.73rem;color:#2d4258}.chain-value span{display:block;font-size:.68rem;color:#536579;overflow-wrap:anywhere}
+.status-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.status-box{border:1px solid #d2dbe4;border-radius:8px;text-align:center;padding:6px 3px;font-size:.63rem;color:#647589}.status-box b{display:block;color:#30465c;font-size:.69rem}.status-box.on{border-color:var(--green);background:var(--green-soft);color:#076047}.status-box.on b{color:#076047}
+.controls{display:grid;gap:9px}.control-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.btn{min-height:38px;border:1px solid #aebcca;border-radius:9px;background:#fff;color:#354a60;padding:6px 10px;font-size:.75rem;font-weight:850}.btn:hover{border-color:var(--blue);background:#f5faff;color:var(--blue)}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:#0d578b}.btn.danger{background:var(--red);border-color:var(--red);color:#fff}.btn.on{background:var(--green);border-color:var(--green);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}
+.switches{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px}.switch-card{border:1px solid #d6dfe7;border-radius:10px;padding:8px}.switch-card label{display:flex;justify-content:space-between;gap:8px;font-size:.72rem;font-weight:850;color:#344a60}.switch-card code{display:block;margin-top:2px;color:#65778b;font-size:.64rem}.switch-card button{width:100%;margin-top:6px}
+.time-readout{margin-left:auto;color:#4c6075;font-size:.74rem;font-weight:850}.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.phase{border:1px solid #cfd9e3;border-radius:10px;padding:8px 6px;text-align:center;color:#607184;font-size:.68rem}.phase b{display:block;color:var(--navy);font-size:.74rem}.phase.active{border-color:var(--blue);background:var(--blue-soft);color:#175b85}.phase.done{border-color:var(--green);background:var(--green-soft);color:#076047}
+.tables{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.table-wrap{overflow:auto;border:1px solid #d6dfe8;border-radius:10px}.data-table{width:100%;border-collapse:collapse;font-size:.68rem}.data-table th,.data-table td{padding:6px 7px;border-bottom:1px solid #e1e7ed;text-align:left}.data-table th{background:#f4f7fa;color:#45596e}.data-table td:last-child{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:900}.data-table tr:last-child td{border-bottom:0}.v1{color:var(--green)}.v0{color:#718194}
+.ladder-card{margin-top:12px}.ladder-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:9px 13px;background:#f7f9fb;border-bottom:1px solid #d8e1e9;align-items:center}.ladder-toolbar .grow{flex:1}.ladder-toolbar span{font-size:.69rem;color:#5b6e81}
+.rung-list{padding:8px 12px 12px}.rung{display:grid;grid-template-columns:22px minmax(0,1fr) 22px;border-bottom:1px solid #dfe6ed;min-width:720px;position:relative}.rung:last-child{border-bottom:0}.rail{background:var(--navy);width:6px;justify-self:center}.rung-center{min-height:104px;display:grid;grid-template-rows:28px 1fr 24px;padding:0 8px}.rung-title{display:flex;justify-content:space-between;align-items:end;gap:8px;font-size:.7rem;font-weight:900;color:#30465c}.rung-result{font-size:.65rem;color:#718194}.rung-result.true{color:var(--green)}
+.path{position:relative;display:flex;align-items:center;justify-content:space-around;gap:6px;padding:0 5px}.path::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;background:#8797a7}.rung.true .path::before{background:var(--green);height:4px}.inst{position:relative;z-index:2;min-width:100px;max-width:140px;border:0;background:#fff;color:#31485f;text-align:center;padding:2px 5px;border-radius:8px}.inst:hover,.inst.selected{background:var(--blue-soft);color:var(--blue)}.inst.true{color:var(--green)}.inst-label{font-size:.64rem;font-weight:850;line-height:1.05;min-height:20px}.inst-tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.61rem;font-weight:900;color:var(--blue);white-space:nowrap}.inst-value{font-size:.59rem;color:#68798c}.symbol{height:34px;display:grid;place-items:center;background:#fff}.contact{position:relative;width:82px;height:28px}.contact::before,.contact::after{content:"";position:absolute;top:2px;bottom:2px;width:4px;background:currentColor;border-radius:2px}.contact::before{left:30px}.contact::after{right:30px}.contact span::before,.contact span::after{content:"";position:absolute;top:13px;height:3px;background:currentColor;width:30px}.contact span::before{left:0}.contact span::after{right:0}.contact.nc i{position:absolute;left:25px;top:13px;width:32px;height:3px;background:currentColor;transform:rotate(-48deg);border-radius:2px}.coil{width:80px;height:34px}.coil path{fill:none;stroke:currentColor;stroke-width:3.5;stroke-linecap:round}.box{position:relative;border:3px solid currentColor;border-radius:5px;padding:4px 6px;min-width:64px;background:#fff;font-size:.66rem;font-weight:900}.parallel{position:relative;z-index:2;min-width:210px;display:grid;grid-template-rows:1fr 1fr;gap:2px;padding:2px 16px;background:#fff}.parallel::before,.parallel::after{content:"";position:absolute;top:12px;bottom:12px;width:8px;border-color:#7d8e9f}.parallel::before{left:0;border-right:3px solid currentColor}.parallel::after{right:0;border-left:3px solid currentColor}.branch{position:relative;display:flex;align-items:center;justify-content:center}.branch::before{content:"";position:absolute;left:-7px;right:-7px;top:50%;height:3px;background:#8797a7}.branch.true::before{background:var(--green)}.branch .inst{transform:scale(.84);min-width:112px}
+.rung-note{font-size:.64rem;color:#607286}.ladder-scroll{overflow-x:auto;border:1px solid #c7d3df;border-radius:11px;background:#fff}
+.inspector{border-top:1px solid #d9e2ea;background:#f8fafc;padding:9px 13px;min-height:86px}.inspector-grid{display:grid;grid-template-columns:110px minmax(0,1fr);gap:5px 8px;font-size:.71rem}.inspector-grid b{color:#31475e}.inspector-grid span{color:#53667a}
+.bridge{margin-top:12px}.bridge-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.bridge-box{border:1px solid #d5dfe8;border-radius:10px;padding:8px;background:#fbfcfd}.bridge-box b{display:block;color:#2f455c;font-size:.72rem}.bridge-box p{margin:3px 0 0;color:#5a6d80;font-size:.68rem}.bridge-box code{font-size:.64rem;overflow-wrap:anywhere}
+.challenge{margin-top:12px}.scenario-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.scenario-tabs button{min-height:32px;border:1px solid #b8c5d1;border-radius:999px;background:#fff;padding:4px 9px;color:#43566c;font-size:.7rem}.scenario-tabs button.active{border-color:var(--blue);background:var(--blue-soft);color:#0d5d94}.question{font-size:.81rem;font-weight:850;color:#2e4359}.answers{display:grid;gap:6px;margin-top:8px}.answer{border:1px solid #b8c5d1;border-radius:9px;background:#fff;padding:8px;text-align:left;color:#40536a;font-size:.74rem}.answer:hover{border-color:var(--blue);background:#f5faff}.answer.correct{border-color:var(--green);background:var(--green-soft);color:#075b45}.answer.wrong{border-color:var(--red);background:var(--red-soft);color:#842018}.feedback{margin-top:8px;border-left:4px solid var(--amber);background:var(--amber-soft);border-radius:8px;padding:8px;color:#714409;font-size:.72rem}
+.footer{margin-top:14px;text-align:center;color:#738397;font-size:.66rem}
+[hidden]{display:none!important}
+@media(max-width:900px){.grid2,.tank-layout{grid-template-columns:1fr}.bridge-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.progress button span{display:none}.progress button{font-size:.62rem}.tables,.bridge-grid{grid-template-columns:1fr}.phase-grid{gap:4px}.card-body{padding:10px}.status-strip{grid-template-columns:repeat(2,1fr)}.tank-svg{height:260px}}
+@media print{body{background:#fff}.app{width:100%}.controls,.ladder-toolbar,.challenge,.progress{display:none}.card{box-shadow:none}.ladder-scroll{overflow:visible}.rung{min-width:0}}
+
+.mode-panel{border:2px solid #1468a8;border-radius:14px;background:#f5faff;padding:12px 14px;margin-bottom:12px}.mode-panel h2{margin:0;color:#13314d;font-size:1rem}.mode-panel p{margin:4px 0;color:#44566c;font-size:.78rem}.mode-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}.mode-status{font-size:.72rem;font-weight:800;color:#0d5d94}.locked-control{opacity:.42!important;pointer-events:none!important}.unlock-note{border-left:4px solid #9b5700;background:#fff4d8;border-radius:8px;padding:7px 9px;color:#714409;font-size:.72rem;margin-top:8px}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <p class="eyebrow">Session 7 · Tank process bridge</p>
+  <h1>Tank Ladder & Scan-Cycle Studio</h1>
+  <p>Translate the tank rules learned in Session 6 into stored PLC data, ladder instructions, scan-cycle decisions, and physical output changes.</p>
+</header>
+<nav class="progress" aria-label="Learning sequence">
+  <button class="active" data-jump="process">1 · <span>Process</span></button>
+  <button data-jump="scan">2 · <span>Scan</span></button>
+  <button data-jump="ladder">3 · <span>Ladder</span></button>
+  <button data-jump="bridge">4 · <span>Translation</span></button>
+  <button data-jump="challenge">5 · <span>Challenge</span></button>
+</nav>
+<main>
+
+  <section class="mode-panel" id="modePanel">
+    <h2>Required sequence</h2>
+    <p><b>Basic mode:</b> complete one manual READ–SOLVE–UPDATE scan and answer the four base predictions. Button 2, Button 3 and automatic run remain locked.</p>
+    <div class="mode-row"><span class="badge" id="modeBadge">BASIC MODE</span><span class="mode-status" id="modeStatus"></span><button class="btn" id="unlockChallenge" disabled>Unlock extension controls</button></div>
+    <div class="unlock-note">Extension controls unlock only after the manual scan and the base prediction set are complete.</div>
+  </section>
+  <div class="note">
+    <b>Source boundary and teaching assumptions</b>
+    The course slides specify the behavior: fill through A and B, mix for 30 seconds, drain through C, stop at any point, select the desired level, and optionally keep the motor on during evacuation. This simulator uses internal stage bits to make that sequence visible. It also exposes a separate <code>TANK_EMPTY</code> feedback bit because one high-level switch alone cannot distinguish a partly full tank from an empty tank.
+  </div>
+
+  <section id="process" class="grid2">
+    <article class="card">
+      <div class="card-head"><div><h2>Known process rules</h2><p>These are recalled from Session 6; the new work is translating them into ladder logic.</p></div><span class="badge">Rule recall</span></div>
+      <div class="card-body rules">
+        <div class="rule"><b>1 · Fill</b><span>When the Start switch is active and the tank is ready, activate solenoids A and B.</span></div>
+        <div class="rule"><b>2 · Mix</b><span>When the desired level is reached, deactivate A and B, run the motor, and start a 30-second timer.</span></div>
+        <div class="rule"><b>3 · Drain</b><span>When 30 seconds is reached, open solenoid C. The motor normally stops unless Switch Button 3 is selected.</span></div>
+        <div class="rule"><b>4 · Repeat</b><span>When the tank is empty, close C and return to filling while the Start switch remains active.</span></div>
+        <div class="rule"><b>Extension controls</b><span>Stop Button 1 stops the process; Button 2 requests the selected liquid level; Button 3 keeps the motor on during evacuation.</span></div>
+      </div>
+    </article>
+    <article class="card">
+      <div class="card-head"><div><h2>Learning goal</h2><p>Follow one complete cycle without confusing physical devices with software instructions.</p></div><span class="badge green">Beginner bridge</span></div>
+      <div class="card-body">
+        <div class="rules">
+          <div class="rule"><b>Physical device</b><span>A switch, sensor, solenoid, or motor on the real machine.</span></div>
+          <div class="rule"><b>Stored PLC value</b><span>A bit such as <code>LEVEL_HIGH</code> or <code>PA_CMD</code> containing 0 or 1.</span></div>
+          <div class="rule"><b>Contact instruction</b><span>Reads a stored bit and returns true or false.</span></div>
+          <div class="rule"><b>Coil or function instruction</b><span>Writes a bit, updates stage memory, or updates timer data.</span></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="card" style="margin-top:12px">
+    <div class="card-head"><div><h2>Animated tank and PLC data</h2><p>The tank creates signals; the PLC stores, evaluates, and writes data.</p></div><span class="badge" id="stageBadge">IDLE</span></div>
+    <div class="card-body tank-layout">
+      <div class="tank-visual">
+        <svg class="tank-svg" viewBox="0 0 430 330" role="img" aria-label="Tank with inlet valves A and B, mixer motor, drain valve C, and liquid level">
+          <defs>
+            <clipPath id="tankClip"><rect x="110" y="86" width="210" height="182" rx="10"/></clipPath>
+          </defs>
+          <path d="M55 30 H150 V78" fill="none" stroke="#556b7e" stroke-width="8" stroke-linecap="round"/>
+          <path d="M375 30 H280 V78" fill="none" stroke="#556b7e" stroke-width="8" stroke-linecap="round"/>
+          <circle id="valveA" cx="150" cy="52" r="13" fill="#9aa8b5"/><circle id="valveB" cx="280" cy="52" r="13" fill="#9aa8b5"/>
+          <text x="150" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#20364c">A</text><text x="280" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#20364c">B</text>
+          <path id="flowA" d="M150 65 V95" fill="none" stroke="#3d9ed8" stroke-width="7" stroke-linecap="round" opacity="0"/>
+          <path id="flowB" d="M280 65 V95" fill="none" stroke="#3d9ed8" stroke-width="7" stroke-linecap="round" opacity="0"/>
+          <rect x="100" y="78" width="230" height="200" rx="16" fill="#fff" stroke="#173a57" stroke-width="7"/>
+          <rect id="liquid" x="110" y="266" width="210" height="2" fill="#63bfe8" clip-path="url(#tankClip)"/>
+          <line x1="105" y1="118" x2="325" y2="118" stroke="#9a5a00" stroke-width="2" stroke-dasharray="7 5"/>
+          <text x="337" y="122" font-size="11" fill="#7b531b">High level</text>
+          <line x1="105" y1="258" x2="325" y2="258" stroke="#68798b" stroke-width="2" stroke-dasharray="5 5"/>
+          <text x="337" y="262" font-size="11" fill="#607184">Empty</text>
+          <circle id="highSensor" cx="318" cy="118" r="8" fill="#9aa8b5"/><circle id="emptySensor" cx="318" cy="258" r="8" fill="#08785a"/>
+          <g id="mixer" transform="translate(215 163)"><circle cx="0" cy="0" r="22" fill="#eaf0f5" stroke="#203a51" stroke-width="4"/><path d="M0 -42 V-22 M0 22 V60 M-25 50 H25 M-18 42 L18 58 M18 42 L-18 58" fill="none" stroke="#203a51" stroke-width="5" stroke-linecap="round"/></g>
+          <rect id="motorLamp" x="184" y="286" width="62" height="25" rx="7" fill="#9aa8b5"/><text x="215" y="303" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">MOTOR</text>
+          <path d="M215 278 V315 H370" fill="none" stroke="#556b7e" stroke-width="8" stroke-linecap="round"/>
+          <circle id="valveC" cx="305" cy="315" r="13" fill="#9aa8b5"/><text x="305" y="307" text-anchor="middle" font-size="14" font-weight="800" fill="#20364c">C</text>
+          <path id="flowC" d="M319 315 H395" fill="none" stroke="#3d9ed8" stroke-width="7" stroke-linecap="round" opacity="0"/>
+          <text id="levelText" x="215" y="205" text-anchor="middle" font-size="24" font-weight="900" fill="#15344f">0%</text>
+        </svg>
+        <p class="caption">Green devices are physically energized after the output-update phase. The blue liquid animation represents the process, not PLC memory.</p>
+      </div>
+      <div>
+        <div class="data-chain">
+          <div class="chain"><div class="chain-label">Physical</div><div class="chain-value"><b id="physicalSummary">Tank empty; Start OFF</b><span>Real switches, sensors, valves, and motor.</span></div></div>
+          <div class="chain"><div class="chain-label">Input image</div><div class="chain-value read"><b id="inputSummary">Inputs not yet read</b><span>The program reads this stored snapshot during the solve phase.</span></div></div>
+          <div class="chain"><div class="chain-label">Logic</div><div class="chain-value logic"><b id="logicSummary">No active stage</b><span>Stage bits and timer data remember where the cycle is.</span></div></div>
+          <div class="chain"><div class="chain-label">Output image</div><div class="chain-value write"><b id="outputSummary">All command bits = 0</b><span>Coils write these command bits during program solving.</span></div></div>
+        </div>
+        <div class="status-strip" id="stageStrip"></div>
+        <div class="status-strip" id="outputStrip"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:12px">
+    <div class="card-head"><div><h2>Operate the process</h2><p>Use maintained switches and momentary push buttons exactly as labeled.</p></div><button class="btn" id="resetBtn">Reset simulator</button></div>
+    <div class="card-body controls">
+      <div class="switches">
+        <div class="switch-card"><label><span>Start switch</span><span id="startState">OFF</span></label><code>START_SW · maintained input</code><button class="btn" id="startToggle">Turn Start ON</button></div>
+        <div class="switch-card"><label><span>Stop Button 1</span><span>momentary</span></label><code>STOP_PB · stops at any point</code><button class="btn danger" id="stopPulse">Press Stop</button></div>
+        <div class="switch-card"><label><span>Button 2</span><span>momentary</span></label><code>SB2_LEVEL · request desired level</code><button class="btn" id="levelPulse">Request selected level</button></div>
+        <div class="switch-card"><label><span>Button 3</span><span id="mixDrainState">OFF</span></label><code>SB3_MIX_DRAIN · keep motor on while draining</code><button class="btn" id="mixDrainToggle">Turn Button 3 ON</button></div>
+      </div>
+      <div class="control-row">
+        <button class="btn primary" id="advance1">Advance 1 process second</button>
+        <button class="btn" id="advance5">Advance 5 seconds</button>
+        <button class="btn" id="nextEvent">Run to next stage</button>
+        <button class="btn" id="autoBtn">Start automatic run</button>
+        <span class="time-readout" id="timeReadout">Process time 0 s · Scan 0</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="scan" class="card" style="margin-top:12px">
+    <div class="card-head"><div><h2>Scan-cycle microscope</h2><p>Pause between reading inputs, solving the program, and updating physical outputs.</p></div><span class="badge amber" id="phaseBadge">Ready for READ</span></div>
+    <div class="card-body">
+      <div class="phase-grid">
+        <div class="phase" id="phaseRead"><b>1 · READ INPUTS</b>Copy physical input states into the input image.</div>
+        <div class="phase" id="phaseSolve"><b>2 · SOLVE LOGIC</b>Evaluate rungs top to bottom and write internal/output data.</div>
+        <div class="phase" id="phaseUpdate"><b>3 · UPDATE OUTPUTS</b>Transfer output-image values to the physical output module.</div>
+      </div>
+      <div class="control-row" style="margin-top:9px">
+        <button class="btn primary" id="stepPhase">Step one phase</button>
+        <button class="btn" id="fullScan">Run full scan</button>
+        <button class="btn" id="lateInput" disabled>Pulse Button 2 after READ</button>
+        <span class="time-readout" id="scanMessage">No phase has run.</span>
+      </div>
+      <div class="tables" style="margin-top:10px">
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>Input tag</th><th>Physical</th><th>Input image</th></tr></thead><tbody id="inputTable"></tbody></table></div>
+        <div class="table-wrap"><table class="data-table"><thead><tr><th>Output tag</th><th>Output image</th><th>Physical output</th></tr></thead><tbody id="outputTable"></tbody></table></div>
+      </div>
+      <div class="note" style="margin:10px 0 0">
+        <b>Try the late-input demonstration</b>
+        Step through READ, then pulse Button 2. The physical button changes after the snapshot, but the input image remains unchanged until the next READ phase.
+      </div>
+    </div>
+  </section>
+
+  <section id="ladder" class="card ladder-card">
+    <div class="card-head"><div><h2>Ladder program</h2><p>Click any instruction. Green means that instruction or path is true during the most recent solve.</p></div><span class="badge">Top-to-bottom order</span></div>
+    <div class="ladder-toolbar">
+      <button class="btn primary" id="solveAgain">Read, solve, update</button>
+      <button class="btn" id="showAll">Show all rungs</button>
+      <button class="btn" id="outputsOnly">Output rungs only</button>
+      <span class="grow"></span><span>Logical highlighting is not real electrical current.</span>
+    </div>
+    <div class="rung-list"><div class="ladder-scroll"><div id="ladderProgram"></div></div></div>
+    <div class="inspector" id="inspector"><div class="inspector-grid"><b>Instruction</b><span>Click an instruction to inspect what it reads or writes.</span></div></div>
+  </section>
+
+  <section id="bridge" class="card bridge">
+    <div class="card-head"><div><h2>Four-way translation</h2><p>One engineering requirement expressed in four connected forms.</p></div><span class="badge green">Session 6 → Session 7</span></div>
+    <div class="card-body">
+      <div class="scenario-tabs" id="bridgeTabs"></div>
+      <div class="bridge-grid" id="bridgeGrid"></div>
+    </div>
+  </section>
+
+  <section id="challenge" class="card challenge">
+    <div class="card-head"><div><h2>Prediction challenge</h2><p>Predict first, then load the scenario and check the real scan behavior.</p></div><span class="badge" id="scoreBadge">Score 0/5</span></div>
+    <div class="card-body">
+      <div class="scenario-tabs" id="challengeTabs"></div>
+      <p class="question" id="questionText"></p>
+      <div class="answers" id="answers"></div>
+      <div id="feedback"></div>
+      <div class="control-row" style="margin-top:9px"><button class="btn" id="loadScenario">Load this scenario</button><button class="btn primary" id="runScenario">Load and run one scan</button></div>
+    </div>
+  </section>
+
+  <div class="note danger-note" style="margin-top:12px">
+    <b>Engineering boundary</b>
+    This is an educational sequence simulator. A real plant requires validated sensor placement, valve and motor interlocks, electrical protection, fail-safe stop design, and platform-specific PLC instructions.
+  </div>
+  <p class="footer">Tank Ladder & Scan-Cycle Studio · self-contained HTML · no external libraries</p>
+</main>
+</div>
+<script>
+(()=>{
+  const $=id=>document.getElementById(id);
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  const bool=v=>v?1:0;
+  const inputTags=["START_SW","STOP_PB","SB2_LEVEL","SB3_MIX_DRAIN","LEVEL_HIGH","TANK_EMPTY"];
+  const outputTags=["PA_CMD","PB_CMD","MOTOR_CMD","PC_CMD"];
+  const labels={START_SW:"Start switch",STOP_PB:"Stop button 1",SB2_LEVEL:"Desired-level button 2",SB3_MIX_DRAIN:"Mix-during-drain button 3",LEVEL_HIGH:"High-level sensor",TANK_EMPTY:"Empty-level sensor",PA_CMD:"Solenoid A command",PB_CMD:"Solenoid B command",MOTOR_CMD:"Mixer motor command",PC_CMD:"Solenoid C command"};
+  let state;
+  let phaseCursor=0;
+  let lastTrace=[];
+  let autoTimer=null;
+  let showOutputsOnly=false;
+  let selectedInstruction=null;
+  let challengeIndex=0,score=0,answered=new Set();
+  let bridgeIndex=0;
+  let manualPhaseSteps=0;
+  let extensionMode=false;
+
+
+  const BASE_CHALLENGES=[0,1,3,4];
+  function basePredictionsComplete(){return BASE_CHALLENGES.every(i=>answered.has(i))}
+  function canUnlockExtension(){return manualPhaseSteps>=3&&basePredictionsComplete()}
+  function applyModeConstraints(){
+    const locked=!extensionMode;
+    ["levelPulse","mixDrainToggle","autoBtn"].forEach(id=>$(id).disabled=locked);
+    $("modeBadge").textContent=extensionMode?"EXTENSION MODE":"BASIC MODE";
+    $("modeBadge").className="badge "+(extensionMode?"green":"");
+    $("modeStatus").textContent=`Manual phases ${Math.min(manualPhaseSteps,3)}/3 · base predictions ${BASE_CHALLENGES.filter(i=>answered.has(i)).length}/4`;
+    $("unlockChallenge").disabled=extensionMode||!canUnlockExtension();
+    document.querySelectorAll('[data-challenge="2"]').forEach(b=>{b.disabled=locked;b.title=locked?"Complete the basic mode first":""});
+  }
+
+  function fresh(){
+    return {
+      tankLevel:0,time:0,scan:0,
+      physicalInputs:{START_SW:false,STOP_PB:false,SB2_LEVEL:false,SB3_MIX_DRAIN:false,LEVEL_HIGH:false,TANK_EMPTY:true},
+      inputImage:{START_SW:false,STOP_PB:false,SB2_LEVEL:false,SB3_MIX_DRAIN:false,LEVEL_HIGH:false,TANK_EMPTY:true},
+      internal:{CYCLE_ACTIVE:false,STEP_FILL:false,STEP_MIX:false,STEP_DRAIN:false,MIX_TIMER_ET:0,MIX_TIMER_Q:false},
+      outputImage:{PA_CMD:false,PB_CMD:false,MOTOR_CMD:false,PC_CMD:false},
+      physicalOutputs:{PA_CMD:false,PB_CMD:false,MOTOR_CMD:false,PC_CMD:false}
+    };
+  }
+
+  function updateSensors(){
+    state.physicalInputs.LEVEL_HIGH=state.tankLevel>=80;
+    state.physicalInputs.TANK_EMPTY=state.tankLevel<=2;
+  }
+  function evolve(dt){
+    const o=state.physicalOutputs;
+    let rate=0;
+    if(o.PA_CMD)rate+=2.2;
+    if(o.PB_CMD)rate+=2.2;
+    if(o.PC_CMD)rate-=6;
+    state.tankLevel=Math.max(0,Math.min(100,state.tankLevel+rate*dt));
+    state.time+=dt;
+    updateSensors();
+  }
+  function readInputs(){
+    updateSensors();
+    state.inputImage=clone(state.physicalInputs);
+    return "Physical inputs copied into the input image.";
+  }
+  function trace(id,title,result,nodes,note,writes=[]){lastTrace.push({id,title,result:!!result,nodes,note,writes});}
+  function solveLogic(dt=0){
+    lastTrace=[];
+    const i=state.inputImage,m=state.internal,o=state.outputImage;
+    const stopReset=(!i.START_SW)||i.STOP_PB;
+    if(stopReset){m.CYCLE_ACTIVE=false;m.STEP_FILL=false;m.STEP_MIX=false;m.STEP_DRAIN=false;m.MIX_TIMER_ET=0;m.MIX_TIMER_Q=false;}
+    trace("R0","Master stop and reset",stopReset,[p([n("contact","START_SW",!i.START_SW,"nc"),n("contact","STOP_PB",i.STOP_PB)]),n("reset","ALL_SEQUENCE",stopReset)],"If Start is OFF or Stop is pressed, clear the cycle and every stage.",["CYCLE_ACTIVE","STEP_FILL","STEP_MIX","STEP_DRAIN"]);
+
+    const startPath=i.START_SW&&!i.STOP_PB;
+    if(startPath)m.CYCLE_ACTIVE=true;
+    trace("R1","Enable cycle",startPath,[n("contact","START_SW",i.START_SW),n("contact","STOP_PB",!i.STOP_PB,"nc"),n("set","CYCLE_ACTIVE",startPath)],"A maintained Start switch stores the cycle request while Stop is healthy.",["CYCLE_ACTIVE"]);
+
+    const initFill=m.CYCLE_ACTIVE&&!m.STEP_FILL&&!m.STEP_MIX&&!m.STEP_DRAIN;
+    if(initFill)m.STEP_FILL=true;
+    trace("R2","Initialize filling stage",initFill,[n("contact","CYCLE_ACTIVE",m.CYCLE_ACTIVE),n("contact","STEP_FILL",!m.STEP_FILL,"nc"),n("contact","STEP_MIX",!m.STEP_MIX,"nc"),n("contact","STEP_DRAIN",!m.STEP_DRAIN,"nc"),n("set","STEP_FILL",initFill)],"If the cycle is active and no stage is selected, begin filling.",["STEP_FILL"]);
+
+    const levelEvent=m.STEP_FILL&&(i.LEVEL_HIGH||i.SB2_LEVEL);
+    if(levelEvent){m.STEP_FILL=false;m.STEP_MIX=true;m.MIX_TIMER_ET=0;m.MIX_TIMER_Q=false;}
+    trace("R3","Fill → Mix transition",levelEvent,[n("contact","STEP_FILL",m.STEP_FILL||levelEvent),p([n("contact","LEVEL_HIGH",i.LEVEL_HIGH),n("contact","SB2_LEVEL",i.SB2_LEVEL)]),n("transition","FILL_TO_MIX",levelEvent)],"The physical high-level sensor or Button 2 can complete the filling stage.",["STEP_FILL","STEP_MIX"]);
+
+    const timerEnable=m.STEP_MIX;
+    if(timerEnable){m.MIX_TIMER_ET=Math.min(30,m.MIX_TIMER_ET+dt);m.MIX_TIMER_Q=m.MIX_TIMER_ET>=30;}else if(!m.STEP_DRAIN){m.MIX_TIMER_ET=0;m.MIX_TIMER_Q=false;}
+    trace("R4","30-second mixing timer",timerEnable,[n("contact","STEP_MIX",timerEnable),n("timer","MIX_TIMER",timerEnable)],`Timer ET=${m.MIX_TIMER_ET.toFixed(1)} s; Q=${bool(m.MIX_TIMER_Q)}.`,["MIX_TIMER.ET","MIX_TIMER.Q"]);
+
+    const mixDone=m.STEP_MIX&&m.MIX_TIMER_Q;
+    if(mixDone){m.STEP_MIX=false;m.STEP_DRAIN=true;}
+    trace("R5","Mix → Drain transition",mixDone,[n("contact","STEP_MIX",m.STEP_MIX||mixDone),n("contact","MIX_TIMER.Q",m.MIX_TIMER_Q),n("transition","MIX_TO_DRAIN",mixDone)],"When the timer is done, leave mixing and enter draining.",["STEP_MIX","STEP_DRAIN"]);
+
+    const drainDone=m.STEP_DRAIN&&i.TANK_EMPTY;
+    if(drainDone){m.STEP_DRAIN=false;m.STEP_FILL=true;m.MIX_TIMER_ET=0;m.MIX_TIMER_Q=false;}
+    trace("R6","Drain → Fill transition",drainDone,[n("contact","STEP_DRAIN",m.STEP_DRAIN||drainDone),n("contact","TANK_EMPTY",i.TANK_EMPTY),n("transition","DRAIN_TO_FILL",drainDone)],"When empty feedback is true, close the drain stage and begin filling again.",["STEP_DRAIN","STEP_FILL"]);
+
+    const pa=m.CYCLE_ACTIVE&&m.STEP_FILL&&!i.LEVEL_HIGH;
+    o.PA_CMD=pa;
+    trace("R7","Solenoid A output",pa,[n("contact","CYCLE_ACTIVE",m.CYCLE_ACTIVE),n("contact","STEP_FILL",m.STEP_FILL),n("contact","LEVEL_HIGH",!i.LEVEL_HIGH,"nc"),n("coil","PA_CMD",pa)],"An ordinary coil writes the current rung result to the A command bit.",["PA_CMD"]);
+
+    const pb=m.CYCLE_ACTIVE&&m.STEP_FILL&&!i.LEVEL_HIGH;
+    o.PB_CMD=pb;
+    trace("R8","Solenoid B output",pb,[n("contact","CYCLE_ACTIVE",m.CYCLE_ACTIVE),n("contact","STEP_FILL",m.STEP_FILL),n("contact","LEVEL_HIGH",!i.LEVEL_HIGH,"nc"),n("coil","PB_CMD",pb)],"A and B fill together in the base process.",["PB_CMD"]);
+
+    const mixPath=m.STEP_MIX;
+    const drainMixPath=m.STEP_DRAIN&&i.SB3_MIX_DRAIN;
+    const motor=m.CYCLE_ACTIVE&&(mixPath||drainMixPath);
+    o.MOTOR_CMD=motor;
+    trace("R9","Mixer motor output",motor,[n("contact","CYCLE_ACTIVE",m.CYCLE_ACTIVE),p([n("contact","STEP_MIX",mixPath),s([n("contact","STEP_DRAIN",m.STEP_DRAIN),n("contact","SB3_MIX_DRAIN",i.SB3_MIX_DRAIN)])]),n("coil","MOTOR_CMD",motor)],"The motor runs during mixing. Button 3 creates an alternative path that keeps it on during draining.",["MOTOR_CMD"]);
+
+    const drain=m.CYCLE_ACTIVE&&m.STEP_DRAIN&&!i.TANK_EMPTY;
+    o.PC_CMD=drain;
+    trace("R10","Solenoid C drain output",drain,[n("contact","CYCLE_ACTIVE",m.CYCLE_ACTIVE),n("contact","STEP_DRAIN",m.STEP_DRAIN),n("contact","TANK_EMPTY",!i.TANK_EMPTY,"nc"),n("coil","PC_CMD",drain)],"The drain command remains on while the drain stage is active and the tank is not yet empty.",["PC_CMD"]);
+    return "Rungs solved top to bottom; internal memory and output-image bits were updated.";
+  }
+  function updateOutputs(){state.physicalOutputs=clone(state.outputImage);state.scan++;return "Output-image bits transferred to the physical outputs.";}
+  function fullScan(dt=0){readInputs();solveLogic(dt);updateOutputs();phaseCursor=0;render();}
+  function advance(dt){evolve(dt);fullScan(dt);}
+  function stageName(){const m=state.internal;return m.STEP_FILL?"FILLING":m.STEP_MIX?"MIXING":m.STEP_DRAIN?"DRAINING":m.CYCLE_ACTIVE?"READY":"IDLE";}
+  function n(kind,tag,result,mode="no",layout=""){return{kind,tag,result:!!result,mode,layout};}
+  function p(items){return{kind:"parallel",items,result:items.some(x=>x.result)}}
+  function s(items){return{kind:"series",items,result:items.every(x=>x.result)}}
+
+  function valueClass(v){return v?'v1':'v0'}
+  function render(){
+    updateSensors();
+    applyModeConstraints();
+    $("stageBadge").textContent=stageName();
+    $("stageBadge").className="badge "+(stageName()==="IDLE"?"":stageName()==="DRAINING"?"amber":"green");
+    $("startState").textContent=state.physicalInputs.START_SW?"ON":"OFF";
+    $("startToggle").textContent=state.physicalInputs.START_SW?"Turn Start OFF":"Turn Start ON";
+    $("startToggle").className="btn "+(state.physicalInputs.START_SW?"on":"");
+    $("mixDrainState").textContent=state.physicalInputs.SB3_MIX_DRAIN?"ON":"OFF";
+    $("mixDrainToggle").textContent=state.physicalInputs.SB3_MIX_DRAIN?"Turn Button 3 OFF":"Turn Button 3 ON";
+    $("mixDrainToggle").className="btn "+(state.physicalInputs.SB3_MIX_DRAIN?"on":"");
+    $("timeReadout").textContent=`Process time ${state.time.toFixed(0)} s · Scan ${state.scan}`;
+    const level=state.tankLevel;
+    const h=1.8*level,y=268-h;
+    $("liquid").setAttribute("y",y);$("liquid").setAttribute("height",Math.max(2,h));$("levelText").textContent=`${level.toFixed(0)}%`;
+    const po=state.physicalOutputs;
+    $("valveA").setAttribute("fill",po.PA_CMD?"#08785a":"#9aa8b5");$("valveB").setAttribute("fill",po.PB_CMD?"#08785a":"#9aa8b5");$("valveC").setAttribute("fill",po.PC_CMD?"#08785a":"#9aa8b5");
+    $("motorLamp").setAttribute("fill",po.MOTOR_CMD?"#08785a":"#9aa8b5");
+    $("flowA").setAttribute("opacity",po.PA_CMD?"1":"0");$("flowB").setAttribute("opacity",po.PB_CMD?"1":"0");$("flowC").setAttribute("opacity",po.PC_CMD?"1":"0");
+    $("highSensor").setAttribute("fill",state.physicalInputs.LEVEL_HIGH?"#08785a":"#9aa8b5");$("emptySensor").setAttribute("fill",state.physicalInputs.TANK_EMPTY?"#08785a":"#9aa8b5");
+    $("mixer").style.transform=`translate(215px,163px) rotate(${po.MOTOR_CMD?(state.time*100)%360:0}deg)`;
+    $("physicalSummary").textContent=`Tank ${level.toFixed(0)}%; Start ${state.physicalInputs.START_SW?"ON":"OFF"}; High sensor ${bool(state.physicalInputs.LEVEL_HIGH)}; Empty sensor ${bool(state.physicalInputs.TANK_EMPTY)}`;
+    $("inputSummary").textContent=inputTags.map(t=>`${t}=${bool(state.inputImage[t])}`).join(" · ");
+    const m=state.internal;
+    $("logicSummary").textContent=`${stageName()} · Timer ${m.MIX_TIMER_ET.toFixed(1)}/30 s · Q=${bool(m.MIX_TIMER_Q)}`;
+    $("outputSummary").textContent=outputTags.map(t=>`${t}=${bool(state.outputImage[t])}`).join(" · ");
+    $("stageStrip").innerHTML=[["Cycle",m.CYCLE_ACTIVE],["Fill",m.STEP_FILL],["Mix",m.STEP_MIX],["Drain",m.STEP_DRAIN]].map(([x,v])=>`<div class="status-box ${v?'on':''}"><b>${x}</b>${v?'ON':'OFF'}</div>`).join("");
+    $("outputStrip").innerHTML=[["A",po.PA_CMD],["B",po.PB_CMD],["Motor",po.MOTOR_CMD],["C",po.PC_CMD]].map(([x,v])=>`<div class="status-box ${v?'on':''}"><b>${x}</b>${v?'ENERGIZED':'OFF'}</div>`).join("");
+    $("inputTable").innerHTML=inputTags.map(t=>`<tr><td>${labels[t]}<br><code>${t}</code></td><td class="${valueClass(state.physicalInputs[t])}">${bool(state.physicalInputs[t])}</td><td class="${valueClass(state.inputImage[t])}">${bool(state.inputImage[t])}</td></tr>`).join("");
+    $("outputTable").innerHTML=outputTags.map(t=>`<tr><td>${labels[t]}<br><code>${t}</code></td><td class="${valueClass(state.outputImage[t])}">${bool(state.outputImage[t])}</td><td class="${valueClass(state.physicalOutputs[t])}">${bool(state.physicalOutputs[t])}</td></tr>`).join("");
+    renderPhases();renderLadder();renderBridge();renderChallenge();
+  }
+
+  function renderPhases(){
+    ["phaseRead","phaseSolve","phaseUpdate"].forEach((id,idx)=>{$(id).className="phase"+(idx<phaseCursor?" done":"")});
+    if(phaseCursor>=0&&phaseCursor<3)$(["phaseRead","phaseSolve","phaseUpdate"][phaseCursor]).classList.add("active");
+    const next=["READ","SOLVE","UPDATE"][phaseCursor]||"READ";
+    $("phaseBadge").textContent=`Ready for ${next}`;
+    $("lateInput").disabled=phaseCursor!==1;
+  }
+
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function symbol(node){
+    if(node.kind==="contact")return `<div class="contact ${node.mode==='nc'?'nc':''}"><span></span>${node.mode==='nc'?'<i></i>':''}</div>`;
+    if(node.kind==="coil")return `<svg class="coil" viewBox="0 0 80 34"><path d="M0 17 H18 M18 4 C4 10 4 24 18 30 M62 4 C76 10 76 24 62 30 M62 17 H80"/></svg>`;
+    if(node.kind==="set")return `<div class="box">SET</div>`;
+    if(node.kind==="reset")return `<div class="box">RESET</div>`;
+    if(node.kind==="timer")return `<div class="box">TON 30 s</div>`;
+    if(node.kind==="transition")return `<div class="box">MOVE STAGE</div>`;
+    return `<div class="box">${esc(node.kind.toUpperCase())}</div>`;
+  }
+  function instLabel(node){
+    const role=node.kind==="contact"?(node.mode==="nc"?"N.C. software test":"N.O. software test"):node.kind==="coil"?"ordinary coil":node.kind==="timer"?"timer instruction":node.kind==="transition"?"stage transition":node.kind==="set"?"set instruction":"reset instruction";
+    const value=node.kind==="timer"?`ET=${state.internal.MIX_TIMER_ET.toFixed(1)} · Q=${bool(state.internal.MIX_TIMER_Q)}`:`result=${bool(node.result)}`;
+    return `<button class="inst ${node.result?'true':''}" data-kind="${node.kind}" data-tag="${esc(node.tag)}" data-result="${bool(node.result)}" data-mode="${node.mode||''}"><div class="inst-label">${role}</div><div class="symbol">${symbol(node)}</div><span class="inst-tag">${esc(node.tag)}</span><span class="inst-value">${value}</span></button>`;
+  }
+  function renderNode(node){
+    if(node.kind==="parallel")return `<div class="parallel">${node.items.map(x=>`<div class="branch ${x.result?'true':''}">${renderNode(x)}</div>`).join("")}</div>`;
+    if(node.kind==="series")return node.items.map(renderNode).join("");
+    return instLabel(node);
+  }
+  function renderLadder(){
+    const traces=(showOutputsOnly?lastTrace.filter(r=>/^R(7|8|9|10)$/.test(r.id)):lastTrace);
+    $("ladderProgram").innerHTML=traces.map(r=>`<div class="rung ${r.result?'true':''}" data-rung="${r.id}"><div class="rail"></div><div class="rung-center"><div class="rung-title"><span>${r.id} · ${esc(r.title)}</span><span class="rung-result ${r.result?'true':''}">${r.result?'TRUE':'FALSE'}</span></div><div class="path">${r.nodes.map(renderNode).join("")}</div><div class="rung-note">${esc(r.note)}</div></div><div class="rail"></div></div>`).join("") || `<div style="padding:20px">Run a scan to generate rung results.</div>`;
+    document.querySelectorAll('.inst').forEach(el=>el.addEventListener('click',()=>inspect(el)));
+  }
+  function inspect(el){
+    document.querySelectorAll('.inst.selected').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');
+    const kind=el.dataset.kind,tag=el.dataset.tag,result=Number(el.dataset.result),mode=el.dataset.mode;
+    let role="",question="",effect="";
+    if(kind==="contact"){
+      role="READS a stored PLC bit; it does not change the bit.";
+      question=mode==="nc"?`Is ${tag}=0?`:`Is ${tag}=1?`;
+      effect=`The test returned ${result?'TRUE':'FALSE'} during the most recent solve.`;
+    }else if(kind==="coil"){
+      role="WRITES the final rung result to an output-image bit every scan.";question="What is the final rung result?";effect=`The coil wrote ${tag}=${result}. The physical device changes only during UPDATE OUTPUTS.`;
+    }else if(kind==="timer"){
+      role="UPDATES timer data while its enable path is true.";question="Is STEP_MIX true, and how much time has accumulated?";effect=`MIX_TIMER.ET=${state.internal.MIX_TIMER_ET.toFixed(1)} s and Q=${bool(state.internal.MIX_TIMER_Q)}.`;
+    }else if(kind==="transition"){
+      role="WRITES internal stage memory.";question="Has the transition condition become true?";effect=result?"The old stage was cleared and the next stage was stored.":"No stage change occurred.";
+    }else{
+      role="WRITES retained internal memory when its rung is true.";question="Is this rung true now?";effect=`The instruction result is ${result}.`;
+    }
+    $("inspector").innerHTML=`<div class="inspector-grid"><b>Instruction</b><span>${esc(kind.toUpperCase())} · <code>${esc(tag)}</code></span><b>Software role</b><span>${esc(role)}</span><b>Question asked</b><span>${esc(question)}</span><b>This scan</b><span>${esc(effect)}</span></div>`;
+  }
+
+  const bridges=[
+    {name:"Fill",req:"Fill while the cycle is active, the filling stage is selected, and the high-level sensor is not active.",ifthen:"IF CYCLE_ACTIVE and STEP_FILL and NOT LEVEL_HIGH, THEN open A and B.",bool:"PA_CMD = CYCLE_ACTIVE AND STEP_FILL AND NOT LEVEL_HIGH",ladder:"N.O. CYCLE_ACTIVE → N.O. STEP_FILL → N.C. LEVEL_HIGH → PA_CMD coil (and the same logic for B)."},
+    {name:"Start mixing",req:"Stop filling and begin mixing when the desired level is reached.",ifthen:"IF STEP_FILL and (LEVEL_HIGH or SB2_LEVEL), THEN move from FILL to MIX.",bool:"FILL_TO_MIX = STEP_FILL AND (LEVEL_HIGH OR SB2_LEVEL)",ladder:"STEP_FILL in series with a parallel branch of LEVEL_HIGH and SB2_LEVEL, followed by a stage-transition instruction."},
+    {name:"Drain",req:"After 30 seconds of mixing, stop normal mixing and open drain C.",ifthen:"IF STEP_MIX and MIX_TIMER.Q, THEN move from MIX to DRAIN.",bool:"MIX_TO_DRAIN = STEP_MIX AND MIX_TIMER.Q",ladder:"N.O. STEP_MIX → N.O. MIX_TIMER.Q → MOVE STAGE; later output rungs write MOTOR_CMD and PC_CMD."},
+    {name:"Mix during drain",req:"Keep the motor on during evacuation only when Button 3 is selected.",ifthen:"IF STEP_MIX OR (STEP_DRAIN and SB3_MIX_DRAIN), THEN command the motor.",bool:"MOTOR_CMD = CYCLE_ACTIVE AND [STEP_MIX OR (STEP_DRAIN AND SB3_MIX_DRAIN)]",ladder:"CYCLE_ACTIVE in series with two parallel paths: STEP_MIX, or STEP_DRAIN in series with SB3_MIX_DRAIN."}
+  ];
+  function renderBridge(){
+    $("bridgeTabs").innerHTML=bridges.map((b,i)=>`<button class="${i===bridgeIndex?'active':''}" data-bridge="${i}">${b.name}</button>`).join("");
+    const b=bridges[bridgeIndex];
+    $("bridgeGrid").innerHTML=`<div class="bridge-box"><b>1 · Process requirement</b><p>${esc(b.req)}</p></div><div class="bridge-box"><b>2 · If–Then statement</b><p>${esc(b.ifthen)}</p></div><div class="bridge-box"><b>3 · Boolean form</b><p><code>${esc(b.bool)}</code></p></div><div class="bridge-box"><b>4 · Ladder interpretation</b><p>${esc(b.ladder)}</p></div>`;
+    document.querySelectorAll('[data-bridge]').forEach(x=>x.addEventListener('click',()=>{bridgeIndex=Number(x.dataset.bridge);renderBridge()}));
+  }
+
+  const challenges=[
+    {name:"High level",q:"The tank is filling. LEVEL_HIGH changes to 1 before the next scan. What should happen after that scan?",a:["A and B remain on; motor remains off","A and B turn off; the program enters MIX; motor turns on","C opens immediately and the motor remains off"],correct:1,why:"R3 moves FILL to MIX. The later output rungs see the updated stage in the same scan, so A/B become 0 and MOTOR_CMD becomes 1.",setup(){loadState("fillHigh")}},
+    {name:"Timer done",q:"The mixing timer reaches 30 seconds and Button 3 is OFF. What should the next solved outputs be?",a:["Motor ON and C OFF","Motor OFF and C ON","A/B ON and C OFF"],correct:1,why:"The program moves from MIX to DRAIN. The normal mixing path becomes false; C is commanded on while the tank is not empty.",setup(){loadState("mixDone")}},
+    {name:"Button 3",q:"The tank is draining and Button 3 is ON. Which commands should be true?",a:["Only C","Motor and C","A, B, and motor"],correct:1,why:"Button 3 supplies the alternative motor path during STEP_DRAIN, while C remains the drain command.",setup(){loadState("drainMix")}},
+    {name:"Stop",q:"Stop Button 1 is pressed during any stage. What happens?",a:["Only the current output turns off","All stages and output commands reset","The timer pauses but outputs remain energized"],correct:1,why:"The top reset rung clears the cycle and stages. Ordinary output coils then write 0 later in the same solve.",setup(){loadState("stop")}},
+    {name:"Late input",q:"Button 2 is pressed after the READ phase. Will the current SOLVE phase see it?",a:["Yes, physical inputs are read continuously","No, the current input image still contains the earlier snapshot","Only the output-update phase sees it"],correct:1,why:"The program solves from the input image. A physical change after READ is normally used on the next scan.",setup(){loadState("late")}}
+  ];
+  function renderChallenge(){
+    $("scoreBadge").textContent=`Score ${score}/5`;
+    $("challengeTabs").innerHTML=challenges.map((c,i)=>`<button class="${i===challengeIndex?'active':''}" data-challenge="${i}">${i+1} · ${c.name}</button>`).join("");
+    const c=challenges[challengeIndex];$("questionText").textContent=c.q;
+    $("answers").innerHTML=c.a.map((x,i)=>`<button class="answer" data-answer="${i}">${esc(x)}</button>`).join("");$("feedback").innerHTML="";
+    document.querySelectorAll('[data-challenge]').forEach(x=>x.addEventListener('click',()=>{const idx=Number(x.dataset.challenge);if(idx===2&&!extensionMode)return;challengeIndex=idx;renderChallenge()}));
+    document.querySelectorAll('[data-answer]').forEach(x=>x.addEventListener('click',()=>answerChallenge(Number(x.dataset.answer))));
+    applyModeConstraints();
+  }
+  function answerChallenge(choice){
+    const c=challenges[challengeIndex];document.querySelectorAll('[data-answer]').forEach((x,i)=>{x.disabled=true;if(i===c.correct)x.classList.add('correct');else if(i===choice)x.classList.add('wrong')});
+    if(choice===c.correct&&!answered.has(challengeIndex)){score++;}
+    answered.add(challengeIndex);
+    $("scoreBadge").textContent=`Score ${score}/5`;$("feedback").innerHTML=`<div class="feedback"><b>${choice===c.correct?'Correct.':'Not yet.'}</b> ${esc(c.why)}</div>`;
+    applyModeConstraints();
+  }
+  function loadState(type){
+    state=fresh();state.physicalInputs.START_SW=true;
+    if(type==="fillHigh"){state.tankLevel=79;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_FILL:true};state.physicalOutputs.PA_CMD=true;state.physicalOutputs.PB_CMD=true;state.outputImage=clone(state.physicalOutputs);updateSensors();readInputs();solveLogic(0);state.tankLevel=82;updateSensors();}
+    else if(type==="mixDone"){state.tankLevel=82;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_MIX:true,MIX_TIMER_ET:29,MIX_TIMER_Q:false};state.physicalOutputs.MOTOR_CMD=true;state.outputImage=clone(state.physicalOutputs);updateSensors();readInputs();solveLogic(0);state.internal.MIX_TIMER_ET=30;state.internal.MIX_TIMER_Q=true;}
+    else if(type==="drainMix"){state.tankLevel=55;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_DRAIN:true};state.physicalInputs.SB3_MIX_DRAIN=false;updateSensors();readInputs();solveLogic(0);state.physicalInputs.SB3_MIX_DRAIN=true;updateSensors();}
+    else if(type==="stop"){state.tankLevel=60;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_MIX:true,MIX_TIMER_ET:12};state.physicalOutputs.MOTOR_CMD=true;state.outputImage=clone(state.physicalOutputs);state.physicalInputs.STOP_PB=false;updateSensors();readInputs();solveLogic(0);state.physicalInputs.STOP_PB=true;updateSensors();}
+    else if(type==="late"){state.tankLevel=40;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_FILL:true};updateSensors();readInputs();solveLogic(0);state.physicalInputs.SB2_LEVEL=true;phaseCursor=1;}
+    else { solveLogic(0); }
+    render();
+  }
+
+  function reset(){if(autoTimer){clearInterval(autoTimer);autoTimer=null}state=fresh();phaseCursor=0;lastTrace=[];readInputs();solveLogic(0);render();$("autoBtn").textContent="Start automatic run";$("scanMessage").textContent="Simulator reset.";}
+  function pulse(tag,after){if (phaseCursor !== 0) { $("scanMessage").textContent = "Cannot press momentary buttons during a manual scan."; return; } state.physicalInputs[tag]=true;if(tag==="STOP_PB")state.physicalInputs.START_SW=false;fullScan(0);setTimeout(()=>{state.physicalInputs[tag]=false;render()},after||350)}
+  function runToNextEvent(){const startStage=stageName();let guard=0;while(stageName()===startStage&&guard<80){advance(1);guard++}render();}
+  function stepPhase(){
+    let msg="";
+    if(phaseCursor===0){msg=readInputs();phaseCursor=1;}
+    else if(phaseCursor===1){msg=solveLogic(0);phaseCursor=2;}
+    else{msg=updateOutputs();phaseCursor=0;manualPhaseSteps=Math.min(3,manualPhaseSteps+1);}
+    if(phaseCursor===1&&manualPhaseSteps<1)manualPhaseSteps=1;
+    if(phaseCursor===2&&manualPhaseSteps<2)manualPhaseSteps=2;
+    $("scanMessage").textContent=msg;render();
+  }
+
+  $("unlockChallenge").onclick=()=>{if(canUnlockExtension()){extensionMode=true;renderChallenge();render();$("modeStatus").textContent="Extension controls unlocked."}};
+  $("startToggle").onclick=()=>{state.physicalInputs.START_SW=!state.physicalInputs.START_SW;fullScan(0)};
+  $("stopPulse").onclick=()=>pulse("STOP_PB",450);
+  $("levelPulse").onclick=()=>{if(!extensionMode)return;pulse("SB2_LEVEL",450)};
+  $("mixDrainToggle").onclick=()=>{if(!extensionMode)return;state.physicalInputs.SB3_MIX_DRAIN=!state.physicalInputs.SB3_MIX_DRAIN;fullScan(0)};
+  $("resetBtn").onclick=reset;$("advance1").onclick=()=>advance(1);$("advance5").onclick=()=>advance(5);$("nextEvent").onclick=runToNextEvent;
+  $("autoBtn").onclick=()=>{if(!extensionMode)return;if(autoTimer){clearInterval(autoTimer);autoTimer=null;$("autoBtn").textContent="Start automatic run"}else{autoTimer=setInterval(()=>advance(1),300);$("autoBtn").textContent="Pause automatic run"}};
+  $("stepPhase").onclick=stepPhase;$("fullScan").onclick=()=>{fullScan(0);$("scanMessage").textContent="A complete read–solve–update scan was executed."};
+  $("lateInput").onclick=()=>{state.physicalInputs.SB2_LEVEL=true;$("scanMessage").textContent="Button 2 changed physically after READ. Input image is unchanged until the next READ.";render();setTimeout(()=>{state.physicalInputs.SB2_LEVEL=false;render()},1200)};
+  $("solveAgain").onclick=()=>fullScan(0);$("showAll").onclick=()=>{showOutputsOnly=false;renderLadder()};$("outputsOnly").onclick=()=>{showOutputsOnly=true;renderLadder()};
+  $("loadScenario").onclick=()=>challenges[challengeIndex].setup();$("runScenario").onclick=()=>{challenges[challengeIndex].setup();if(phaseCursor===1){solveLogic(0);updateOutputs();phaseCursor=0;render()}else{fullScan(0)}};
+  document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.progress button').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.jump).scrollIntoView({behavior:'smooth',block:'start'})}));
+  reset();
+  renderChallenge();
+  applyModeConstraints();
+})();
+</script>
+</body>
+</html>

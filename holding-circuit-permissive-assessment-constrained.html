@@ -1,0 +1,1985 @@
+<!doctype html>
+<html lang="en" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Conveyor Holding Circuit and Permissive Exercise</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: transparent !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --main-surface-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
+  --card: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --card-foreground: var(--foreground);
+  --popover: light-dark(rgb(255 255 255), rgb(45 45 45));
+  --popover-foreground: var(--foreground);
+  --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
+  --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
+  --secondary: light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%));
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: light-dark(
+    rgb(26 28 31 / 49.4%),
+    rgb(255 255 255 / 49.8%)
+  );
+  --accent: light-dark(rgb(229 242 255), rgb(13 39 63));
+  --accent-foreground: var(--primary);
+  --destructive: light-dark(rgb(226 85 7), rgb(255 133 73));
+  --border: light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%));
+  --input: light-dark(
+    rgb(26 28 31 / 11.8%),
+    color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+  );
+  --ring: light-dark(rgb(51 156 255), rgb(131 195 255 / 76%));
+  --font-size-base: 14px;
+  --red: light-dark(rgb(186 38 35), rgb(250 66 62));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: 10px;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+  --color-background-primary: var(--background);
+  --color-text-primary: var(--foreground);
+  --color-border-secondary: var(--border);
+}
+
+:root[data-visualize-standalone] {
+  background-color: var(--background) !important;
+}
+
+/* Generic mobile code-block hosts provide light/dark mode but no series palette.
+   AppBlock hosts set all six variables themselves. */
+:root:not([data-app-block-surface]) {
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(#f3883b, #f59a56);
+  --viz-series-3: light-dark(#5dc977, #74d58b);
+  --viz-series-4: light-dark(#eb77b1, #f08fc0);
+  --viz-series-5: light-dark(#9b79ec, #aa91ef);
+  --viz-series-6: light-dark(#3ab9b1, #5acbc2);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+:root:not([data-app-block-surface]) > body {
+  padding: 12px;
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The bundled tooltip runtime owns [data-tooltip]. AppBlock's CSS-only
+   pseudo-tooltip can widen dense grids even while hidden. */
+main [data-tooltip]::after {
+  content: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--interactive-label-primary-default, var(--primary-foreground));
+  background: var(--interactive-bg-primary-default, var(--foreground));
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(
+    in srgb,
+    var(--interactive-label-primary-default, var(--primary-foreground)) 50%,
+    transparent
+  );
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+    [aria-pressed="true"],
+    [aria-selected="true"],
+    .is-selected
+  ) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+</style>
+</head>
+<body>
+<main id="conveyor-safety-ladder-exercise" aria-label="Conveyor holding-circuit and permissive ladder-logic exercise">
+  <section class="card" id="assessmentContract" aria-label="Assessment constraints">
+    <p class="section-label">Assessment constraints</p>
+    <p style="margin:0"><b>Complete tasks in order.</b> A hint becomes available only after the first failed attempt. After three incorrect attempts, the correct explanation is shown and the task receives zero points.</p>
+  </section>
+
+  <style>
+    #conveyor-safety-ladder-exercise{
+      width:100%;
+      min-width:0;
+      display:grid;
+      gap:12px;
+      color:var(--foreground);
+    }
+    #conveyor-safety-ladder-exercise *{box-sizing:border-box}
+    #conveyor-safety-ladder-exercise #exerciseWork{min-width:0}
+    #conveyor-safety-ladder-exercise .exercise-meta,
+    #conveyor-safety-ladder-exercise .status-line,
+    #conveyor-safety-ladder-exercise .ladder-head,
+    #conveyor-safety-ladder-exercise .stage-actions,
+    #conveyor-safety-ladder-exercise .rung-actions{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    #conveyor-safety-ladder-exercise .exercise-meta progress{
+      flex:1 1 150px;
+      min-width:110px;
+      accent-color:var(--primary);
+    }
+    #conveyor-safety-ladder-exercise .task-copy,
+    #conveyor-safety-ladder-exercise .coach-copy{
+      margin:0;
+    }
+    #conveyor-safety-ladder-exercise .section-label{
+      margin:0 0 6px;
+      color:var(--muted-foreground);
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    #conveyor-safety-ladder-exercise .task-heading{
+      margin:0 0 6px;
+    }
+    #conveyor-safety-ladder-exercise .state-strip{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:6px;
+    }
+    #conveyor-safety-ladder-exercise .state-item{
+      min-width:0;
+      padding:6px 4px;
+      text-align:center;
+      border-block:1px solid var(--border);
+    }
+    #conveyor-safety-ladder-exercise .state-item span,
+    #conveyor-safety-ladder-exercise .state-item strong{
+      display:block;
+      overflow-wrap:anywhere;
+    }
+    #conveyor-safety-ladder-exercise .state-item span{color:var(--muted-foreground)}
+    #conveyor-safety-ladder-exercise .state-item.is-on strong{color:var(--green)}
+    #conveyor-safety-ladder-exercise .state-item.is-off strong{color:var(--muted-foreground)}
+    #conveyor-safety-ladder-exercise .ladder-scroll{
+      width:100%;
+      min-width:0;
+      overflow-x:auto;
+      overscroll-behavior-x:contain;
+      border-block:1px solid var(--border);
+      padding-block:6px;
+    }
+    #conveyor-safety-ladder-exercise .ladder-scroll svg{
+      display:block;
+      max-width:none;
+      margin-inline:auto;
+      color:var(--foreground);
+    }
+    #conveyor-safety-ladder-exercise .ladder-wire{
+      fill:none;
+      stroke:var(--muted-foreground);
+      stroke-width:3;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+    #conveyor-safety-ladder-exercise .ladder-rail{
+      fill:none;
+      stroke:var(--foreground);
+      stroke-width:6;
+      stroke-linecap:square;
+    }
+    #conveyor-safety-ladder-exercise .ladder-hot{
+      stroke:var(--green);
+      stroke-width:4;
+    }
+    #conveyor-safety-ladder-exercise .symbol-mark{
+      fill:none;
+      stroke:currentColor;
+      stroke-width:4;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+    #conveyor-safety-ladder-exercise .ladder-part.is-true{color:var(--green)}
+    #conveyor-safety-ladder-exercise .ladder-part.is-false{color:var(--foreground)}
+    #conveyor-safety-ladder-exercise .ladder-part.is-selected .symbol-mark{
+      stroke:var(--primary);
+      stroke-width:6;
+    }
+    #conveyor-safety-ladder-exercise .component-name{
+      fill:var(--foreground);
+      font-size:11px;
+      font-weight:600;
+      text-anchor:middle;
+    }
+    #conveyor-safety-ladder-exercise .component-tag{
+      fill:var(--muted-foreground);
+      font-size:9.5px;
+      text-anchor:middle;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    }
+    #conveyor-safety-ladder-exercise .component-value{
+      fill:var(--foreground);
+      text-anchor:middle;
+      font-weight:500;
+    }
+    #conveyor-safety-ladder-exercise .slot-box{
+      fill:var(--card);
+      stroke:var(--primary);
+      stroke-width:3;
+      stroke-dasharray:7 5;
+    }
+    #conveyor-safety-ladder-exercise .slot-text{
+      fill:var(--foreground);
+      text-anchor:middle;
+      font-weight:500;
+    }
+    #conveyor-safety-ladder-exercise .answer-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
+    #conveyor-safety-ladder-exercise .answer-grid .btn{
+      min-width:0;
+      white-space:normal;
+      text-align:left;
+    }
+    #conveyor-safety-ladder-exercise .test-context{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:6px;
+      margin-block:8px;
+    }
+    #conveyor-safety-ladder-exercise .test-context div{
+      min-width:0;
+      padding-block:5px;
+      border-bottom:1px solid var(--border);
+    }
+    #conveyor-safety-ladder-exercise .test-context span,
+    #conveyor-safety-ladder-exercise .test-context strong{display:block}
+    #conveyor-safety-ladder-exercise .test-context span{color:var(--muted-foreground)}
+    #conveyor-safety-ladder-exercise .completion-score{
+      margin:0;
+      font-size:clamp(1.6rem,8vw,2.8rem);
+      font-weight:500;
+    }
+    #conveyor-safety-ladder-exercise .summary-table{
+      width:100%;
+      border-collapse:collapse;
+    }
+    #conveyor-safety-ladder-exercise .summary-table th,
+    #conveyor-safety-ladder-exercise .summary-table td{
+      padding:6px 4px;
+      border-bottom:1px solid var(--border);
+      text-align:left;
+    }
+    #conveyor-safety-ladder-exercise .summary-table td:last-child,
+    #conveyor-safety-ladder-exercise .summary-table th:last-child{text-align:right}
+    #conveyor-safety-ladder-exercise .scroll-cue{color:var(--muted-foreground)}
+    #conveyor-safety-ladder-exercise .sr-status{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+    @media (max-width:460px){
+      #conveyor-safety-ladder-exercise{gap:9px}
+      #conveyor-safety-ladder-exercise .state-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+      #conveyor-safety-ladder-exercise .answer-grid{grid-template-columns:1fr}
+      #conveyor-safety-ladder-exercise .stage-actions .btn{flex:1 1 120px}
+      #conveyor-safety-ladder-exercise .rung-actions{justify-content:center}
+    }
+    #conveyor-safety-ladder-exercise .intro-card{
+      border-inline-start:5px solid var(--primary);
+    }
+    #conveyor-safety-ladder-exercise .intro-card h1{
+      margin:0 0 6px;
+      color:var(--foreground);
+    }
+    #conveyor-safety-ladder-exercise .intro-card > p:not(.section-label){
+      margin:0;
+      color:var(--muted-foreground);
+    }
+    #conveyor-safety-ladder-exercise .concept-strip{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:8px;
+      margin-top:12px;
+    }
+    #conveyor-safety-ladder-exercise .concept-item{
+      min-width:0;
+      padding:9px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      background:var(--secondary);
+    }
+    #conveyor-safety-ladder-exercise .concept-item strong,
+    #conveyor-safety-ladder-exercise .concept-item span{
+      display:block;
+    }
+    #conveyor-safety-ladder-exercise .concept-item strong{
+      margin-bottom:3px;
+      color:var(--foreground);
+    }
+    #conveyor-safety-ladder-exercise .concept-item span{
+      color:var(--muted-foreground);
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+    }
+    #conveyor-safety-ladder-exercise .teaching-boundary{
+      margin-top:12px;
+      padding:9px 10px;
+      border-inline-start:4px solid var(--destructive);
+      border-radius:var(--radius-lg);
+      background:color-mix(in srgb,var(--destructive) 10%,transparent);
+    }
+    #conveyor-safety-ladder-exercise .teaching-boundary strong{
+      display:block;
+      margin-bottom:2px;
+      color:var(--destructive);
+    }
+    #conveyor-safety-ladder-exercise .teaching-boundary p{
+      margin:0;
+      color:var(--foreground);
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+    }
+    #conveyor-safety-ladder-exercise .scan-model h3{
+      margin:0 0 4px;
+    }
+    #conveyor-safety-ladder-exercise .scan-model > p{
+      margin:0 0 9px;
+      color:var(--muted-foreground);
+    }
+    #conveyor-safety-ladder-exercise .scan-story{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:8px;
+    }
+    #conveyor-safety-ladder-exercise .scan-card{
+      min-width:0;
+      padding:9px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      background:var(--secondary);
+    }
+    #conveyor-safety-ladder-exercise .scan-card b,
+    #conveyor-safety-ladder-exercise .scan-card span{
+      display:block;
+    }
+    #conveyor-safety-ladder-exercise .scan-card b{
+      margin-bottom:3px;
+      color:var(--primary);
+    }
+    #conveyor-safety-ladder-exercise .scan-card span{
+      color:var(--foreground);
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+      overflow-wrap:anywhere;
+    }
+    #conveyor-safety-ladder-exercise .logic-legend{
+      margin-top:8px!important;
+      padding-top:8px;
+      border-top:1px solid var(--border);
+      color:var(--muted-foreground)!important;
+      font-size:var(--font-size-small);
+    }
+    @media (max-width:700px){
+      #conveyor-safety-ladder-exercise .concept-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width:460px){
+      #conveyor-safety-ladder-exercise .concept-strip,
+      #conveyor-safety-ladder-exercise .scan-story{grid-template-columns:1fr}
+    }
+    @media (prefers-reduced-motion:no-preference){
+      #conveyor-safety-ladder-exercise .ladder-hot,
+      #conveyor-safety-ladder-exercise .symbol-mark{transition:stroke .18s ease,stroke-width .18s ease}
+    }
+  </style>
+
+  <section class="card intro-card" aria-labelledby="exerciseIntroHeading">
+    <p class="section-label">Practice environment</p>
+    <h1 id="exerciseIntroHeading">Conveyor holding circuit and permissives</h1>
+    <p>Apply an IF–THEN rule as PLC data and ladder instructions. The exercise separates the physical buttons, stored bits, contact tests, rung results, coil writes and output commands.</p>
+    <div class="concept-strip" aria-label="Core concept guide">
+      <div class="concept-item"><strong>Physical input</strong><span>A push button or field device changes an electrical input signal.</span></div>
+      <div class="concept-item"><strong>Contact instruction</strong><span>Reads a stored Boolean tag and returns TRUE or FALSE.</span></div>
+      <div class="concept-item"><strong>Ordinary coil</strong><span>Writes the current rung result to a Boolean tag on every scan.</span></div>
+      <div class="concept-item"><strong>Output command</strong><span><code>MOTOR_RUN = 1</code> commands the output; it does not prove the motor is rotating.</span></div>
+    </div>
+    <div class="teaching-boundary" role="note">
+      <strong>Control-logic training boundary</strong>
+      <p>This exercise teaches ordinary PLC logic and positive healthy-state tags. Real emergency-stop and guard functions require a properly engineered safety circuit, safety relay or safety PLC. Do not treat this rung as a complete machine-safety design.</p>
+    </div>
+  </section>
+
+  <div class="exercise-meta" aria-label="Exercise progress">
+    <span id="exerciseStep" class="viz-badge">Task 1 of 6</span>
+    <progress id="exerciseProgress" max="6" value="1" aria-label="Exercise progress"></progress>
+    <span id="exerciseScore" class="viz-badge">Score 0/10</span>
+  </div>
+
+  <section class="card" aria-labelledby="taskHeading">
+    <p class="section-label">Task</p>
+    <h2 id="taskHeading" class="task-heading">Predict the holding circuit</h2>
+    <p id="taskCopy" class="task-copy"></p>
+    <div id="testContext"></div>
+  </section>
+
+  <section class="card" aria-labelledby="coachHeading">
+    <p class="section-label" id="coachHeading">Coach</p>
+    <p id="coachCopy" class="coach-copy" aria-live="polite"></p>
+  </section>
+
+  <div id="exerciseWork">
+    <div class="state-strip" id="stateStrip" aria-label="Live PLC state"></div>
+
+    <section class="card scan-model" aria-labelledby="scanModelHeading">
+      <h3 id="scanModelHeading">What the PLC does during the current scan</h3>
+      <p>The holding contact does not receive a special signal from the coil. The ordinary coil writes <code>RUN_REQ</code>; the contact reads the same stored bit when the rung is evaluated again.</p>
+      <div class="scan-story" id="scanStory"></div>
+      <p class="logic-legend">Green ladder lines show a TRUE logical path. They do not represent real water or electrical current flowing through the software diagram.</p>
+    </section>
+
+    <div class="ladder-head">
+      <div class="status-line">
+        <strong id="rungTitle">Rung 1 · Run request</strong>
+        <span id="rungResult" class="viz-badge">FALSE path</span>
+      </div>
+      <span class="scroll-cue text-small" id="scrollCue">Swipe rung horizontally if needed ↔</span>
+    </div>
+
+    <div class="ladder-scroll" id="ladderScroll" aria-live="polite"></div>
+
+    <div class="rung-actions" aria-label="Rung navigation">
+      <button type="button" class="btn btn-ghost" id="previousRung">Previous rung</button>
+      <span id="rungCounter" class="text-muted">Rung 1 of 3</span>
+      <button type="button" class="btn btn-ghost" id="nextRung">Next rung</button>
+    </div>
+
+    <div id="answerArea"></div>
+
+    <div class="stage-actions">
+      <button type="button" class="btn btn-ghost" id="hintButton">Show a hint</button>
+      <button type="button" class="btn btn-primary" id="checkButton" disabled>Check answer</button>
+    </div>
+
+    <div class="stage-actions">
+      <button type="button" class="btn btn-ghost" id="backButton">Previous task</button>
+      <button type="button" class="btn btn-primary" id="nextButton" disabled>Next task</button>
+    </div>
+  </div>
+
+  <section class="card" id="completionPanel" hidden aria-labelledby="completionHeading">
+    <p class="section-label">Exercise complete</p>
+    <h2 id="completionHeading">Conveyor holding-circuit challenge</h2>
+    <p class="completion-score" id="completionScore">0/10</p>
+    <p id="completionMessage"></p>
+    <table class="summary-table" aria-label="Exercise result summary">
+      <thead><tr><th>Evidence</th><th>Result</th></tr></thead>
+      <tbody id="summaryBody"></tbody>
+    </table>
+    <div class="stage-actions">
+      <button type="button" class="btn" id="copyResult">Copy result</button>
+      <button type="button" class="btn btn-primary" id="restartExercise">Try again</button>
+    </div>
+  </section>
+
+  <p class="sr-status" id="screenReaderStatus" aria-live="assertive"></p>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const root = document.getElementById("conveyor-safety-ladder-exercise");
+      if (!root) return;
+
+      const STORAGE_KEY = "plc-holding-assessment-constrained-v1";
+      const MAX_SCORE = 10;
+      const taskPoints = [2, 1, 3, 2, 1, 1];
+      const tasks = [
+        {
+          title: "Predict the holding circuit",
+          copy: "STOP_OK, GUARD_OK and OL_OK are healthy. The physical Start button is captured as START_PB = 1 for one input scan, so Rung 1 writes RUN_REQ = 1. START_PB is then released before the next scan. What should the PLC command?",
+          rung: 0,
+          hint: "The lower branch contains a contact that reads the same RUN_REQ bit written by the ordinary coil. On the next scan, that stored 1 can keep the rung TRUE.",
+          options: [
+            ["hold", "MOTOR_RUN remains commanded ON"],
+            ["momentary", "MOTOR_RUN is ON only while START_PB is pressed"],
+            ["blocked", "MOTOR_RUN cannot be commanded ON"]
+          ],
+          correct: "hold"
+        },
+        {
+          title: "Identify the writing instruction",
+          copy: "On Rung 2, which instruction writes the final TRUE or FALSE rung result to the MOTOR_RUN output-command bit?",
+          rung: 1,
+          hint: "Contacts read stored tag values. The ordinary coil at the far right writes the rung result to its addressed bit.",
+          options: [
+            ["RUN_REQ", "RUN_REQ contact"],
+            ["MOTOR_RUN", "MOTOR_RUN ordinary coil"],
+            ["left_rail", "Left ladder rail"]
+          ],
+          correct: "MOTOR_RUN"
+        },
+        {
+          title: "Complete the motor rung",
+          copy: "Choose the right-side instruction for Rung 2. When Rung 2 is solved with RUN_REQ = 0, MOTOR_RUN must be written as 0; the physical output changes during the output-update stage.",
+          rung: 1,
+          hint: "Choose an instruction whose output follows the rung result on every scan. A retained instruction would need a separate reset.",
+          options: [
+            ["coil", "Ordinary coil  ( )"],
+            ["set", "SET coil  (S)"],
+            ["reset", "RESET coil  (R)"],
+            ["timer", "TON timer"]
+          ],
+          correct: "coil"
+        },
+        {
+          title: "Verify six operating cases",
+          copy: "Predict the MOTOR_RUN command for each case, then check it against the PLC scan. Complete all six cases.",
+          rung: 0,
+          hint: "Evaluate the positive healthy-state tests from left to right. If one required permissive is FALSE, Rung 1 writes RUN_REQ = 0; the later rungs then write MOTOR_RUN = 0 and RUN_LAMP = 0.",
+          options: [
+            ["on", "MOTOR_RUN command = ON"],
+            ["off", "MOTOR_RUN command = OFF"]
+          ]
+        },
+        {
+          title: "Diagnose the first blocker",
+          copy: "The conveyor was running, then the overload tripped. RUN_REQ, MOTOR_RUN and RUN_LAMP are now all OFF. Which condition first broke the logic path?",
+          rung: 0,
+          hint: "Start at the left rail of Rung 1. Find the first displayed condition that is FALSE; downstream coils are symptoms.",
+          options: [
+            ["START_PB", "START_PB is released"],
+            ["OL_OK", "OL_OK is FALSE"],
+            ["MOTOR_RUN", "MOTOR_RUN coil is OFF"],
+            ["RUN_LAMP", "RUN_LAMP coil is OFF"]
+          ],
+          correct: "OL_OK"
+        },
+        {
+          title: "Choose the fail-off coil explanation",
+          copy: "Why is an ordinary coil appropriate for the MOTOR_RUN command instead of a retained SET instruction?",
+          rung: 1,
+          hint: "Compare what each instruction does after its rung changes from TRUE to FALSE.",
+          options: [
+            ["ordinary", "The ordinary coil follows the rung result whenever the rung is solved, so the motor command is written OFF when the required permissive path is lost."],
+            ["set", "A SET coil automatically turns OFF whenever its rung becomes FALSE."],
+            ["shape", "The coil type affects only the drawing; all coil instructions behave the same."],
+            ["contact", "An ordinary coil only reads MOTOR_RUN and never writes it."]
+          ],
+          correct: "ordinary"
+        }
+      ];
+
+      const testCases = [
+        {
+          id: "normal",
+          name: "1 · Normal start",
+          description: "STOP_OK, GUARD_OK and OL_OK are 1. START_PB is captured as 1.",
+          expected: "on",
+          reason: "Every required permissive test is TRUE and the START_PB branch is TRUE, so Rung 1 writes RUN_REQ = 1."
+        },
+        {
+          id: "released",
+          name: "2 · Start released",
+          description: "The conveyor has been commanded ON. START_PB returns to 0; all permissives remain healthy.",
+          expected: "on",
+          reason: "The RUN_REQ contact reads the stored RUN_REQ = 1 and provides the holding path around START_PB."
+        },
+        {
+          id: "stop",
+          name: "3 · Stop pressed",
+          description: "The conveyor was commanded ON. Pressing the physical normally closed Stop button makes STOP_OK = 0.",
+          expected: "off",
+          reason: "The normally open software test of STOP_OK becomes FALSE, so Rung 1 writes RUN_REQ = 0."
+        },
+        {
+          id: "guard",
+          name: "4 · Guard opened",
+          description: "The conveyor was commanded ON. GUARD_OK changes to 0.",
+          expected: "off",
+          reason: "The GUARD_OK software test becomes FALSE, so the complete permissive path is no longer TRUE."
+        },
+        {
+          id: "overload",
+          name: "5 · Overload trip",
+          description: "The conveyor was commanded ON. OL_OK changes to 0.",
+          expected: "off",
+          reason: "OL_OK becomes the first FALSE test on Rung 1, which removes RUN_REQ and the downstream output commands."
+        },
+        {
+          id: "recovery",
+          name: "6 · Overload restored",
+          description: "OL_OK returns to 1 after the trip, but START_PB remains 0.",
+          expected: "off",
+          reason: "The trip already caused RUN_REQ to be written as 0. Restoring OL_OK alone does not recreate the start request."
+        }
+      ];
+
+      function freshState() {
+        return {
+          stage: 0,
+          rung: 0,
+          score: 0,
+          selected: "",
+          attempts: [0, 0, 0, 0, 0, 0],
+          completed: [false, false, false, false, false, false],
+          awarded: [0, 0, 0, 0, 0, 0],
+          answers: ["", "", "", "", "", ""],
+          hints: [false, false, false, false, false, false],
+          testIndex: 0,
+          testSelected: "",
+          testPassed: Array(testCases.length).fill(false),
+          testErrors: 0,
+          testReadyNext: false,
+          finished: false,
+          coach: "",
+          inputs: { start: false, stop: true, guard: true, overload: true },
+          mem: { runReq: false, motor: false, lamp: false }
+        };
+      }
+
+      function loadState() {
+        const base = freshState();
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (!saved || typeof saved !== "object") return base;
+          const merged = Object.assign(base, saved);
+          merged.inputs = Object.assign(base.inputs, saved.inputs || {});
+          merged.mem = Object.assign(base.mem, saved.mem || {});
+          return merged;
+        } catch (error) {
+          return base;
+        }
+      }
+
+      let state = loadState();
+
+      const els = {
+        step: root.querySelector("#exerciseStep"),
+        progress: root.querySelector("#exerciseProgress"),
+        score: root.querySelector("#exerciseScore"),
+        taskHeading: root.querySelector("#taskHeading"),
+        taskCopy: root.querySelector("#taskCopy"),
+        testContext: root.querySelector("#testContext"),
+        coachCopy: root.querySelector("#coachCopy"),
+        stateStrip: root.querySelector("#stateStrip"),
+        scanStory: root.querySelector("#scanStory"),
+        rungTitle: root.querySelector("#rungTitle"),
+        rungResult: root.querySelector("#rungResult"),
+        scrollCue: root.querySelector("#scrollCue"),
+        ladderScroll: root.querySelector("#ladderScroll"),
+        rungCounter: root.querySelector("#rungCounter"),
+        previousRung: root.querySelector("#previousRung"),
+        nextRung: root.querySelector("#nextRung"),
+        answerArea: root.querySelector("#answerArea"),
+        hintButton: root.querySelector("#hintButton"),
+        checkButton: root.querySelector("#checkButton"),
+        backButton: root.querySelector("#backButton"),
+        nextButton: root.querySelector("#nextButton"),
+        work: root.querySelector("#exerciseWork"),
+        completionPanel: root.querySelector("#completionPanel"),
+        completionScore: root.querySelector("#completionScore"),
+        completionMessage: root.querySelector("#completionMessage"),
+        summaryBody: root.querySelector("#summaryBody"),
+        copyResult: root.querySelector("#copyResult"),
+        restartExercise: root.querySelector("#restartExercise"),
+        srStatus: root.querySelector("#screenReaderStatus")
+      };
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (error) {
+          /* Third-party iframe storage may be unavailable; the exercise still works. */
+        }
+        notifyParent("progress");
+      }
+
+      function notifyParent(type, extra) {
+        if (window.parent === window) return;
+        const message = Object.assign({
+          source: "conveyor-holding-permissive-exercise",
+          version: 2,
+          type,
+          stage: state.stage + 1,
+          score: state.score,
+          maxScore: MAX_SCORE,
+          completed: state.finished
+        }, extra || {});
+        window.parent.postMessage(message, "*");
+      }
+
+      function reportHeight() {
+        const height = Math.ceil(document.documentElement.scrollHeight);
+        notifyParent("resize", { height });
+      }
+
+      function scan() {
+        const i = state.inputs;
+        state.mem.runReq = Boolean(i.stop && i.guard && i.overload && (i.start || state.mem.runReq));
+        state.mem.motor = Boolean(state.mem.runReq);
+        state.mem.lamp = Boolean(state.mem.motor);
+      }
+
+      function setMachine(priorRunning, overrides) {
+        state.inputs = Object.assign(
+          { start: false, stop: true, guard: true, overload: true },
+          overrides || {}
+        );
+        state.mem = { runReq: Boolean(priorRunning), motor: Boolean(priorRunning), lamp: Boolean(priorRunning) };
+        scan();
+      }
+
+      function prepareStage(index) {
+        if (index === 0) {
+          setMachine(true, { start: false });
+        } else if (index === 1 || index === 2 || index === 5) {
+          setMachine(true, { start: false });
+        } else if (index === 3) {
+          applyTestCase(state.testIndex);
+        } else if (index === 4) {
+          setMachine(true, { start: false, overload: false });
+        }
+      }
+
+      function applyTestCase(index) {
+        const test = testCases[index];
+        if (!test) return;
+        if (test.id === "normal") setMachine(false, { start: true });
+        if (test.id === "released") setMachine(true, { start: false });
+        if (test.id === "stop") setMachine(true, { start: false, stop: false });
+        if (test.id === "guard") setMachine(true, { start: false, guard: false });
+        if (test.id === "overload") setMachine(true, { start: false, overload: false });
+        if (test.id === "recovery") setMachine(false, { start: false, overload: true });
+      }
+
+      function esc(value) {
+        return String(value).replace(/[&<>"']/g, character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;"
+        })[character]);
+      }
+
+      function line(x1, y1, x2, y2, hot, extraClass) {
+        return `<path class="ladder-wire${hot ? " ladder-hot" : ""}${extraClass ? ` ${extraClass}` : ""}" d="M${x1} ${y1}H${x2}"></path>`;
+      }
+
+      function vertical(x, y1, y2, hot) {
+        return `<path class="ladder-wire${hot ? " ladder-hot" : ""}" d="M${x} ${y1}V${y2}"></path>`;
+      }
+
+      function contact(x, y, name, tag, value, selected, placement) {
+        const stateClass = value ? "is-true" : "is-false";
+        const selectedClass = selected ? " is-selected" : "";
+        const mode = placement || "normal";
+        const nameY = mode === "above" ? y - 43 : mode === "below" ? y + 48 : y - 38;
+        const tagY = mode === "above" ? y - 28 : mode === "below" ? y + 64 : y + 42;
+        return `
+          <g class="ladder-part ${stateClass}${selectedClass}" aria-label="${esc(name)}; normally open software contact instruction; reads ${esc(tag)}; test is ${value ? "TRUE" : "FALSE"}">
+            <path class="symbol-mark" d="M${x - 11} ${y - 17}V${y + 17} M${x + 11} ${y - 17}V${y + 17}"></path>
+            <text class="component-name" x="${x}" y="${nameY}">${esc(name)}</text>
+            <text class="component-tag" x="${x}" y="${tagY}">${esc(tag)} · N.O.</text>
+          </g>`;
+      }
+
+      function coil(x, y, name, tag, value, selected, missing) {
+        if (missing) {
+          return `
+            <g aria-label="Missing right-side instruction">
+              <rect class="slot-box" x="${x - 42}" y="${y - 29}" width="84" height="58" rx="4"></rect>
+              <text class="slot-text" x="${x}" y="${y + 5}">Choose</text>
+              <text class="component-name" x="${x}" y="${y - 48}">${esc(name)}</text>
+              <text class="component-tag" x="${x}" y="${y + 52}">${esc(tag)} · ?</text>
+            </g>`;
+        }
+        const stateClass = value ? "is-true" : "is-false";
+        const selectedClass = selected ? " is-selected" : "";
+        return `
+          <g class="ladder-part ${stateClass}${selectedClass}" aria-label="${esc(name)}; ordinary coil instruction; writes ${esc(tag)} as ${value ? "ON" : "OFF"}">
+            <path class="symbol-mark" d="M${x - 11} ${y - 22}Q${x - 30} ${y} ${x - 11} ${y + 22} M${x + 11} ${y - 22}Q${x + 30} ${y} ${x + 11} ${y + 22}"></path>
+            <text class="component-name" x="${x}" y="${y - 48}">${esc(name)}</text>
+            <text class="component-tag" x="${x}" y="${y + 52}">${esc(tag)} · COIL</text>
+          </g>`;
+      }
+
+      function selectedPart(id) {
+        if (state.stage !== 1) return false;
+        return state.selected === id;
+      }
+
+      function rungOneSvg() {
+        const i = state.inputs;
+        const m = state.mem;
+        const afterStop = i.stop;
+        const afterGuard = afterStop && i.guard;
+        const beforeBranch = afterGuard && i.overload;
+        const topPath = beforeBranch && i.start;
+        const bottomPath = beforeBranch && m.runReq;
+        const result = beforeBranch && (i.start || m.runReq);
+        return `
+          <svg width="1040" height="240" viewBox="0 0 1040 240" role="img" aria-labelledby="rung1Title rung1Desc">
+            <title id="rung1Title">Rung 1: healthy-state permissives and holding circuit write RUN_REQ</title>
+            <desc id="rung1Desc">Normally open software tests of STOP_OK, GUARD_OK and OL_OK are in series. START_PB and a RUN_REQ holding contact are in parallel. The ordinary coil writes the rung result to RUN_REQ.</desc>
+            <path class="ladder-rail${result ? " ladder-hot" : ""}" d="M18 22V218"></path>
+            <path class="ladder-rail" d="M1022 22V218"></path>
+            ${line(18, 120, 89, 120, true)}
+            ${line(111, 120, 219, 120, afterStop)}
+            ${line(241, 120, 349, 120, afterGuard)}
+            ${line(371, 120, 430, 120, beforeBranch)}
+            ${vertical(430, 72, 168, beforeBranch)}
+            ${line(430, 72, 549, 72, beforeBranch)}
+            ${line(571, 72, 700, 72, topPath)}
+            ${line(430, 168, 549, 168, beforeBranch)}
+            ${line(571, 168, 700, 168, bottomPath)}
+            ${vertical(700, 72, 168, result)}
+            ${line(700, 120, 830, 120, result)}
+            ${line(890, 120, 1022, 120, result)}
+            ${contact(100, 120, "Stop healthy", "STOP_OK", i.stop, selectedPart("STOP_OK"))}
+            ${contact(230, 120, "Guard closed", "GUARD_OK", i.guard, selectedPart("GUARD_OK"))}
+            ${contact(360, 120, "Overload healthy", "OL_OK", i.overload, selectedPart("OL_OK"))}
+            ${contact(560, 72, "Start pressed", "START_PB", i.start, selectedPart("START_PB"), "above")}
+            ${contact(560, 168, "RUN_REQ hold", "RUN_REQ", m.runReq, selectedPart("RUN_REQ"), "below")}
+            ${coil(860, 120, "Run request", "RUN_REQ", m.runReq, selectedPart("RUN_REQ_COIL"), false)}
+          </svg>`;
+      }
+
+      function rungTwoSvg() {
+        const m = state.mem;
+        const result = m.runReq;
+        const missing = state.stage === 2 && !state.completed[2];
+        return `
+          <svg width="650" height="205" viewBox="0 0 650 205" role="img" aria-labelledby="rung2Title rung2Desc">
+            <title id="rung2Title">Rung 2: RUN_REQ controls the MOTOR_RUN output-command bit</title>
+            <desc id="rung2Desc">A normally open software test reads RUN_REQ. An ordinary coil writes the rung result to the MOTOR_RUN output-command bit.</desc>
+            <path class="ladder-rail${result ? " ladder-hot" : ""}" d="M18 18V187"></path>
+            <path class="ladder-rail" d="M632 18V187"></path>
+            ${line(18, 102, 179, 102, true)}
+            ${line(201, 102, missing ? 425 : 436, 102, result)}
+            ${line(missing ? 509 : 494, 102, 632, 102, result && !missing)}
+            ${contact(190, 102, "Run request active", "RUN_REQ", m.runReq, selectedPart("RUN_REQ"))}
+            ${coil(465, 102, "Motor command", "MOTOR_RUN", m.motor, selectedPart("MOTOR_RUN"), missing)}
+          </svg>`;
+      }
+
+      function rungThreeSvg() {
+        const m = state.mem;
+        const result = m.motor;
+        return `
+          <svg width="560" height="205" viewBox="0 0 560 205" role="img" aria-labelledby="rung3Title rung3Desc">
+            <title id="rung3Title">Rung 3: MOTOR_RUN command controls the RUN_LAMP command</title>
+            <desc id="rung3Desc">A normally open software test reads the MOTOR_RUN command bit. An ordinary coil writes RUN_LAMP.</desc>
+            <path class="ladder-rail${result ? " ladder-hot" : ""}" d="M18 18V187"></path>
+            <path class="ladder-rail" d="M542 18V187"></path>
+            ${line(18, 102, 149, 102, true)}
+            ${line(171, 102, 368, 102, result)}
+            ${line(426, 102, 542, 102, result)}
+            ${contact(160, 102, "Motor commanded", "MOTOR_RUN", m.motor, selectedPart("MOTOR_RUN_CONTACT"))}
+            ${coil(397, 102, "Running lamp", "RUN_LAMP", m.lamp, selectedPart("RUN_LAMP"), false)}
+          </svg>`;
+      }
+
+      function currentRungResult() {
+        if (state.rung === 0) return state.mem.runReq;
+        if (state.rung === 1) return state.mem.motor;
+        return state.mem.lamp;
+      }
+
+      function renderStateStrip() {
+        const i = state.inputs;
+        const m = state.mem;
+        const items = [
+          ["START_PB", i.start ? "1 · PRESSED" : "0 · RELEASED", i.start],
+          ["STOP_OK", i.stop ? "1 · HEALTHY" : "0 · STOPPED", i.stop],
+          ["GUARD_OK", i.guard ? "1 · CLOSED" : "0 · OPEN", i.guard],
+          ["OL_OK", i.overload ? "1 · HEALTHY" : "0 · TRIPPED", i.overload],
+          ["RUN_REQ", m.runReq ? "1 · STORED" : "0 · CLEARED", m.runReq],
+          ["MOTOR_RUN", m.motor ? "1 · COMMAND ON" : "0 · COMMAND OFF", m.motor],
+          ["RUN_LAMP", m.lamp ? "1 · COMMAND ON" : "0 · COMMAND OFF", m.lamp],
+          ["Rung 1 result", m.runReq ? "TRUE" : "FALSE", m.runReq]
+        ];
+        els.stateStrip.innerHTML = items.map(item => `
+          <div class="state-item ${item[2] ? "is-on" : "is-off"}">
+            <span>${esc(item[0])}</span><strong>${esc(item[1])}</strong>
+          </div>`).join("");
+      }
+
+      function renderScanStory() {
+        const i = state.inputs;
+        const m = state.mem;
+        if (!els.scanStory) return;
+        const inputSummary = `START_PB=${i.start ? 1 : 0}, STOP_OK=${i.stop ? 1 : 0}, GUARD_OK=${i.guard ? 1 : 0}, OL_OK=${i.overload ? 1 : 0}`;
+        const rungOneSummary = `Rung 1 evaluates the permissives and the Start/Hold branches, then writes RUN_REQ=${m.runReq ? 1 : 0}. Rung 2 reads that value and writes MOTOR_RUN=${m.motor ? 1 : 0}.`;
+        const outputSummary = m.motor
+          ? "The output module receives an ON command for the motor-control circuit. A separate feedback input would be needed to prove that the physical motor is rotating."
+          : "The output module receives an OFF command for the motor-control circuit.";
+        els.scanStory.innerHTML = `
+          <div class="scan-card"><b>1 · Read inputs</b><span>${esc(inputSummary)}</span></div>
+          <div class="scan-card"><b>2 · Solve rungs in order</b><span>${esc(rungOneSummary)}</span></div>
+          <div class="scan-card"><b>3 · Update outputs</b><span>${esc(outputSummary)}</span></div>`;
+      }
+
+      function renderRung() {
+        const titles = ["Rung 1 · Permissives and holding circuit", "Rung 2 · Motor output command", "Rung 3 · Running indication command"];
+        const svgs = [rungOneSvg, rungTwoSvg, rungThreeSvg];
+        const result = currentRungResult();
+        els.rungTitle.textContent = titles[state.rung];
+        els.rungCounter.textContent = `Rung ${state.rung + 1} of 3`;
+        els.rungResult.textContent = result ? "TRUE rung result" : "FALSE rung result";
+        els.ladderScroll.innerHTML = svgs[state.rung]();
+        els.previousRung.disabled = state.rung === 0;
+        els.nextRung.disabled = state.rung === 2;
+        els.scrollCue.hidden = state.rung === 2;
+      }
+
+      function renderTestContext() {
+        if (state.stage !== 3) {
+          els.testContext.innerHTML = "";
+          return;
+        }
+        const test = testCases[state.testIndex];
+        const passedCount = state.testPassed.filter(Boolean).length;
+        els.testContext.innerHTML = `
+          <div class="test-context" aria-label="Current test case">
+            <div><span>Test case</span><strong>${esc(test.name)}</strong></div>
+            <div><span>Completed</span><strong>${passedCount} of ${testCases.length}</strong></div>
+          </div>
+          <p>${esc(test.description)}</p>`;
+      }
+
+      function renderAnswers() {
+        const task = tasks[state.stage];
+        const selected = state.stage === 3 ? state.testSelected : state.selected;
+        const options = task.options;
+        els.answerArea.innerHTML = `
+          <fieldset>
+            <legend>${state.stage === 3 ? "Predict the MOTOR_RUN command bit" : "Choose one answer"}</legend>
+            <div class="answer-grid">
+              ${options.map(option => `
+                <button type="button"
+                  class="btn viz-tile${selected === option[0] ? " is-selected" : ""}"
+                  data-answer="${esc(option[0])}"
+                  aria-pressed="${selected === option[0] ? "true" : "false"}">
+                  ${esc(option[1])}
+                </button>`).join("")}
+            </div>
+          </fieldset>`;
+      }
+
+      function defaultCoach() {
+        if (state.completed[state.stage]) {
+          if (state.stage === 3) return "All required operating cases are complete. Review the TRUE instruction paths and the values written by the coils, then continue.";
+          return "This task is complete. You can review the rungs or continue to the next task.";
+        }
+        if (state.stage === 3) {
+          return "Predict first. After you check, compare your answer with the live bit values and TRUE/FALSE rung results.";
+        }
+        return "Separate the physical device, stored PLC tag and software instruction. Then evaluate the rung from left to right.";
+      }
+
+      function render() {
+        if (state.finished) {
+          renderCompletion();
+          reportHeight();
+          return;
+        }
+        const task = tasks[state.stage];
+        els.work.hidden = false;
+        els.completionPanel.hidden = true;
+        els.step.textContent = `Task ${state.stage + 1} of ${tasks.length}`;
+        els.progress.value = state.stage + 1;
+        els.score.textContent = `Score ${state.score}/${MAX_SCORE}`;
+        els.taskHeading.textContent = task.title;
+        els.taskCopy.textContent = task.copy;
+        els.coachCopy.textContent = state.coach || defaultCoach();
+        state.rung = Math.max(0, Math.min(2, state.rung));
+        renderTestContext();
+        renderStateStrip();
+        renderScanStory();
+        renderRung();
+        renderAnswers();
+
+        const hasSelection = state.stage === 3 ? Boolean(state.testSelected) : Boolean(state.selected);
+        els.checkButton.disabled = state.completed[state.stage] || !hasSelection || (state.stage === 3 && state.testReadyNext);
+        els.checkButton.textContent = "Check answer";
+        if (state.stage === 3 && state.testReadyNext && !state.completed[3]) {
+          els.checkButton.disabled = false;
+          els.checkButton.textContent = "Next test case";
+        } else if (state.completed[state.stage]) {
+          els.checkButton.textContent = "Task complete";
+        }
+        els.hintButton.textContent = state.hints[state.stage] ? "Hint shown" : "Show a hint";
+        els.hintButton.disabled = state.completed[state.stage] || state.attempts[state.stage] < 1 || state.hints[state.stage];
+        els.backButton.disabled = state.stage === 0;
+        els.nextButton.disabled = !state.completed[state.stage];
+        els.nextButton.textContent = state.stage === tasks.length - 1 ? "Finish exercise" : "Next task";
+        saveState();
+        reportHeight();
+      }
+
+      function pointsForAttempt(stage, attempt) {
+        if (stage === 0) return attempt === 1 ? 2 : 1;
+        if (stage === 2) return Math.max(1, 4 - attempt);
+        return attempt === 1 ? taskPoints[stage] : 0;
+      }
+
+      function award(stage, points) {
+        if (state.completed[stage]) return;
+        state.completed[stage] = true;
+        state.awarded[stage] = points;
+        state.score = state.awarded.reduce((total, value) => total + value, 0);
+      }
+
+      function checkRegularTask() {
+        const task = tasks[state.stage];
+        if (!state.selected) return;
+        state.attempts[state.stage] += 1;
+        if (state.selected === task.correct) {
+          state.answers[state.stage] = state.selected;
+          const points = pointsForAttempt(state.stage, state.attempts[state.stage]);
+          award(state.stage, points);
+          const feedback = [
+            "Correct. The ordinary coil first writes RUN_REQ = 1. On the following scan, the RUN_REQ contact reads that stored 1 and keeps the branch TRUE after START_PB is released, while every required permissive remains TRUE.",
+            "Correct. The MOTOR_RUN ordinary coil is the writing instruction. The RUN_REQ contact on the left reads stored data; it does not write the motor command.",
+            "Correct. The ordinary coil writes the current rung result whenever Rung 2 is solved. When RUN_REQ = 0, it writes MOTOR_RUN = 0; the physical channel changes during output update.",
+            "",
+            "Correct. OL_OK is the first FALSE test. RUN_REQ, MOTOR_RUN and RUN_LAMP becoming 0 are downstream results.",
+            "Correct. An ordinary coil follows the rung result. A retained SET instruction would keep the bit at 1 until separate reset logic executed, which is inappropriate for this direct motor command."
+          ];
+          state.coach = `${feedback[state.stage]} ${points} point${points === 1 ? "" : "s"} earned.`;
+          els.srStatus.textContent = "Correct answer.";
+        } else {
+          const feedback = [
+            "START_PB is only the initial path. The RUN_REQ holding contact reads the stored RUN_REQ bit and maintains the branch after START_PB is released.",
+            "The MOTOR_RUN ordinary coil at the right writes the rung result. Contacts and the left rail do not write MOTOR_RUN.",
+            "The correct instruction is an ordinary coil because it writes 0 automatically when the rung becomes false.",
+            "",
+            "OL_OK is the first false permissive. RUN_REQ, MOTOR_RUN and RUN_LAMP are downstream results.",
+            "An ordinary coil follows the rung result. A retained SET instruction would require separate reset logic."
+          ];
+          if(state.attempts[state.stage] >= 3){
+            award(state.stage,0);
+            state.answers[state.stage] = task.correct;
+            state.selected = task.correct;
+            state.coach = `Attempt limit reached. Correct explanation: ${feedback[state.stage]}`;
+            els.srStatus.textContent = "Attempt limit reached. Correct explanation displayed.";
+          }else{
+            state.coach = "Not yet. Review the rung and try again. A hint is now available.";
+            els.srStatus.textContent = "Answer not correct yet.";
+          }
+        }
+        render();
+      }
+
+      function checkTestCase() {
+        if (state.testReadyNext) {
+          state.testIndex += 1;
+          state.testSelected = "";
+          state.testReadyNext = false;
+          state.coach = "";
+          applyTestCase(state.testIndex);
+          state.rung = 0;
+          render();
+          return;
+        }
+        const test = testCases[state.testIndex];
+        if (!test || !state.testSelected) return;
+        applyTestCase(state.testIndex);
+        state.attempts[3] += 1;
+        const actual = state.mem.motor ? "on" : "off";
+        if (state.testSelected === test.expected && actual === test.expected) {
+          state.testPassed[state.testIndex] = true;
+          state.coach = `Correct. ${test.reason} Remember: MOTOR_RUN = 1 is a PLC output command, not proof that the physical motor is rotating.`;
+          els.srStatus.textContent = `Test ${state.testIndex + 1} correct.`;
+          if (state.testPassed.every(Boolean)) {
+            const points = state.testErrors === 0 ? 2 : state.testErrors <= 2 ? 1 : 0;
+            award(3, points);
+            state.answers[3] = `${state.testPassed.filter(Boolean).length}/${testCases.length} tests`;
+            state.coach += ` All ${testCases.length} tests are complete. ${points} point${points === 1 ? "" : "s"} earned.`;
+            state.testReadyNext = false;
+          } else {
+            state.testReadyNext = true;
+          }
+        } else {
+          state.testErrors += 1;
+          state.coach = `The PLC command result is MOTOR_RUN = ${actual.toUpperCase()}. ${test.reason}`;
+          els.srStatus.textContent = `Test ${state.testIndex + 1} needs another answer.`;
+        }
+        render();
+      }
+
+      function goToStage(index) {
+        state.stage = Math.max(0, Math.min(tasks.length - 1, index));
+        state.rung = tasks[state.stage].rung;
+        state.selected = state.answers[state.stage] || "";
+        state.testSelected = "";
+        state.testReadyNext = false;
+        state.coach = "";
+        prepareStage(state.stage);
+        render();
+        root.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function finishExercise() {
+        state.finished = true;
+        saveState();
+        notifyParent("complete", {
+          passed: state.score >= 8,
+          percentage: Math.round((state.score / MAX_SCORE) * 100),
+          evidence: state.awarded.slice()
+        });
+        renderCompletion();
+      }
+
+      function resultText() {
+        const status = state.score >= 8 ? "Mastery achieved" : "Further practice recommended";
+        return [
+          "Conveyor Holding Circuit and Permissive Exercise",
+          `Result: ${state.score}/${MAX_SCORE} (${Math.round((state.score / MAX_SCORE) * 100)}%)`,
+          `Status: ${status}`,
+          `Tasks completed: ${state.completed.filter(Boolean).length}/${tasks.length}`,
+          `Operating tests: ${state.testPassed.filter(Boolean).length}/${testCases.length}`
+        ].join("\n");
+      }
+
+      function renderCompletion() {
+        els.work.hidden = true;
+        els.completionPanel.hidden = false;
+        els.step.textContent = "Complete";
+        els.progress.value = tasks.length;
+        els.score.textContent = `Score ${state.score}/${MAX_SCORE}`;
+        els.completionScore.textContent = `${state.score}/${MAX_SCORE}`;
+        els.completionMessage.textContent = state.score >= 8
+          ? "Mastery achieved. You correctly connected physical input meanings, stored bit values, contact tests, rung results, ordinary-coil writes and output commands."
+          : "Further practice is recommended. Retry the exercise and separate the physical device, stored tag, software test and coil write at each step.";
+        els.summaryBody.innerHTML = tasks.map((task, index) => `
+          <tr>
+            <td>${esc(task.title)}</td>
+            <td>${state.awarded[index]}/${taskPoints[index]}</td>
+          </tr>`).join("");
+        reportHeight();
+      }
+
+      root.addEventListener("click", event => {
+        const answer = event.target.closest("[data-answer]");
+        if (answer) {
+          const value = answer.getAttribute("data-answer") || "";
+          if (state.stage === 3) {
+            if (!state.testReadyNext) state.testSelected = value;
+          } else if (!state.completed[state.stage]) {
+            state.selected = value;
+          }
+          state.coach = "";
+          render();
+          return;
+        }
+      });
+
+      els.previousRung.addEventListener("click", () => {
+        if (state.rung > 0) {
+          state.rung -= 1;
+          render();
+        }
+      });
+
+      els.nextRung.addEventListener("click", () => {
+        if (state.rung < 2) {
+          state.rung += 1;
+          render();
+        }
+      });
+
+      els.hintButton.addEventListener("click", () => {
+        if(state.attempts[state.stage] < 1 || state.completed[state.stage] || state.hints[state.stage]) return;
+        state.hints[state.stage] = true;
+        state.coach = `Hint: ${tasks[state.stage].hint}`;
+        render();
+      });
+
+      els.checkButton.addEventListener("click", () => {
+        if (state.stage === 3) checkTestCase();
+        else checkRegularTask();
+      });
+
+      els.backButton.addEventListener("click", () => {
+        if (state.stage > 0) goToStage(state.stage - 1);
+      });
+
+      els.nextButton.addEventListener("click", () => {
+        if (!state.completed[state.stage]) return;
+        if (state.stage === tasks.length - 1) finishExercise();
+        else goToStage(state.stage + 1);
+      });
+
+      els.copyResult.addEventListener("click", async () => {
+        const text = resultText();
+        try {
+          await navigator.clipboard.writeText(text);
+          els.copyResult.textContent = "Result copied";
+        } catch (error) {
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          root.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          textarea.remove();
+          els.copyResult.textContent = "Result copied";
+        }
+      });
+
+      els.restartExercise.addEventListener("click", () => {
+        state = freshState();
+        prepareStage(0);
+        render();
+      });
+
+      if (!state.finished) {
+        prepareStage(state.stage);
+        if (!state.coach) state.coach = defaultCoach();
+      }
+      render();
+      notifyParent("ready");
+
+      if ("ResizeObserver" in window) {
+        const resizeObserver = new ResizeObserver(reportHeight);
+        resizeObserver.observe(root);
+      }
+      window.addEventListener("load", reportHeight);
+    })();
+  </script>
+</main>
+
+</body>
+</html>
