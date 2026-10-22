@@ -824,6 +824,7 @@ svg {
   <section class="card" id="assessmentContract" aria-label="Assessment constraints">
     <p class="section-label">Assessment constraints</p>
     <p style="margin:0"><b>Complete tasks in order.</b> A hint becomes available only after the first failed attempt. After three incorrect attempts, the correct explanation is shown and the task receives zero points.</p>
+    <p class="section-question" style="margin:6px 0 0">Answers: <em>What rules decide my score?</em> Points per task are listed under “How is my score calculated?” next to the score bar. While a question is open, any live value that would give the answer away is shown as “?”.</p>
   </section>
 
   <style>
@@ -1122,11 +1123,308 @@ svg {
       #conveyor-safety-ladder-exercise .ladder-hot,
       #conveyor-safety-ladder-exercise .symbol-mark{transition:stroke .18s ease,stroke-width .18s ease}
     }
+
+    /* ---- Explicit questions, explanations and whole-picture panels ---- */
+    #conveyor-safety-ladder-exercise [hidden]{display:none!important}
+    #conveyor-safety-ladder-exercise .section-question{
+      margin:2px 0 8px;
+      color:color-mix(in srgb,var(--foreground) 74%,transparent);
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+    }
+    #conveyor-safety-ladder-exercise .section-question em{font-style:italic}
+    #conveyor-safety-ladder-exercise .mini-heading{
+      margin:12px 0 6px;
+      font-size:var(--font-size-normal);
+      font-weight:600;
+    }
+    #conveyor-safety-ladder-exercise abbr[title]{text-decoration:underline dotted;cursor:help}
+    #conveyor-safety-ladder-exercise .question-panel{border-inline-start:5px solid var(--primary)}
+    #conveyor-safety-ladder-exercise .main-question{margin:0 0 4px;line-height:1.3}
+    #conveyor-safety-ladder-exercise .subq-list{
+      display:grid;
+      gap:6px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+    #conveyor-safety-ladder-exercise .subq{
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr);
+      gap:4px 10px;
+      align-items:start;
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      background:var(--secondary);
+    }
+    #conveyor-safety-ladder-exercise .subq.is-current{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+    #conveyor-safety-ladder-exercise .subq-num{
+      display:inline-grid;
+      place-items:center;
+      width:26px;
+      height:26px;
+      border-radius:var(--radius-full);
+      background:var(--muted);
+      font-weight:600;
+    }
+    #conveyor-safety-ladder-exercise .subq.is-answered .subq-num{background:color-mix(in srgb,var(--green) 22%,transparent)}
+    #conveyor-safety-ladder-exercise .subq.is-current .subq-num{background:var(--accent);color:var(--accent-foreground)}
+    #conveyor-safety-ladder-exercise .subq-body{min-width:0}
+    #conveyor-safety-ladder-exercise .subq-body p{margin:0}
+    #conveyor-safety-ladder-exercise .subq-answer{margin-top:4px!important;font-size:var(--font-size-small);line-height:var(--line-height-small)}
+    #conveyor-safety-ladder-exercise .subq-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
+    #conveyor-safety-ladder-exercise .status-pill{
+      display:inline-block;
+      padding:1px 8px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-full);
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+      font-weight:500;
+      white-space:normal;
+    }
+    #conveyor-safety-ladder-exercise .status-pill.is-answered{border-color:color-mix(in srgb,var(--green) 55%,transparent);color:var(--green)}
+    #conveyor-safety-ladder-exercise .status-pill.is-current{border-color:var(--primary);color:var(--accent-foreground);background:var(--accent)}
+    #conveyor-safety-ladder-exercise .status-pill.is-locked{color:var(--muted-foreground)}
+    #conveyor-safety-ladder-exercise .qp-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:4px 18px;
+    }
+    #conveyor-safety-ladder-exercise .qp-grid ul,
+    #conveyor-safety-ladder-exercise .qp-grid ol,
+    #conveyor-safety-ladder-exercise .plain-list{margin:0;padding-inline-start:20px}
+    #conveyor-safety-ladder-exercise .qp-grid li,
+    #conveyor-safety-ladder-exercise .plain-list li{margin-block:3px}
+    #conveyor-safety-ladder-exercise details > summary{
+      cursor:pointer;
+      font-weight:600;
+      padding-block:4px;
+    }
+    #conveyor-safety-ladder-exercise details > summary:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:var(--radius-sm)}
+    #conveyor-safety-ladder-exercise .qp-details{margin-top:10px;padding-top:6px;border-top:1px solid var(--border)}
+    #conveyor-safety-ladder-exercise .q-box{
+      margin-top:10px;
+      padding:10px 12px;
+      border-inline-start:4px solid var(--primary);
+      border-radius:var(--radius-lg);
+      background:var(--accent);
+      color:var(--foreground);
+    }
+    #conveyor-safety-ladder-exercise .q-box p{margin:0}
+    #conveyor-safety-ladder-exercise .q-box .q-text{font-size:calc(var(--font-size-normal) * 1.08);font-weight:500}
+    #conveyor-safety-ladder-exercise .given-list{
+      display:grid;
+      grid-template-columns:minmax(0,max-content) minmax(0,1fr);
+      gap:3px 12px;
+      margin:8px 0 0;
+    }
+    #conveyor-safety-ladder-exercise .given-list dt{color:color-mix(in srgb,var(--foreground) 74%,transparent)}
+    #conveyor-safety-ladder-exercise .given-list dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+    #conveyor-safety-ladder-exercise .look-line{margin-top:8px!important;font-size:var(--font-size-small);line-height:var(--line-height-small)}
+    #conveyor-safety-ladder-exercise .state-item small{
+      display:block;
+      margin-top:2px;
+      color:color-mix(in srgb,var(--foreground) 70%,transparent);
+      font-size:11px;
+      line-height:1.3;
+    }
+    #conveyor-safety-ladder-exercise .state-item.is-hidden strong{color:var(--primary)}
+    #conveyor-safety-ladder-exercise .strip-head .section-label{margin-bottom:0}
+    #conveyor-safety-ladder-exercise .ladder-part.is-unknown{color:var(--foreground)}
+    #conveyor-safety-ladder-exercise .unknown-mark{fill:var(--primary);font-weight:600;text-anchor:middle}
+    #conveyor-safety-ladder-exercise .ladder-note{
+      margin:6px 0 0;
+      padding:6px 10px;
+      border-inline-start:4px solid var(--primary);
+      border-radius:var(--radius-lg);
+      background:var(--accent);
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+    }
+    #conveyor-safety-ladder-exercise .chain{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:8px;
+      margin:0;
+      padding:0;
+      list-style:none;
+      counter-reset:chain;
+    }
+    #conveyor-safety-ladder-exercise .chain li{
+      position:relative;
+      min-width:0;
+      padding:8px 9px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      background:var(--secondary);
+      counter-increment:chain;
+    }
+    #conveyor-safety-ladder-exercise .chain li b{display:block;color:var(--primary)}
+    #conveyor-safety-ladder-exercise .chain li b::before{content:counter(chain) " · "}
+    #conveyor-safety-ladder-exercise .chain li span{display:block;font-size:var(--font-size-small);line-height:var(--line-height-small);overflow-wrap:anywhere}
+    #conveyor-safety-ladder-exercise .chain-note{margin:8px 0 0;font-size:var(--font-size-small);line-height:var(--line-height-small)}
+    #conveyor-safety-ladder-exercise .glossary-list{margin:8px 0 0;display:grid;gap:0}
+    #conveyor-safety-ladder-exercise .glossary-list > div{padding-block:7px;border-bottom:1px solid var(--border)}
+    #conveyor-safety-ladder-exercise .glossary-list > div:last-child{border-bottom:0}
+    #conveyor-safety-ladder-exercise .glossary-list dt{font-weight:600}
+    #conveyor-safety-ladder-exercise .glossary-list dd{margin:2px 0 0}
+    #conveyor-safety-ladder-exercise .glossary-list .is-locked dd{color:var(--muted-foreground);font-style:italic}
+    #conveyor-safety-ladder-exercise .score-explain > summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+    #conveyor-safety-ladder-exercise .score-table{width:100%;border-collapse:collapse;margin-top:6px}
+    #conveyor-safety-ladder-exercise .score-table th,
+    #conveyor-safety-ladder-exercise .score-table td{
+      padding:6px 8px 6px 0;
+      border-bottom:1px solid var(--border);
+      text-align:left;
+      vertical-align:top;
+      font-size:var(--font-size-small);
+      line-height:var(--line-height-small);
+    }
+    #conveyor-safety-ladder-exercise .score-table td:last-child,
+    #conveyor-safety-ladder-exercise .score-table th:last-child{text-align:right;padding-right:0;white-space:nowrap}
+    #conveyor-safety-ladder-exercise .resolution-card{border-inline-start:5px solid var(--green)}
+    #conveyor-safety-ladder-exercise .resolution-card h3{margin:0 0 2px}
+    #conveyor-safety-ladder-exercise .result-line{margin:0 0 8px;font-weight:500}
+    #conveyor-safety-ladder-exercise .model-answer{
+      margin:0;
+      padding:9px 11px;
+      border-radius:var(--radius-lg);
+      background:color-mix(in srgb,var(--green) 10%,transparent);
+    }
+    #conveyor-safety-ladder-exercise .option-review{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+    #conveyor-safety-ladder-exercise .option-review li{
+      padding:7px 10px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      background:var(--secondary);
+    }
+    #conveyor-safety-ladder-exercise .option-review li.is-correct{border-color:color-mix(in srgb,var(--green) 60%,transparent)}
+    #conveyor-safety-ladder-exercise .verdict{font-weight:600}
+    #conveyor-safety-ladder-exercise .is-correct .verdict{color:var(--green)}
+    #conveyor-safety-ladder-exercise .is-wrong .verdict{color:var(--destructive)}
+    #conveyor-safety-ladder-exercise .option-review span.why{display:block;margin-top:2px;font-size:var(--font-size-small);line-height:var(--line-height-small)}
+    #conveyor-safety-ladder-exercise .timing-scroll{
+      width:100%;
+      min-width:0;
+      overflow-x:auto;
+      overscroll-behavior-x:contain;
+      padding-block:4px;
+    }
+    #conveyor-safety-ladder-exercise .timing-scroll svg{max-width:none;color:var(--foreground)}
+    #conveyor-safety-ladder-exercise .tl-grid{stroke:var(--border);stroke-width:1}
+    #conveyor-safety-ladder-exercise .tl-base{stroke:color-mix(in srgb,var(--foreground) 18%,transparent);stroke-width:1;stroke-dasharray:2 3}
+    #conveyor-safety-ladder-exercise .tl-wave{fill:none;stroke:var(--primary);stroke-width:2.5;stroke-linejoin:round}
+    #conveyor-safety-ladder-exercise .tl-wave.is-output{stroke:var(--green)}
+    #conveyor-safety-ladder-exercise .tl-wave.is-whatif{stroke:var(--destructive);stroke-dasharray:6 4}
+    #conveyor-safety-ladder-exercise .tl-cursor{fill:var(--accent);stroke:var(--primary);stroke-width:1.5}
+    #conveyor-safety-ladder-exercise .tl-label{fill:var(--foreground);font-size:11px;font-family:var(--font-mono)}
+    #conveyor-safety-ladder-exercise .tl-head{fill:var(--foreground);font-size:11px;text-anchor:middle;font-weight:600}
+    #conveyor-safety-ladder-exercise .tl-sub{fill:var(--primary);font-size:9.5px;text-anchor:middle;font-weight:600}
+    #conveyor-safety-ladder-exercise .tl-val{fill:color-mix(in srgb,var(--foreground) 62%,transparent);font-size:9.5px;text-anchor:middle}
+    #conveyor-safety-ladder-exercise .tl-axis{fill:color-mix(in srgb,var(--foreground) 70%,transparent);font-size:10px}
+    #conveyor-safety-ladder-exercise .replay-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0}
+    #conveyor-safety-ladder-exercise .replay-controls .replay-label{flex:1 1 180px;min-width:0;font-weight:500}
+    #conveyor-safety-ladder-exercise .case-picker{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+    #conveyor-safety-ladder-exercise .case-picker .btn{white-space:normal}
+    #conveyor-safety-ladder-exercise .narrative{margin:4px 0 0;padding-inline-start:22px}
+    #conveyor-safety-ladder-exercise .narrative li{margin-block:4px;overflow-wrap:anywhere}
+    #conveyor-safety-ladder-exercise .narrative .tests{display:block;margin-top:2px;font-size:var(--font-size-small);line-height:var(--line-height-small)}
+    #conveyor-safety-ladder-exercise .chg{
+      padding:0 5px;
+      border-radius:var(--radius-sm);
+      background:color-mix(in srgb,var(--primary) 16%,transparent);
+      font-weight:600;
+      white-space:nowrap;
+    }
+    #conveyor-safety-ladder-exercise .keep{font-style:italic;color:color-mix(in srgb,var(--foreground) 80%,transparent)}
+    #conveyor-safety-ladder-exercise .lesson-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
+    #conveyor-safety-ladder-exercise .mistake-box{
+      margin-top:12px;
+      padding:9px 10px;
+      border-inline-start:4px solid var(--destructive);
+      border-radius:var(--radius-lg);
+      background:color-mix(in srgb,var(--destructive) 10%,transparent);
+    }
+    #conveyor-safety-ladder-exercise .mistake-box strong{display:block;color:var(--destructive)}
+    #conveyor-safety-ladder-exercise .mistake-box p{margin:2px 0 0}
+    #conveyor-safety-ladder-exercise .locked-note{margin:0;padding:9px 10px;border:1px dashed var(--border);border-radius:var(--radius-lg)}
+    #conveyor-safety-ladder-exercise .final-review{display:grid;gap:8px;margin:6px 0 0;padding:0;list-style:none}
+    #conveyor-safety-ladder-exercise .final-review > li{
+      padding:9px 11px;
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      background:var(--secondary);
+    }
+    #conveyor-safety-ladder-exercise .final-review h4{margin:0 0 4px;font-size:var(--font-size-normal);font-weight:600}
+    #conveyor-safety-ladder-exercise .final-review dl{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);gap:3px 12px;margin:0}
+    #conveyor-safety-ladder-exercise .final-review dt{color:color-mix(in srgb,var(--foreground) 74%,transparent)}
+    #conveyor-safety-ladder-exercise .final-review dd{margin:0;overflow-wrap:anywhere}
+    #conveyor-safety-ladder-exercise .end-summary{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+    #conveyor-safety-ladder-exercise .end-summary .main-answer{margin:4px 0 8px}
+    #conveyor-safety-ladder-exercise .summary-table small{display:block;color:color-mix(in srgb,var(--foreground) 74%,transparent)}
+    @media (max-width:700px){
+      #conveyor-safety-ladder-exercise .chain{grid-template-columns:repeat(2,minmax(0,1fr))}
+      #conveyor-safety-ladder-exercise .qp-grid,
+      #conveyor-safety-ladder-exercise .lesson-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:460px){
+      #conveyor-safety-ladder-exercise .given-list,
+      #conveyor-safety-ladder-exercise .final-review dl{grid-template-columns:1fr}
+      #conveyor-safety-ladder-exercise .given-list dd,
+      #conveyor-safety-ladder-exercise .final-review dd{margin-bottom:4px}
+      #conveyor-safety-ladder-exercise .replay-controls .btn{flex:1 1 100px}
+    }
   </style>
+
+  <section class="card question-panel" id="questionPanel" aria-labelledby="mainQuestionHeading">
+    <p class="section-label">What question does this exercise answer?</p>
+    <h2 id="mainQuestionHeading" class="main-question">How do a holding contact and three healthy-state permissives decide, scan by scan, whether the PLC commands the conveyor motor ON?</h2>
+    <p class="section-question">Each task below answers one part of this question. A part is marked <b>Answered</b> once you resolve its task (correct answer, or three attempts used).</p>
+    <h3 class="mini-heading">Sub-questions, one per task</h3>
+    <ol class="subq-list" id="subQuestionList" aria-label="Sub-questions and their status"></ol>
+    <p class="text-small" id="mainQuestionStatus" style="margin:6px 0 0"></p>
+    <div class="qp-grid">
+      <div>
+        <h3 class="mini-heading">By the end you can…</h3>
+        <ul>
+          <li>Trace one PLC scan for this conveyor as READ inputs → SOLVE Rungs 1, 2, 3 → UPDATE outputs.</li>
+          <li>Predict the <code>MOTOR_RUN</code> command for a start, a release, a stop, an open guard, an overload trip and an overload reset.</li>
+          <li>Point to the instruction on a rung that writes a bit, and to the ones that only test bits.</li>
+          <li>Choose a coil type for a motor command and justify the choice.</li>
+          <li>Separate the cause of a stop from its downstream symptoms.</li>
+          <li>Explain why <code>MOTOR_RUN = 1</code> is a command, not proof that the motor turns.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="mini-heading">How to use this page (about 25 minutes)</h3>
+        <ol>
+          <li>Read the sub-questions above and the big-picture chain below (3 min).</li>
+          <li>For each task, read the <b>Question</b>, the <b>Given</b> values and <b>Where to look</b> (1 min).</li>
+          <li>Study the PLC data table and the ladder, choose an answer, then press <b>Check answer</b> (2 min).</li>
+          <li>If you miss, open the hint (it unlocks after the first miss) and try again.</li>
+          <li>When the task is resolved, read the model answer and step through the scan replay before pressing <b>Next task</b> (2 min).</li>
+          <li>At the end, review every question with your result and the correct answer (3 min).</li>
+        </ol>
+      </div>
+    </div>
+    <details class="qp-details">
+      <summary>What you should already know (one-line refreshers)</summary>
+      <ul class="plain-list">
+        <li><b>Bit:</b> a Boolean tag holds 0 or 1.</li>
+        <li><b><abbr title="normally open">N.O.</abbr> contact:</b> a software test that is TRUE when its bit is 1.</li>
+        <li><b>Series and parallel:</b> instructions in series must all be TRUE (AND); parallel branches need at least one TRUE branch (OR).</li>
+        <li><b>Scan cycle:</b> the PLC reads all inputs, solves the rungs from top to bottom, then updates the outputs, and repeats.</li>
+      </ul>
+    </details>
+    <p class="text-small" style="margin:8px 0 0"><a href="#bigPicture">Big picture ↓</a> · <a href="#glossaryPanel">Glossary ↓</a> · <a href="#taskCard">Current task ↓</a></p>
+  </section>
 
   <section class="card intro-card" aria-labelledby="exerciseIntroHeading">
     <p class="section-label">Practice environment</p>
     <h1 id="exerciseIntroHeading">Conveyor holding circuit and permissives</h1>
+    <p class="section-question">Answers: <em>What is this exercise about, and which layers (device, bit, instruction, command) must I keep apart?</em></p>
     <p>Apply an IF–THEN rule as PLC data and ladder instructions. The exercise separates the physical buttons, stored bits, contact tests, rung results, coil writes and output commands.</p>
     <div class="concept-strip" aria-label="Core concept guide">
       <div class="concept-item"><strong>Physical input</strong><span>A push button or field device changes an electrical input signal.</span></div>
@@ -1140,30 +1438,69 @@ svg {
     </div>
   </section>
 
+  <section class="card" id="bigPicture" aria-labelledby="bigPictureHeading">
+    <p class="section-label">Big picture</p>
+    <h2 id="bigPictureHeading">From push button to conveyor motor</h2>
+    <p class="section-question">Answers: <em>How does a physical button press become a motor command in this conveyor, and where does each tag live?</em> Follow the steps 1 → 8.</p>
+    <ol class="chain" aria-label="Signal chain from field device to actuator">
+      <li><b>Field device</b><span>Momentary Start <abbr title="push button">PB</abbr> (N.O.). Stop PB is wired <abbr title="normally closed">N.C.</abbr>, so its circuit is closed until pressed. Guard switch and <abbr title="overload">OL</abbr> relay are closed while healthy.</span></li>
+      <li><b>Input module</b><span>Each 24 V input channel becomes 1 (voltage present) or 0 (no voltage).</span></li>
+      <li><b>Input image (READ)</b><span>At the start of every scan the PLC copies the channels into <code>START_PB</code>, <code>STOP_OK</code>, <code>GUARD_OK</code>, <code>OL_OK</code>.</span></li>
+      <li><b>Instructions (SOLVE)</b><span>N.O. contacts on Rung 1 test those bits and the internal <code>RUN_REQ</code> bit; series = AND, parallel = OR.</span></li>
+      <li><b>Rung result</b><span>TRUE only if a complete TRUE path joins the left rail to the right-hand instruction.</span></li>
+      <li><b>Data written</b><span><code>RUN_REQ</code> (internal memory) on Rung 1, then <code>MOTOR_RUN</code> on Rung 2, then <code>RUN_LAMP</code> on Rung 3 — in that order, in the same scan.</span></li>
+      <li><b>Output image → module (UPDATE)</b><span>After all rungs are solved, <code>MOTOR_RUN</code> and <code>RUN_LAMP</code> are sent to the output channels.</span></li>
+      <li><b>Actuator</b><span>The motor contactor coil pulls in and the conveyor motor starts; the running lamp lights.</span></li>
+    </ol>
+    <p class="chain-note"><b>Two meanings of “normally”.</b> The physical Stop button is normally closed (N.C.), so <code>STOP_OK = 1</code> while nobody presses it. The software contact that tests <code>STOP_OK</code> is normally open (N.O.): it is TRUE while the bit is 1. A broken wire also gives 0, the same value as a pressed Stop button; that is why the exercise uses positive healthy-state tags.</p>
+    <p class="chain-note"><b>Command, not proof.</b> <code>MOTOR_RUN = 1</code> only commands the output. Proving that the motor turns needs a feedback input, such as a contactor auxiliary contact or a speed sensor, which this exercise does not have.</p>
+  </section>
+
   <div class="exercise-meta" aria-label="Exercise progress">
     <span id="exerciseStep" class="viz-badge">Task 1 of 6</span>
     <progress id="exerciseProgress" max="6" value="1" aria-label="Exercise progress"></progress>
     <span id="exerciseScore" class="viz-badge">Score 0/10</span>
   </div>
 
-  <section class="card" aria-labelledby="taskHeading">
+  <details class="card score-explain" id="scoreExplain">
+    <summary><span>How is my score calculated?</span><span class="text-small text-muted" id="scoreExplainSummary"></span></summary>
+    <p class="section-question">Answers: <em>What does the score mean, which points have I earned or lost, and what is still possible?</em></p>
+    <div class="table-responsive">
+      <table class="score-table" aria-label="Points per task">
+        <thead><tr><th scope="col">Task</th><th scope="col">How points are earned</th><th scope="col">Status</th><th scope="col">Points</th></tr></thead>
+        <tbody id="scoreExplainBody"></tbody>
+      </table>
+    </div>
+    <p class="text-small" id="scoreExplainNote" style="margin:8px 0 0"></p>
+  </details>
+
+  <section class="card" id="taskCard" aria-labelledby="taskHeading">
     <p class="section-label">Task</p>
     <h2 id="taskHeading" class="task-heading">Predict the holding circuit</h2>
+    <p class="section-question">Answers: <em>What exactly am I asked, what is given, and where is the evidence?</em></p>
     <p id="taskCopy" class="task-copy"></p>
     <div id="testContext"></div>
+    <div id="taskQuestion"></div>
   </section>
 
   <section class="card" aria-labelledby="coachHeading">
     <p class="section-label" id="coachHeading">Coach</p>
+    <p class="section-question">Answers: <em>What does the result of my last action mean, and what should I do next?</em></p>
     <p id="coachCopy" class="coach-copy" aria-live="polite"></p>
   </section>
 
   <div id="exerciseWork">
+    <div class="strip-head">
+      <p class="section-label">PLC data table for this scan</p>
+      <p class="section-question">Answers: <em>Which bit values does the PLC hold on this scan, and what does each value mean physically?</em></p>
+    </div>
     <div class="state-strip" id="stateStrip" aria-label="Live PLC state"></div>
 
     <section class="card scan-model" aria-labelledby="scanModelHeading">
       <h3 id="scanModelHeading">What the PLC does during the current scan</h3>
-      <p>The holding contact does not receive a special signal from the coil. The ordinary coil writes <code>RUN_REQ</code>; the contact reads the same stored bit when the rung is evaluated again.</p>
+      <p class="section-question">Answers: <em>In which order does the PLC read the inputs, solve the three rungs and update the outputs on this scan?</em></p>
+      <p id="scanModelNote" hidden>The holding contact does not receive a special signal from the coil. The ordinary coil writes <code>RUN_REQ</code>; the contact reads the same stored bit when the rung is evaluated again.</p>
+      <p id="scanModelNeutral">Every scan the PLC first READS all inputs into the input image, then SOLVES Rung 1, Rung 2 and Rung 3 in order using stored bit values, then UPDATES the output modules. While a prediction is open, any result that would give the answer away is shown as “?”.</p>
       <div class="scan-story" id="scanStory"></div>
       <p class="logic-legend">Green ladder lines show a TRUE logical path. They do not represent real water or electrical current flowing through the software diagram.</p>
     </section>
@@ -1175,6 +1512,8 @@ svg {
       </div>
       <span class="scroll-cue text-small" id="scrollCue">Swipe rung horizontally if needed ↔</span>
     </div>
+    <p class="section-question" id="ladderQuestion" style="margin:0">Answers: <em>Which instructions are TRUE on this scan, and what does each right-hand instruction store?</em></p>
+    <p class="ladder-note" id="ladderNote" hidden></p>
 
     <div class="ladder-scroll" id="ladderScroll" aria-live="polite"></div>
 
@@ -1191,6 +1530,28 @@ svg {
       <button type="button" class="btn btn-primary" id="checkButton" disabled>Check answer</button>
     </div>
 
+    <section class="card resolution-card" id="resolutionPanel" hidden aria-labelledby="resolutionHeading">
+      <p class="section-label">Answer and explanation</p>
+      <h3 id="resolutionHeading">Model answer</h3>
+      <p class="section-question">Answers: <em>What is the correct answer to this task, and why is each other option wrong?</em></p>
+      <div id="resolutionBody"></div>
+      <div id="replayBlock">
+        <h4 class="mini-heading">Scan replay and timing diagram</h4>
+        <p class="section-question">Answers: <em>What does each signal do scan by scan, and what caused each change?</em> Step through the scans; the narrative below the diagram follows the selected scan.</p>
+        <div class="case-picker" id="replayCases" role="group" aria-label="Choose an operating case to replay"></div>
+        <div class="timing-scroll" id="timingDiagram"></div>
+        <div class="replay-controls" role="group" aria-label="Scan replay controls">
+          <button type="button" class="btn btn-ghost" id="replayPrev">Previous scan</button>
+          <span class="replay-label" id="replayLabel"></span>
+          <button type="button" class="btn btn-ghost" id="replayNext">Next scan</button>
+          <button type="button" class="btn" id="replayAsked">Back to the asked scan</button>
+        </div>
+        <h4 class="mini-heading" id="replayNarrativeHeading">What happened on this scan?</h4>
+        <ol class="narrative" id="replayNarrative" aria-live="polite" aria-labelledby="replayNarrativeHeading"></ol>
+      </div>
+      <div id="resolutionLessons"></div>
+    </section>
+
     <div class="stage-actions">
       <button type="button" class="btn btn-ghost" id="backButton">Previous task</button>
       <button type="button" class="btn btn-primary" id="nextButton" disabled>Next task</button>
@@ -1200,17 +1561,27 @@ svg {
   <section class="card" id="completionPanel" hidden aria-labelledby="completionHeading">
     <p class="section-label">Exercise complete</p>
     <h2 id="completionHeading">Conveyor holding-circuit challenge</h2>
+    <p class="section-question">Answers: <em>How did I do on each question, why did I earn or lose points, and what is the answer to the main question?</em></p>
     <p class="completion-score" id="completionScore">0/10</p>
     <p id="completionMessage"></p>
     <table class="summary-table" aria-label="Exercise result summary">
       <thead><tr><th>Evidence</th><th>Result</th></tr></thead>
       <tbody id="summaryBody"></tbody>
     </table>
+    <h3 class="mini-heading">Question by question</h3>
+    <ol class="final-review" id="finalReview" aria-label="Each question with your result and the correct answer"></ol>
+    <div class="end-summary" id="endSummary"></div>
     <div class="stage-actions">
       <button type="button" class="btn" id="copyResult">Copy result</button>
       <button type="button" class="btn btn-primary" id="restartExercise">Try again</button>
     </div>
   </section>
+
+  <details class="card" id="glossaryPanel">
+    <summary>Glossary — what does each PLC term on this page mean?</summary>
+    <p class="section-question">Answers: <em>What exactly do the PLC words used in this exercise mean?</em> A term that is the answer to a task you have not resolved yet unlocks when that task is resolved.</p>
+    <dl class="glossary-list" id="glossaryList"></dl>
+  </details>
 
   <p class="sr-status" id="screenReaderStatus" aria-live="assertive"></p>
 
@@ -1227,7 +1598,15 @@ svg {
       const tasks = [
         {
           title: "Predict the holding circuit",
-          copy: "STOP_OK, GUARD_OK and OL_OK are healthy. The physical Start button is captured as START_PB = 1 for one input scan, so Rung 1 writes RUN_REQ = 1. START_PB is then released before the next scan. What should the PLC command?",
+          copy: "STOP_OK, GUARD_OK and OL_OK are healthy (1). The physical Start button is captured as START_PB = 1 for one input scan, so Rung 1 writes RUN_REQ = 1. START_PB is then released (0) before the next scan.",
+          question: "On the next scan, with START_PB = 0 and all three permissives still 1, what does the PLC command on MOTOR_RUN?",
+          subQuestion: "After a one-scan Start press is released, what does the PLC command on MOTOR_RUN?",
+          given: [
+            ["Earlier scan", "START_PB = 1 → Rung 1 wrote RUN_REQ = 1"],
+            ["Scan asked about", "START_PB = 0, STOP_OK = 1, GUARD_OK = 1, OL_OK = 1"],
+            ["Stored before that scan", "RUN_REQ = 1"]
+          ],
+          look: "The Given values and the PLC data table (inputs), then Rung 1 in the ladder: trace every path from the left rail to the RUN_REQ coil. Results stay hidden (?) until you check.",
           rung: 0,
           hint: "The lower branch contains a contact that reads the same RUN_REQ bit written by the ordinary coil. On the next scan, that stored 1 can keep the rung TRUE.",
           options: [
@@ -1235,11 +1614,42 @@ svg {
             ["momentary", "MOTOR_RUN is ON only while START_PB is pressed"],
             ["blocked", "MOTOR_RUN cannot be commanded ON"]
           ],
-          correct: "hold"
+          correct: "hold",
+          answer: "It stays commanded ON: the RUN_REQ hold contact reads the 1 stored on the previous scan.",
+          model: "MOTOR_RUN remains commanded ON. On the scan after START_PB is released, the upper branch (START_PB) is FALSE, but the lower branch is a normally open contact on RUN_REQ. It reads the RUN_REQ = 1 that the coil wrote on the previous scan, so the Start/Hold branch is still TRUE. STOP_OK, GUARD_OK and OL_OK are all TRUE, so Rung 1 writes RUN_REQ = 1 again, Rung 2 writes MOTOR_RUN = 1 and Rung 3 writes RUN_LAMP = 1.",
+          why: {
+            hold: "The hold branch reads the stored RUN_REQ = 1, so it replaces START_PB as the TRUE path.",
+            momentary: "This would be true only if START_PB were the only path to the coil. The parallel RUN_REQ hold branch is TRUE on its own, so releasing START_PB changes nothing.",
+            blocked: "Nothing blocks Rung 1: all three permissive tests are TRUE (bits = 1), and START_PB = 1 already made RUN_REQ = 1 on the earlier scan."
+          },
+          takeaways: [
+            "A holding (seal-in) contact is an ordinary N.O. contact that tests the coil's own bit.",
+            "It reads the value written on the previous scan, so a single-scan Start press is enough.",
+            "The hold lasts only while every series permissive stays TRUE."
+          ],
+          mistake: "Thinking the coil sends a signal back to the contact. Nothing is sent: the coil stores RUN_REQ in memory and the contact simply reads that stored bit on the next scan.",
+          alsoTestedBy: [3],
+          replay: {
+            from: false,
+            asked: 2,
+            scans: [
+              { set: {}, note: "Conveyor stopped, nothing pressed" },
+              { set: { start: true }, note: "Start pressed (captured for one scan)" },
+              { set: {}, note: "Start released: the scan this task asks about" },
+              { set: {}, note: "Following scan, Start still released" }
+            ]
+          }
         },
         {
           title: "Identify the writing instruction",
-          copy: "On Rung 2, which instruction writes the final TRUE or FALSE rung result to the MOTOR_RUN output-command bit?",
+          copy: "Rung 2 connects the left rail through an instruction on RUN_REQ to an instruction on MOTOR_RUN at the right.",
+          question: "On Rung 2, which instruction writes the final TRUE or FALSE rung result to the MOTOR_RUN output-command bit?",
+          subQuestion: "Which instruction on Rung 2 actually writes the MOTOR_RUN bit?",
+          given: [
+            ["Rung 2 (left to right)", "left rail → N.O. instruction on RUN_REQ → instruction on MOTOR_RUN → right rail"],
+            ["Values on this scan", "RUN_REQ = 1, MOTOR_RUN = 1 (see the PLC data table)"]
+          ],
+          look: "Rung 2 in the ladder (it opens automatically). Use Previous/Next rung to compare with Rungs 1 and 3, which are built the same way.",
           rung: 1,
           hint: "Contacts read stored tag values. The ordinary coil at the far right writes the rung result to its addressed bit.",
           options: [
@@ -1247,11 +1657,42 @@ svg {
             ["MOTOR_RUN", "MOTOR_RUN ordinary coil"],
             ["left_rail", "Left ladder rail"]
           ],
-          correct: "MOTOR_RUN"
+          correct: "MOTOR_RUN",
+          answer: "The MOTOR_RUN ordinary coil; the RUN_REQ contact only tests a bit.",
+          model: "The MOTOR_RUN ordinary coil at the right end of Rung 2 writes the rung result into the MOTOR_RUN bit every time Rung 2 is solved. The RUN_REQ contact only tests (reads) a stored bit, and the left rail is just the always-TRUE start of the logic path.",
+          why: {
+            RUN_REQ: "A contact is a test instruction. It reports whether RUN_REQ is 1; it never changes RUN_REQ or MOTOR_RUN.",
+            MOTOR_RUN: "The coil is the only write instruction on Rung 2: TRUE rung → MOTOR_RUN = 1, FALSE rung → MOTOR_RUN = 0.",
+            left_rail: "The left rail is not an instruction. It is the logical start of every rung (always TRUE) and writes no tag."
+          },
+          takeaways: [
+            "Contacts read (test) bits; coils write bits.",
+            "Read a rung left to right: conditions on the left, the write instruction on the right.",
+            "MOTOR_RUN is an output-image bit; the output module copies it to the real channel during UPDATE."
+          ],
+          mistake: "Assuming that a contact labelled RUN_REQ changes RUN_REQ. A contact can only test the bit named on it.",
+          alsoTestedBy: [2],
+          replay: {
+            from: false,
+            asked: 1,
+            scans: [
+              { set: { start: true }, note: "Start pressed: Rung 1 writes RUN_REQ, Rung 2 copies it in the same scan" },
+              { set: {}, note: "Start released: the running state this task shows" },
+              { set: { stop: false }, note: "Stop pressed: both bits are written 0 in the same scan" }
+            ]
+          }
         },
         {
           title: "Complete the motor rung",
-          copy: "Choose the right-side instruction for Rung 2. When Rung 2 is solved with RUN_REQ = 0, MOTOR_RUN must be written as 0; the physical output changes during the output-update stage.",
+          copy: "The right-side instruction of Rung 2 is missing (dashed “Choose” box). When Rung 2 is solved with RUN_REQ = 0, MOTOR_RUN must be written as 0; the physical output then changes during the output-update stage.",
+          question: "Which right-side instruction makes Rung 2 write MOTOR_RUN = 0 on every scan in which RUN_REQ = 0 (and MOTOR_RUN = 1 when RUN_REQ = 1)?",
+          subQuestion: "Which right-side instruction makes MOTOR_RUN = 0 whenever RUN_REQ = 0?",
+          given: [
+            ["Rung 2", "left rail → N.O. contact on RUN_REQ → missing instruction for MOTOR_RUN"],
+            ["Requirement", "RUN_REQ = 1 → MOTOR_RUN = 1; RUN_REQ = 0 → MOTOR_RUN = 0 on that same scan"],
+            ["No other logic", "There is no separate reset rung for MOTOR_RUN"]
+          ],
+          look: "Rung 2 in the ladder (the dashed “Choose” box) and the requirement in the Given values. MOTOR_RUN and RUN_LAMP show “?” because they depend on the missing instruction.",
           rung: 1,
           hint: "Choose an instruction whose output follows the rung result on every scan. A retained instruction would need a separate reset.",
           options: [
@@ -1260,21 +1701,66 @@ svg {
             ["reset", "RESET coil  (R)"],
             ["timer", "TON timer"]
           ],
-          correct: "coil"
+          correct: "coil",
+          answer: "The ordinary coil ( ): it writes 0 whenever its rung is FALSE.",
+          model: "Use the ordinary coil ( ). It writes the rung result every time Rung 2 is solved: RUN_REQ = 1 → rung TRUE → MOTOR_RUN = 1; RUN_REQ = 0 → rung FALSE → MOTOR_RUN = 0 on that same scan. The output module then switches the motor command OFF in the UPDATE step.",
+          why: {
+            coil: "Non-retentive: the bit follows the rung result on every scan, which is exactly the requirement.",
+            set: "A SET (latch) coil writes 1 when its rung is TRUE and does nothing when it is FALSE, so MOTOR_RUN would stay 1 after RUN_REQ falls until some RESET instruction ran. There is none.",
+            reset: "A RESET (unlatch) coil can only write 0, and only while its rung is TRUE. Here it would clear MOTOR_RUN whenever RUN_REQ = 1 and could never command the motor ON.",
+            timer: "A TON (on-delay) timer is not a bit write for MOTOR_RUN. Its output Q turns 1 only after IN has been TRUE for the preset time PT, so it would add an unwanted start delay."
+          },
+          takeaways: [
+            "Ordinary coil = non-retentive: its bit follows the rung result on every scan.",
+            "SET and RESET are retentive: they change the bit only while their rung is TRUE.",
+            "Rung 1's holding contact already stores the run request, so Rung 2 needs no memory of its own."
+          ],
+          mistake: "Picking SET because it “keeps the motor running”. The holding circuit already provides that memory; a SET coil would also keep the motor commanded ON after a permissive is lost.",
+          alsoTestedBy: [5],
+          replay: {
+            from: true,
+            asked: 1,
+            whatIfSet: true,
+            scans: [
+              { set: {}, note: "Running: RUN_REQ = 1" },
+              { set: { stop: false }, note: "Stop pressed: Rung 2 is solved with RUN_REQ = 0 (the situation in the question)" },
+              { set: {}, note: "Stop released again, nobody presses Start" }
+            ]
+          }
         },
         {
           title: "Verify six operating cases",
           copy: "Predict the MOTOR_RUN command for each case, then check it against the PLC scan. Complete all six cases.",
+          question: "For the case below, what MOTOR_RUN command (ON or OFF) does the PLC write on the scan described?",
+          subQuestion: "What is the MOTOR_RUN command in six cases: start, release, stop, guard open, overload trip and overload restored?",
+          look: "The case description and Given values, then Rung 1: permissives in series, Start and Hold in parallel. Results stay hidden (?) until you check each case.",
           rung: 0,
           hint: "Evaluate the positive healthy-state tests from left to right. If one required permissive is FALSE, Rung 1 writes RUN_REQ = 0; the later rungs then write MOTOR_RUN = 0 and RUN_LAMP = 0.",
           options: [
             ["on", "MOTOR_RUN command = ON"],
             ["off", "MOTOR_RUN command = OFF"]
-          ]
+          ],
+          answer: "ON for start and release; OFF for stop, guard open, overload trip, and after the overload is restored (a new Start press is needed).",
+          model: "Cases 1 and 2 are ON; cases 3 to 6 are OFF. A start needs all three permissives TRUE plus START_PB = 1; the hold branch keeps the command after Start is released; losing any one permissive (Stop, Guard or Overload) makes Rung 1 FALSE and clears RUN_REQ; restoring the permissive alone does not restart the conveyor, because START_PB = 0 and the hold contact now reads RUN_REQ = 0.",
+          takeaways: [
+            "Permissives are in series: any one FALSE test blocks both the Start branch and the Hold branch.",
+            "The hold branch only remembers while the rung stays TRUE; once RUN_REQ is written 0 the memory is gone.",
+            "After any stop or trip, a new Start press is required: no automatic restart."
+          ],
+          mistake: "Expecting the conveyor to restart when the overload is reset. RUN_REQ was already written 0 by the trip scan, so the conveyor stays OFF until Start is pressed again, which is the safe behaviour.",
+          alsoTestedBy: [4]
         },
         {
           title: "Diagnose the first blocker",
-          copy: "The conveyor was running, then the overload tripped. RUN_REQ, MOTOR_RUN and RUN_LAMP are now all OFF. Which condition first broke the logic path?",
+          copy: "The conveyor was running, then the overload tripped. RUN_REQ, MOTOR_RUN and RUN_LAMP are now all OFF.",
+          question: "Which condition first broke the logic path, so that RUN_REQ, MOTOR_RUN and RUN_LAMP all went OFF?",
+          subQuestion: "When several bits are OFF at once, which condition is the cause and which are only symptoms?",
+          given: [
+            ["Before", "Conveyor running (RUN_REQ = 1, MOTOR_RUN = 1)"],
+            ["Now", "START_PB = 0, STOP_OK = 1, GUARD_OK = 1, OL_OK = 0"],
+            ["Observed", "RUN_REQ = 0, MOTOR_RUN = 0, RUN_LAMP = 0"]
+          ],
+          look: "The PLC data table (all values are visible) and Rung 1 in the ladder, where green lines show the TRUE parts of the path.",
           rung: 0,
           hint: "Start at the left rail of Rung 1. Find the first displayed condition that is FALSE; downstream coils are symptoms.",
           options: [
@@ -1283,11 +1769,42 @@ svg {
             ["MOTOR_RUN", "MOTOR_RUN coil is OFF"],
             ["RUN_LAMP", "RUN_LAMP coil is OFF"]
           ],
-          correct: "OL_OK"
+          correct: "OL_OK",
+          answer: "OL_OK = 0 is the first FALSE test on Rung 1; the OFF coils are downstream symptoms.",
+          model: "OL_OK is FALSE. Reading Rung 1 from the left rail: STOP_OK TRUE, GUARD_OK TRUE, OL_OK FALSE. The path breaks there, before the Start/Hold branch, so Rung 1 writes RUN_REQ = 0. Rung 2 then writes MOTOR_RUN = 0 and Rung 3 writes RUN_LAMP = 0 in the same scan: those three OFF bits are consequences of one FALSE test.",
+          why: {
+            START_PB: "START_PB = 0 is normal for a running conveyor (the hold branch had replaced it). It sits in a parallel branch after OL_OK, so it is not where the path first breaks.",
+            OL_OK: "It is the first FALSE condition met when you trace from the left rail, and it is the only input that changed.",
+            MOTOR_RUN: "MOTOR_RUN is written by Rung 2 from RUN_REQ. Being OFF is a symptom of Rung 1 being FALSE, not its cause.",
+            RUN_LAMP: "RUN_LAMP is written last (Rung 3) from MOTOR_RUN, so it is the furthest downstream symptom."
+          },
+          takeaways: [
+            "Trace from the left rail and stop at the first FALSE series condition.",
+            "Coil bits that are OFF are usually symptoms; look for the input that changed.",
+            "Online monitoring shows exactly where the TRUE (green) path ends."
+          ],
+          mistake: "Blaming the last thing you can see OFF (the motor or the lamp) instead of the condition that broke the path.",
+          replay: {
+            from: true,
+            asked: 1,
+            scans: [
+              { set: {}, note: "Running normally" },
+              { set: { overload: false }, note: "Overload trips: the state this task shows" },
+              { set: { overload: false }, note: "Still tripped" }
+            ]
+          }
         },
         {
           title: "Choose the fail-off coil explanation",
-          copy: "Why is an ordinary coil appropriate for the MOTOR_RUN command instead of a retained SET instruction?",
+          copy: "Rung 2 uses an ordinary coil to write MOTOR_RUN. A retained SET (S) coil would be the alternative.",
+          question: "Why is an ordinary coil appropriate for the MOTOR_RUN command instead of a retained SET instruction?",
+          subQuestion: "Why does the choice of coil type matter for a motor command?",
+          given: [
+            ["In the program", "Rung 2: N.O. contact on RUN_REQ → ordinary coil MOTOR_RUN"],
+            ["Alternative", "Retained SET (S) coil on MOTOR_RUN, no RESET rung"],
+            ["Situation to compare", "A required permissive is lost while the motor is commanded ON"]
+          ],
+          look: "Rung 2 in the ladder and the four statements below. Each statement makes a claim about how a coil behaves.",
           rung: 1,
           hint: "Compare what each instruction does after its rung changes from TRUE to FALSE.",
           options: [
@@ -1296,7 +1813,31 @@ svg {
             ["shape", "The coil type affects only the drawing; all coil instructions behave the same."],
             ["contact", "An ordinary coil only reads MOTOR_RUN and never writes it."]
           ],
-          correct: "ordinary"
+          correct: "ordinary",
+          answer: "An ordinary coil follows its rung, so a lost permissive writes MOTOR_RUN = 0 on the same scan; a SET coil would keep it at 1.",
+          model: "The ordinary coil writes the rung result every time Rung 2 is solved. When a permissive is lost, Rung 1 writes RUN_REQ = 0 and, on the very same scan, Rung 2 writes MOTOR_RUN = 0: the command fails OFF. A SET coil would leave MOTOR_RUN = 1 until separate RESET logic ran, so the motor would stay commanded ON with the guard open.",
+          why: {
+            ordinary: "Correct: the coil writes 0 as soon as the rung is FALSE, so losing the permissive path removes the command at once.",
+            set: "False: a SET coil does nothing while its rung is FALSE; the bit stays 1 until a RESET writes 0.",
+            shape: "False: coil types behave differently. Ordinary follows the rung, SET latches to 1, RESET unlatches to 0.",
+            contact: "False: that describes a contact. An ordinary coil writes its bit every time the rung is solved."
+          },
+          takeaways: [
+            "Fail-off: losing a permissive must remove the motor command on the same scan.",
+            "The holding circuit on Rung 1 already provides the needed memory; do not latch the motor a second time with SET.",
+            "Real safety functions still need a safety relay or safety PLC; this is ordinary control logic."
+          ],
+          mistake: "Latching the motor with SET “to be sure it stays on”. The command then ignores a lost permissive until something resets it.",
+          replay: {
+            from: true,
+            asked: 1,
+            whatIfSet: true,
+            scans: [
+              { set: {}, note: "Running: MOTOR_RUN commanded ON" },
+              { set: { guard: false }, note: "Guard opened: a required permissive is lost (the situation in the question)" },
+              { set: {}, note: "Guard closed again, nobody presses Start" }
+            ]
+          }
         }
       ];
 
@@ -1306,44 +1847,162 @@ svg {
           name: "1 · Normal start",
           description: "STOP_OK, GUARD_OK and OL_OK are 1. START_PB is captured as 1.",
           expected: "on",
-          reason: "Every required permissive test is TRUE and the START_PB branch is TRUE, so Rung 1 writes RUN_REQ = 1."
+          reason: "Every required permissive test is TRUE and the START_PB branch is TRUE, so Rung 1 writes RUN_REQ = 1.",
+          question: "Does the PLC command the motor ON on the scan in which Start is pressed?",
+          given: [
+            ["Before this scan", "Conveyor stopped: RUN_REQ = 0"],
+            ["This scan", "START_PB = 1, STOP_OK = 1, GUARD_OK = 1, OL_OK = 1"]
+          ],
+          whyWrong: "OFF is wrong: all three permissive tests are TRUE and the Start branch is TRUE, so nothing blocks Rung 1.",
+          replay: {
+            from: false,
+            asked: 1,
+            scans: [
+              { set: {}, note: "Conveyor stopped, nothing pressed" },
+              { set: { start: true }, note: "Start pressed: this case" }
+            ]
+          }
         },
         {
           id: "released",
           name: "2 · Start released",
           description: "The conveyor has been commanded ON. START_PB returns to 0; all permissives remain healthy.",
           expected: "on",
-          reason: "The RUN_REQ contact reads the stored RUN_REQ = 1 and provides the holding path around START_PB."
+          reason: "The RUN_REQ contact reads the stored RUN_REQ = 1 and provides the holding path around START_PB.",
+          question: "Does the motor command survive when the Start button is let go?",
+          given: [
+            ["Before this scan", "Conveyor commanded ON: RUN_REQ = 1"],
+            ["This scan", "START_PB = 0, STOP_OK = 1, GUARD_OK = 1, OL_OK = 1"]
+          ],
+          whyWrong: "OFF is wrong: releasing START_PB only makes the upper branch FALSE; the parallel hold branch still reads RUN_REQ = 1.",
+          replay: {
+            from: false,
+            asked: 1,
+            scans: [
+              { set: { start: true }, note: "Start pressed" },
+              { set: {}, note: "Start released: this case" },
+              { set: {}, note: "Following scan" }
+            ]
+          }
         },
         {
           id: "stop",
           name: "3 · Stop pressed",
           description: "The conveyor was commanded ON. Pressing the physical normally closed Stop button makes STOP_OK = 0.",
           expected: "off",
-          reason: "The normally open software test of STOP_OK becomes FALSE, so Rung 1 writes RUN_REQ = 0."
+          reason: "The normally open software test of STOP_OK becomes FALSE, so Rung 1 writes RUN_REQ = 0.",
+          question: "Does pressing Stop remove the motor command, even though RUN_REQ was 1?",
+          given: [
+            ["Before this scan", "Conveyor commanded ON: RUN_REQ = 1"],
+            ["This scan", "START_PB = 0, STOP_OK = 0 (Stop pressed), GUARD_OK = 1, OL_OK = 1"]
+          ],
+          whyWrong: "ON is wrong: STOP_OK sits in series before the Start/Hold branch, so its FALSE test breaks every path, including the hold.",
+          replay: {
+            from: true,
+            asked: 1,
+            scans: [
+              { set: {}, note: "Running" },
+              { set: { stop: false }, note: "Stop pressed: this case" },
+              { set: {}, note: "Stop released again" }
+            ]
+          }
         },
         {
           id: "guard",
           name: "4 · Guard opened",
           description: "The conveyor was commanded ON. GUARD_OK changes to 0.",
           expected: "off",
-          reason: "The GUARD_OK software test becomes FALSE, so the complete permissive path is no longer TRUE."
+          reason: "The GUARD_OK software test becomes FALSE, so the complete permissive path is no longer TRUE.",
+          question: "Does opening the guard remove the motor command?",
+          given: [
+            ["Before this scan", "Conveyor commanded ON: RUN_REQ = 1"],
+            ["This scan", "START_PB = 0, STOP_OK = 1, GUARD_OK = 0 (guard open), OL_OK = 1"]
+          ],
+          whyWrong: "ON is wrong: GUARD_OK = 0 makes its N.O. test FALSE, and being in series it blocks both the Start and the Hold branch.",
+          replay: {
+            from: true,
+            asked: 1,
+            scans: [
+              { set: {}, note: "Running" },
+              { set: { guard: false }, note: "Guard opened: this case" },
+              { set: {}, note: "Guard closed again" }
+            ]
+          }
         },
         {
           id: "overload",
           name: "5 · Overload trip",
           description: "The conveyor was commanded ON. OL_OK changes to 0.",
           expected: "off",
-          reason: "OL_OK becomes the first FALSE test on Rung 1, which removes RUN_REQ and the downstream output commands."
+          reason: "OL_OK becomes the first FALSE test on Rung 1, which removes RUN_REQ and the downstream output commands.",
+          question: "Does an overload trip remove the motor command?",
+          given: [
+            ["Before this scan", "Conveyor commanded ON: RUN_REQ = 1"],
+            ["This scan", "START_PB = 0, STOP_OK = 1, GUARD_OK = 1, OL_OK = 0 (tripped)"]
+          ],
+          whyWrong: "ON is wrong: OL_OK = 0 gives a FALSE test in series, so Rung 1 writes RUN_REQ = 0 and Rung 2 writes MOTOR_RUN = 0 in the same scan.",
+          replay: {
+            from: true,
+            asked: 1,
+            scans: [
+              { set: {}, note: "Running" },
+              { set: { overload: false }, note: "Overload trips: this case" },
+              { set: { overload: false }, note: "Still tripped" }
+            ]
+          }
         },
         {
           id: "recovery",
           name: "6 · Overload restored",
           description: "OL_OK returns to 1 after the trip, but START_PB remains 0.",
           expected: "off",
-          reason: "The trip already caused RUN_REQ to be written as 0. Restoring OL_OK alone does not recreate the start request."
+          reason: "The trip already caused RUN_REQ to be written as 0. Restoring OL_OK alone does not recreate the start request.",
+          question: "When the overload relay is reset, does the conveyor start again by itself?",
+          given: [
+            ["History", "Running → OL_OK went 0 (trip scan) → OL_OK back to 1 now"],
+            ["This scan", "START_PB = 0, STOP_OK = 1, GUARD_OK = 1, OL_OK = 1"],
+            ["RUN_REQ before this scan", "Work it out: what did the trip scan write?"]
+          ],
+          whyWrong: "ON is wrong: the permissives are TRUE again, but neither branch is TRUE. START_PB = 0 and the hold contact reads RUN_REQ = 0, written by the trip scan. A new Start press is needed.",
+          replay: {
+            from: true,
+            asked: 2,
+            scans: [
+              { set: {}, note: "Running" },
+              { set: { overload: false }, note: "Overload trips" },
+              { set: {}, note: "Overload restored: this case" },
+              { set: {}, note: "Following scan, START_PB still 0" }
+            ]
+          }
         }
       ];
+
+      /* Glossary: a term whose definition would answer an unresolved task carries that task's index. */
+      const glossary = [
+        { term: "Scan cycle (READ → SOLVE → UPDATE)", def: "The PLC repeats three steps: copy all inputs into the input image, solve the rungs from top to bottom using stored bits, then copy the output image to the output modules." },
+        { term: "Field device / physical input", def: "A real button, switch or relay contact (Start PB, Stop PB, guard switch, overload relay) that puts voltage on an input channel or removes it." },
+        { term: "Momentary push button", def: "A button that is only closed while it is held; it springs back when released. START_PB is 1 only during the scans in which it is held." },
+        { term: "Input image / output image", def: "The memory areas holding one bit per input or output channel. Rungs read and write these bits; the modules are only touched at READ and UPDATE." },
+        { term: "Tag (Boolean bit)", def: "A named memory location holding 0 or 1, such as STOP_OK or MOTOR_RUN." },
+        { term: "Internal memory bit", def: "A bit with no physical channel. RUN_REQ is internal: it exists only in PLC memory and is used by the rungs." },
+        { term: "Healthy-state tag", def: "A tag that is 1 when its condition is OK: STOP_OK = 1 (Stop not pressed), GUARD_OK = 1 (guard closed), OL_OK = 1 (overload relay not tripped). A broken wire also gives 0." },
+        { term: "Normally closed (N.C.) physical contact", def: "A device contact that is closed at rest. The Stop button is N.C., so its input is 1 until someone presses it." },
+        { term: "N.O. contact instruction", def: "A software test (also called examine-if-closed, XIC) that reads a stored bit: TRUE when the bit is 1, FALSE when the bit is 0." },
+        { term: "N.O. test of a healthy-state bit", def: "An N.O. contact on STOP_OK, GUARD_OK or OL_OK is TRUE only while that condition is healthy. “Normally open” describes the software test, not the wiring of the physical button." },
+        { term: "Permissive", def: "A condition that must be TRUE before a rung is allowed to turn its output ON. Here STOP_OK, GUARD_OK and OL_OK are permissives placed in series." },
+        { term: "Series (AND) / parallel (OR)", def: "Instructions in series must all be TRUE for the path to continue. Parallel branches give a TRUE path if at least one branch is TRUE." },
+        { term: "Rung result", def: "TRUE when at least one complete path of TRUE instructions joins the left rail to the right-hand instruction; otherwise FALSE." },
+        { term: "Online monitoring (green path)", def: "The programming tool colours TRUE instructions and wires. It shows logic results, not real current flowing in the software." },
+        { term: "Holding (seal-in) contact", def: "An N.O. contact on the coil's own bit (RUN_REQ), placed in parallel with Start. It reads the value stored on the previous scan, so after a one-scan Start press the rung stays TRUE for as long as every permissive stays TRUE.", task: 0 },
+        { term: "Ordinary coil ( ) — non-retentive", def: "Writes the rung result to its bit every time the rung is solved: TRUE → 1, FALSE → 0. When a permissive is lost the bit goes to 0 on the same scan (fail-off).", task: 2 },
+        { term: "SET (S) / RESET (R) coil — retentive", def: "SET writes 1 while its rung is TRUE and leaves the bit alone when FALSE; RESET writes 0 while its rung is TRUE. The bit keeps its last value until the other instruction runs.", task: 2 },
+        { term: "TON (on-delay timer)", def: "A timer block: while IN is TRUE the elapsed time ET counts up; output Q becomes 1 when ET reaches the preset PT. When IN goes FALSE, ET resets and Q = 0." },
+        { term: "First blocker vs downstream symptom", def: "The first blocker is the first FALSE series condition found when tracing from the left rail. Bits written later from it (RUN_REQ, MOTOR_RUN, RUN_LAMP) go OFF as symptoms.", task: 4 },
+        { term: "Output command vs feedback", def: "MOTOR_RUN = 1 means the PLC commands the motor output ON. Proof that the motor turns needs a feedback input, such as a contactor auxiliary contact or a speed sensor." }
+      ];
+
+      const MAIN_ANSWER = "Rung 1 ANDs three healthy-state permissives (STOP_OK, GUARD_OK, OL_OK) with an OR branch of START_PB and the RUN_REQ holding contact. A one-scan Start press writes RUN_REQ = 1; on later scans the holding contact reads that stored 1, so the command stays ON. If any permissive becomes 0, Rung 1 writes RUN_REQ = 0 and the ordinary coils on Rungs 2 and 3 pass that 0 to MOTOR_RUN and RUN_LAMP in the same scan. Restoring the permissive does not restart the conveyor: a new Start press is needed.";
+      const DEFAULT_INPUTS = { start: false, stop: true, guard: true, overload: true };
 
       function freshState() {
         return {
@@ -1364,7 +2023,12 @@ svg {
           finished: false,
           coach: "",
           inputs: { start: false, stop: true, guard: true, overload: true },
-          mem: { runReq: false, motor: false, lamp: false }
+          mem: { runReq: false, motor: false, lamp: false },
+          /* Explanation-only records: they never change scoring. */
+          wrongPicks: [[], [], [], [], [], []],
+          outcome: ["", "", "", "", "", ""],
+          testChecked: Array(testCases.length).fill(false),
+          testMisses: Array(testCases.length).fill(0)
         };
       }
 
@@ -1413,7 +2077,32 @@ svg {
         summaryBody: root.querySelector("#summaryBody"),
         copyResult: root.querySelector("#copyResult"),
         restartExercise: root.querySelector("#restartExercise"),
-        srStatus: root.querySelector("#screenReaderStatus")
+        srStatus: root.querySelector("#screenReaderStatus"),
+        subQuestionList: root.querySelector("#subQuestionList"),
+        mainQuestionStatus: root.querySelector("#mainQuestionStatus"),
+        scoreExplainSummary: root.querySelector("#scoreExplainSummary"),
+        scoreExplainBody: root.querySelector("#scoreExplainBody"),
+        scoreExplainNote: root.querySelector("#scoreExplainNote"),
+        taskQuestion: root.querySelector("#taskQuestion"),
+        scanModelNote: root.querySelector("#scanModelNote"),
+        scanModelNeutral: root.querySelector("#scanModelNeutral"),
+        ladderNote: root.querySelector("#ladderNote"),
+        resolutionPanel: root.querySelector("#resolutionPanel"),
+        resolutionHeading: root.querySelector("#resolutionHeading"),
+        resolutionBody: root.querySelector("#resolutionBody"),
+        resolutionLessons: root.querySelector("#resolutionLessons"),
+        replayBlock: root.querySelector("#replayBlock"),
+        replayCases: root.querySelector("#replayCases"),
+        timingDiagram: root.querySelector("#timingDiagram"),
+        replayPrev: root.querySelector("#replayPrev"),
+        replayNext: root.querySelector("#replayNext"),
+        replayAsked: root.querySelector("#replayAsked"),
+        replayLabel: root.querySelector("#replayLabel"),
+        replayNarrative: root.querySelector("#replayNarrative"),
+        finalReview: root.querySelector("#finalReview"),
+        endSummary: root.querySelector("#endSummary"),
+        glossaryList: root.querySelector("#glossaryList"),
+        exerciseMeta: root.querySelector(".exercise-meta")
       };
 
       function saveState() {
@@ -1444,11 +2133,20 @@ svg {
         notifyParent("resize", { height });
       }
 
+      /* One PLC scan of the three rungs. The page state, the scan replays and the
+         narratives all use this single function, so their results cannot drift apart. */
+      function solveScan(i, prev) {
+        const runReq = Boolean(i.stop && i.guard && i.overload && (i.start || prev.runReq));
+        const motor = Boolean(runReq);
+        const lamp = Boolean(motor);
+        return { runReq, motor, lamp };
+      }
+
       function scan() {
-        const i = state.inputs;
-        state.mem.runReq = Boolean(i.stop && i.guard && i.overload && (i.start || state.mem.runReq));
-        state.mem.motor = Boolean(state.mem.runReq);
-        state.mem.lamp = Boolean(state.mem.motor);
+        const next = solveScan(state.inputs, state.mem);
+        state.mem.runReq = next.runReq;
+        state.mem.motor = next.motor;
+        state.mem.lamp = next.lamp;
       }
 
       function setMachine(priorRunning, overrides) {
@@ -1501,14 +2199,23 @@ svg {
         return `<path class="ladder-wire${hot ? " ladder-hot" : ""}" d="M${x} ${y1}V${y2}"></path>`;
       }
 
+      /* While Task 2 is open, accessible names must not say which instruction reads and which writes. */
+      function neutralVerbs() {
+        return !state.finished && state.stage === 1 && !state.completed[1];
+      }
+
+      /* value === null draws the instruction without a TRUE/FALSE result (prediction still open). */
       function contact(x, y, name, tag, value, selected, placement) {
-        const stateClass = value ? "is-true" : "is-false";
+        const hidden = value === null;
+        const stateClass = hidden ? "is-unknown" : value ? "is-true" : "is-false";
         const selectedClass = selected ? " is-selected" : "";
         const mode = placement || "normal";
         const nameY = mode === "above" ? y - 43 : mode === "below" ? y + 48 : y - 38;
         const tagY = mode === "above" ? y - 28 : mode === "below" ? y + 64 : y + 42;
+        const verb = neutralVerbs() ? "on" : "reads";
+        const result = hidden ? "test result hidden until you check your answer" : `test is ${value ? "TRUE" : "FALSE"}`;
         return `
-          <g class="ladder-part ${stateClass}${selectedClass}" aria-label="${esc(name)}; normally open software contact instruction; reads ${esc(tag)}; test is ${value ? "TRUE" : "FALSE"}">
+          <g class="ladder-part ${stateClass}${selectedClass}" aria-label="${esc(name)}; normally open software contact instruction; ${verb} ${esc(tag)}; ${result}">
             <path class="symbol-mark" d="M${x - 11} ${y - 17}V${y + 17} M${x + 11} ${y - 17}V${y + 17}"></path>
             <text class="component-name" x="${x}" y="${nameY}">${esc(name)}</text>
             <text class="component-tag" x="${x}" y="${tagY}">${esc(tag)} · N.O.</text>
@@ -1525,11 +2232,18 @@ svg {
               <text class="component-tag" x="${x}" y="${y + 52}">${esc(tag)} · ?</text>
             </g>`;
         }
-        const stateClass = value ? "is-true" : "is-false";
+        const hidden = value === null;
+        const stateClass = hidden ? "is-unknown" : value ? "is-true" : "is-false";
         const selectedClass = selected ? " is-selected" : "";
+        const label = hidden
+          ? `${name}; ordinary coil instruction on ${tag}; value hidden until you check your answer`
+          : neutralVerbs()
+            ? `${name}; ordinary coil instruction on ${tag}; ${tag} is ${value ? "ON" : "OFF"}`
+            : `${name}; ordinary coil instruction; writes ${tag} as ${value ? "ON" : "OFF"}`;
         return `
-          <g class="ladder-part ${stateClass}${selectedClass}" aria-label="${esc(name)}; ordinary coil instruction; writes ${esc(tag)} as ${value ? "ON" : "OFF"}">
+          <g class="ladder-part ${stateClass}${selectedClass}" aria-label="${esc(label)}">
             <path class="symbol-mark" d="M${x - 11} ${y - 22}Q${x - 30} ${y} ${x - 11} ${y + 22} M${x + 11} ${y - 22}Q${x + 30} ${y} ${x + 11} ${y + 22}"></path>
+            ${hidden ? `<text class="unknown-mark" x="${x}" y="${y + 6}">?</text>` : ""}
             <text class="component-name" x="${x}" y="${y - 48}">${esc(name)}</text>
             <text class="component-tag" x="${x}" y="${y + 52}">${esc(tag)} · COIL</text>
           </g>`;
@@ -1543,19 +2257,22 @@ svg {
       function rungOneSvg() {
         const i = state.inputs;
         const m = state.mem;
-        const afterStop = i.stop;
+        const hide = hiddenScope() === "all";
+        const show = value => hide ? null : value;
+        const afterStop = !hide && i.stop;
         const afterGuard = afterStop && i.guard;
         const beforeBranch = afterGuard && i.overload;
         const topPath = beforeBranch && i.start;
         const bottomPath = beforeBranch && m.runReq;
         const result = beforeBranch && (i.start || m.runReq);
+        const neutral = neutralVerbs();
         return `
           <svg width="1040" height="240" viewBox="0 0 1040 240" role="img" aria-labelledby="rung1Title rung1Desc">
-            <title id="rung1Title">Rung 1: healthy-state permissives and holding circuit write RUN_REQ</title>
-            <desc id="rung1Desc">Normally open software tests of STOP_OK, GUARD_OK and OL_OK are in series. START_PB and a RUN_REQ holding contact are in parallel. The ordinary coil writes the rung result to RUN_REQ.</desc>
+            <title id="rung1Title">Rung 1: healthy-state permissives and holding circuit ${neutral ? "for" : "write"} RUN_REQ</title>
+            <desc id="rung1Desc">Normally open software tests of STOP_OK, GUARD_OK and OL_OK are in series. START_PB and a RUN_REQ holding contact are in parallel. ${neutral ? "An ordinary coil instruction on RUN_REQ is at the right." : "The ordinary coil writes the rung result to RUN_REQ."}${hide ? " TRUE/FALSE results are hidden until you check your answer." : ""}</desc>
             <path class="ladder-rail${result ? " ladder-hot" : ""}" d="M18 22V218"></path>
             <path class="ladder-rail" d="M1022 22V218"></path>
-            ${line(18, 120, 89, 120, true)}
+            ${line(18, 120, 89, 120, !hide)}
             ${line(111, 120, 219, 120, afterStop)}
             ${line(241, 120, 349, 120, afterGuard)}
             ${line(371, 120, 430, 120, beforeBranch)}
@@ -1567,47 +2284,58 @@ svg {
             ${vertical(700, 72, 168, result)}
             ${line(700, 120, 830, 120, result)}
             ${line(890, 120, 1022, 120, result)}
-            ${contact(100, 120, "Stop healthy", "STOP_OK", i.stop, selectedPart("STOP_OK"))}
-            ${contact(230, 120, "Guard closed", "GUARD_OK", i.guard, selectedPart("GUARD_OK"))}
-            ${contact(360, 120, "Overload healthy", "OL_OK", i.overload, selectedPart("OL_OK"))}
-            ${contact(560, 72, "Start pressed", "START_PB", i.start, selectedPart("START_PB"), "above")}
-            ${contact(560, 168, "RUN_REQ hold", "RUN_REQ", m.runReq, selectedPart("RUN_REQ"), "below")}
-            ${coil(860, 120, "Run request", "RUN_REQ", m.runReq, selectedPart("RUN_REQ_COIL"), false)}
+            ${contact(100, 120, "Stop healthy", "STOP_OK", show(i.stop), selectedPart("STOP_OK"))}
+            ${contact(230, 120, "Guard closed", "GUARD_OK", show(i.guard), selectedPart("GUARD_OK"))}
+            ${contact(360, 120, "Overload healthy", "OL_OK", show(i.overload), selectedPart("OL_OK"))}
+            ${contact(560, 72, "Start pressed", "START_PB", show(i.start), selectedPart("START_PB"), "above")}
+            ${contact(560, 168, "RUN_REQ hold", "RUN_REQ", show(m.runReq), selectedPart("RUN_REQ"), "below")}
+            ${coil(860, 120, "Run request", "RUN_REQ", show(m.runReq), selectedPart("RUN_REQ_COIL"), false)}
           </svg>`;
       }
 
       function rungTwoSvg() {
         const m = state.mem;
-        const result = m.runReq;
+        const hide = hiddenScope() === "all";
+        const show = value => hide ? null : value;
+        const result = !hide && m.runReq;
         const missing = state.stage === 2 && !state.completed[2];
+        const neutral = neutralVerbs();
+        const desc = missing
+          ? "A normally open software test reads RUN_REQ. The right-side instruction for the MOTOR_RUN output-command bit is missing: choose it below."
+          : neutral
+            ? "A normally open contact instruction on RUN_REQ is followed by an ordinary coil instruction on the MOTOR_RUN output-command bit."
+            : "A normally open software test reads RUN_REQ. An ordinary coil writes the rung result to the MOTOR_RUN output-command bit.";
         return `
           <svg width="650" height="205" viewBox="0 0 650 205" role="img" aria-labelledby="rung2Title rung2Desc">
             <title id="rung2Title">Rung 2: RUN_REQ controls the MOTOR_RUN output-command bit</title>
-            <desc id="rung2Desc">A normally open software test reads RUN_REQ. An ordinary coil writes the rung result to the MOTOR_RUN output-command bit.</desc>
+            <desc id="rung2Desc">${desc}${hide ? " TRUE/FALSE results are hidden until you check your answer." : ""}</desc>
             <path class="ladder-rail${result ? " ladder-hot" : ""}" d="M18 18V187"></path>
             <path class="ladder-rail" d="M632 18V187"></path>
-            ${line(18, 102, 179, 102, true)}
+            ${line(18, 102, 179, 102, !hide)}
             ${line(201, 102, missing ? 425 : 436, 102, result)}
             ${line(missing ? 509 : 494, 102, 632, 102, result && !missing)}
-            ${contact(190, 102, "Run request active", "RUN_REQ", m.runReq, selectedPart("RUN_REQ"))}
-            ${coil(465, 102, "Motor command", "MOTOR_RUN", m.motor, selectedPart("MOTOR_RUN"), missing)}
+            ${contact(190, 102, "Run request active", "RUN_REQ", show(m.runReq), selectedPart("RUN_REQ"))}
+            ${coil(465, 102, "Motor command", "MOTOR_RUN", show(m.motor), selectedPart("MOTOR_RUN"), missing)}
           </svg>`;
       }
 
       function rungThreeSvg() {
         const m = state.mem;
-        const result = m.motor;
+        const hide = hiddenScope() !== "";
+        const show = value => hide ? null : value;
+        const result = !hide && m.motor;
+        const neutral = neutralVerbs();
         return `
           <svg width="560" height="205" viewBox="0 0 560 205" role="img" aria-labelledby="rung3Title rung3Desc">
             <title id="rung3Title">Rung 3: MOTOR_RUN command controls the RUN_LAMP command</title>
-            <desc id="rung3Desc">A normally open software test reads the MOTOR_RUN command bit. An ordinary coil writes RUN_LAMP.</desc>
+            <desc id="rung3Desc">${neutral ? "A normally open contact instruction on the MOTOR_RUN command bit is followed by an ordinary coil instruction on RUN_LAMP." : "A normally open software test reads the MOTOR_RUN command bit. An ordinary coil writes RUN_LAMP."}${hide ? " TRUE/FALSE results are hidden until you check your answer." : ""}</desc>
             <path class="ladder-rail${result ? " ladder-hot" : ""}" d="M18 18V187"></path>
             <path class="ladder-rail" d="M542 18V187"></path>
-            ${line(18, 102, 149, 102, true)}
+            ${line(18, 102, 149, 102, !hide)}
             ${line(171, 102, 368, 102, result)}
             ${line(426, 102, 542, 102, result)}
-            ${contact(160, 102, "Motor commanded", "MOTOR_RUN", m.motor, selectedPart("MOTOR_RUN_CONTACT"))}
-            ${coil(397, 102, "Running lamp", "RUN_LAMP", m.lamp, selectedPart("RUN_LAMP"), false)}
+            ${contact(160, 102, "Motor commanded", "MOTOR_RUN", show(m.motor), selectedPart("MOTOR_RUN_CONTACT"))}
+            ${coil(397, 102, "Running lamp", "RUN_LAMP", show(m.lamp), selectedPart("RUN_LAMP"), false)}
           </svg>`;
       }
 
@@ -1617,51 +2345,118 @@ svg {
         return state.mem.lamp;
       }
 
+      /* ---- Answer protection ----
+         "all": the open question asks for the result of this scan (Task 1, or an unchecked Task 4 case),
+                so RUN_REQ, MOTOR_RUN, RUN_LAMP, rung results and ladder colours are shown as "?".
+         "outputs": Task 3 is open; MOTOR_RUN and RUN_LAMP depend on the missing instruction.
+         "": nothing on screen gives the open answer away (the given evidence is shown in full). */
+      function caseRevealed() {
+        return Boolean(state.testPassed[state.testIndex] || state.testChecked[state.testIndex] || state.testReadyNext);
+      }
+
+      function hiddenScope() {
+        if (state.finished) return "";
+        if (state.stage === 0 && !state.completed[0]) return "all";
+        if (state.stage === 2 && !state.completed[2]) return "outputs";
+        if (state.stage === 3 && !state.completed[3] && !caseRevealed()) return "all";
+        return "";
+      }
+
+      function tagHidden(tag) {
+        const scope = hiddenScope();
+        if (scope === "all") return tag === "RUN_REQ" || tag === "MOTOR_RUN" || tag === "RUN_LAMP" || tag === "RUNG1";
+        if (scope === "outputs") return tag === "MOTOR_RUN" || tag === "RUN_LAMP";
+        return false;
+      }
+
+      /* Tasks resolve in order, so the first unresolved task is the furthest one the student has reached. */
+      function frontier() {
+        const index = state.completed.indexOf(false);
+        return index < 0 ? tasks.length : index;
+      }
+
+      /* A resolved task's explanation is held back while a later task that tests the same idea is open. */
+      function blockedBy(index) {
+        const later = (tasks[index] && tasks[index].alsoTestedBy) || [];
+        const open = later.find(t => !state.completed[t] && frontier() >= t);
+        return open === undefined ? -1 : open;
+      }
+
+      function explanationOpen(index) {
+        return Boolean(state.completed[index]) && blockedBy(index) < 0;
+      }
+
       function renderStateStrip() {
         const i = state.inputs;
         const m = state.mem;
         const items = [
-          ["START_PB", i.start ? "1 · PRESSED" : "0 · RELEASED", i.start],
-          ["STOP_OK", i.stop ? "1 · HEALTHY" : "0 · STOPPED", i.stop],
-          ["GUARD_OK", i.guard ? "1 · CLOSED" : "0 · OPEN", i.guard],
-          ["OL_OK", i.overload ? "1 · HEALTHY" : "0 · TRIPPED", i.overload],
-          ["RUN_REQ", m.runReq ? "1 · STORED" : "0 · CLEARED", m.runReq],
-          ["MOTOR_RUN", m.motor ? "1 · COMMAND ON" : "0 · COMMAND OFF", m.motor],
-          ["RUN_LAMP", m.lamp ? "1 · COMMAND ON" : "0 · COMMAND OFF", m.lamp],
-          ["Rung 1 result", m.runReq ? "TRUE" : "FALSE", m.runReq]
+          ["START_PB", i.start ? "1 · PRESSED" : "0 · RELEASED", i.start, i.start ? "Start button is held down on this scan." : "Start button not pressed (a momentary button springs back)."],
+          ["STOP_OK", i.stop ? "1 · HEALTHY" : "0 · STOPPED", i.stop, i.stop ? "Stop not pressed: its N.C. circuit is closed." : "Stop pressed (or wire broken): circuit open."],
+          ["GUARD_OK", i.guard ? "1 · CLOSED" : "0 · OPEN", i.guard, i.guard ? "Guard closed: this permissive is healthy." : "Guard open: this permissive is lost."],
+          ["OL_OK", i.overload ? "1 · HEALTHY" : "0 · TRIPPED", i.overload, i.overload ? "Motor overload relay not tripped." : "Motor overload relay has tripped."],
+          ["RUN_REQ", m.runReq ? "1 · STORED" : "0 · CLEARED", m.runReq, m.runReq ? "Internal run-request memory bit is set." : "No run request is stored.", "RUN_REQ"],
+          ["MOTOR_RUN", m.motor ? "1 · COMMAND ON" : "0 · COMMAND OFF", m.motor, m.motor ? "PLC commands the motor contactor ON (not proof that it turns)." : "Motor contactor output is commanded OFF.", "MOTOR_RUN"],
+          ["RUN_LAMP", m.lamp ? "1 · COMMAND ON" : "0 · COMMAND OFF", m.lamp, m.lamp ? "Running lamp output is commanded ON." : "Running lamp output is commanded OFF.", "RUN_LAMP"],
+          ["Rung 1 result", m.runReq ? "TRUE" : "FALSE", m.runReq, m.runReq ? "A complete TRUE path reaches the RUN_REQ coil." : "No complete TRUE path reaches the RUN_REQ coil.", "RUNG1"]
         ];
-        els.stateStrip.innerHTML = items.map(item => `
-          <div class="state-item ${item[2] ? "is-on" : "is-off"}">
-            <span>${esc(item[0])}</span><strong>${esc(item[1])}</strong>
-          </div>`).join("");
+        els.stateStrip.innerHTML = items.map(item => {
+          const hidden = Boolean(item[4]) && tagHidden(item[4]);
+          const meaning = hidden
+            ? (state.stage === 2 ? "Depends on the missing Rung 2 instruction." : "Hidden: predict it, then check.")
+            : item[3];
+          return `
+          <div class="state-item ${hidden ? "is-hidden" : item[2] ? "is-on" : "is-off"}">
+            <span>${esc(item[0])}</span><strong>${hidden ? "? · PREDICT" : esc(item[1])}</strong><small>${esc(meaning)}</small>
+          </div>`;
+        }).join("");
       }
 
       function renderScanStory() {
         const i = state.inputs;
         const m = state.mem;
         if (!els.scanStory) return;
+        const scope = hiddenScope();
         const inputSummary = `START_PB=${i.start ? 1 : 0}, STOP_OK=${i.stop ? 1 : 0}, GUARD_OK=${i.guard ? 1 : 0}, OL_OK=${i.overload ? 1 : 0}`;
-        const rungOneSummary = `Rung 1 evaluates the permissives and the Start/Hold branches, then writes RUN_REQ=${m.runReq ? 1 : 0}. Rung 2 reads that value and writes MOTOR_RUN=${m.motor ? 1 : 0}.`;
-        const outputSummary = m.motor
+        let rungOneSummary = `Rung 1 evaluates the permissives and the Start/Hold branches, then writes RUN_REQ=${m.runReq ? 1 : 0}. Rung 2 reads that value and writes MOTOR_RUN=${m.motor ? 1 : 0}.`;
+        let outputSummary = m.motor
           ? "The output module receives an ON command for the motor-control circuit. A separate feedback input would be needed to prove that the physical motor is rotating."
           : "The output module receives an OFF command for the motor-control circuit.";
+        if (scope === "all") {
+          rungOneSummary = "Rung 1 evaluates the permissives and the Start/Hold branches, then writes RUN_REQ = ?. Rung 2 reads that value and writes MOTOR_RUN = ?. These results are your prediction; they appear after you check.";
+          outputSummary = "The output module receives the MOTOR_RUN command (? until you check). A separate feedback input would be needed to prove that the physical motor is rotating.";
+        } else if (scope === "outputs") {
+          rungOneSummary = `Rung 1 evaluates the permissives and the Start/Hold branches, then writes RUN_REQ=${m.runReq ? 1 : 0}. The right-side instruction of Rung 2 is missing, so what it writes to MOTOR_RUN depends on your choice (?).`;
+          outputSummary = "The output module receives whatever MOTOR_RUN holds after Rung 2 is solved (? until the instruction is chosen).";
+        }
         els.scanStory.innerHTML = `
           <div class="scan-card"><b>1 · Read inputs</b><span>${esc(inputSummary)}</span></div>
           <div class="scan-card"><b>2 · Solve rungs in order</b><span>${esc(rungOneSummary)}</span></div>
           <div class="scan-card"><b>3 · Update outputs</b><span>${esc(outputSummary)}</span></div>`;
+        /* The holding-contact note repeats the Task 1 hint and names the writing instruction (Task 2). */
+        const showNote = state.finished || (state.completed[0] && state.completed[1]);
+        els.scanModelNote.hidden = !showNote;
+        els.scanModelNeutral.hidden = showNote;
       }
 
       function renderRung() {
         const titles = ["Rung 1 · Permissives and holding circuit", "Rung 2 · Motor output command", "Rung 3 · Running indication command"];
         const svgs = [rungOneSvg, rungTwoSvg, rungThreeSvg];
         const result = currentRungResult();
+        const scope = hiddenScope();
+        const rungHidden = scope === "all" || (scope === "outputs" && state.rung > 0);
         els.rungTitle.textContent = titles[state.rung];
         els.rungCounter.textContent = `Rung ${state.rung + 1} of 3`;
-        els.rungResult.textContent = result ? "TRUE rung result" : "FALSE rung result";
+        els.rungResult.textContent = rungHidden ? "Rung result ? (hidden until you check)" : result ? "TRUE rung result" : "FALSE rung result";
         els.ladderScroll.innerHTML = svgs[state.rung]();
         els.previousRung.disabled = state.rung === 0;
         els.nextRung.disabled = state.rung === 2;
         els.scrollCue.hidden = state.rung === 2;
+        els.ladderNote.hidden = !scope;
+        els.ladderNote.textContent = scope === "all"
+          ? "Prediction mode: TRUE/FALSE colours and coil values are hidden on all three rungs until you check your answer. Use the input values in the PLC data table and the Given values."
+          : scope === "outputs"
+            ? "Rung 2 has no right-side instruction yet, so MOTOR_RUN and RUN_LAMP (Rung 3) are shown without results until you complete the rung."
+            : "";
       }
 
       function renderTestContext() {
