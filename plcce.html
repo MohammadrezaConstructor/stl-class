@@ -11,54 +11,107 @@
   .panel { max-width: 860px; margin: 0 auto; background: #fff;
     border: 1px solid #d9e0e6; border-radius: 12px; padding: 24px; }
   h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
   .sub { color: #62707d; font-size: 14px; margin: 0 0 18px; }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+    border-radius: 50%; background: #1c64f2; color: #fff; font-size: 13px; font-weight: 700; margin-right: 6px; }
+  .block { border-top: 1px solid #e4e7eb; padding-top: 18px; margin-top: 22px; }
+  .block > p { font-size: 14px; margin: 0 0 10px; }
+  .note { font-size: 13px; color: #62707d; }
 
+  /* 1 · The problem */
+  .problem { border: 1px solid #d9e0e6; border-left: 4px solid #15445f; border-radius: 8px;
+    background: #fbfcfd; padding: 14px 16px; font-size: 14.5px; }
+  .problem p { margin: 0 0 10px; }
+  .problem p:last-child { margin-bottom: 0; }
+  .c, .a { border-radius: 4px; padding: 1px 3px; }
+  .c { background: #fff3bf; box-shadow: inset 0 -2px 0 #f59f00; }
+  .a { background: #d3f9d8; box-shadow: inset 0 -2px 0 #2f9e44; }
+  .c sup, .a sup { font-size: 10px; font-weight: 700; color: #52606d; margin-left: 2px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: #52606d; margin-top: 8px; }
+
+  /* 2 · From the problem to rules */
+  .anatomy { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
+  .anatomy div { border: 1px solid #d9e0e6; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; }
+  .anatomy .if { border-top: 4px solid #f59f00; }
+  .anatomy .then { border-top: 4px solid #2f9e44; }
+  .anatomy b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .devices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: 13.5px; }
+  .devices div { background: #f7f9fb; border-radius: 8px; padding: 10px 12px; }
+  .devices ul { margin: 4px 0 0; padding-left: 18px; }
+  .ruletable { display: grid; gap: 8px; }
+  .rt-row { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 10px; align-items: start;
+    border: 1px solid #d9e0e6; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; }
+  .rt-row.head { border: 0; padding: 0 12px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: #7b8794; }
+  .rt-row .from { grid-column: 2 / -1; font-size: 12.5px; color: #62707d; font-style: italic; }
+  .rt-num { font-weight: 700; color: #52606d; }
+  .rt-if { background: #fff8db; border-radius: 6px; padding: 4px 8px; }
+  .rt-then { background: #ebfbee; border-radius: 6px; padding: 4px 8px; }
+  .kw { font-weight: 700; color: #1c64f2; }
+
+  /* 3 · Try it */
+  .modes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .mode { background: #fff; color: #3e4c59; border: 1px solid #cbd2d9; }
+  .mode.active { background: #eff5ff; border-color: #1c64f2; color: #174ea6; }
   .controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
-  button { font-size: 14px; font-weight: 600; border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
+  button { font: inherit; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
+  button:focus-visible, select:focus-visible { outline: 3px solid rgba(28,100,242,.35); outline-offset: 2px; }
   .btn-start { background: #1c64f2; color: #fff; }
   .btn-start:disabled { background: #aec4f5; cursor: default; }
   .btn-reset { background: #e4e7eb; color: #3e4c59; }
   .badge-state { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-    padding: 6px 12px; border-radius: 8px; background: #e4e7eb; color: #616e7c; }
+    padding: 6px 12px; border-radius: 8px; background: #e4e7eb; color: #7b8794; }
   .badge-state.fill  { background: #d0ebff; color: #1971c2; }
   .badge-state.mix   { background: #e5dbff; color: #6741d9; }
-  .badge-state.drain { background: #ffe8cc; color: #c2410c; }
+  .badge-state.drain { background: #ffe8cc; color: #e8590c; }
   .timer { font-family: "Courier New", monospace; font-size: 22px; font-weight: 700;
     background: #15445f; color: #ffd43b; padding: 6px 14px; border-radius: 8px; letter-spacing: 2px; }
   .speed { font-size: 13px; color: #62707d; display: flex; align-items: center; gap: 6px; }
   select { padding: 5px 8px; border: 1px solid #cbd2d9; border-radius: 6px; font-size: 13px; }
 
   .main { display: flex; gap: 24px; flex-wrap: wrap; }
-  .vis { flex: 1 1 340px; }
-  .side { flex: 1 1 240px; }
+  .vis { flex: 1 1 320px; min-width: 0; }
+  .side { flex: 1 1 260px; min-width: 0; }
 
   .section-title { font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
-    color: #616e7c; margin: 0 0 10px; }
+    color: #7b8794; margin: 0 0 10px; }
+  .section-title small { text-transform: none; letter-spacing: 0; }
+
+  .cond-item { border: 1px solid #d9e0e6; border-radius: 10px; padding: 9px 12px; margin-bottom: 8px; }
+  .cond-item .cname { font-size: 14px; font-weight: 600; }
+  .cond-item .cval { font-size: 12.5px; color: #62707d; }
+  .cond-item .cval b.t { color: #2b8a3e; }
+  .cond-item .cval b.f { color: #c92a2a; }
+  .seg { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+  .seg button { padding: 6px 10px; font-size: 13px; background: #fff; border: 1px solid #cbd2d9; color: #3e4c59; }
+  .seg button[aria-pressed="true"] { background: #fff3bf; border-color: #f59f00; color: #1f2933; }
 
   .out { display: flex; align-items: center; gap: 12px; border: 1px solid #d9e0e6;
-    border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; }
-  .ind { width: 36px; height: 36px; border-radius: 50%; background: #d2d6db;
+    border-radius: 10px; padding: 9px 14px; margin-bottom: 8px; }
+  .ind { width: 32px; height: 32px; border-radius: 50%; background: #d2d6db;
     border: 3px solid #b4bcc4; transition: all .15s; flex-shrink: 0; }
   .ind.on[data-kind="valve"]  { background: #2f9e44; border-color: #2b8a3e; box-shadow: 0 0 14px rgba(47,158,68,.6); }
   .ind.on[data-kind="motor"]  { background: #6741d9; border-color: #5f3dc4; box-shadow: 0 0 14px rgba(103,65,217,.6); }
-  .ind.on[data-kind="sensor"] { background: #ffd43b; border-color: #f59f00; box-shadow: 0 0 14px rgba(245,159,0,.6); }
   .out .olabel { font-size: 14px; font-weight: 600; }
   .out .ostate { font-size: 12px; color: #62707d; }
+
+  .change { margin: 16px 0 12px; border-radius: 8px; padding: 10px 14px; font-size: 14px;
+    background: #eff5ff; border: 1px solid #cfe0ff; }
+  .change:empty { display: none; }
 
   .rulecard { border: 1px solid #d9e0e6; border-left: 4px solid #c3ccd5; border-radius: 8px;
     padding: 12px 14px; margin-bottom: 10px; background: #fbfcfd; transition: all .15s; }
   .rulecard.active { border-left-color: #1c64f2; background: #eff5ff; }
-  .rulehead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .rulehead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
   .rulenum { font-size: 12px; font-weight: 700; color: #52606d; }
-  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #e4e7eb; color: #52606d; }
+  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #e4e7eb; color: #7b8794; }
   .badge.on { background: #d0ebff; color: #1971c2; }
   .ruletext { font-size: 14px; }
-  .kw { font-weight: 700; color: #1c64f2; }
   .cond { display: inline-block; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
   .cond.true  { background: #d3f9d8; color: #2b8a3e; }
   .cond.false { background: #ffe3e3; color: #c92a2a; }
 
-  .scan { margin-top: 14px; font-size: 12px; color: #616e7c; display: flex; align-items: center; gap: 6px; }
+  .scan { margin-top: 14px; font-size: 12px; color: #7b8794; display: flex; align-items: center; gap: 6px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: #1c64f2; animation: pulse 1.2s infinite; flex-shrink: 0; }
   @keyframes pulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
 
@@ -72,1201 +125,254 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .motorbox { transition: fill .2s, stroke .2s; }
   .motorbox.run { fill: #6741d9; stroke: #5f3dc4; }
+  [hidden] { display: none !important; }
 
-  /* ---------- Teaching layer (same palette and shapes as the simulator above) ---------- */
-  a { color: #1c64f2; }
-  :focus-visible { outline: 3px solid #1c64f2; outline-offset: 2px; border-radius: 4px; }
-  h2.section-title { font-weight: 700; }
-  .section-q { font-size: 13px; color: #52606d; font-style: italic; margin: -6px 0 10px; }
-  .block { margin-top: 28px; }
-  .mini { display: block; font-size: 12px; color: #52606d; margin: 2px 0; }
-  .muted { color: #616e7c; }
-  .tag { font-family: "Courier New", monospace; font-weight: 700; font-size: 12px; color: #15445f;
-    background: #eef3f7; padding: 0 4px; border-radius: 4px; white-space: nowrap; }
-  .ql { color: #1c64f2; }
-  .chg { background: #fff3bf; color: #1f2933; padding: 0 4px; border-radius: 3px; font-weight: 600; }
-  .btn-reset:disabled { opacity: .5; cursor: default; }
-  .btn-small { font-size: 12px; padding: 6px 12px; }
-
-  /* Page question panel */
-  .qpanel { border: 1px solid #d9e0e6; border-left: 4px solid #1c64f2; background: #eff5ff;
-    border-radius: 10px; padding: 16px 18px; margin: 0 0 18px; }
-  .mainq { font-size: 18px; font-weight: 700; color: #15445f; margin: 0 0 10px; line-height: 1.35; }
-  .qgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; }
-  .qh { font-size: 13px; margin: 8px 0 4px; }
-  .qcount { font-weight: 600; color: #52606d; font-size: 12px; margin-left: 4px; }
-  .subq, .outcomes, .howto { margin: 0; padding-left: 20px; font-size: 13px; }
-  .subq li, .outcomes li, .howto li { margin-bottom: 4px; }
-  .subq .st { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 10px;
-    background: #e4e7eb; color: #52606d; white-space: nowrap; }
-  .subq li.done .st { background: #d3f9d8; color: #2b8a3e; }
-  details > summary { cursor: pointer; font-weight: 600; font-size: 13px; }
-  .prereq { margin-top: 10px; font-size: 13px; }
-  .prereq ul { margin: 6px 0 0; padding-left: 20px; }
-
-  /* Extra controls */
-  .controls2 { margin-top: -4px; gap: 10px 14px; }
-  .chk { font-size: 13px; color: #3e4c59; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-  .chk input { width: 16px; height: 16px; margin: 0; }
-  .scanchip { font-family: "Courier New", monospace; font-size: 12px; color: #3e4c59; background: #f4f6f8;
-    border: 1px solid #d9e0e6; border-radius: 8px; padding: 5px 10px; }
-  .scan.paused .dot { animation: none; opacity: .35; }
-
-  /* Pause & predict, quiz */
-  .predict { border: 2px solid #f59f00; background: #fff9db; border-radius: 10px; padding: 14px 16px; margin: 0 0 16px; }
-  .predict h2:focus { outline: none; }
-  .qline { margin: 0 0 4px; font-size: 14px; }
-  .opts { display: grid; gap: 6px; margin: 8px 0; padding: 0; list-style: none; }
-  .opt { display: block; width: 100%; text-align: left; font-size: 13.5px; font-weight: 500; line-height: 1.4;
-    background: #fff; border: 1px solid #cbd2d9; border-radius: 8px; color: #1f2933; padding: 9px 12px; }
-  button.opt:hover { border-color: #1c64f2; background: #eff5ff; }
-  .opt.right { border-color: #2b8a3e; background: #ebfbee; }
-  .opt.wrong { border-color: #c92a2a; background: #fff5f5; }
-  .optl { display: inline-block; min-width: 18px; font-weight: 700; color: #52606d; }
-  .why { display: block; font-size: 12.5px; color: #3e4c59; margin-top: 3px; }
-  .verdict { font-weight: 700; margin: 6px 0; }
-  .verdict:focus { outline: none; }
-  .model { border-left: 4px solid #2f9e44; background: #ebfbee; padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 6px; }
-  .quiz-q { border: 1px solid #d9e0e6; border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; background: #fbfcfd; }
-  .qhead { font-size: 14px; margin-bottom: 4px; }
-  .score { font-size: 13px; background: #f4f6f8; border-radius: 8px; padding: 8px 12px; margin: 0 0 10px; }
-
-  /* Process caption, inputs, timer card */
-  .cap { font-size: 13px; color: #3e4c59; margin: 2px 0 12px; }
-  .out.small { padding: 7px 12px; }
-  .out.small .ind { width: 26px; height: 26px; }
-  .ind.on[data-kind="button"] { background: #1c64f2; border-color: #1a56db; box-shadow: 0 0 14px rgba(28,100,242,.5); }
-  .note { font-size: 12px; color: #616e7c; margin: 2px 0 0; }
-  .tcard { border: 1px solid #d9e0e6; border-radius: 10px; padding: 10px 14px; }
-  .tgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; text-align: center; }
-  .tval { font-family: "Courier New", monospace; font-weight: 700; font-size: 16px; color: #15445f; }
-  .tlab { font-size: 11px; color: #52606d; line-height: 1.2; }
-  .bar { height: 10px; background: #e4e7eb; border-radius: 5px; overflow: hidden; margin: 8px 0 6px; }
-  .bar > i { display: block; height: 100%; background: #6741d9; }
-  .tmean { font-size: 12.5px; color: #3e4c59; margin: 0; }
-
-  /* What just happened? */
-  .live { font-size: 13.5px; font-weight: 600; color: #15445f; background: #eff5ff; border-radius: 8px; padding: 8px 12px; margin: 0 0 8px; }
-  .narr { border: 1px solid #d9e0e6; border-left: 4px solid #15445f; border-radius: 10px; padding: 12px 16px; background: #fbfcfd; }
-  .narr h3 { font-size: 14px; margin: 0; }
-  .narr ol { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; }
-  .narr li { margin-bottom: 6px; }
-
-  /* Sequence map */
-  .stepmap { display: flex; align-items: stretch; gap: 4px; }
-  .stepcard { flex: 1 1 0; min-width: 0; border: 1px solid #d9e0e6; border-top: 4px solid #c3ccd5; border-radius: 8px;
-    padding: 9px 10px; background: #fbfcfd; font-size: 12.5px; }
-  .stepcard p { margin: 4px 0; }
-  .stepcard.active { box-shadow: 0 0 0 2px #1c64f2; background: #fff; }
-  .stepcard.fill  { border-top-color: #1971c2; }
-  .stepcard.mix   { border-top-color: #6741d9; }
-  .stepcard.drain { border-top-color: #e8590c; }
-  .stephead { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; }
-  .stepno { font-size: 11px; color: #52606d; font-weight: 700; }
-  .now { display: block; margin-top: 4px; font-weight: 600; color: #15445f; background: #fff3bf; border-radius: 4px; padding: 2px 6px; }
-  .arrow { align-self: center; color: #616e7c; font-size: 18px; font-weight: 700; }
-  .loopnote { font-size: 12.5px; color: #3e4c59; margin: 6px 0 0; }
-
-  /* Rule cards: question and model answer */
-  .rulecard.watched { border-left-color: #f59f00; }
-  .rulecard.fired { border-left-color: #2f9e44; background: #ebfbee; }
-  .rulescan { font-size: 12.5px; color: #3e4c59; background: #fff; border: 1px solid #e4e7eb; border-radius: 6px; padding: 5px 8px; margin: 8px 0 0; }
-  .rulestep { margin-left: auto; font-size: 11px; color: #52606d; }
-  .ruleq { font-size: 13px; margin: 8px 0 0; }
-  .ruleq .look { display: block; font-size: 12px; color: #52606d; }
-  .locked { font-size: 12px; color: #616e7c; margin: 4px 0 0; }
-  .answer { margin-top: 6px; font-size: 13px; }
-  .answer ul { margin: 2px 0 6px; padding-left: 20px; }
-  .answer p { margin: 6px 0; }
-  .mistake { background: #fff5f5; border-left: 3px solid #c92a2a; padding: 4px 8px; border-radius: 4px; }
-
-  /* Status labels used on the rule cards */
-  .stb { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 10px; background: #e4e7eb; color: #3e4c59; margin-right: 4px; }
-  .stb.fired { background: #2f9e44; color: #fff; }
-  .stb.force { background: #d0ebff; color: #1864ab; }
-  .stb.wait { background: #ffe066; color: #5c3c00; }
-  .stb.ended, .stb.ignored { background: #ffc9c9; color: #a51111; }
-
-  /* Timing diagram */
-  .tdwrap { overflow-x: auto; border: 1px solid #d9e0e6; border-radius: 10px; background: #fff; }
-  .tdwrap svg { display: block; width: 100%; min-width: 680px; height: auto; }
-  .tdempty { padding: 16px; margin: 0; font-size: 13px; }
-  .tdbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
-
-  /* Summary, chain, bridge, glossary */
-  .sumtbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 6px 0; }
-  .sumtbl th, .sumtbl td { border: 1px solid #d9e0e6; padding: 6px 8px; text-align: left; vertical-align: top; }
-  .sumtbl th { background: #f4f6f8; font-size: 11.5px; color: #3e4c59; }
-  .chain { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; counter-reset: link; }
-  .chain li { flex: 1 1 150px; border: 1px solid #d9e0e6; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; background: #fbfcfd; position: relative; }
-  .chain li b { display: block; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: #52606d; }
-  .chain li b::before { counter-increment: link; content: counter(link) " · "; }
-  .bridge-more { margin-top: 8px; }
-  .bridge { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
-  .bridge th, .bridge td { border: 1px solid #d9e0e6; padding: 6px 8px; text-align: left; vertical-align: top; }
-  .bridge th { background: #f4f6f8; font-size: 11.5px; color: #3e4c59; }
-  pre.rung { font-family: "Courier New", monospace; font-size: 13px; line-height: 1.35; background: #15445f; color: #e6f0f7;
-    padding: 12px 14px; border-radius: 8px; overflow-x: auto; margin: 8px 0; }
-  .gloss dl { margin: 10px 0 0; font-size: 13px; }
-  .gloss dt { font-weight: 700; margin-top: 8px; }
-  .gloss dt:target { background: #fff3bf; }
-  .gloss dd { margin: 2px 0 0 0; color: #3e4c59; }
-  .answered { font-size: 13px; padding-left: 20px; margin: 0; }
-  .answered li { margin-bottom: 8px; }
-  .answered li.done::marker { color: #2b8a3e; }
-
-  @media (max-width: 700px) {
-    .qgrid { grid-template-columns: 1fr; }
-    .stepmap { flex-direction: column; }
-    .arrow { transform: rotate(90deg); }
-  }
-  @media (max-width: 640px) {
-    .sumtbl thead { display: none; }
-    .sumtbl, .sumtbl tbody, .sumtbl tr, .sumtbl td { display: block; width: 100%; }
-    .sumtbl tr { border: 1px solid #d9e0e6; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-    .sumtbl td { border: none; border-top: 1px solid #eef1f4; }
-    .sumtbl td::before { content: attr(data-label); display: block; font-size: 10.5px; font-weight: 700;
-      color: #52606d; text-transform: uppercase; letter-spacing: .04em; }
-  }
-  @media (max-width: 520px) {
-    body { padding: 10px; }
+  @media (max-width: 600px) {
+    body { padding: 12px; }
     .panel { padding: 16px; }
-    .qpanel { padding: 14px; }
-    .mainq { font-size: 16px; }
+    .anatomy, .devices { grid-template-columns: 1fr; }
+    .rt-row { grid-template-columns: 1fr; gap: 6px; }
+    .rt-row.head { display: none; }
+    .rt-row .from { grid-column: 1; }
   }
 </style>
 </head>
 <body>
 <div class="panel">
   <h1>PLC Tank Process — Sequential IF–THEN Logic</h1>
-  <p class="sub">Press Start. The PLC steps through the process by checking its rules on every scan: fill → mix → drain → ready.</p>
+  <p class="sub">Read the problem, see how it is written as four IF–THEN rules, then change the conditions and watch how the outputs follow the rules.</p>
 
-  <!-- The question this page answers -->
-  <section class="qpanel" id="pageQuestion" aria-labelledby="pqTitle">
-    <h2 class="section-title" id="pqTitle">What question does this page answer?</h2>
-    <p class="mainq">How can a <abbr title="Programmable Logic Controller">PLC</abbr> run a whole fill → mix → drain sequence just by checking a few simple IF–THEN rules over and over?</p>
-    <div class="qgrid">
-      <div>
-        <h3 class="qh">Sub-questions <span class="qcount" id="subqCount"></span></h3>
-        <ol class="subq" id="subqList"></ol>
+  <!-- 1 · The problem -->
+  <section aria-labelledby="h-problem">
+    <h2 id="h-problem"><span class="step-num">1</span>The problem</h2>
+    <div class="problem">
+      <p>Let us consider a simple tank system. The system has two inlet pipes, A and B, which fill the tank with two different liquids. There is a motor that mixes the liquids inside the tank. There is also an outlet pipe, C, which drains the mixture after mixing is complete.</p>
+      <p>The process begins <span class="c">when the operator presses the start switch<sup>R1</sup></span>. When the process starts, <span class="a">valves A and B open<sup>R1</sup></span> so that the two liquids can enter the tank. A level switch detects when the tank has reached the desired level. <span class="c">Once the tank is full<sup>R2</sup></span>, <span class="a">valves A and B close, and the motor starts mixing<sup>R2</sup></span>.</p>
+      <p>The motor runs for a fixed time, for example 30 seconds. <span class="c">When this time is complete<sup>R3</sup></span>, <span class="a">the motor stops and valve C opens<sup>R3</sup></span> to drain the tank. <span class="c">When the tank is empty<sup>R4</sup></span>, <span class="a">valve C closes<sup>R4</sup></span>, and the system is ready for the next cycle.</p>
+      <p>This example helps us understand how a PLC controls a sequence of operations. The PLC does not only turn one device on or off. It controls a process step by step.</p>
+    </div>
+    <div class="legend">
+      <span><span class="c">yellow</span> = a condition (becomes an <b>IF</b>)</span>
+      <span><span class="a">green</span> = an action (becomes a <b>THEN</b>)</span>
+      <span>R1–R4 = the rule it becomes</span>
+    </div>
+  </section>
+
+  <!-- 2 · From the problem to IF–THEN rules -->
+  <section class="block" aria-labelledby="h-rules">
+    <h2 id="h-rules"><span class="step-num">2</span>From the problem to IF–THEN rules</h2>
+    <p>Every rule the PLC uses has the same two parts:</p>
+    <div class="anatomy">
+      <div class="if"><b><span class="kw">IF</span> — the condition</b>Something the PLC can check, whose answer is only TRUE or FALSE: is the start switch pressed? Is the tank full? Are the 30 seconds over?</div>
+      <div class="then"><b><span class="kw">THEN</span> — the action</b>What the PLC does to the outputs when the condition is TRUE: open or close a valve, start or stop the motor.</div>
+    </div>
+    <div class="devices">
+      <div><b>Conditions come from the inputs</b> (what the PLC reads)
+        <ul><li>Start switch — pressed or not</li><li>Level switch — tank full or not</li><li>Tank empty — yes or no</li><li>The PLC's own 30-second timer — over or not</li></ul></div>
+      <div><b>Actions go to the outputs</b> (what the PLC drives)
+        <ul><li>Valve A — open or closed</li><li>Valve B — open or closed</li><li>Mixing motor — running or stopped</li><li>Valve C — open or closed</li></ul></div>
+    </div>
+    <p>Each highlighted condition and action in the problem becomes one rule:</p>
+    <div class="ruletable" id="ruleTable"></div>
+    <p class="note" style="margin-top:10px">The rules are used one after the other: Rule 1 → Rule 2 → Rule 3 → Rule 4 → back to Rule 1. The PLC remembers which step the process is in (Idle, Filling, Mixing or Draining), so it knows which rule comes next.</p>
+  </section>
+
+  <!-- 3 · Try it -->
+  <section class="block" aria-labelledby="h-try">
+    <h2 id="h-try"><span class="step-num">3</span>Try it: change the conditions, watch the outputs</h2>
+    <div class="modes" role="group" aria-label="How to run the process">
+      <button class="mode active" id="modeAuto" aria-pressed="true">Watch it run</button>
+      <button class="mode" id="modeManual" aria-pressed="false">Change the conditions yourself</button>
+    </div>
+    <p id="modeHelp" class="note"></p>
+
+    <div class="controls">
+      <button class="btn-start" id="startBtn">▶ Start</button>
+      <button class="btn-reset" id="resetBtn">Reset</button>
+      <span class="badge-state" id="stateBadge">Idle</span>
+      <span class="timer" id="timer">00:00:30</span>
+      <span class="speed" id="speedBox">Speed:
+        <select id="speed">
+          <option value="1">1×</option>
+          <option value="2" selected>2×</option>
+          <option value="5">5×</option>
+          <option value="10">10×</option>
+        </select>
+      </span>
+    </div>
+
+    <div class="main">
+      <div class="vis">
+        <div class="section-title">Process</div>
+        <svg viewBox="0 0 360 330" width="100%" role="img" aria-label="Tank with inlet valves A and B, a mixing motor, level switch, and outlet valve C">
+          <!-- Inlet A -->
+          <rect x="6" y="50" width="78" height="9" rx="3" fill="#8a99a8"/>
+          <rect x="28" y="44" width="18" height="21" rx="3" id="valveA" fill="#b4bcc4"/>
+          <text x="14" y="42" font-size="14" font-weight="700" fill="#15445f">A</text>
+          <!-- Inlet B -->
+          <rect x="6" y="68" width="78" height="9" rx="3" fill="#8a99a8"/>
+          <rect x="28" y="62" width="18" height="21" rx="3" id="valveB" fill="#b4bcc4"/>
+          <text x="14" y="92" font-size="14" font-weight="700" fill="#15445f">B</text>
+          <!-- pour streams -->
+          <line class="flow" id="streamA" x1="100" y1="80" x2="100" y2="120"/>
+          <line class="flow" id="streamB" x1="120" y1="80" x2="120" y2="120"/>
+
+          <!-- Tank walls -->
+          <rect x="64" y="86" width="16" height="186" fill="#15445f"/>
+          <rect x="250" y="86" width="16" height="186" fill="#15445f"/>
+          <rect x="64" y="256" width="202" height="16" fill="#15445f"/>
+
+          <!-- Liquid -->
+          <rect id="liquid" x="80" y="256" width="170" height="0" fill="#74c0fc"/>
+          <!-- graduation lines -->
+          <g stroke="#fff" stroke-width="1" opacity="0.35">
+            <line x1="80" y1="128" x2="250" y2="128"/>
+            <line x1="80" y1="170" x2="250" y2="170"/>
+            <line x1="80" y1="212" x2="250" y2="212"/>
+          </g>
+
+          <!-- Swirl (mixing) -->
+          <g class="swirl" id="swirl" fill="none" stroke="#3b6e8f" stroke-width="4" stroke-linecap="round">
+            <path d="M120 185 A45 45 0 0 1 210 185"/>
+            <path d="M210 185 L202 176 M210 185 L201 193"/>
+          </g>
+
+          <!-- Stirrer shaft + paddle -->
+          <rect x="160" y="44" width="10" height="194" fill="#2c5f7a"/>
+          <rect x="138" y="230" width="54" height="8" rx="2" fill="#2c5f7a"/>
+          <!-- Motor -->
+          <rect class="motorbox" id="motorbox" x="120" y="12" width="90" height="30" rx="5" fill="#b4bcc4" stroke="#8a99a8" stroke-width="2"/>
+          <text x="165" y="32" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">Motor</text>
+
+          <!-- Level switch -->
+          <rect x="266" y="92" width="20" height="16" rx="3" id="levelSwitch" fill="#b4bcc4"/>
+          <text x="292" y="104" font-size="12" font-weight="600" fill="#15445f">Level switch</text>
+
+          <!-- Outlet C -->
+          <rect x="266" y="238" width="86" height="9" rx="3" fill="#8a99a8"/>
+          <rect x="300" y="232" width="18" height="21" rx="3" id="valveC" fill="#b4bcc4"/>
+          <text x="330" y="266" font-size="14" font-weight="700" fill="#15445f">C</text>
+          <line class="flow flow-out" id="streamC" x1="280" y1="243" x2="352" y2="243"/>
+        </svg>
       </div>
-      <div>
-        <h3 class="qh">By the end you can…</h3>
-        <ul class="outcomes">
-          <li>describe one <a class="term" href="#g-scan">scan</a> as READ inputs → SOLVE every rule → UPDATE outputs;</li>
-          <li>name the condition that ends each <a class="term" href="#g-step">step</a>, and the rule that checks it;</li>
-          <li>explain why a rule whose IF is TRUE can still do nothing (the <a class="term" href="#g-stepmem">step memory</a>);</li>
-          <li>read a <a class="term" href="#g-timer">timer</a> as elapsed (ET), preset (PT), remaining and done (Q);</li>
-          <li>find the scan in a timing diagram where each output changes, and say which rule changed it.</li>
-        </ul>
-        <h3 class="qh">How to use this page (about 15–20 min)</h3>
-        <ol class="howto">
-          <li>Press <b>▶ Start</b> at 2× and watch one full cycle (about 20 s). Follow <a href="#narrativeSec">What just happened?</a></li>
-          <li>Tick <b>Pause &amp; predict</b> and press Start again: answer before each step change, then the page stops on the change so you can check your prediction.</li>
-          <li>Use <b>⏸ Pause</b> and <b>Step one scan</b> to read each rule’s “This scan” line in <a href="#rulesSec">Control rules</a>, scan by scan.</li>
-          <li>Press <b>Reset</b> in the middle of a cycle and read what it did.</li>
-          <li>Read the <a href="#timingSec">timing diagram</a> and the <a href="#summarySec">cycle summary</a>, then do the <a href="#quizSec">self-check</a>.</li>
-        </ol>
+
+      <div class="side">
+        <div class="section-title">Conditions <small>— inputs the PLC checks</small></div>
+        <div id="conditions"></div>
+        <div class="section-title" style="margin-top:14px;">Outputs <small>— what the PLC drives</small></div>
+        <div id="outputs"></div>
       </div>
     </div>
-    <details class="prereq">
-      <summary>What you should already know (three one-line refreshers)</summary>
-      <ul>
-        <li><b>Inputs and outputs:</b> buttons and sensors are <a class="term" href="#g-input">inputs</a> (the PLC reads them); valves and motors are <a class="term" href="#g-output">outputs</a> (the PLC writes them).</li>
-        <li><b>1 and 0:</b> 1 = ON = TRUE, 0 = OFF = FALSE.</li>
-        <li><b>AND:</b> “X AND Y” is TRUE only when X and Y are both TRUE.</li>
-      </ul>
-    </details>
-  </section>
 
-  <div class="controls">
-    <button class="btn-start" id="startBtn">▶ Start</button>
-    <button class="btn-reset" id="resetBtn">Reset</button>
-    <span class="badge-state" id="stateBadge">Idle</span>
-    <span class="timer" id="timer" title="Mix timer: remaining time (PT − ET) as hh:mm:ss">00:00:30</span>
-    <span class="speed">Speed:
-      <select id="speed" aria-label="Simulation speed">
-        <option value="1">1×</option>
-        <option value="2" selected>2×</option>
-        <option value="5">5×</option>
-        <option value="10">10×</option>
-      </select>
-    </span>
-  </div>
-  <div class="controls controls2">
-    <button class="btn-reset" id="pauseBtn" aria-pressed="false">⏸ Pause</button>
-    <button class="btn-reset" id="stepBtn" disabled>Step one scan</button>
-    <label class="chk"><input type="checkbox" id="predictMode"> Pause &amp; predict at each step change</label>
-    <span class="scanchip" id="scanChip">Scan #0</span>
-  </div>
+    <div class="change" id="change" aria-live="polite"></div>
 
-  <section class="predict" id="predictBox" hidden aria-labelledby="predictTitle">
-    <h2 class="section-title" id="predictTitle" tabindex="-1">Pause &amp; predict — the scan is held just before a step change</h2>
-    <div id="predictBody"></div>
-    <button class="btn-start" id="predictGo">Skip and continue ▶</button>
-  </section>
-
-  <div class="main">
-    <div class="vis">
-      <h2 class="section-title">Process</h2>
-      <p class="section-q">What is the tank doing right now?</p>
-      <svg viewBox="0 0 360 330" width="100%" role="img" aria-label="Tank with inlet valves A and B, a mixing motor, level switch, and outlet valve C">
-        <!-- Inlet A -->
-        <rect x="6" y="50" width="78" height="9" rx="3" fill="#8a99a8"/>
-        <rect x="28" y="44" width="18" height="21" rx="3" id="valveA" fill="#b4bcc4"/>
-        <text x="14" y="42" font-size="14" font-weight="700" fill="#15445f">A</text>
-        <!-- Inlet B -->
-        <rect x="6" y="68" width="78" height="9" rx="3" fill="#8a99a8"/>
-        <rect x="28" y="62" width="18" height="21" rx="3" id="valveB" fill="#b4bcc4"/>
-        <text x="14" y="92" font-size="14" font-weight="700" fill="#15445f">B</text>
-        <!-- pour streams -->
-        <line class="flow" id="streamA" x1="100" y1="80" x2="100" y2="120"/>
-        <line class="flow" id="streamB" x1="120" y1="80" x2="120" y2="120"/>
-
-        <!-- Tank walls -->
-        <rect x="64" y="86" width="16" height="186" fill="#15445f"/>
-        <rect x="250" y="86" width="16" height="186" fill="#15445f"/>
-        <rect x="64" y="256" width="202" height="16" fill="#15445f"/>
-
-        <!-- Liquid -->
-        <rect id="liquid" x="80" y="256" width="170" height="0" fill="#74c0fc"/>
-        <!-- graduation lines -->
-        <g stroke="#fff" stroke-width="1" opacity="0.35">
-          <line x1="80" y1="128" x2="250" y2="128"/>
-          <line x1="80" y1="170" x2="250" y2="170"/>
-          <line x1="80" y1="212" x2="250" y2="212"/>
-        </g>
-
-        <!-- Swirl (mixing) -->
-        <g class="swirl" id="swirl" fill="none" stroke="#3b6e8f" stroke-width="4" stroke-linecap="round">
-          <path d="M120 185 A45 45 0 0 1 210 185"/>
-          <path d="M210 185 L202 176 M210 185 L201 193"/>
-        </g>
-
-        <!-- Stirrer shaft + paddle -->
-        <rect x="160" y="44" width="10" height="194" fill="#2c5f7a"/>
-        <rect x="138" y="230" width="54" height="8" rx="2" fill="#2c5f7a"/>
-        <!-- Motor -->
-        <rect class="motorbox" id="motorbox" x="120" y="12" width="90" height="30" rx="5" fill="#b4bcc4" stroke="#8a99a8" stroke-width="2"/>
-        <text x="165" y="32" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">Motor</text>
-
-        <!-- Level switch -->
-        <rect x="266" y="92" width="20" height="16" rx="3" id="levelSwitch" fill="#b4bcc4"/>
-        <text x="292" y="104" font-size="12" font-weight="600" fill="#15445f">Level switch</text>
-
-        <!-- Outlet C -->
-        <rect x="266" y="238" width="86" height="9" rx="3" fill="#8a99a8"/>
-        <rect x="300" y="232" width="18" height="21" rx="3" id="valveC" fill="#b4bcc4"/>
-        <text x="330" y="266" font-size="14" font-weight="700" fill="#15445f">C</text>
-        <line class="flow flow-out" id="streamC" x1="280" y1="243" x2="352" y2="243"/>
-      </svg>
-      <p class="cap" id="procCap"></p>
-
-      <section id="timerSec" aria-labelledby="timerTitle">
-        <h2 class="section-title" id="timerTitle">Mix timer</h2>
-        <p class="section-q">How long has the motor mixed, and how much time is left?</p>
-        <div class="tcard" id="timerCard"></div>
-      </section>
-    </div>
-
-    <div class="side">
-      <h2 class="section-title">Outputs</h2>
-      <p class="section-q">What is the PLC commanding right now?</p>
-      <div id="outputs"></div>
-      <h2 class="section-title" style="margin-top:16px;">Inputs (sensors → PLC)</h2>
-      <p class="section-q">What does the PLC read on each scan?</p>
-      <div id="inputs"></div>
-      <p class="note">The drawing shows only the level switch near the top. In a real tank the “empty” signal would come from a second, low-level sensor.</p>
-    </div>
-  </div>
-
-  <section class="block" id="stepMapSec" aria-labelledby="mapTitle">
-    <h2 class="section-title" id="mapTitle">Sequence map (steps and transitions)</h2>
-    <p class="section-q">Which step is the PLC in, and which condition is it waiting for to move on?</p>
-    <div class="stepmap" id="stepMap"></div>
-    <p class="loopnote">↺ After DRAIN the PLC returns to IDLE and waits: one batch per Start press. Exactly one step is active at any time — the <a class="term" href="#g-stepmem">step memory</a> stores which one.</p>
-  </section>
-
-  <section class="block" id="narrativeSec" aria-labelledby="narrTitle">
-    <h2 class="section-title" id="narrTitle">What just happened?</h2>
-    <p class="section-q">What did the PLC read, decide and write on the latest scan — and what changed since the scan before?</p>
-    <p class="live" id="liveMsg" aria-live="polite">Press ▶ Start to begin a cycle. The PLC is already scanning: it checks all four rules every 50 ms, even in IDLE.</p>
-    <div class="narr" id="narrative"></div>
-  </section>
-
-  <section class="block" id="rulesSec" aria-labelledby="rulesTitle">
-    <h2 class="section-title" id="rulesTitle">Control rules (checked every scan)</h2>
-    <p class="section-q">On this scan, what does each rule read, is its IF TRUE or FALSE, and what does the PLC do with it?</p>
-    <p class="note" style="margin:-4px 0 10px;">Each card shows the rule (the program, never changes) and its <b>This scan</b> line (live values). ACTIVE = this rule’s THEN is what the outputs are doing now (the other cards say “not active”) · WATCHED = the condition the current step is waiting for · FIRED = the IF became TRUE and the step changed on this scan · ENDED = the PLC just left this rule’s step · not its step = nothing to do now. Pause to read a single scan.</p>
+    <div class="section-title">Control rules (checked every scan)</div>
     <div id="rules"></div>
-  </section>
 
-  <div class="scan" id="scanLine"><span class="dot"></span> <span id="scanLineTxt">PLC scanning continuously — reads inputs/sensors, evaluates each rule, drives the outputs</span></div>
-
-  <section class="block" id="timingSec" aria-labelledby="timingTitle">
-    <h2 class="section-title" id="timingTitle">Timing diagram (signal history)</h2>
-    <p class="section-q">How did every input, output, the timer and the step change over the whole cycle — and on which scan?</p>
-    <div class="tdwrap" id="timing"></div>
-    <div class="tdbar">
-      <p class="note">Horizontal axis: process time since Start, in seconds. Each scan adds one sample. Bars = 1 (ON / TRUE). Dashed lines = step changes, labelled with the rule that fired (R1–R4). Red line = the latest scan.</p>
-      <button class="btn-reset btn-small" id="clearTrace">Clear trace</button>
-    </div>
-  </section>
-
-  <section class="block" id="summarySec" aria-labelledby="sumTitle">
-    <h2 class="section-title" id="sumTitle">End-of-cycle summary</h2>
-    <p class="section-q">What happened in the whole run, and what does it prove?</p>
-    <div id="cycleSummary"></div>
-  </section>
-
-  <section class="block" id="chainSec" aria-labelledby="chainTitle">
-    <h2 class="section-title" id="chainTitle">Big picture: sensor → PLC → actuator</h2>
-    <p class="section-q">How does a physical signal become a valve or motor action in this tank?</p>
-    <p class="note" id="chainIntro"></p>
-    <ol class="chain" id="chain"></ol>
-  </section>
-
-  <section class="block" id="quizSec" aria-labelledby="quizTitle">
-    <h2 class="section-title" id="quizTitle">Self-check: predict the PLC</h2>
-    <p class="section-q">Can you predict what the PLC does next from the step, its ending condition and the inputs?</p>
-    <p class="score" id="quizScore" aria-live="polite"></p>
-    <div id="quizList"></div>
-    <button class="btn-reset btn-small" id="quizReset">Reset quiz</button>
-  </section>
-
-  <section class="block" id="bridgeSec" aria-labelledby="bridgeTitle">
-    <h2 class="section-title" id="bridgeTitle">Next: the same rules as ladder rungs</h2>
-    <p class="section-q">How will these IF–THEN rules look in a ladder diagram?</p>
-    <p style="font-size:13.5px;margin:0;">Next you will write these same four rules as <a class="term" href="#g-rung">ladder rungs</a> (in the Tank Ladder &amp; Scan-Cycle Studio). Nothing about the scan changes: the PLC still reads, solves and writes on every scan. Only the notation changes.</p>
-    <details class="bridge-more">
-      <summary>Show how each part of a rule becomes a ladder symbol, with Rule 1 as a preview</summary>
-      <table class="bridge">
-        <thead><tr><th>On this page (IF–THEN)</th><th>In ladder (next)</th></tr></thead>
-        <tbody>
-          <tr><td>IF … AND …</td><td>contacts in series</td></tr>
-          <tr><td>… OR …</td><td>contacts in parallel (a branch)</td></tr>
-          <tr><td>level switch detects full</td><td>normally open (N.O.) contact on <code class="tag">LEVEL_HIGH</code> — TRUE while the bit is 1</td></tr>
-          <tr><td>tank <b>not</b> full</td><td>normally closed (N.C.) contact on <code class="tag">LEVEL_HIGH</code> — TRUE while the bit is 0</td></tr>
-          <tr><td>THEN open valve A</td><td>output coil <code class="tag">PA_CMD</code></td></tr>
-          <tr><td>“Start activated” (remembered)</td><td>a holding (seal-in) contact, or SET/RESET of a step bit</td></tr>
-          <tr><td>which step am I in?</td><td>step bits <code class="tag">STEP_FILL</code>, <code class="tag">STEP_MIX</code>, <code class="tag">STEP_DRAIN</code></td></tr>
-          <tr><td>motor mixed for 30 s</td><td>an on-delay timer TON: IN = <code class="tag">STEP_MIX</code>, PT = 30 s; its Q is Rule 3’s IF</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:13px;margin:8px 0 0;">Preview — Rule 1 written as two rungs (read each rung left to right: contacts are the IF, the coil is the THEN):</p>
-  <pre class="rung" aria-label="Ladder preview of Rule 1">     START_PB      LEVEL_HIGH              STEP_FILL
- |------| |-----+------|/|-------------------( )------|
- |              |
- |    STEP_FILL |
- |------| |-----+
-
-     STEP_FILL                               PA_CMD
- |------| |----------------------------------( )------|</pre>
-      <p class="note">Rung 1: STEP_FILL is ON while (Start is pressed OR STEP_FILL was already ON) AND the level switch does NOT read full. The parallel STEP_FILL contact is how the PLC remembers the short Start press. Rung 2: valve A is commanded open while STEP_FILL is ON (PB_CMD gets the same rung). In the full program you will also add a condition so that Start only works from IDLE.</p>
-    </details>
-  </section>
-
-  <details class="block gloss" id="glossarySec">
-    <summary>Glossary — every PLC word used on this page</summary>
-    <dl id="glossary"></dl>
-  </details>
-
-  <section class="block" id="answeredSec" aria-labelledby="ansTitle">
-    <h2 class="section-title" id="ansTitle">You have now answered…</h2>
-    <p class="section-q">What are the short answers to this page’s questions?</p>
-    <div class="model" id="mainAnswer"></div>
-    <ol class="answered" id="answeredList" style="margin-top:10px;"></ol>
+    <div class="scan"><span class="dot"></span> The PLC checks all four rules again and again — many times per second. One check of all the rules is called a scan.</div>
   </section>
 </div>
 
 <script>
-  const MIX_TIME = 30;                 // seconds the motor mixes (from the scenario)
+  const MIX_TIME = 30;                 // seconds the motor mixes (from the problem)
   const FILL_RATE = 22;                // % per second while A & B are open
   const DRAIN_RATE = 26;               // % per second while C is open
 
+  // The four rules, as written from the problem text.
+  const RULES = [
+    { cond: "the start switch is pressed AND the tank is not full", act: "open valves A and B",
+      from: "“The process begins when the operator presses the start switch. When the process starts, valves A and B open…”" },
+    { cond: "the level switch detects that the tank is full", act: "close valves A and B, and start the motor",
+      from: "“Once the tank is full, valves A and B close, and the motor starts mixing.”" },
+    { cond: "the motor has mixed for 30 seconds", act: "stop the motor, and open valve C",
+      from: "“When this time is complete, the motor stops and valve C opens to drain the tank.”" },
+    { cond: "the tank is empty", act: "close valve C — ready for the next cycle",
+      from: "“When the tank is empty, valve C closes, and the system is ready for the next cycle.”" }
+  ];
+
   // --- Process state ---
+  let mode = "auto";                   // auto: the process runs by itself | manual: the student sets the conditions
   let phase = "idle";                  // idle | fill | mix | drain
   let level = 0;                       // 0–100 %
-  let timer = MIX_TIME;                // mixing countdown
+  let timer = MIX_TIME;                // mixing countdown (automatic mode)
   let speed = 2;
   let running = false;
+  let startUntil = 0;                  // automatic mode: Start reads as pressed until this time (ms)
+  let manual = { start: false, tank: "empty", timeDone: false };
   let last = performance.now();
 
   // --- DOM references ---
-  const liquid   = document.getElementById("liquid");
-  const swirl    = document.getElementById("swirl");
-  const motorbox = document.getElementById("motorbox");
-  const valveA   = document.getElementById("valveA");
-  const valveB   = document.getElementById("valveB");
-  const valveC   = document.getElementById("valveC");
-  const lvlSw    = document.getElementById("levelSwitch");
-  const streamA  = document.getElementById("streamA");
-  const streamB  = document.getElementById("streamB");
-  const streamC  = document.getElementById("streamC");
-  const timerEl  = document.getElementById("timer");
-  const stateEl  = document.getElementById("stateBadge");
-  const startBtn = document.getElementById("startBtn");
-  const rulesEl  = document.getElementById("rules");
-  const outputsEl= document.getElementById("outputs");
   const $ = id => document.getElementById(id);
+  const liquid = $("liquid"), swirl = $("swirl"), motorbox = $("motorbox");
+  const valveA = $("valveA"), valveB = $("valveB"), valveC = $("valveC"), lvlSw = $("levelSwitch");
+  const streamA = $("streamA"), streamB = $("streamB"), streamC = $("streamC");
+  const timerEl = $("timer"), stateEl = $("stateBadge"), startBtn = $("startBtn");
+  const rulesEl = $("rules"), outputsEl = $("outputs"), condEl = $("conditions"), changeEl = $("change");
 
   function pill(t, txt) { return `<span class="cond ${t ? "true" : "false"}">${txt}</span>`; }
   function fmtTime(s) { return "00:00:" + String(Math.ceil(s)).padStart(2, "0"); }
 
-  // --- One PLC scan: advance the process per the four rules ---
+  $("ruleTable").innerHTML = `<div class="rt-row head"><span>Rule</span><span>IF (condition)</span><span>THEN (action)</span></div>` +
+    RULES.map((r, i) => `<div class="rt-row"><span class="rt-num">Rule ${i + 1}</span>
+      <span class="rt-if"><span class="kw">IF</span> ${r.cond}</span>
+      <span class="rt-then"><span class="kw">THEN</span> ${r.act}</span>
+      <span class="from">From the problem: ${r.from}</span></div>`).join("");
+
+  // --- The conditions the PLC reads, in either mode ---
+  function conditions() {
+    if (mode === "manual") {
+      return { start: manual.start, full: manual.tank === "full", empty: manual.tank === "empty", timeDone: manual.timeDone };
+    }
+    return { start: performance.now() < startUntil, full: level >= 100, empty: level <= 0, timeDone: timer <= 0 };
+  }
+
+  // --- One PLC scan: check the rule for the current step; if its IF is TRUE, do its THEN ---
+  function scan() {
+    const c = conditions();
+    let fired = -1;
+    if (phase === "idle" && c.start && !c.full) { phase = "fill"; fired = 0; }
+    else if (phase === "fill" && c.full) { phase = "mix"; timer = MIX_TIME; manual.timeDone = false; fired = 1; }
+    else if (phase === "mix" && c.timeDone) { phase = "drain"; fired = 2; }
+    else if (phase === "drain" && c.empty) { phase = "idle"; running = false; timer = MIX_TIME; fired = 3; }
+    if (fired >= 0) changeEl.innerHTML = firedText(fired);
+    return fired;
+  }
+  function firedText(i) {
+    return `<b>Rule ${i + 1} fired.</b> Its IF part is now TRUE (${RULES[i].cond}), so the PLC carried out its THEN part: <b>${RULES[i].act}</b>.`;
+  }
+
+  // --- Automatic mode: the process itself moves the level and the timer ---
   function tick(dt) {
-    if (phase === "fill") {                       // Rule 1 active: A & B open, liquid rising
-      level = Math.min(100, level + FILL_RATE * dt);
-      if (level >= 100) { phase = "mix"; timer = MIX_TIME; }   // Rule 2: full → close A,B, start motor
-    } else if (phase === "mix") {                 // Rule 2 active: motor mixing
-      timer = Math.max(0, timer - dt);
-      if (timer <= 0) { phase = "drain"; }                     // Rule 3: 30s done → stop motor, open C
-    } else if (phase === "drain") {               // Rule 3 active: C open, liquid falling
-      level = Math.max(0, level - DRAIN_RATE * dt);
-      if (level <= 0) { phase = "idle"; running = false; }     // Rule 4: empty → close C, ready
+    if (phase === "fill") level = Math.min(100, level + FILL_RATE * dt);
+    else if (phase === "mix") timer = Math.max(0, timer - dt);
+    else if (phase === "drain") level = Math.max(0, level - DRAIN_RATE * dt);
+  }
+
+  // --- Manual mode: the student changes one condition; the PLC scans at once ---
+  const NEXT = { idle: 0, fill: 1, mix: 2, drain: 3 };
+  function setCondition(key, value, label) {
+    manual[key] = value;
+    // Keep scanning until no rule fires, as the PLC would on its following scans.
+    const fired = [];
+    for (let n = 0; n < 4; n++) { const f = scan(); if (f < 0) break; fired.push(f); }
+    if (fired.length) {
+      changeEl.innerHTML = `You changed <b>${label}</b>. ` + fired.map((f, k) => (k ? "On the next scan, " : "") + firedText(f)).join(" ");
+    } else {
+      const labels = { idle: "Idle", fill: "Filling", mix: "Mixing", drain: "Draining" };
+      changeEl.innerHTML = `You changed <b>${label}</b>. No output changed: the process is in the <b>${labels[phase]}</b> step, so the PLC is waiting for Rule ${NEXT[phase] + 1}, and its IF part (${RULES[NEXT[phase]].cond}) is still FALSE.`;
     }
+    render();
   }
-
-  // ======================================================================
-  // Teaching layer. tick() above is the process and stays unchanged; the
-  // code below records every scan and explains it. Lesson text lives in
-  // the tables that follow, the functions only add live values.
-  // ======================================================================
-  const SCAN_S = 0.05;                 // real time between scans (the 50 ms loop at the bottom)
-  const STEP_ORDER = ["idle", "fill", "mix", "drain"];   // Rule k+1 ends STEP_ORDER[k]; its THEN holds in the next step
-  const TRACE_MAX = 2400;              // cap on stored samples (a 1× cycle is about 800 scans)
-  const PROGRESS_KEY = "plcce.progress.v1";
-
-  const STEPS = {
-    idle:  { no: 0, name: "IDLE",  cls: "",      phys: "everything closed and stopped",
-             does: "All outputs OFF. Nothing moves; the PLC waits.",
-             q: "What does the PLC do while it waits?", ends: "▶ Start is pressed (tank not full)" },
-    fill:  { no: 1, name: "FILL",  cls: "fill",  phys: "A and B open — liquid flows in",
-             does: "Valves A and B open: liquid flows in, the level rises.",
-             q: "Which outputs are ON while the tank fills?", ends: "the level switch reads FULL" },
-    mix:   { no: 2, name: "MIX",   cls: "mix",   phys: "the motor stirs; all valves closed",
-             does: "Motor ON, A and B closed. The 30 s mix timer runs.",
-             q: "Which outputs are ON while mixing, and what is counting?", ends: "the mix timer is done (ET reaches 30 s)" },
-    drain: { no: 3, name: "DRAIN", cls: "drain", phys: "C open — liquid flows out",
-             does: "Motor OFF, valve C open: the level falls.",
-             q: "Which outputs are ON while the tank drains?", ends: "the tank is empty (level 0 %)" }
-  };
-
-  // One entry per rule card. cond/then/hold/why/did are used to build the live explanations.
-  const RULE_INFO = [
-    { q: "When do valves A and B open, and what keeps them open?",
-      look: "this card’s “This scan” line and the Outputs panel.",
-      cond: "Start activated AND tank not full", then: "open valves A and B", hold: "keep valves A and B open",
-      why: "Start pressed with the tank not full", did: "valves A and B open",
-      answer: "A and B open on the scan that reads the Start press while the PLC is IDLE and the tank is not full. On every later scan Rule 1 is checked again: the PLC remembers the press as the FILL step and the tank is still not full, so the IF stays TRUE and A = B = 1 is written again — until the level switch reads FULL.",
-      take: ["The Start button is pressed only for an instant; the PLC remembers the press as the FILL step.",
-             "An output stays ON because its rule writes 1 again on every scan, not because it was switched on once."],
-      mistake: "Thinking the valves close when you let go of Start. The press is remembered in the step memory." },
-    { q: "When does filling stop and mixing start?",
-      look: "this card’s “This scan” line and the level-switch input.",
-      cond: "level switch detects full", then: "close A and B, start the motor and the 30 s timer", hold: "keep the motor ON and A, B closed",
-      why: "level switch reads FULL", did: "A and B closed, motor ON, 30 s timer started",
-      answer: "On the first scan on which the level switch reads FULL. In that single scan Rule 2’s IF becomes TRUE, the step changes FILL → MIX, A and B are written 0, the motor is written 1 and the 30 s timer starts.",
-      take: ["A step change happens on one particular scan: the first one on which the condition is TRUE.",
-             "All of the THEN actions (close A and B, start the motor) are written in that same scan."],
-      mistake: "Expecting the valves to close a little before or after the motor starts. Both are written in the same UPDATE." },
-    { q: "When does mixing stop and draining start?",
-      look: "this card’s “This scan” line and the Mix timer panel.",
-      cond: "motor mixed for 30 s (timer done)", then: "stop the motor, open valve C", hold: "keep the motor OFF and valve C open",
-      why: "mix timer done (30 s)", did: "motor OFF, valve C open",
-      answer: "When the mix timer is done: ET reaches PT = 30 s, so Q = 1. On that scan Rule 3 stops the motor and opens C. The level switch still reads FULL on that scan, but the PLC is now in DRAIN, so Rule 2 cannot restart the motor.",
-      take: ["A timer turns “wait 30 s” into a TRUE/FALSE condition (its done bit Q).",
-             "Nothing physical changes during MIX, so only the timer can end this step."],
-      mistake: "Thinking the level switch ends mixing. During MIX the level does not change; the timer ends the step." },
-    { q: "When does draining stop, and when is the PLC ready again?",
-      look: "this card’s “This scan” line and the Tank-empty input.",
-      cond: "tank is empty", then: "close valve C — ready for the next cycle", hold: "keep valve C closed (ready)",
-      why: "tank empty", did: "valve C closed, PLC ready",
-      answer: "On the first scan on which the tank reads empty (level 0 %). Rule 4 closes C and the step returns to IDLE. The PLC then waits: Rule 1 needs a new Start press, so the next batch does not start by itself.",
-      take: ["The end of one cycle is the starting point (IDLE) of the next.",
-             "Rule 4 is checked during the whole cycle, but it only ends the DRAIN step."],
-      mistake: "Expecting the next batch to start automatically. Without a new Start press, Rule 1’s IF stays FALSE." }
-  ];
-
-  const STATUS = {
-    fired:   { txt: "FIRED",              cls: "fired" },
-    ended:   { txt: "ENDED",              cls: "ended" },
-    force:   { txt: "IN FORCE",           cls: "force" },
-    wait:    { txt: "WATCHED",            cls: "wait" },
-    ignored: { txt: "TRUE but ignored",   cls: "ignored" },
-    off:     { txt: "not its step",       cls: "off" }
-  };
-
-  const SUBQ = [
-    { id: "scan", q: "What is a scan, and what happens in one?", href: "#narrativeSec",
-      todo: "watch about 40 scans of a running cycle, or use “Step one scan”.",
-      a: "One pass of READ inputs → SOLVE every rule → UPDATE outputs. This page does one every 50 ms; a real PLC repeats it every few milliseconds for as long as it is in RUN." },
-    { id: "always", q: "Why is every rule checked on every scan, even when nothing happens?", href: "#rulesSec",
-      todo: "run one full cycle and read the cycle summary.",
-      a: "The PLC cannot know in advance on which scan a condition will become TRUE, so it re-checks all rules every scan. In a full cycle only 4 of the hundreds of rule checks change the step; the rest find nothing new. That is what lets the PLC react within one scan of a change." },
-    { id: "step", q: "How does the PLC know which step it is in?", href: "#stepMapSec",
-      todo: "watch FILL change to MIX.",
-      a: "It stores the active step in memory (step bits such as STEP_MIX). A rule may only act in its own step: the level switch still reads FULL when draining starts, but the step memory says DRAIN, so the motor is not restarted." },
-    { id: "timer", q: "What does the timer do?", href: "#timerSec",
-      todo: "watch MIX change to DRAIN.",
-      a: "It turns “mix for 30 s” into a TRUE/FALSE condition. ET counts up during MIX, PT = 30 s is the preset, and Q (done) = 1 once ET reaches PT. Q is the IF of Rule 3. The yellow readout shows the remaining time, PT − ET." },
-    { id: "ends", q: "What ends each step?", href: "#stepMapSec",
-      todo: "complete one full cycle.",
-      a: "IDLE ends when Start is pressed (Rule 1); FILL ends when the level switch reads FULL (Rule 2); MIX ends when the timer is done (Rule 3); DRAIN ends when the tank is empty (Rule 4)." },
-    { id: "reset", q: "What happens if I press Reset in the middle of a cycle?", href: "#narrativeSec",
-      todo: "press Reset while a cycle is running.",
-      a: "Reset is not one of the four rules; it overrides them. The step is forced to IDLE, every output goes OFF and the timer is reloaded to 30 s. (This simulation also empties the tank so you can start again. A real tank would still hold its liquid.)" },
-    { id: "predict", q: "Can I predict what the PLC will do next?", href: "#quizSec",
-      todo: "answer all self-check questions, or three Pause & predict questions.",
-      a: "Yes. Ask: (1) which step is active, (2) which condition ends it, (3) is that condition TRUE on this scan? If not, the outputs stay as they are. If it is, the next step’s outputs are written in that same scan." }
-  ];
-
-  // Pause & predict: asked just before the step named by the key is entered.
-  const PREDICT = {
-    mix: {
-      q: c => `The tank is at ${fmt1(c.level)} % and still filling (A and B open). Within the next scan or two the level switch will read FULL. What will the PLC do on the scan where it reads FULL?`,
-      look: "Rule 2 in “Control rules”, and the FILL card of the sequence map.",
-      options: [
-        { t: "Start the motor, but keep A and B open until mixing is finished.",
-          why: "Then the tank would overflow. Rule 2’s THEN closes A and B and starts the motor together." },
-        { t: "Close A and B and start the motor in that same scan; the 30 s mix timer starts.", ok: true,
-          why: "Rule 2’s IF is TRUE on that scan, so its THEN is written in the UPDATE part of the same scan: A 1 → 0, B 1 → 0, motor 0 → 1, and the timer starts at ET = 0 s." },
-        { t: "Close A and B now, and start the motor 30 s later.",
-          why: "The 30 s is the mixing time. It starts when the motor starts, not before it." },
-        { t: "Nothing — the PLC waits for the operator to press Start again.",
-          why: "Start is only needed to leave IDLE. Every later step ends automatically when its condition becomes TRUE." }
-      ],
-      model: "On the first scan with LEVEL_HIGH = 1, Rule 2 fires: step FILL → MIX, PA_CMD and PB_CMD 1 → 0, MOTOR_CMD 0 → 1, and the mix timer starts (ET = 0 s of 30 s)." },
-    drain: {
-      q: c => `The motor has mixed for ${fmt1(c.et)} s of 30 s. What happens on the scan where the timer is done (ET reaches 30 s, Q = 1)?`,
-      look: "The mix-timer panel and Rule 3 in “Control rules”.",
-      options: [
-        { t: "The timer starts again and the motor mixes for another 30 s.",
-          why: "Nothing sends the PLC back into MIX. The step memory moves on to DRAIN, and the timer is reloaded only by Start or Reset." },
-        { t: "The level switch turns OFF first, and that opens valve C.",
-          why: "Cause and effect are reversed. C opens because the timer is done; the level switch turns OFF later, because the tank is draining." },
-        { t: "Motor OFF and valve C open in that same scan; the level starts to fall.", ok: true,
-          why: "Rule 3’s IF (timer done) is TRUE, so the step changes MIX → DRAIN: MOTOR_CMD 1 → 0 and PC_CMD 0 → 1 in one UPDATE." },
-        { t: "Valve C opens, but the motor keeps stirring until the tank is empty.",
-          why: "Rule 3’s THEN stops the motor AND opens C. (Some real processes do stir while draining, but this program does not.)" }
-      ],
-      model: "On the scan where ET reaches 30 s, Q = 1 and Rule 3 fires: step MIX → DRAIN, MOTOR_CMD 1 → 0, PC_CMD 0 → 1. The level switch still reads FULL on that scan, but the step memory says DRAIN, so Rule 2 cannot restart the motor." },
-    idle: {
-      q: c => `The level is ${fmt1(c.level)} % and falling (valve C open). What happens on the scan where the tank reads empty?`,
-      look: "Rule 4 in “Control rules”, and the DRAIN card of the sequence map.",
-      options: [
-        { t: "Valve C stays open until you press Reset.",
-          why: "No Reset is needed: Rule 4 closes C automatically as soon as the empty condition is TRUE." },
-        { t: "C closes, and A and B open at once to start the next batch.",
-          why: "Rule 1 needs a new Start press; an empty tank alone is not enough. This program runs one batch per Start." },
-        { t: "The motor runs briefly to stir out the last drops.",
-          why: "The motor is ON only in MIX. In IDLE every output is OFF." },
-        { t: "Valve C closes, the step returns to IDLE and the PLC waits for the next Start.", ok: true,
-          why: "Rule 4’s IF (tank empty) is TRUE, so the step changes DRAIN → IDLE and PC_CMD goes 1 → 0. The Start button can be used again." }
-      ],
-      model: "On the first scan with TANK_EMPTY = 1, Rule 4 fires: step DRAIN → IDLE and PC_CMD 1 → 0. The cycle is complete; the end-of-cycle summary below explains the whole run." }
-  };
-
-  const QUIZ = [
-    { id: "q-scan",
-      q: "The PLC is in the FILL step, the level is 60 % and nothing changes on this scan. Is Rule 4 (“IF tank is empty THEN close valve C”) checked on this scan?",
-      given: "Step = FILL · level = 60 % · LEVEL_HIGH = 0 · TANK_EMPTY = 0",
-      look: "Control rules: watch which “This scan” lines update while the PLC is filling.",
-      options: [
-        { t: "No — only the active rule (Rule 1) is checked during FILL.",
-          why: "“Active” only marks the rule whose THEN is in force. The PLC still evaluates every rule; all four “This scan” lines in Control rules update on every scan." },
-        { t: "Yes — every rule is checked on every scan. Rule 4’s IF is FALSE (60 % is not empty), so it does nothing.", ok: true,
-          why: "The PLC solves all of its rules on every scan, whether or not anything is about to happen. A FALSE IF simply means “no action on this scan”." },
-        { t: "No — Rule 4 is only checked once the tank is empty.",
-          why: "The PLC cannot know that the tank is empty unless it checks. It checks every scan; the answer is FALSE until the level reaches 0 %." },
-        { t: "Only if the operator presses Start again.",
-          why: "Start belongs to Rule 1, not Rule 4. Rule 4 depends on the empty condition (and on the step)." }
-      ],
-      model: "Each scan the PLC reads all inputs, solves every rule and writes all outputs. During FILL, Rule 4 is checked once per 50 ms scan; its IF stays FALSE until the tank is empty at the end of DRAIN." },
-    { id: "q-timer",
-      q: "The motor is mixing. The timer shows ET = 18.0 s with PT = 30 s. What is the remaining time, and what is the done bit Q?",
-      given: "ET = 18.0 s · PT = 30 s",
-      look: "The mix-timer panel under the tank.",
-      options: [
-        { t: "12.0 s remaining, Q = 0", ok: true,
-          why: "Remaining = PT − ET = 30 − 18 = 12 s, and Q stays 0 until ET reaches PT. The yellow readout would show 00:00:12." },
-        { t: "18.0 s remaining, Q = 0",
-          why: "18 s is the elapsed time ET, not the remaining time. Remaining is PT − ET." },
-        { t: "12.0 s remaining, Q = 1",
-          why: "Q (done) only becomes 1 when ET reaches the 30 s preset. At 18 s the timer is still timing." },
-        { t: "30 s remaining — the timer restarts on every scan",
-          why: "The timer keeps its value from scan to scan; each scan adds that scan’s time to ET. It is reloaded only by Start or Reset." }
-      ],
-      model: "ET 18.0 s of PT 30 s → 12.0 s remaining, Q = 0. When ET reaches 30 s, Q becomes 1. That is Rule 3’s IF, so mixing ends on that scan." },
-    { id: "q-stepmem",
-      q: "On the scan where mixing ends, the tank is still full, so the level switch still reads 1. Rule 2 says “IF level switch detects full THEN close A and B, start motor”. Why does the motor not start again?",
-      given: "LEVEL_HIGH = 1 · timer Q = 1 · the step changes MIX → DRAIN on this scan",
-      look: "Rule 2’s “This scan” line on that scan (tick Pause & predict, answer, then press Pause right after the change).",
-      options: [
-        { t: "Because the level switch is not read during DRAIN.",
-          why: "Inputs are read on every scan, in every step. On that scan LEVEL_HIGH is read as 1." },
-        { t: "Because the motor needs a new Start press.",
-          why: "Start belongs to Rule 1 (IDLE → FILL). The motor follows the step: ON in MIX, OFF in every other step." },
-        { t: "Because the step memory now says DRAIN. Rule 2 only acts while the PLC is filling or mixing, so its TRUE IF is ignored.", ok: true,
-          why: "The step memory decides which rule may act. On that scan Rule 2’s card is marked ENDED, with its IF still TRUE." },
-        { t: "Because Rule 3 is checked after Rule 2 and simply overwrites it.",
-          why: "Here the PLC does not rely on rule order: it knows it is in DRAIN. (In ladder, rung order does matter if two rungs write the same coil — a habit to avoid.)" }
-      ],
-      model: "A sequence needs a memory of where it is. “Level switch = 1” is TRUE both at the end of FILL and at the start of DRAIN; only the step memory (STEP_MIX or STEP_DRAIN) tells the PLC which meaning applies." },
-    { id: "q-end",
-      q: "During DRAIN the level reaches 0 %, so “tank is empty” becomes TRUE. What does the PLC do on that scan?",
-      given: "Step = DRAIN · TANK_EMPTY 0 → 1",
-      look: "Rule 4 and the DRAIN card of the sequence map.",
-      options: [
-        { t: "It keeps valve C open until you press Reset.",
-          why: "No Reset is needed: Rule 4 closes C as soon as its IF is TRUE." },
-        { t: "It closes C and immediately opens A and B for the next batch.",
-          why: "Rule 1 needs a new Start press; an empty tank alone is not enough." },
-        { t: "It starts the motor to stir out the last drops.",
-          why: "The motor is ON only in MIX. In IDLE every output is OFF." },
-        { t: "It closes valve C, returns to IDLE and waits for the next Start press.", ok: true,
-          why: "Rule 4: THEN close C — ready for the next cycle. Nothing else happens until Start is pressed." }
-      ],
-      model: "Rule 4 fires: step DRAIN → IDLE, PC_CMD 1 → 0. The PLC keeps scanning in IDLE, with Rule 1 waiting for Start." },
-    { id: "q-reset",
-      q: "You press Reset while the motor is mixing (ET = 10 s). What happens?",
-      given: "Step = MIX · ET = 10 s · Reset pressed",
-      look: "“What just happened?” right after you press Reset during MIX.",
-      options: [
-        { t: "The step is forced to IDLE: all outputs OFF and the timer reloaded to 30 s. (This simulation also empties the tank.)", ok: true,
-          why: "Reset is an override outside the four rules. It does not wait for any condition." },
-        { t: "The motor finishes the remaining 20 s first, then the tank drains.",
-          why: "Reset acts on the very next scan; it does not wait for the timer." },
-        { t: "The PLC jumps to DRAIN and empties the tank through C.",
-          why: "Reset is not a transition to DRAIN. It forces IDLE with every output OFF; here the tank is emptied by the simulation, not by valve C." },
-        { t: "The timer stops at 10 s and continues from there after the next Start.",
-          why: "Reset (and Start) reload the preset: the readout goes back to 00:00:30, and ET starts from 0 s again in the next MIX." }
-      ],
-      model: "Reset → step IDLE, PA_CMD = PB_CMD = MOTOR_CMD = PC_CMD = 0, timer reloaded to 30 s. In a real plant the liquid would still be in the tank, which is why real machines need a defined restart procedure." },
-    { id: "q-speed",
-      q: "You switch the speed from 2× to 10×. What changes in the PLC’s work?",
-      given: "The page scans every 50 ms of real time",
-      look: "The scan counter next to “Pause & predict” (it shows how much process time one scan covers).",
-      options: [
-        { t: "It checks only every 10th scan, to keep up.",
-          why: "Every scan still checks all four rules. Nothing is skipped." },
-        { t: "Nothing in the logic: it still checks all four rules every 50 ms scan, but each scan now covers 0.5 s of process time instead of 0.1 s.", ok: true,
-          why: "Speed only scales the process time per scan, so the level and the timer move further between scans. A step can therefore end up to one (longer) scan later than the ideal time." },
-        { t: "The timer preset becomes 3 s.",
-          why: "PT stays 30 s of process time; at 10× those 30 s pass in 3 s of real time." },
-        { t: "The rules are checked 10 times as often.",
-          why: "This simulation always scans every 50 ms of real time; speed changes how much process time each scan represents." }
-      ],
-      model: "Speed is a simulation setting, not a PLC setting: the same rules on the same scans. At 10× each 50 ms scan covers 0.5 s of process time." },
-    { id: "q-cmd",
-      q: "The Outputs panel shows Valve A = ON. Does this prove that liquid is flowing in through A?",
-      given: "PA_CMD = 1",
-      look: "The Outputs panel (read the meaning next to each value).",
-      options: [
-        { t: "Yes — an output bit always matches what the device is doing.",
-          why: "A stuck valve, a broken wire or an empty supply pipe would leave the flow at zero while the bit is 1. The PLC writes commands; it only learns the real result through inputs." },
-        { t: "No — valve A only opens after the level switch turns on.",
-          why: "This is backwards: the level switch turning on is what closes A and B (Rule 2)." },
-        { t: "No — it shows that the PLC is commanding valve A open. Only a sensor (for example a flow switch) could confirm the flow.", ok: true,
-          why: "An output is a command. To know the result, the PLC needs feedback from an input." },
-        { t: "Yes — because the level is rising.",
-          why: "In this simulation the level does rise, but that is separate evidence. The output bit on its own is only a command." }
-      ],
-      model: "PA_CMD = 1 means the PLC is commanding valve A open. Whether liquid really flows can only be confirmed by feedback, such as a flow switch or a level sensor." }
-  ];
-
-  // Big picture: the sensor → PLC → actuator chain that will cause the next step change.
-  const CHAIN = {
-    idle:  { dev: "Start push button (the operator presses it)", inmod: "24 V from the button → bit 1 while pressed",
-             bit: "START_PB", next: "FILL: PA_CMD = PB_CMD = 1", outmod: "24 V to the solenoids of valves A and B",
-             act: "Valves A and B open — liquid flows in" },
-    fill:  { dev: "Level switch: a float switch near the top of the tank closes when the liquid reaches it", inmod: "switch closed → bit 1",
-             bit: "LEVEL_HIGH", next: "MIX: PA_CMD = PB_CMD = 0, MOTOR_CMD = 1", outmod: "valve solenoids switched off, motor contactor switched on",
-             act: "Valves close, the stirrer turns" },
-    mix:   { dev: "No physical sensor: the PLC’s own mix timer measures the time", inmod: "none needed — the timer is inside the PLC",
-             bit: "MIX_TIMER.Q", next: "DRAIN: MOTOR_CMD = 0, PC_CMD = 1", outmod: "motor contactor off, solenoid of valve C on",
-             act: "The stirrer stops, outlet valve C opens" },
-    drain: { dev: "Empty signal (a low-level sensor in a real tank; here the simulated level reaching 0 %)", inmod: "sensor → bit 1 when empty",
-             bit: "TANK_EMPTY", next: "IDLE: PC_CMD = 0", outmod: "solenoid of valve C switched off",
-             act: "Valve C closes — ready for the next batch" }
-  };
-
-  const GLOSSARY = [
-    ["plc", "PLC (Programmable Logic Controller)", "An industrial computer that reads inputs, runs a stored program and writes outputs, over and over, as long as it is in RUN mode."],
-    ["scan", "Scan (scan cycle)", "One complete pass of the program: READ all inputs → SOLVE every rule → UPDATE all outputs. The next scan starts straight away."],
-    ["scantime", "Scan time", "How long one scan takes. This page scans every 50 ms; real PLCs usually need about 1 ms to a few tens of ms, depending on the program."],
-    ["input", "Input", "A signal the PLC reads: here the Start button, the level switch and the empty signal. 1 = ON/TRUE, 0 = OFF/FALSE."],
-    ["output", "Output", "A signal the PLC writes: here valves A, B, C and the motor. An output is a command, not proof that the device really moved."],
-    ["sensor", "Sensor", "A device that turns a physical fact into an input signal, e.g. the level switch closes when the liquid reaches it."],
-    ["actuator", "Actuator", "A device that does physical work when commanded: a valve opens, a motor turns."],
-    ["rule", "Rule (IF–THEN)", "IF its condition is TRUE on this scan, THEN the PLC carries out its action. In a ladder diagram the IF becomes contacts and the THEN becomes a coil."],
-    ["condition", "Condition (IF part)", "A test that is TRUE or FALSE on this scan, e.g. “level switch detects full”. Tests joined by AND are TRUE only if all of them are TRUE."],
-    ["action", "Action (THEN part)", "What the PLC writes when the condition is TRUE, e.g. “open valves A and B”."],
-    ["step", "Step (state)", "One stage of the sequence: IDLE, FILL, MIX or DRAIN. Exactly one step is active at a time."],
-    ["stepmem", "Step memory", "Internal bits (e.g. STEP_FILL, STEP_MIX) in which the PLC stores the active step. It lets the PLC remember a Start press after the button is released, and stops a rule from acting in the wrong step."],
-    ["transition", "Transition", "The change from one step to the next. It happens on the first scan on which the step’s ending condition is TRUE."],
-    ["timer", "Timer (on-delay, TON)", "Measures how long something has been ON. PT = preset (here 30 s), ET = elapsed time, Q = done bit (1 once ET reaches PT). Remaining time = PT − ET."],
-    ["levelsw", "Level switch", "An ON/OFF sensor mounted at one height. It reads 1 (FULL) when the liquid reaches it and 0 otherwise, so it cannot tell a half-full tank from an empty one."],
-    ["pushbutton", "Momentary push button", "Gives 1 only while it is pressed. The PLC must remember the press itself (here, by switching to the FILL step)."],
-    ["processtime", "Process time", "Time in the simulated plant. The speed selector changes how much process time each 50 ms scan represents (2× → 0.1 s)."],
-    ["ladder", "Ladder diagram (LD)", "The graphical PLC language you learn next: conditions are drawn as contacts, actions as coils."],
-    ["rung", "Rung", "One line of a ladder diagram: contacts (the IF) on the left, a coil (the THEN) on the right."]
-  ];
-
-  const TRACE_ROWS = [
-    { key: "phase", label: "Step (memory)",       type: "step", h: 22 },
-    { key: "start", label: "Start button (in)",   type: "bit",  h: 18, col: "#1c64f2" },
-    { key: "level", label: "Level % (process)",   type: "ana",  h: 42, max: 100, col: "#1971c2" },
-    { key: "full",  label: "Level switch (in)",   type: "bit",  h: 18, col: "#f59f00" },
-    { key: "empty", label: "Tank empty (in)",     type: "bit",  h: 18, col: "#f59f00" },
-    { key: "A",     label: "Valve A (out)",       type: "bit",  h: 18, col: "#2f9e44" },
-    { key: "B",     label: "Valve B (out)",       type: "bit",  h: 18, col: "#2f9e44" },
-    { key: "M",     label: "Motor (out)",         type: "bit",  h: 18, col: "#6741d9" },
-    { key: "C",     label: "Valve C (out)",       type: "bit",  h: 18, col: "#2f9e44" },
-    { key: "et",    label: "Timer ET (s)",        type: "ana",  h: 42, max: 30, col: "#15445f" },
-    { key: "q",     label: "Timer done Q",        type: "bit",  h: 18, col: "#15445f" }
-  ];
-  const STEP_BG = { idle: "#e4e7eb", fill: "#d0ebff", mix: "#e5dbff", drain: "#ffe8cc" };
-  const STEP_FG = { idle: "#52606d", fill: "#1864ab", mix: "#5f3dc4", drain: "#c2410c" };
-
-  // --- Teaching state ---
-  let paused = false, scanNo = 0, startPulse = false, resetPulse = false;
-  let rec = null;                      // the latest scan; every explanation panel is built from it
-  let cycle = null;                    // bookkeeping for the current / last cycle
-  let trace = [], traceT = 0, recording = false, tailLeft = 0, traceDirty = true;
-  let predicting = null, predictChoice = null, predictAsked = {}, holdAfterChange = false;
-  let runScans = 0;
-  const progress = loadProgress();
-
-  function setHTML(el, html) { if (el._html !== html) { el._html = html; el.innerHTML = html; } }
-  function setText(el, txt) { if (el.textContent !== txt) el.textContent = txt; }
-  function fmt1(x) { return (Math.round(x * 10) / 10).toFixed(1); }
-  function tag(t) { return `<code class="tag">${t}</code>`; }
-  function bit(v) { return v ? 1 : 0; }
-
-  function loadProgress() {
-    const p = { subq: {}, fired: [0, 0, 0, 0], quiz: {}, predictions: 0 };
-    try { Object.assign(p, JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}); } catch (_) {}
-    if (!Array.isArray(p.fired) || p.fired.length !== 4) p.fired = [0, 0, 0, 0];
-    if (!p.subq || typeof p.subq !== "object") p.subq = {};
-    if (!p.quiz || typeof p.quiz !== "object") p.quiz = {};
-    return p;
-  }
-  function saveProgress() { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (_) {} }
-  function markDone(id) { if (!progress.subq[id]) { progress.subq[id] = 1; saveProgress(); renderProgress(); } }
-
-  // --- What the PLC "has" at the end of a scan: step, process values, inputs, outputs, timer ---
-  function snap() {
-    const timing = phase === "mix" || phase === "drain";      // the mix timer is only in use in MIX and DRAIN
-    return { phase, level, timer, running,
-      A: phase === "fill", B: phase === "fill", M: phase === "mix", C: phase === "drain",
-      full: level >= 100, empty: level <= 0,
-      et: timing ? MIX_TIME - timer : 0, q: timing && timer <= 0 };
-  }
-  let lastSnap = snap();               // what the PLC had written at the end of the previous scan
-
-  // The IF part of each rule card, exactly as the cards show it
-  function ruleIfs(s) {
-    return [ s.phase === "fill" && !s.full, s.full, s.phase === "drain" || (s.phase === "mix" && s.timer <= 0), s.empty ];
-  }
-  // What happened to rule k on this scan, given the step before (p) and after (c)
-  function ruleStatus(k, p, c, ev, ifv) {
-    const watch = STEP_ORDER[k], hold = STEP_ORDER[(k + 1) % 4];
-    if (!ev.reset && p.phase === watch && c.phase === hold) return "fired";
-    if (p.phase === hold && c.phase !== hold) return "ended";
-    if (c.phase === hold) return ifv ? "force" : "off";
-    if (c.phase === watch) return "wait";
-    return ifv ? "ignored" : "off";
-  }
-
-  // --- One scan as the student sees it: READ → SOLVE → UPDATE (tick() moves the process) ---
-  function plcScan(pdt) {
-    const ev = { start: startPulse, reset: resetPulse };
-    startPulse = resetPulse = false;
-    const before = { phase, level, timer, running };
-    if (running) tick(pdt);
-    // Pause & predict: hold the scan that would change the step until the student has predicted it
-    if ($("predictMode").checked && !ev.start && !ev.reset && phase !== before.phase && PREDICT[phase] && !predictAsked[phase]) {
-      const next = phase;
-      ({ phase, level, timer, running } = before);           // undo: the change happens on the next scan instead
-      openPredict(next);
-      return;
-    }
-    scanNo++;
-    const cur = snap();
-    const r = { n: scanNo, pdt, adv: before.running ? pdt : 0, ev, prev: lastSnap, cur };
-    r.rules = ruleIfs(cur).map((ifv, k) => ({ ifv, status: ruleStatus(k, lastSnap, cur, ev, ifv) }));
-    rec = r; lastSnap = cur;
-    bookkeeping(r);
-    if (holdAfterChange && cur.phase !== r.prev.phase) {      // Pause & predict: stop on the scan that made the change so it can be read
-      holdAfterChange = false; paused = true;
-      announce(eventText(cycle.events[cycle.events.length - 1]) + " Paused on this scan so you can compare it with your prediction — press ▶ Resume to go on.");
-    }
-  }
-
-  function bookkeeping(r) {
-    const { prev: p, cur: c, ev } = r;
-    if (ev.start && c.phase !== "idle") {                   // Start began a new cycle: fresh records
-      cycle = { t: 0, scans: 0, events: [], end: null, speeds: [] };
-      predictAsked = {};
-      trace = []; traceT = 0; recording = true; tailLeft = 0;
-      traceAdd(Object.assign({}, c, { level: p.level, full: p.full, empty: p.empty }), 0, r.pdt, r.n, { start: true });
-    }
-    if (cycle && !cycle.end) {
-      cycle.scans++; cycle.t += r.adv;
-      if (!cycle.speeds.includes(speed)) cycle.speeds.push(speed);
-    }
-    if (c.running && ++runScans >= 40) markDone("scan");
-    if (p.phase !== c.phase) {
-      const k = ev.reset ? -1 : STEP_ORDER.findIndex((s, i) => s === p.phase && STEP_ORDER[(i + 1) % 4] === c.phase);
-      const e = { n: r.n, t: cycle ? cycle.t - (ev.start ? r.adv : 0) : 0, from: p.phase, to: c.phase, rule: k };
-      if (cycle && !cycle.end) cycle.events.push(e);
-      if (k >= 0 && !progress.fired[k]) { progress.fired[k] = 1; saveProgress(); renderProgress(); }
-      if (k === 1) markDone("step");
-      if (k === 2) markDone("timer");
-      if (cycle && !cycle.end && (k === 3 || ev.reset)) {
-        cycle.end = { reset: !!ev.reset, n: r.n, t: cycle.t, step: p.phase };
-        tailLeft = 2;                                         // keep recording 2 s of IDLE after the end
-        if (k === 3) { markDone("always"); markDone("ends"); }
-      }
-      if (ev.reset && p.running) markDone("reset");
-      announce(eventText(e));
-    } else if (ev.reset) {
-      announce(`Scan #${r.n}: Reset pressed while the PLC was already IDLE — nothing to stop; the timer is reloaded to 30 s.`);
-    }
-    if (recording) {
-      traceT += r.pdt;
-      traceAdd(c, traceT, r.pdt, r.n, ev);
-      if (cycle && cycle.end && (tailLeft -= r.pdt) <= 0) recording = false;
-    }
-  }
-
-  function traceAdd(s, t, dt, n, ev) {
-    trace.push({ t, dt, n, phase: s.phase, start: !!ev.start, reset: !!ev.reset, level: s.level,
-      full: s.full, empty: s.empty, A: s.A, B: s.B, M: s.M, C: s.C, et: s.et, q: s.q });
-    if (trace.length > TRACE_MAX) trace.shift();
-    traceDirty = true;
-  }
-
-  function eventText(e) {
-    const from = STEPS[e.from].name, to = STEPS[e.to].name;
-    if (e.rule < 0) return `Scan #${e.n}: Reset pressed during ${from} → step forced to IDLE, every output OFF, timer reloaded to 30 s.`;
-    return `Scan #${e.n}, ${fmt1(e.t)} s: ${RULE_INFO[e.rule].why} → Rule ${e.rule + 1} fired: ${from} → ${to}; ${RULE_INFO[e.rule].did}.` +
-      (e.rule === 3 ? " Cycle complete — see the end-of-cycle summary." : "");
-  }
-  function announce(msg) { setText($("liveMsg"), msg); }
-
-  // --- Explanation builders (all read from the scan record, never from fixed text) ---
-  function timerShort(c) {
-    if (c.phase === "mix") return `mix timer ET = ${fmt1(c.et)} s of PT 30 s, Q = ${bit(c.q)}`;
-    if (c.phase === "drain") return `mix timer done (ET = 30 s, Q = 1)`;
-    return `mix timer not in use (Q = 0)`;
-  }
-  function condValues(k, r) {
-    const c = r.cur;
-    switch (k) {
-      case 0: return `Start activated: <b>${c.phase === "fill" ? "yes" : "no"}</b>${r.ev.start ? " (Start pressed this scan)" : c.phase === "fill" ? " (press remembered as the FILL step)" : ""} · tank not full: <b>${c.full ? "no" : "yes"}</b> (${tag("LEVEL_HIGH")} = ${bit(c.full)})`;
-      case 1: return `${tag("LEVEL_HIGH")} = ${bit(c.full)} → ${c.full ? "detects FULL" : "not full"} (level ${fmt1(c.level)} %)`;
-      case 2: return c.phase === "mix" ? `ET = ${fmt1(c.et)} s of PT 30 s, Q = ${bit(c.q)}` :
-                     c.phase === "drain" ? `timer done this cycle (Q = 1)` : `no mixing in progress — timer not in use`;
-      case 3: return `${tag("TANK_EMPTY")} = ${bit(c.empty)} (level ${fmt1(c.level)} %)`;
-    }
-  }
-  function resultText(k, x, r) {
-    const c = r.cur, info = RULE_INFO[k], hold = STEPS[STEP_ORDER[(k + 1) % 4]].name, now = STEPS[c.phase].name;
-    switch (x.status) {
-      case "fired":   return `Step ${STEPS[STEP_ORDER[k]].name} → ${hold}. THEN ${info.then} — written in this same scan.`;
-      case "force":   return `THEN ${info.hold}: the same values are written again (no change).`;
-      case "wait":    return `${now} is waiting for this. IF FALSE → no action yet.`;
-      case "ended":   return r.ev.reset ? `Reset forced IDLE, so this rule’s THEN no longer applies.` :
-                        x.ifv ? `The PLC just left ${hold}. The IF is still TRUE, but the step memory now says ${now}, so it is ignored — nothing is restarted.` :
-                                `IF is FALSE now, so its THEN no longer applies (the PLC left ${hold}).`;
-      case "ignored": return `IF TRUE, but the PLC is in ${now}, not ${hold} → ignored (the step memory decides).`;
-      default:        return `IF ${x.ifv ? "TRUE" : "FALSE"} and the PLC is in ${now}, not ${hold} → nothing to do.`;
-    }
-  }
-  function untilHTML(c) {
-    const per = SCAN_S * speed, scans = s => Math.max(1, Math.ceil(s / per - 1e-9));
-    switch (c.phase) {
-      case "idle":  return `Start not pressed → still waiting for you.`;
-      case "fill":  { const s = (100 - c.level) / FILL_RATE;
-                      return `${tag("LEVEL_HIGH")} = 0 at ${fmt1(c.level)} % → FALSE. About ${fmt1(s)} s of process time to go (≈ ${scans(s)} scans at ${speed}×).`; }
-      case "mix":   return `ET ${fmt1(c.et)} of 30 s, Q = 0 → FALSE. ${fmt1(c.timer)} s to go (≈ ${scans(c.timer)} scans at ${speed}×).`;
-      case "drain": { const s = c.level / DRAIN_RATE;
-                      return `${tag("TANK_EMPTY")} = 0 at ${fmt1(c.level)} % → FALSE. About ${fmt1(s)} s to go (≈ ${scans(s)} scans at ${speed}×).`; }
-    }
-  }
-
-  function narrativeHTML(r) {
-    if (!r) return `<p class="muted">Waiting for the first scan…</p>`;
-    const { prev: p, cur: c, ev } = r;
-    const outKeys = [["A", "PA_CMD"], ["B", "PB_CMD"], ["M", "MOTOR_CMD"], ["C", "PC_CMD"]];
-    // 2. SOLVE: only the decisive rule here; every rule's own result is on its card
-    const solve = [];
-    if (ev.reset) solve.push(`<mark class="chg">Reset</mark> was pressed. Reset is not one of the four rules — it overrides them: step memory forced to IDLE, every output to 0, timer reloaded to 30 s (the simulation also empties the tank).`);
-    const fk = r.rules.findIndex(x => x.status === "fired"), wk = STEP_ORDER.indexOf(c.phase);
-    if (fk >= 0) solve.push(`<b>Rule ${fk + 1}</b>: IF ${RULE_INFO[fk].cond} → <b>TRUE</b> → <mark class="chg">step ${STEPS[p.phase].name} → ${STEPS[c.phase].name}</mark>; THEN ${RULE_INFO[fk].then}.`);
-    else if (!ev.reset) solve.push(`<b>Rule ${wk + 1}</b> (what ${STEPS[c.phase].name} waits for): IF ${RULE_INFO[wk].cond} → <b>FALSE</b> → no step change.`);
-    r.rules.forEach((x, k) => { if (x.status === "ended" && x.ifv && !ev.reset) solve.push(`Rule ${k + 1}’s IF is still TRUE, but the step memory now says ${STEPS[c.phase].name}, so it is ignored.`); });
-    solve.push(`The other rules were checked too — <a href="#rulesSec">each rule card’s “This scan” line</a> shows its result.`);
-    // 4. CHANGED since the previous scan
-    const bits = [], nums = [];
-    if (ev.start) bits.push(`${tag("START_PB")} read as 1`);
-    if (p.phase !== c.phase) bits.push(`step ${STEPS[p.phase].name} → ${STEPS[c.phase].name}`);
-    outKeys.forEach(([k, t]) => { if (p[k] !== c[k]) bits.push(`${tag(t)} ${bit(p[k])} → ${bit(c[k])}`); });
-    if (p.full !== c.full) bits.push(`${tag("LEVEL_HIGH")} ${bit(p.full)} → ${bit(c.full)}`);
-    if (p.empty !== c.empty) bits.push(`${tag("TANK_EMPTY")} ${bit(p.empty)} → ${bit(c.empty)}`);
-    if (p.q !== c.q) bits.push(`timer Q ${bit(p.q)} → ${bit(c.q)}`);
-    if (Math.abs(p.level - c.level) > 1e-9) nums.push(`level ${fmt1(p.level)} → ${fmt1(c.level)} %`);
-    if (Math.abs(p.et - c.et) > 1e-9) nums.push(`timer ET ${fmt1(p.et)} → ${fmt1(c.et)} s`);
-    if (p.timer !== c.timer && c.phase === "idle") nums.push(`timer reloaded: readout ${fmtTime(p.timer)} → ${fmtTime(c.timer)}`);
-    const keep = { idle: "All outputs stay 0: Rule 4 keeps C closed and Rule 1 is still waiting for Start.",
-                   fill: "A and B stay 1 because Rule 1’s IF is still TRUE — the PLC writes 1 again on every scan.",
-                   mix:  "The motor stays 1 because Rule 2’s IF is still TRUE (full) and the step is still MIX.",
-                   drain: "C stays 1 because Rule 3 is still in force (step DRAIN)." }[c.phase];
-    const changed = bits.length
-      ? `${bits.map(b => `<mark class="chg">${b}</mark>`).join(", ")}${nums.length ? " · " + nums.join(" · ") : ""}`
-      : `${nums.length ? nums.join(" · ") : "nothing"}. No bit changed. ${keep}`;
-    const since = cycle && !cycle.end ? ` · ${fmt1(cycle.t)} s since Start` : "";
-    return `<h3>Scan #${r.n} · step ${STEPS[c.phase].name}${since}</h3>
-      <span class="mini">This scan covered ≈ ${r.pdt.toFixed(2)} s of process time (${speed}× speed).${paused ? " Simulation paused: this is the latest scan." : ""}</span>
-      <ol>
-        <li><b>READ inputs</b> — ${tag("START_PB")} = ${bit(ev.start)}, ${tag("LEVEL_HIGH")} = ${bit(c.full)}, ${tag("TANK_EMPTY")} = ${bit(c.empty)} (level ${fmt1(c.level)} %); ${timerShort(c)}; step memory said ${STEPS[p.phase].name}.</li>
-        <li><b>SOLVE every rule</b> — ${solve.join(" ")}</li>
-        <li><b>UPDATE outputs</b> — ${outKeys.map(([k, t]) => `${tag(t)} = ${bit(c[k])}`).join(", ")} → ${STEPS[c.phase].phys}.</li>
-        <li><b>Changed since the previous scan</b> — ${changed}</li>
-        <li><b>What ends this step</b> — Rule ${wk + 1}: ${STEPS[c.phase].ends}. The live countdown is on the ACTIVE card of the <a href="#stepMapSec">sequence map</a>.</li>
-      </ol>`;
-  }
-
-  function ruleScanHTML(k, r) {
-    const x = r.rules[k], S = STATUS[x.status];
-    const label = x.status === "force" ? "" : `<span class="stb ${S.cls}">${S.txt}</span> `;
-    return `<p class="rulescan"><b>This scan:</b> ${condValues(k, r)} → IF ${pill(x.ifv, x.ifv ? "TRUE" : "FALSE")} → ${label}${resultText(k, x, r)}</p>`;
-  }
-
-  function stepMapHTML(c) {
-    const passed = cycle && !cycle.end ? cycle.events.map(e => e.from) : [];
-    const nextStep = STEP_ORDER[(STEP_ORDER.indexOf(c.phase) + 1) % 4];
-    return STEP_ORDER.map((s, i) => {
-      const S = STEPS[s], active = c.phase === s;
-      const badge = active ? `<span class="badge on">ACTIVE</span>` : passed.includes(s) ? `<span class="badge">passed ✓</span>` :
-                    s === nextStep ? `<span class="badge">next</span>` : "";
-      return `<div class="stepcard ${S.cls} ${active ? "active" : ""}">
-        <div class="stephead"><span class="stepno">Step ${S.no}</span><b>${S.name}</b>${badge}</div>
-        <p><b class="ql">Question:</b> ${S.q}</p>
-        <p>${S.does}</p>
-        <p><b>Ends when</b> (Rule ${i + 1}): ${S.ends} → ${STEPS[STEP_ORDER[(i + 1) % 4]].name}.${active ? `<span class="now">Now: ${untilHTML(c)}</span>` : ""}</p>
-      </div>`;
-    }).join(`<div class="arrow" aria-hidden="true">→</div>`);
-  }
-
-  function timerHTML(c) {
-    const leftover = c.phase === "idle" && c.timer < MIX_TIME;
-    const cells = leftover ? ["—", "30 s", "—", "—"] : [`${fmt1(c.et)} s`, "30 s", `${fmt1(MIX_TIME - c.et)} s`, String(bit(c.q))];
-    const mean = {
-      idle:  leftover ? "Not in use in IDLE. The yellow readout still shows 00:00:00 from the last batch; ▶ Start (or Reset) reloads the 30 s preset."
-                      : "Not timing. It starts on the scan on which the level switch reads FULL (Rule 2).",
-      fill:  "Not timing yet. It starts on the scan on which the level switch reads FULL (Rule 2).",
-      mix:   "Timing. Q stays 0 until ET reaches PT; on that scan Q = 1 and Rule 3 ends mixing. The yellow readout above shows Remaining, rounded up to whole seconds.",
-      drain: "Done: ET reached PT (30 s), so Q = 1. Rule 3 used Q to stop the motor and open C. The readout holds 00:00:00."
-    }[c.phase];
-    const pct = leftover ? 0 : c.et / MIX_TIME * 100;
-    return `<div class="tgrid">
-        <div><div class="tval">${cells[0]}</div><div class="tlab">Elapsed ET</div></div>
-        <div><div class="tval">${cells[1]}</div><div class="tlab">Preset PT</div></div>
-        <div><div class="tval">${cells[2]}</div><div class="tlab">Remaining PT − ET</div></div>
-        <div><div class="tval">${cells[3]}</div><div class="tlab">Done Q</div></div>
-      </div>
-      <div class="bar" role="img" aria-label="Elapsed ${leftover ? 0 : fmt1(c.et)} of 30 seconds"><i style="width:${pct.toFixed(1)}%"></i></div>
-      <p class="tmean">${mean}</p>`;
-  }
-
-  function chainHTML(c) {
-    const ch = CHAIN[c.phase], k = STEP_ORDER.indexOf(c.phase);
-    return [
-      ["Physical device", ch.dev],
-      ["Input module", ch.inmod],
-      ["Input bit", `${tag(ch.bit)} in the PLC’s memory (0 or 1)`],
-      ["Rule (instruction)", `Rule ${k + 1} tests it on every scan: IF ${RULE_INFO[k].cond}`],
-      ["Step memory", `when the IF is TRUE: ${STEPS[c.phase].name} → ${STEPS[STEP_ORDER[(k + 1) % 4]].name}`],
-      ["Output bits", ch.next],
-      ["Output module", ch.outmod],
-      ["Actuator", ch.act]
-    ].map(([h, t]) => `<li><b>${h}</b>${t}</li>`).join("");
-  }
-
-  function summaryHTML() {
-    if (!cycle) return `<p class="muted" style="font-size:13px;">No cycle yet. Press <b>▶ Start</b>. When the tank is empty again, this panel explains the whole run.</p>`;
-    const ev = cycle.events, rows = [];
-    ev.forEach((e, i) => {
-      if (e.to === "idle") return;
-      const nx = ev[i + 1];
-      rows.push(`<tr>
-        <td data-label="Step"><b>${STEPS[e.to].name}</b></td>
-        <td data-label="Began">scan #${e.n} at ${fmt1(e.t)} s — Rule ${e.rule + 1}: ${RULE_INFO[e.rule].why}</td>
-        <td data-label="What the PLC did">${STEPS[e.to].does}</td>
-        <td data-label="Ended">${!nx ? "still active" : `scan #${nx.n} at ${fmt1(nx.t)} s — ${nx.rule >= 0 ? `Rule ${nx.rule + 1}: ${RULE_INFO[nx.rule].why}` : "Reset pressed"}`}</td>
-        <td data-label="Lasted">${nx ? `${fmt1(nx.t - e.t)} s (${nx.n - e.n} scans)` : "—"}</td>
-      </tr>`);
-    });
-    const table = `<table class="sumtbl"><thead><tr><th>Step</th><th>Began</th><th>What the PLC did</th><th>Ended</th><th>Lasted</th></tr></thead><tbody>${rows.join("")}</tbody></table>`;
-    if (!cycle.end) return `<p style="font-size:13px;"><b>Cycle in progress</b> — step ${STEPS[lastSnap.phase].name}, ${fmt1(cycle.t)} s of process time, ${cycle.scans} scans so far. Each step is added below as it starts; the verdict appears when the tank is empty again (or when you press Reset).</p>${table}`;
-    const fired = ev.filter(e => e.rule >= 0).length, checks = cycle.scans * 4;
-    const head = cycle.end.reset
-      ? `<p class="verdict">Cycle stopped by Reset during ${STEPS[cycle.end.step].name}, after ${fmt1(cycle.end.t)} s of process time (${cycle.scans} scans).</p>`
-      : `<p class="verdict">✓ Cycle complete: ${fmt1(cycle.end.t)} s of process time in ${cycle.scans} scans (speed used: ${cycle.speeds.map(s => s + "×").join(", ")}).</p>`;
-    const proves = cycle.end.reset
-      ? `<p style="font-size:13px;"><b>What this shows:</b> Reset is an override outside the four rules. It forced IDLE at once, switched every output OFF and reloaded the timer, without waiting for any step to finish. Press ▶ Start to run a complete batch.</p>`
-      : `<p style="font-size:13px;"><b>What this proves:</b> the whole batch came from the same four rules, checked again on every one of the ${cycle.scans} scans (${checks} rule checks). Only ${fired} of those checks changed the step; all the others found nothing new and simply wrote the same outputs again. The step memory decided which rule could act (so “level switch FULL” could not restart the motor while draining), and the timer turned “mix for 30 s” into a TRUE/FALSE condition for Rule 3.</p>
-         <p class="note">Ideal durations: FILL 100 % ÷ 22 %/s ≈ 4.5 s, MIX 30 s, DRAIN 100 % ÷ 26 %/s ≈ 3.8 s. Measured values can be a little longer, because a step can only end on a scan: at 10× each scan covers 0.5 s.</p>`;
-    return `${head}${table}${proves}`;
-  }
-
-  function traceSVG() {
-    if (trace.length < 2) return `<p class="muted tdempty">No trace yet. Press <b>▶ Start</b>: every scan adds one sample, and the diagram fills in as the cycle runs.</p>`;
-    const W = 760, L = 132, R = 14, T = 24, GAP = 5;
-    let y = T;
-    const ys = TRACE_ROWS.map(row => { const y0 = y; y += row.h + GAP; return y0; });
-    const H = y + 30, yEnd = y - GAP;
-    const t0 = trace[0].t, tN = trace[trace.length - 1].t, span = Math.max(42, tN - t0 + 1);
-    const X = t => L + (t - t0) / span * (W - L - R);
-    const f = v => v.toFixed(1);
-    const endT = i => (i + 1 < trace.length ? trace[i + 1].t : trace[i].t + trace[i].dt);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Timing diagram of the recorded cycle: step, Start, level, level switch, tank empty, valves A and B, motor, valve C, timer ET and timer done, against process time." font-size="11">`;
-    for (let tt = Math.ceil(t0 / 5) * 5; tt <= t0 + span; tt += 5) {
-      s += `<line x1="${f(X(tt))}" y1="${T - 4}" x2="${f(X(tt))}" y2="${yEnd}" stroke="#eef1f4"/>` +
-           `<text x="${f(X(tt))}" y="${yEnd + 13}" text-anchor="middle" fill="#52606d" font-size="10">${tt} s</text>`;
-    }
-    TRACE_ROWS.forEach((row, i) => {
-      const y0 = ys[i], y1 = y0 + row.h;
-      s += `<text x="${L - 8}" y="${y0 + row.h / 2 + 4}" text-anchor="end" fill="#3e4c59">${row.label}</text>`;
-      if (row.type === "step" || row.type === "bit") {
-        if (row.type === "bit") s += `<line x1="${L}" y1="${y1 - 2}" x2="${f(X(endT(trace.length - 1)))}" y2="${y1 - 2}" stroke="#cbd2d9"/>`;
-        for (let a = 0; a < trace.length; ) {
-          let b = a; while (b + 1 < trace.length && trace[b + 1][row.key] === trace[a][row.key]) b++;
-          const v = trace[a][row.key], x1 = X(trace[a].t), w = Math.max(2, X(endT(b)) - x1);
-          if (row.type === "step") {
-            s += `<rect x="${f(x1)}" y="${y0}" width="${f(w)}" height="${row.h}" fill="${STEP_BG[v]}"/>`;
-            if (w > 34) s += `<text x="${f(x1 + w / 2)}" y="${y0 + 15}" text-anchor="middle" font-weight="700" fill="${STEP_FG[v]}">${STEPS[v].name}</text>`;
-          } else if (v) {
-            s += `<rect x="${f(x1)}" y="${y0 + 2}" width="${f(w)}" height="${row.h - 4}" rx="2" fill="${row.col}"/>`;
-          }
-          a = b + 1;
-        }
-      } else {
-        const every = Math.ceil(trace.length / 300), pts = [];
-        trace.forEach((p, j) => {
-          const edge = j === 0 || j === trace.length - 1 || trace[j - 1].phase !== p.phase || trace[j + 1].phase !== p.phase;
-          if (edge || j % every === 0) pts.push(`${f(X(p.t))},${f(y1 - 2 - p[row.key] / row.max * (row.h - 4))}`);
-        });
-        s += `<line x1="${L}" y1="${y0 + 2}" x2="${W - R}" y2="${y0 + 2}" stroke="#eef1f4" stroke-dasharray="2 3"/>` +
-             `<line x1="${L}" y1="${y1 - 2}" x2="${W - R}" y2="${y1 - 2}" stroke="#cbd2d9"/>` +
-             `<text x="${L + 3}" y="${y0 + 11}" fill="#7b8794" font-size="9">${row.max}</text>` +
-             `<polyline points="${pts.join(" ")}" fill="none" stroke="${row.col}" stroke-width="2"/>`;
-      }
-    });
-    trace.forEach((p, i) => {
-      const changed = i === 0 ? p.start : trace[i - 1].phase !== p.phase;
-      if (!changed) return;
-      const k = p.reset ? -1 : i === 0 ? 0 : STEP_ORDER.findIndex((st, j) => st === trace[i - 1].phase && STEP_ORDER[(j + 1) % 4] === p.phase);
-      const x = f(X(p.t));
-      s += `<line x1="${x}" y1="${T - 4}" x2="${x}" y2="${yEnd}" stroke="#52606d" stroke-dasharray="3 3"/>` +
-           `<text x="${x}" y="${T - 8}" text-anchor="middle" font-weight="700" fill="#3e4c59" font-size="10">${k < 0 ? "Reset" : "R" + (k + 1)}</text>`;
-    });
-    const xn = X(tN), lastN = trace[trace.length - 1].n;
-    s += `<line x1="${f(xn)}" y1="${T - 4}" x2="${f(xn)}" y2="${yEnd}" stroke="#c92a2a" stroke-width="1.5"/>` +
-         `<text x="${f(xn)}" y="${yEnd + 26}" text-anchor="${xn > W / 2 ? "end" : "start"}" fill="#c92a2a" font-weight="700" font-size="10">${recording ? "latest scan" : "last recorded scan"} #${lastN} · ${fmt1(tN)} s</text>`;
-    return s + `</svg>`;
-  }
-
-  function choiceHTML(item, chosen, attr) {
-    if (chosen === null || chosen === undefined)
-      return `<div class="opts">${item.options.map((o, j) => `<button class="opt" ${attr} data-opt="${j}"><span class="optl">${"ABCD"[j]}</span> ${o.t}</button>`).join("")}</div>`;
-    const right = item.options.findIndex(o => o.ok);
-    return `<ul class="opts">${item.options.map((o, j) => `<li class="opt ${o.ok ? "right" : j === chosen ? "wrong" : ""}"><span class="optl">${"ABCD"[j]}</span> ${o.t}
-        <span class="why"><b>${o.ok ? (j === chosen ? "✓ Your answer — correct." : "✓ Correct answer.") : (j === chosen ? "✗ Your answer — not correct." : "✗ Not correct.")}</b> ${o.why}</span></li>`).join("")}</ul>
-      <p class="verdict" tabindex="-1">${chosen === right ? "✓ Correct." : `✗ Not quite — the correct answer is ${"ABCD"[right]}.`}</p>
-      <div class="model"><b>Model answer:</b> ${item.model}</div>`;
-  }
-
-  // --- Pause & predict ---
-  function openPredict(next) {
-    predicting = next; predictChoice = null; predictAsked[next] = true; paused = true;
-    renderPredict();
-    $("predictBox").hidden = false;
-    $("predictTitle").focus();
-    announce(`Paused just before a step change. Predict what the PLC will do on the next scan, then continue.`);
-  }
-  function renderPredict() {
-    const P = PREDICT[predicting];
-    $("predictBody").innerHTML = `<p class="qline"><b class="ql">Question:</b> ${P.q(snap())}</p>
-      <p class="mini"><b>Where to look for the answer:</b> ${P.look}</p>
-      ${choiceHTML(P, predictChoice, `data-pred="1"`)}`;
-    $("predictGo").textContent = predictChoice === null ? "Skip and continue ▶" : "Continue — watch it happen ▶";
-  }
-  function closePredict() { predicting = null; $("predictBox").hidden = true; }
-
-  // --- Quiz ---
-  function renderQuizItem(i) {
-    const item = QUIZ[i], chosen = progress.quiz[item.id];
-    $("quiz-" + i).innerHTML = `<div class="qhead"><b>Q${i + 1}.</b> ${item.q}</div>
-      <span class="mini"><b>Given:</b> ${item.given}</span>
-      <span class="mini"><b>Where to look for the answer:</b> ${item.look}</span>
-      ${choiceHTML(item, typeof chosen === "number" ? chosen : null, `data-quiz="${i}"`)}`;
-  }
-  function renderQuizScore() {
-    const n = QUIZ.length, answered = QUIZ.filter(q => typeof progress.quiz[q.id] === "number").length;
-    const correct = QUIZ.filter(q => progress.quiz[q.id] === q.options.findIndex(o => o.ok)).length;
-    setText($("quizScore"), `Answered ${answered} of ${n} · ${correct} correct. ` + (answered < n
-      ? `${n - answered} still to answer. Your first choice counts; the explanation of every option and a model answer appear straight away.`
-      : correct === n ? "All correct: you can predict each step change from the active step, the condition that ends it and the current inputs."
-      : "Read the ✗ explanations: each names the idea to revisit and where to see it on this page. “Reset quiz” lets you try again."));
-    if (answered === n) markDone("predict");
-  }
-
-  function renderProgress() {
-    const done = SUBQ.filter(s => progress.subq[s.id]).length;
-    setText($("subqCount"), `${done} of ${SUBQ.length} answered`);
-    setHTML($("subqList"), SUBQ.map(s => `<li class="${progress.subq[s.id] ? "done" : ""}"><a href="${s.href}">${s.q}</a>
-      <span class="st">${progress.subq[s.id] ? "✓ answered" : "not yet"}</span></li>`).join(""));
-    setHTML($("answeredList"), SUBQ.map(s => progress.subq[s.id]
-      ? `<li class="done"><b>${s.q}</b> <span class="st">✓</span><br>${s.a}</li>`
-      : `<li><b>${s.q}</b><br><span class="muted">Not answered yet — ${s.todo}</span></li>`).join(""));
-    setHTML($("mainAnswer"), progress.subq.ends
-      ? `<b>Answer to the main question:</b> the PLC never runs the sequence as one long instruction. On every scan it reads its inputs, checks the same four IF–THEN rules and writes its outputs. A step memory records which step is active, so only that step’s rule can move it on; a timer turns “30 s” into a TRUE/FALSE condition. The sequence happens because each step’s ending condition becomes TRUE at the right moment.`
-      : `<b>Answer to the main question:</b> <span class="muted">it appears here after you have run one complete cycle.</span>`);
-    RULE_INFO.forEach((_, k) => { $("ruleAns" + k).hidden = !progress.fired[k]; $("ruleLock" + k).hidden = !!progress.fired[k]; });
-  }
-
-  // --- Static parts, built once from the tables above ---
-  rulesEl.innerHTML = RULE_INFO.map((r, i) => `
-      <div class="rulecard" id="ruleCard${i}">
-        <div id="ruleDyn${i}"></div>
-        <div id="ruleScan${i}"></div>
-        <p class="ruleq"><b class="ql">Question:</b> ${r.q}<span class="look"><b>Where to look for the answer:</b> ${r.look}</span></p>
-        <p class="locked" id="ruleLock${i}">The model answer unlocks after you have seen Rule ${i + 1} fire (watch its step change).</p>
-        <details class="answer" id="ruleAns${i}" hidden>
-          <summary>Model answer for Rule ${i + 1}</summary>
-          <p>${r.answer}</p>
-          <b>Key takeaways</b><ul>${r.take.map(t => `<li>${t}</li>`).join("")}</ul>
-          <p class="mistake"><b>Common mistake:</b> ${r.mistake}</p>
-        </details>
-      </div>`).join("");
-  $("quizList").innerHTML = QUIZ.map((_, i) => `<div class="quiz-q" id="quiz-${i}"></div>`).join("");
-  QUIZ.forEach((_, i) => renderQuizItem(i));
-  $("glossary").innerHTML = GLOSSARY.map(([id, term, def]) => `<dt id="g-${id}">${term}</dt><dd>${def}</dd>`).join("");
 
   // --- Render everything from current state ---
   function render() {
-    // Derived outputs
-    const vA = phase === "fill",  vB = phase === "fill";
+    const c = conditions();
+    const vA = phase === "fill", vB = phase === "fill";
     const motor = phase === "mix", vC = phase === "drain";
-    // Sensors
-    const full = level >= 100, empty = level <= 0;
+    const shownLevel = mode === "manual" ? { empty: 0, part: 55, full: 100 }[manual.tank] : level;
 
     // Liquid
-    const h = (level / 100) * 170;
+    const h = (shownLevel / 100) * 170;
     liquid.setAttribute("y", 256 - h);
     liquid.setAttribute("height", h);
     liquid.setAttribute("fill", (phase === "mix" || phase === "drain") ? "#5cb89a" : "#74c0fc");
@@ -1277,171 +383,127 @@
     valveA.setAttribute("fill", vA ? "#2f9e44" : "#b4bcc4");
     valveB.setAttribute("fill", vB ? "#2f9e44" : "#b4bcc4");
     valveC.setAttribute("fill", vC ? "#2f9e44" : "#b4bcc4");
-    lvlSw.setAttribute("fill", full ? "#ffd43b" : "#b4bcc4");
+    lvlSw.setAttribute("fill", c.full ? "#ffd43b" : "#b4bcc4");
     streamA.classList.toggle("show", vA);
     streamB.classList.toggle("show", vB);
     streamC.classList.toggle("show", vC);
 
     // Timer + state badge
-    timerEl.textContent = fmtTime(timer);
+    timerEl.textContent = mode === "manual" ? (phase === "mix" ? (manual.timeDone ? "30 s over" : "timing…") : "--:--") : fmtTime(timer);
     const labels = { idle: "Idle", fill: "Filling", mix: "Mixing", drain: "Draining" };
     stateEl.textContent = labels[phase];
     stateEl.className = "badge-state " + (phase === "idle" ? "" : phase);
     startBtn.disabled = (phase !== "idle");
 
-    // Output indicators, each with the plain meaning of its value
+    // Conditions: buttons in manual mode, live read-outs in automatic mode
+    const yes = (t, a, b) => `<b class="${t ? "t" : "f"}">${t ? a : b}</b>`;
+    if (mode === "manual") {
+      condEl.innerHTML = `
+        <div class="cond-item"><div class="cname">Start switch</div>
+          <div class="cval">Start pressed: ${yes(c.start, "TRUE", "FALSE")}</div>
+          <div class="seg"><button data-set="start" data-v="1" aria-pressed="${manual.start}">Pressed</button><button data-set="start" data-v="0" aria-pressed="${!manual.start}">Released</button></div></div>
+        <div class="cond-item"><div class="cname">Tank level</div>
+          <div class="cval">Tank full: ${yes(c.full, "TRUE", "FALSE")} · Tank empty: ${yes(c.empty, "TRUE", "FALSE")}</div>
+          <div class="seg"><button data-set="tank" data-v="empty" aria-pressed="${manual.tank === "empty"}">Empty</button><button data-set="tank" data-v="part" aria-pressed="${manual.tank === "part"}">Partly filled</button><button data-set="tank" data-v="full" aria-pressed="${manual.tank === "full"}">Full</button></div></div>
+        <div class="cond-item"><div class="cname">30-second mixing timer</div>
+          <div class="cval">30 s over: ${yes(c.timeDone, "TRUE", "FALSE")} <span class="note">(restarts when mixing starts)</span></div>
+          <div class="seg"><button data-set="timeDone" data-v="0" aria-pressed="${!manual.timeDone}">Not yet</button><button data-set="timeDone" data-v="1" aria-pressed="${manual.timeDone}">30 s over</button></div></div>`;
+    } else {
+      condEl.innerHTML = [
+        ["Start switch", "Start pressed", c.start],
+        ["Level switch", "Tank full", c.full],
+        ["Tank level", "Tank empty", c.empty],
+        ["30-second mixing timer", "30 s over", c.timeDone]
+      ].map(([n, q, t]) => `<div class="cond-item"><div class="cname">${n}</div><div class="cval">${q}: ${yes(t, "TRUE", "FALSE")}</div></div>`).join("");
+    }
+
+    // Output indicators
     const outs = [
-      { label: "Valve A", tag: "PA_CMD",    kind: "valve", on: vA,    mean: vA ? "PLC commands inlet A open — liquid flows in" : "PLC commands inlet A closed" },
-      { label: "Valve B", tag: "PB_CMD",    kind: "valve", on: vB,    mean: vB ? "PLC commands inlet B open — liquid flows in" : "PLC commands inlet B closed" },
-      { label: "Motor",   tag: "MOTOR_CMD", kind: "motor", on: motor, mean: motor ? "PLC commands the stirrer motor to run" : "PLC commands the motor off" },
-      { label: "Valve C", tag: "PC_CMD",    kind: "valve", on: vC,    mean: vC ? "PLC commands outlet C open — the tank drains" : "PLC commands outlet C closed" }
+      { label: "Valve A", kind: "valve", on: vA, txt: ["open", "closed"] },
+      { label: "Valve B", kind: "valve", on: vB, txt: ["open", "closed"] },
+      { label: "Motor",   kind: "motor", on: motor, txt: ["running", "stopped"] },
+      { label: "Valve C", kind: "valve", on: vC, txt: ["open", "closed"] }
     ];
-    setHTML(outputsEl, outs.map(o => `
+    outputsEl.innerHTML = outs.map(o => `
       <div class="out">
         <div class="ind ${o.on ? "on" : ""}" data-kind="${o.kind}"></div>
-        <div><div class="olabel">${o.label} ${tag(o.tag)}</div>
-        <div class="ostate"><b>${o.on ? "ON" : "OFF"}</b> (${o.on ? 1 : 0}) — ${o.mean}</div></div>
-      </div>`).join(""));
-    const pressed = !!(rec && rec.ev.start);
-    const ins = [
-      { label: "Start button", tag: "START_PB", kind: "button", on: pressed,
-        mean: pressed ? "pressed — read as 1 on this scan" : "not pressed. A push button gives 1 only while pressed; the PLC remembers a press as the FILL step" },
-      { label: "Level switch (full)", tag: "LEVEL_HIGH", kind: "sensor", on: full,
-        mean: full ? "the liquid has reached the switch: tank FULL" : "the liquid is below the switch: not full" },
-      { label: "Tank empty", tag: "TANK_EMPTY", kind: "sensor", on: empty,
-        mean: empty ? "level is 0 %: nothing left in the tank" : "there is still liquid in the tank" }
-    ];
-    setHTML($("inputs"), ins.map(o => `
-      <div class="out small">
-        <div class="ind ${o.on ? "on" : ""}" data-kind="${o.kind}"></div>
-        <div><div class="olabel">${o.label} ${tag(o.tag)}</div>
-        <div class="ostate"><b>${o.on ? "ON" : "OFF"}</b> (${o.on ? 1 : 0}) — ${o.mean}</div></div>
-      </div>`).join(""));
+        <div><div class="olabel">${o.label}</div>
+        <div class="ostate">${o.on ? "ON — " + o.txt[0] : "OFF — " + o.txt[1]}</div></div>
+      </div>`).join("");
 
-    // Rule cards (active rule depends on the current phase)
-    const rules = [
-      { active: phase === "fill",
-        text: `<span class="kw">IF</span> Start ${pill(phase==="fill","activated")}
-               <span class="kw">AND</span> Tank ${pill(!full,"not full")}
-               <span class="kw">THEN</span> open valves A and B` },
-      { active: phase === "mix",
-        text: `<span class="kw">IF</span> Level switch ${pill(full,"detects full")}
-               <span class="kw">THEN</span> close A and B, start motor` },
-      { active: phase === "drain",
-        text: `<span class="kw">IF</span> Motor mixed for 30s ${pill(phase==="drain"||(phase==="mix"&&timer<=0),"elapsed")}
-               <span class="kw">THEN</span> stop motor, open valve C` },
-      { active: phase === "idle" && empty,
-        text: `<span class="kw">IF</span> Tank ${pill(empty,"is empty")}
-               <span class="kw">THEN</span> close valve C — ready for next cycle` }
+    // Rule cards: every IF is shown TRUE/FALSE; the active rule is the one for the current step
+    const cards = [
+      `<span class="kw">IF</span> Start ${pill(c.start, "pressed")} <span class="kw">AND</span> Tank ${pill(!c.full, "not full")} <span class="kw">THEN</span> open valves A and B`,
+      `<span class="kw">IF</span> Level switch ${pill(c.full, "detects full")} <span class="kw">THEN</span> close A and B, start motor`,
+      `<span class="kw">IF</span> Motor mixed for 30 s ${pill(c.timeDone, "time over")} <span class="kw">THEN</span> stop motor, open valve C`,
+      `<span class="kw">IF</span> Tank ${pill(c.empty, "is empty")} <span class="kw">THEN</span> close valve C — ready for next cycle`
     ];
-    rules.forEach((r, i) => {
-      const st = rec ? rec.rules[i].status : "";
-      $("ruleCard" + i).classList.toggle("active", r.active);
-      $("ruleCard" + i).classList.toggle("fired", st === "fired");
-      $("ruleCard" + i).classList.toggle("watched", st === "wait");
-      if (rec) setHTML($("ruleScan" + i), ruleScanHTML(i, rec));
-      setHTML($("ruleDyn" + i), `
+    const activeIdx = { fill: 0, mix: 1, drain: 2 }[phase];
+    rulesEl.innerHTML = cards.map((text, i) => {
+      const active = i === activeIdx;
+      const next = i === NEXT[phase];
+      const badge = active ? "ACTIVE — its action is in effect" : next ? "next — waiting for its IF to become TRUE" : "waiting";
+      return `
+      <div class="rulecard ${active ? "active" : ""}">
         <div class="rulehead">
           <span class="rulenum">Rule ${i + 1}</span>
-          <span class="badge ${r.active ? "on" : ""}">${r.active ? "ACTIVE" : "not active"}</span>
-          <span class="rulestep">${STEPS[STEP_ORDER[i]].name} → ${STEPS[STEP_ORDER[(i + 1) % 4]].name}</span>
+          <span class="badge ${active ? "on" : ""}">${badge}</span>
         </div>
-        <div class="ruletext">${r.text}</div>`);
-    });
-
-    renderTeaching();
-  }
-
-  // --- Live explanation panels (cheap: setHTML only touches the DOM when the text changed) ---
-  function renderTeaching() {
-    const c = rec ? rec.cur : snap();
-    setText($("procCap"), `Level ${fmt1(level)} % · ${STEPS[phase].phys}${phase === "fill" ? " (level rising)" : phase === "drain" ? " (level falling)" : ""}.`);
-    setHTML($("timerCard"), timerHTML(c));
-    setText($("scanChip"), `Scan #${scanNo} · 1 scan ≈ ${(SCAN_S * speed).toFixed(2)} s of process time${paused ? " · paused" : ""}`);
-    setText($("pauseBtn"), paused && !predicting ? "▶ Resume" : "⏸ Pause");
-    $("pauseBtn").setAttribute("aria-pressed", String(paused && !predicting));
-    $("pauseBtn").disabled = !!predicting;
-    $("stepBtn").disabled = !paused || !!predicting;
-    $("scanLine").classList.toggle("paused", paused);
-    setText($("scanLineTxt"), paused
-      ? "Simulation paused — a real PLC in RUN mode never stops scanning. “Step one scan” runs one READ → SOLVE → UPDATE pass."
-      : "PLC scanning continuously — reads inputs/sensors, evaluates each rule, drives the outputs (READ → SOLVE → UPDATE, every 50 ms here)");
-    setHTML($("narrative"), narrativeHTML(rec));
-    setHTML($("stepMap"), stepMapHTML(c));
-    setText($("chainIntro"), `Shown for the step that is active now (${STEPS[c.phase].name}): the path from the signal that ends this step to the devices that react. It changes with the step.`);
-    setHTML($("chain"), chainHTML(c));
-    setHTML($("cycleSummary"), summaryHTML());
-    if (traceDirty && (paused || !recording || scanNo % 4 === 0 || (rec && rec.prev.phase !== rec.cur.phase))) { setHTML($("timing"), traceSVG()); traceDirty = false; }
+        <div class="ruletext">${text}</div>
+      </div>`;
+    }).join("");
   }
 
   // --- Loop (the scan) ---
   setInterval(() => {
     const now = performance.now();
     let dt = (now - last) / 1000; last = now;
-    if (!paused) plcScan(dt * speed);
+    // Manual mode changes only when the student presses a button, so it re-renders from setCondition().
+    if (mode !== "auto") return;
+    if (running) tick(dt * speed);
+    scan();
     render();
   }, 50);
 
   // --- Controls ---
+  function reset() {
+    phase = "idle"; level = 0; timer = MIX_TIME; running = false; startUntil = 0;
+    manual = { start: false, tank: "empty", timeDone: false };
+    changeEl.innerHTML = mode === "manual"
+      ? "Everything is off and the tank is empty. Press the start switch to make Rule 1's IF part TRUE."
+      : "Press ▶ Start to begin. Watch the Conditions panel: each time a condition becomes TRUE, a rule fires and the outputs change.";
+  }
+  function setMode(m) {
+    mode = m;
+    $("modeAuto").classList.toggle("active", m === "auto");
+    $("modeAuto").setAttribute("aria-pressed", m === "auto");
+    $("modeManual").classList.toggle("active", m === "manual");
+    $("modeManual").setAttribute("aria-pressed", m === "manual");
+    $("modeHelp").textContent = m === "auto"
+      ? "The process runs by itself: the liquid rises and falls and the timer counts down, so the conditions change on their own."
+      : "Nothing happens by itself. You are the sensors: set each condition with the buttons in the Conditions panel, and see which rule's IF becomes TRUE and what the outputs do.";
+    startBtn.hidden = m === "manual";
+    $("speedBox").hidden = m === "manual";
+    reset(); render();
+  }
+
   startBtn.addEventListener("click", () => {
-    if (phase === "idle") { phase = "fill"; level = 0; timer = MIX_TIME; running = true; }
+    if (phase === "idle") { level = 0; timer = MIX_TIME; running = true; startUntil = performance.now() + 1200; }
   });
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    phase = "idle"; level = 0; timer = MIX_TIME; running = false;
-  });
-  document.getElementById("speed").addEventListener("change", e => speed = parseFloat(e.target.value));
-
-  // Teaching-layer controls (the three handlers above are unchanged)
-  startBtn.addEventListener("click", () => { startPulse = true; paused = false; holdAfterChange = false; closePredict(); });
-  $("resetBtn").addEventListener("click", () => { resetPulse = true; paused = false; holdAfterChange = false; closePredict(); });
-  $("pauseBtn").addEventListener("click", () => {
-    if (predicting) return;
-    paused = !paused;
-    announce(paused ? "Simulation paused. Use “Step one scan” to advance exactly one scan." : "Simulation resumed.");
-    render();
-  });
-  $("stepBtn").addEventListener("click", () => {
-    if (!paused || predicting) return;
-    plcScan(SCAN_S * speed);
-    markDone("scan");
-    traceDirty = true;
-    render();
-  });
-  $("predictGo").addEventListener("click", () => { closePredict(); paused = false; holdAfterChange = true; render(); });
-  $("predictBody").addEventListener("click", e => {
-    const b = e.target.closest("button[data-pred]");
-    if (!b || predictChoice !== null) return;
-    predictChoice = Number(b.dataset.opt);
-    if (++progress.predictions >= 3) markDone("predict");
-    saveProgress();
-    renderPredict();
-    const v = $("predictBody").querySelector(".verdict"); if (v) v.focus();
-  });
-  $("quizList").addEventListener("click", e => {
-    const b = e.target.closest("button[data-quiz]");
+  $("resetBtn").addEventListener("click", () => { reset(); render(); });
+  $("speed").addEventListener("change", e => speed = parseFloat(e.target.value));
+  $("modeAuto").addEventListener("click", () => setMode("auto"));
+  $("modeManual").addEventListener("click", () => setMode("manual"));
+  condEl.addEventListener("click", e => {
+    const b = e.target.closest("[data-set]");
     if (!b) return;
-    const i = Number(b.dataset.quiz);
-    progress.quiz[QUIZ[i].id] = Number(b.dataset.opt);
-    saveProgress();
-    renderQuizItem(i); renderQuizScore();
-    const v = $("quiz-" + i).querySelector(".verdict"); if (v) v.focus();
-  });
-  $("quizReset").addEventListener("click", () => {
-    progress.quiz = {}; saveProgress();
-    QUIZ.forEach((_, i) => renderQuizItem(i)); renderQuizScore();
-  });
-  $("clearTrace").addEventListener("click", () => {
-    trace = []; traceDirty = true;
-    if (!cycle || cycle.end) recording = false;
-    render();
-  });
-  document.addEventListener("click", e => {                 // glossary links open the glossary first
-    if (e.target.closest("a.term")) $("glossarySec").open = true;
+    const key = b.dataset.set;
+    const value = key === "tank" ? b.dataset.v : b.dataset.v === "1";
+    const label = { start: "Start switch", tank: "Tank level", timeDone: "30-second timer" }[key] + " → " + b.textContent;
+    setCondition(key, value, label);
   });
 
-  renderProgress();
-  renderQuizScore();
-  render();
+  setMode("auto");
 </script>
 </body>
 </html>

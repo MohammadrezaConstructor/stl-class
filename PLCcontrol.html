@@ -573,8 +573,31 @@ details.pq-col[open]>summary{margin-bottom:6px}
 .summary-list .ans{color:#1f4d2b}.summary-list .todo{color:var(--muted)}
 .summary-programs{margin:10px 0 0;padding-left:20px;display:grid;gap:4px;font-size:12px}
 
-.uq-goal{margin-top:7px;font-size:12px;color:#5a4d7d}
-.uq-goal:empty{display:none}
+.problem{margin-top:10px;border:1px solid var(--line);border-left:4px solid var(--rail);border-radius:0 9px 9px 0;background:#fff;padding:10px 12px;font-size:12px;color:#425466}
+.problem-h{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.problem-h span{font-weight:600;color:var(--muted)}
+.scenario .problem-situation{font-size:12.5px;color:var(--ink);margin:0 0 6px}
+.problem h4{margin:10px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#52606d}
+.problem h4 small{text-transform:none;letter-spacing:0;font-weight:600;color:var(--muted);font-size:11px}
+.io-scroll{overflow-x:auto}
+.io-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.io-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:1px solid var(--line);padding:4px 6px}
+.io-table td{border-bottom:1px solid #eef1f4;padding:4px 6px;vertical-align:top}
+.io-table code{font-weight:800;color:var(--blue2)}
+.req-list{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.req-list li{display:grid;grid-template-columns:auto auto 1fr;gap:3px 8px;align-items:baseline;border:1px solid #e6ebf0;border-radius:7px;padding:6px 8px;background:#fbfcfd}
+.req-id{color:var(--blue2)}
+.req-out{font-size:10px;font-weight:800;border-radius:999px;padding:1px 7px;background:var(--blueSoft);color:var(--blue2);white-space:nowrap}
+.req-text{color:var(--ink)}
+.req-map{grid-column:3;font-size:10.5px;color:var(--muted)}
+.req-assume{margin:0;padding-left:18px;display:grid;gap:2px}
+.task-box{margin-top:10px;border:1px solid #e1d8ff;border-left:4px solid var(--purple);border-radius:0 9px 9px 0;background:#faf8ff;padding:9px 11px;font-size:12px;color:#4a3f6b}
+.task-box p{margin:0 0 5px}
+.task-box .task-h{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--ink)}
+.task-box .task-accept{font-weight:600}
+.task-box details{margin:2px 0 5px}.task-box ol{margin:4px 0 0;padding-left:20px;display:grid;gap:2px}
+.task-box .task-skill{margin:0;color:var(--muted)}
+@media(max-width:560px){.req-list li{grid-template-columns:auto 1fr}.req-text,.req-map{grid-column:1/-1}}
 .teacher-fold{margin-top:8px;font-size:12px}
 .teacher-fold>summary{cursor:pointer;font-weight:700;color:#536473;font-size:11px}
 .teacher-fold .note{margin-top:5px}
@@ -681,9 +704,13 @@ html.embedded .pq,html.embedded .modeguide,html.embedded .understand,html.embedd
 <div class="content">
   <div class="scenario">
     <h2 id="programTitle"></h2>
-    <p id="programScenario"></p>
+    <section id="problemDef" class="problem" aria-labelledby="problemHeading">
+      <h3 id="problemHeading" class="problem-h">Problem definition <span>— what must this program do?</span></h3>
+      <p id="programScenario" class="problem-situation"></p>
+      <div id="problemBody"></div>
+    </section>
+    <div id="studentGoal" class="task-box"></div>
     <div id="unitQuestion" class="unitq"></div>
-    <div id="studentGoal" class="uq-goal"></div>
     <div id="unitAnswer" class="answerbox" aria-live="polite"></div>
     <details class="teacher-fold"><summary>Teacher note</summary><div id="teacherNote" class="note teacher"></div></details>
   </div>
@@ -696,7 +723,7 @@ html.embedded .pq,html.embedded .modeguide,html.embedded .understand,html.embedd
   <div class="section-title"><span>2. Rules, ladder and scan result</span><small>Rule n is programmed on rung n</small></div>
   <p class="section-q">This section answers: Which rule is TRUE, which rungs are TRUE, and why did the last scan give these outputs?</p>
   <div class="rules-box">
-    <div class="rule-head">The rules in words. A green rule (marked “output ON”) is TRUE in the reference program right now.</div>
+    <div class="rule-head">The requirements from the problem definition, rewritten as IF–THEN rules: rule n is programmed on rung n. A green rule (marked “output ON”) is TRUE in the reference program right now.</div>
     <div id="ruleList" class="rule-list"></div>
   </div>
 
@@ -911,6 +938,16 @@ const programs=[
  scenario:"A tank has a fill pump, full lamp, and low-level alarm. Each IF–THEN rule becomes its own rung and all rungs run every scan.",
  teacher:"Use this first multi-rung example to establish that the PLC scans every rung. Ask which outputs can be ON simultaneously.",
  goal:"Translate three independent rules into three independent rungs and choose the correct comparison directions.",
+ problem:{
+  situation:"A storage tank is filled by a pump. The operator fills it with a Start button and can interrupt filling with a Stop button. A level transmitter measures how full the tank is (0–100 %). Two indicators warn the operator: a lamp when the tank is full and an alarm when it is almost empty.",
+  outMeans:{Y0:"1 = pump contactor energized → the pump fills the tank",Y1:"1 = “tank full” lamp lit",Y2:"1 = low-level alarm sounding"},
+  requirements:[
+   {out:"Y0",rules:[1],text:"The fill pump runs while Start is pressed, Stop is not pressed and the level is below 90 %. At 90 % or more it must stop, so the tank cannot overfill. Stop always wins over Start."},
+   {out:"Y1",rules:[2],text:"The full lamp is ON whenever the level is 95 % or more — including exactly 95 %."},
+   {out:"Y2",rules:[3],text:"The low-level alarm is ON whenever the level is 15 % or less — including exactly 15 %."}
+  ],
+  assumptions:["Start X0 and Stop X1 are push buttons: 1 = pressed, 0 = released.","There is no memory in this program: the pump runs only while Start is held. (Keeping a motor ON after Start is released is program 5.)","The three outputs are independent: any combination of them may be ON at the same time."]
+ },
  question:"How do three separate IF–THEN rules become three rungs that all run on every scan — and can more than one output be ON at the same time?",
  lookFor:"the rules (green = TRUE), the ladder, the comparison map and “What just happened?”.",
  subQuestions:["Why does Stop use an NC contact —|/|— on the pump rung?","Which comparison direction (<, ≤, ≥) matches each level rule?","Why does the pump stay OFF at 92 % even with Start ON?","Can the pump and the low-level alarm be ON in the same scan?"],
@@ -970,6 +1007,16 @@ const programs=[
  scenario:"The conveyor motor runs only under safe conditions. A sorting gate needs an object and a running motor. A fault lamp turns on for E-Stop OR an open guard.",
  teacher:"This program demonstrates rung interaction: the gate rung reads Y0, which was set by the motor rung earlier in the scan.",
  goal:"Understand series permissives, output-state contacts, and OR branches across multiple rungs.",
+ problem:{
+  situation:"A conveyor carries objects past a photo-eye to a sorting gate. The conveyor motor may run only while it is safe to do so. The sorting gate pushes an object off the belt, but only while the belt is moving. A fault lamp tells the operator that the cell is in an unsafe state.",
+  outMeans:{Y0:"1 = conveyor motor commanded ON",Y1:"1 = sorting-gate solenoid energized (gate pushes the object aside)",Y2:"1 = fault lamp lit"},
+  requirements:[
+   {out:"Y0",rules:[1],text:"The conveyor motor runs while Start is pressed, Stop is not pressed, the E-Stop is not active and the guard door is closed. If any one of these is not met, the motor must be OFF."},
+   {out:"Y1",rules:[2],text:"The sorting gate operates while an object is in front of the photo-eye AND the motor is commanded ON. It must never move while the conveyor is stopped."},
+   {out:"Y2",rules:[3],text:"The fault lamp is ON while the E-Stop is active OR the guard door is open — either one alone is enough."}
+  ],
+  assumptions:["Start X0 and Stop X1 are push buttons (1 = pressed). There is no memory: the motor runs only while Start is held.","E-Stop X3 = 1 means the emergency stop is active (pressed).","Guard X4 = 1 means the guard door is CLOSED (the healthy state). An open guard is X4 = 0.","Teaching model only: a real emergency stop must act through safety-rated hardware, not just the PLC program."]
+ },
  question:"How can one rung use the result of another rung in the same scan — and how do AND (series) and OR (parallel) appear in a multi-rung program?",
  lookFor:"rung 2 (Sorting Gate), the rung interaction map and “What just happened?” — it says where the Y0 value read by the gate rung came from.",
  subQuestions:["Why are Stop and E-Stop NC contacts on the motor rung?","Why may the gate rung use Y0 — an output — as a contact?","Why does the fault rung need a parallel branch?","What would change if the gate rung were scanned before the motor rung?"],
@@ -1039,6 +1086,16 @@ const programs=[
  scenario:"The heater and cooler respond to temperature relative to a setpoint. The fan runs whenever either heating or cooling is active.",
  teacher:"Use this to show that comparison blocks are Boolean conditions and that the fan rung can read two previous outputs through a parallel branch.",
  goal:"Build two comparison rungs and one OR rung based on output states.",
+ problem:{
+  situation:"A room must be kept close to a setpoint temperature SP chosen by the operator. A heater warms the room, a cooler cools it, and a fan circulates the air whenever either of them works. An Enable switch turns the whole system on or off. So that the heater and cooler do not switch on and off constantly around the setpoint, nothing runs while the room is within 1 °C of SP (a deadband).",
+  outMeans:{Y0:"1 = heater contactor energized",Y1:"1 = cooler (compressor) commanded ON",Y2:"1 = fan running"},
+  requirements:[
+   {out:"Y0",rules:[1],text:"The heater is ON while the system is enabled and the room is colder than SP − 1 °C (strictly below: at exactly SP − 1 it stays OFF)."},
+   {out:"Y1",rules:[2],text:"The cooler is ON while the system is enabled and the room is warmer than SP + 1 °C (strictly above: at exactly SP + 1 it stays OFF)."},
+   {out:"Y2",rules:[3],text:"The fan is ON whenever the heater OR the cooler is ON, and OFF when both are OFF."}
+  ],
+  assumptions:["TEMP (measured room temperature) and SP (setpoint) are analog values in °C. Move both sliders to try different situations.","Enable X0 = 1 means the system is switched on. When it is off, everything must be OFF however hot or cold the room is.","Between SP − 1 and SP + 1 (inclusive) the heater and the cooler are both OFF."]
+ },
  question:"How do comparison instructions decide between heating and cooling, and how can a fan rung combine two outputs with OR?",
  lookFor:"the comparison boxes in rungs 1–2 (they show both numbers), the comparison map, and the branch on rung 3.",
  subQuestions:["Why does neither the heater nor the cooler run between SP − 1 and SP + 1?","What happens at exactly TEMP = SP − 1 (21 °C with SP 22 °C)?","Why can the fan rung read Y0 and Y1 in the same scan?","What does Enable X0 do to each rung?"],
@@ -1102,6 +1159,16 @@ const programs=[
  scenario:"Forward and reverse coils must never energize together. Each rung blocks itself when the opposite output is active.",
  teacher:"This is a classic two-rung interaction exercise. Ask students to explain the role of each NC output contact.",
  goal:"Build symmetric interlock rungs using the opposite output as an NC permissive.",
+ problem:{
+  situation:"A motor can turn forward or in reverse. Each direction has its own contactor. If both contactors closed at the same time they would short-circuit the supply, so the program must never command both directions together, whatever the operator requests.",
+  outMeans:{Y0:"1 = forward contactor energized (motor turns forward)",Y1:"1 = reverse contactor energized (motor turns in reverse)"},
+  requirements:[
+   {out:"Y0",rules:[1],text:"The motor runs forward while Forward is requested and reverse is not commanded."},
+   {out:"Y1",rules:[2],text:"The motor runs in reverse while Reverse is requested and forward is not commanded."},
+   {out:"Y0 + Y1",rules:[1,2],text:"Forward and reverse must never both be ON at the end of a scan. If both are requested at the same moment from rest, exactly one direction runs (the tests expect forward)."}
+  ],
+  assumptions:["Forward X0 and Reverse X1 are request signals: 1 = requested, 0 = not requested. There is no memory: a direction runs only while it is requested.","A real reversing starter also has a hardware interlock between the contactors; the PLC interlock alone is not enough."]
+ },
  question:"How do two rungs block each other so that forward and reverse can never be ON together — and which one wins when both are requested?",
  lookFor:"the NC output contacts in both rungs, “What just happened?” (it says whether each interlock contact read this scan's or the previous scan's value) and the truth table's “prev” column.",
  subQuestions:["Why is the interlock an NC contact of the OPPOSITE output?","What happens when both requests are ON at once from rest?","Why does the forward rung read Y1 from the previous scan, but the reverse rung reads Y0 from this scan?","What goes wrong if a rung uses an NC contact of its own coil?"],
@@ -1150,6 +1217,16 @@ const programs=[
  scenario:"Start latches Motor Y0 through its own holding contact. Stop releases the latch. A second rung turns on running lamp Y1 whenever Y0 is on.",
  teacher:"This program introduces memory plus a dependent status rung. Use step-by-step input changes to demonstrate persistence.",
  goal:"Understand a holding branch and a second rung that monitors the latched output.",
+ problem:{
+  situation:"A motor is started and stopped with two momentary push buttons, as on most real machines: the operator presses Start briefly and lets go, and the motor must keep running until Stop is pressed. A lamp on the panel shows that the motor is running.",
+  outMeans:{Y0:"1 = motor contactor energized (motor commanded ON)",Y1:"1 = “running” lamp lit"},
+  requirements:[
+   {out:"Y0",rules:[1],text:"A press of Start — even a short one — starts the motor, and the motor keeps running after Start is released."},
+   {out:"Y0",rules:[1],text:"Pressing Stop stops the motor, and it stays stopped after Stop is released until Start is pressed again. If Start and Stop are pressed together, Stop wins."},
+   {out:"Y1",rules:[2],text:"The running lamp is ON exactly while the motor is commanded ON — in the same scan, with no delay."}
+  ],
+  assumptions:["Start X0 and Stop X1 are momentary push buttons: 1 only while pressed. To “press” one, switch it ON and then OFF again.","Here Stop X1 = 1 means “Stop pressed”. (Real stop buttons are often wired normally closed — see NC contact in the glossary.)"]
+ },
  question:"How does a rung remember that Start was pressed after the button is released — and how does a second rung show that memory?",
  lookFor:"the holding branch (Start OR Hold Y0) on rung 1, the run/stop state map, the scan history and the truth table's “Y0 prev” column.",
  subQuestions:["Why does the motor stay ON after Start is released?","Which scan's value does the Hold Y0 contact read?","Why must Stop be an NC contact in series with the WHOLE branch?","Why does the running lamp turn ON in the same scan as the motor?"],
@@ -1208,6 +1285,17 @@ const programs=[
  scenario:"A simplified batch process uses internal step bits M0, M1, and M2: Start sets Fill step, Full sensor advances to Mix, Timer Done advances to Drain, and Empty ends the cycle.",
  teacher:"This is a conceptual sequence example using internal bits as state. It is intentionally simplified for teaching state transitions.",
  goal:"See how several rungs and internal bits can represent process stages.",
+ problem:{
+  situation:"A batch tank runs one cycle: fill, then mix, then drain. Each stage is started by a short event — a button press or a sensor signal — and must continue after that event has disappeared. So the PLC has to remember which stage the batch is in. Three internal memory bits store the active stage (M0 = Fill, M1 = Mix, M2 = Drain), and the valves and the mixer simply follow the stage.",
+  outMeans:{M0:"1 = the Fill stage is active (memory only, no terminal)",M1:"1 = the Mix stage is active (memory only)",M2:"1 = the Drain stage is active (memory only)",Y0:"1 = fill valve open",Y1:"1 = mixer motor running",Y2:"1 = drain valve open"},
+  requirements:[
+   {out:"M0",rules:[1],text:"Start begins the Fill stage. Fill continues after Start is released and ends when the tank-full switch Full X1 turns ON."},
+   {out:"M1",rules:[2],text:"Full X1 begins the Mix stage. Mix continues after Full X1 turns OFF again and ends when Timer Done X2 turns ON."},
+   {out:"M2",rules:[3],text:"Timer Done X2 begins the Drain stage. Drain continues until Empty X3 turns ON; then every stage and every output is OFF."},
+   {out:"Y0 · Y1 · Y2",rules:[4,5,6],text:"The fill valve is open only during Fill, the mixer runs only during Mix, and the drain valve is open only during Drain. Each output follows its stage bit."}
+  ],
+  assumptions:["Apply the events one at a time and in order: Start → Full → Timer Done → Empty. Each is a short pulse — switch it ON, then OFF again.","Timer Done X2 is a simulated input that stands in for a mixing timer (timers are taught in another studio).","This is a deliberately simplified sequence: a production sequence adds further checks, discussed in the model answer."]
+ },
  question:"How can internal step bits (M0, M1, M2) and several rungs represent the stages of a process, so that each stage starts, holds and ends at the right moment?",
  lookFor:"the sequence map (active step and the condition it is waiting for), the scan history, and rungs 1–3 (step bits) versus rungs 4–6 (outputs).",
  subQuestions:["How does each step bit start, hold itself, and end?","Why are the outputs on separate rungs that only read M0, M1 and M2?","Why must the inputs be applied in order: Start → Full → Timer Done → Empty?","What happens in this simplified program if Full X1 turns ON while no step is active?"],
@@ -1319,9 +1407,8 @@ function loadProgram(i){
  $("programSelect").value=currentIndex;
  $("difficulty").textContent=p.difficulty;
  $("programTitle").textContent=p.title;
- $("programScenario").textContent=p.scenario;
  $("teacherNote").innerHTML="<b>Teacher note:</b> "+p.teacher;
- $("studentGoal").innerHTML="<b>Your task:</b> "+p.goal;
+ renderProblem();
  $("prevProgram").disabled=currentIndex===0;
  $("nextProgram").disabled=currentIndex===programs.length-1;
  // Clear the old ladder first so the power-up scan in resetInputs() does not run the previous program's rungs.
@@ -2277,8 +2364,37 @@ function modeStatusText(){
  if(mode==="repair")return `Status: you have changed ${ids.filter(id=>!deepEqual(slotSelections[id],p.slots[id].choices[p.slots[id].choices.length-1])).length} of ${ids.length} slots · ${solved.has(p.id)?"this program is repaired":"not repaired yet"}.`;
  return `Status: ${studentProgram.length} rungs · ${programDiffers()?"your ladder differs from the reference":"still identical to the reference — change something, then test it"}.`;
 }
+// Problem definition: the situation, the signal list, the numbered requirements and the assumptions,
+// then a mode-dependent task with its acceptance criteria (the behavior tests).
+function renderProblem(){
+ const p=current(),d=p.problem;
+ $("programScenario").textContent=d.situation;
+ const sig=[
+  ...p.inputs.map(i=>[i.key,i.label.replace(new RegExp("\\s*"+i.key+"$"),""),i.type==="analog"?`Analog input (${i.unit})`:"Digital input",i.means]),
+  ...p.outputs.map(o=>[o.key,o.label.replace(new RegExp("\\s*"+o.key+"$"),""),o.internal?"Internal bit (memory)":"Digital output",d.outMeans[o.key]||""])
+ ];
+ $("problemBody").innerHTML=
+  `<h4>Signals <small>— what the PLC reads and writes</small></h4><div class="io-scroll"><table class="io-table"><thead><tr><th>Tag</th><th>Signal</th><th>Kind</th><th>Meaning</th></tr></thead><tbody>${sig.map(r=>`<tr><td><code>${r[0]}</code></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join("")}</tbody></table></div>`+
+  `<h4>Requirements <small>— the behavior your ladder must have</small></h4><ol class="req-list">${d.requirements.map((r,i)=>`<li><b class="req-id">R${i+1}</b><span class="req-out">${r.out}</span><span class="req-text">${r.text}</span><span class="req-map">→ programmed on rung${r.rules.length>1?"s":""} ${r.rules.join(", ")} (rule${r.rules.length>1?"s":""} ${r.rules.join(", ")} below)</span></li>`).join("")}</ol>`+
+  `<h4>Assumptions and limits</h4><ul class="req-assume">${d.assumptions.map(a=>`<li>${a}</li>`).join("")}</ul>`;
+ renderTask();
+}
+function renderTask(){
+ const p=current(),n=Object.keys(p.slots).length,reqs=p.problem.requirements.length,t=p.tests.length;
+ const task={
+  learn:`Study the <b>reference ladder</b>. For each requirement R1–R${reqs}, find the rung and the instructions that implement it, and explain why each rung is TRUE or FALSE for the inputs you set.`,
+  solve:`The ladder has <b>${n} empty slot${n>1?"s":""}</b> (dashed boxes). Fill ${n>1?"each one":"it"} with the instruction that makes the ladder meet requirements R1–R${reqs}.`,
+  repair:`The ladder contains <b>${n} faulty instruction${n>1?"s":""}</b>. Run the behavior tests to see which requirements are broken, then replace the faulty instructions so that R1–R${reqs} are met.`,
+  build:`Write your own ladder that meets requirements R1–R${reqs}. It starts as a copy of the reference; it may look different, as long as it behaves the same.`
+ }[mode];
+ const accept=mode==="learn"
+  ?`You are done when you can explain every requirement from the ladder. <b>Run behavior tests</b> shows the ${t} test cases that check the requirements.`
+  :`Accepted when ${mode==="build"?"":"<b>Check guided solution</b> turns every slot green and "}all <b>${t} behavior test cases</b> pass.`;
+ $("studentGoal").innerHTML=`<p class="task-h"><b>Your task</b> <span class="status">${$("modeStatus").textContent}</span></p><p>${task}</p><p class="task-accept">${accept}</p><details><summary>The ${t} test cases your ladder must pass</summary><ol>${p.testAsk.map(q=>`<li>${q}</li>`).join("")}</ol></details><p class="task-skill"><b>Skill practised:</b> ${p.goal}</p>`;
+}
 function renderModeGuide(){
  const g=modeGuide[mode];if(!g)return;
+ renderTask();
  $("mgQuestion").textContent=g.q;$("mgTodo").textContent=g.todo;$("mgDone").textContent=g.done;
  $("mgStatus").textContent=modeStatusText();
 }
