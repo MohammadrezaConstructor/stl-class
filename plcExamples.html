@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -34,49 +33,567 @@ h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
 .stat b{display:block;font-size:16px}
 .stat span{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 
-.topbar,.programbar{padding:11px 22px;border-bottom:1px solid var(--line);background:#fbfcfd;display;justify-content;gap:12px;align-items;flex-wrap}.tabs,.actions,.picker{display;gap:7px;align-items;flex-wrap}.tab,.ghost,.primary,.secondary,.tiny{border:1px solid #cbd2d9;border-radius:8px;background:#fff;color(--ink);font-weight:700}.tab,.ghost,.primary,.secondary{min-height:38px;padding:0 12px;font-size:13px}.tiny{font-size:10px;padding:4px 7px}.tab.active,.ghost.active{background(--blueSoft);border-color:#9bb8ff;color(--blue2)}.primary{background(--blue);border-color(--blue);color:#fff}.danger{color(--red)}.status{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#e9eef3;color:#66737f}.status.good{background:#d3f9d8;color:#2b8a3e}.status.warn{background:#fff3bf;color:#8a6200}.status.bad{background:#ffe3e3;color:#c92a2a}select{border:1px solid #cbd2d9;border-radius:8px;padding:8px 10px;background:#fff;color(--ink)}label{font-size:13px;font-weight:700;color:#425466}.level{font-size:10px;font-weight:800;border-radius:999px;padding:4px 7px;background(--purpleSoft);color(--purple)}
+.topbar,.programbar{
+  padding:11px 22px;border-bottom:1px solid var(--line);background:#fbfcfd;
+  display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap
+}
+.tabs,.actions,.picker{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.tab,.ghost,.primary,.secondary,.tiny{
+  border:1px solid #cbd2d9;border-radius:8px;background:#fff;color:var(--ink);font-weight:700
+}
+.tab,.ghost,.primary,.secondary{min-height:38px;padding:0 12px;font-size:13px}
+.tiny{font-size:10px;padding:4px 7px}
+.tab.active,.ghost.active{background:var(--blueSoft);border-color:#9bb8ff;color:var(--blue2)}
+.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.danger{color:var(--red)}
+.status{font-size:10px;font-weight:800;padding:4px 7px;border-radius:999px;background:#e9eef3;color:#66737f}
+.status.good{background:#d3f9d8;color:#2b8a3e}.status.warn{background:#fff3bf;color:#8a6200}.status.bad{background:#ffe3e3;color:#c92a2a}
+select{border:1px solid #cbd2d9;border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink)}
+label{font-size:13px;font-weight:700;color:#425466}
+.level{font-size:10px;font-weight:800;border-radius:999px;padding:4px 7px;background:var(--purpleSoft);color:var(--purple)}
 
-.bridge{display;grid-template-columns(5,1fr);gap:7px;padding:12px 22px;border-bottom:1px solid var(--line)}.bridge div{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;text-align;padding:8px;font-size:11px;color(--muted)}.bridge b{display;color(--blue);font-size:12px}
+.bridge{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:7px;padding:12px 22px;border-bottom:1px solid var(--line)
+}
+.bridge div{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;text-align:center;padding:8px;font-size:11px;color:var(--muted)}
+.bridge b{display:block;color:var(--blue);font-size:12px}
 
-.content{padding:18px 22px 24px}.notegrid{display;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}.note{border-radius:9px;padding:10px 12px;font-size:12px}.note.teacher{border:1px solid #cfe0ff;background:#f7faff;color:#425466}.note.student{border:1px solid #e1d8ff;background:#faf8ff;color:#5a4d7d}
+.content{padding:18px 22px 24px}
+.notegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.note{border-radius:9px;padding:10px 12px;font-size:12px}
+.note.teacher{border:1px solid #cfe0ff;background:#f7faff;color:#425466}
+.note.student{border:1px solid #e1d8ff;background:#faf8ff;color:#5a4d7d}
 
-.section-title{display;justify-content;align-items;gap:10px;text-transform;letter-spacing:.06em;font-size:11px;color:#7b8794;margin:0 0 9px}.section-title small{text-transform;letter-spacing:0;font-size:10px}.inputs{display;gap:9px;flex-wrap;margin-bottom:10px}.device{border:1px solid var(--line);border-radius:9px;background:#fafbfc;padding:9px 11px;min-width:132px}.device .name{font-size:12px;font-weight:700;margin-bottom:6px}.toggle{width:52px;height:28px;border:0;border-radius:14px;background:#c4cdd5;position;padding:0}.toggle::after{content:"";position;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s}.toggle.on{background(--green)}.toggle.on::after{transform(24px)}.state{font-size:10px;color(--muted);margin-top:4px}.device.analog{min-width:210px}.device input{width:100%}.value{font-size:11px;font-weight:800;color(--blue);margin-top:3px}.presetrow{display;gap:6px;flex-wrap;margin-bottom:14px}.presetrow button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 8px;font-size:10px}
+.section-title{
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  text-transform:uppercase;letter-spacing:.06em;font-size:11px;color:#7b8794;margin:0 0 9px
+}
+.section-title small{text-transform:none;letter-spacing:0;font-size:10px}
+.inputs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+.device{border:1px solid var(--line);border-radius:9px;background:#fafbfc;padding:9px 11px;min-width:132px}
+.device .name{font-size:12px;font-weight:700;margin-bottom:6px}
+.toggle{width:52px;height:28px;border:0;border-radius:14px;background:#c4cdd5;position:relative;padding:0}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.15s}
+.toggle.on{background:var(--green)}.toggle.on::after{transform:translateX(24px)}
+.state{font-size:10px;color:var(--muted);margin-top:4px}
+.device.analog{min-width:210px}.device input{width:100%}.value{font-size:11px;font-weight:800;color:var(--blue);margin-top:3px}
+.presetrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.presetrow button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 8px;font-size:10px}
 
-.scenario{border:1px solid var(--line);border-radius:10px;background:#fbfcfd;padding:12px 13px;margin-bottom:14px}.scenario h2{font-size:16px;margin:0 0 3px}.scenario p{font-size:12px;color(--muted);margin:0}.rule-list{display;gap:6px;margin-top:9px}.rule{border-left:4px solid #b8c2cc;background:#fff;border-radius:0 7px 7px 0;padding:8px 9px;font-size:12px}.rule.active{border-left-color(--green);background(--greenSoft)}.kw{font-weight:800;color(--blue)}.cond{display;padding:1px 5px;border-radius:4px;font-weight:700}.cond.true{background:#d3f9d8;color:#2b8a3e}.cond.false{background:#ffe3e3;color:#c92a2a}
+.scenario{
+  border:1px solid var(--line);border-radius:10px;background:#fbfcfd;padding:12px 13px;margin-bottom:14px
+}
+.scenario h2{font-size:16px;margin:0 0 3px}.scenario p{font-size:12px;color:var(--muted);margin:0}
+.rule-list{display:grid;gap:6px;margin-top:9px}
+.rule{
+  border-left:4px solid #b8c2cc;background:#fff;border-radius:0 7px 7px 0;padding:8px 9px;font-size:12px
+}
+.rule.active{border-left-color:var(--green);background:var(--greenSoft)}
+.kw{font-weight:800;color:var(--blue)}
+.cond{display:inline-block;padding:1px 5px;border-radius:4px;font-weight:700}
+.cond.true{background:#d3f9d8;color:#2b8a3e}.cond.false{background:#ffe3e3;color:#c92a2a}
 
-.main-grid{display;grid-template-columns(620px,1.35fr) minmax(310px,.65fr);gap:13px;align-items}.panel{border:1px solid var(--line);border-radius:11px;background:#fff;overflow}.panelhead{padding:10px 12px;border-bottom:1px solid var(--line);background:#fbfcfd;display;justify-content;gap:9px;align-items}.panelhead h3{font-size:13px;margin:0}.panelbody{padding:12px}
+.main-grid{display:grid;grid-template-columns:minmax(620px,1.35fr) minmax(310px,.65fr);gap:13px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:11px;background:#fff;overflow:hidden}
+.panelhead{padding:10px 12px;border-bottom:1px solid var(--line);background:#fbfcfd;display:flex;justify-content:space-between;gap:9px;align-items:center}
+.panelhead h3{font-size:13px;margin:0}.panelbody{padding:12px}
 
-.program{position;padding:8px 0}.program::before,.program::after{content:"";position;top:0;bottom:0;width:7px;background(--rail);border-radius:2px}.program::before{left:8px}.program::after{right:8px}.rung{position;display;grid-template-columns:34px 1fr 34px;align-items;min-height:112px;padding:3px 0}.rung-num{text-align;font-size:10px;font-weight:800;color:#7b8794}.rung-wire{position;min-height:106px;display;align-items}.rung-wire::before{content:"";position;left:0;right:0;top:50%;height:3px;background(--wire);transform(-50%)}.rung-wire.powered::before{background(--green);box-shadow:0 0 8px rgba(47,158,68,.35)}.rung-content{position;z-index:2;width:100%;display;justify-content;align-items;gap:10px;padding:0 12px}.element{min-width:78px;text-align;background:#fff;color:#263746;position}.element .tag{display;font-size:10px;font-weight:800;color:#536473;margin-bottom:2px}.symbol{font-family:"Courier New",monospace;font-weight:800;font-size:17px;white-space}.element.on{color(--green)}.element.off{color(--red)}.compare{border:2px solid #778592;border-radius:6px;padding:6px 7px;min-width:110px;font-size:11px;font-weight:800;background:#fff}.compare.on{border-color(--green);background(--greenSoft)}.compare.off{border-color:#e2aaaa;background(--redSoft)}.branch{min-width:190px;border-left:2px solid var(--wire);border-right:2px solid var(--wire);background:#fff;padding:2px 0}.branch-row{min-height:38px;display;align-items;justify-content;position}.branch-row::before{content:"";position;left:0;right:0;top:50%;height:2px;background(--wire);z-index:-1}.branch-row.on::before{background(--green)}
+.program{position:relative;padding:8px 0}
+.program::before,.program::after{
+  content:"";position:absolute;top:0;bottom:0;width:7px;background:var(--rail);border-radius:2px
+}
+.program::before{left:8px}.program::after{right:8px}
+.rung{
+  position:relative;display:grid;grid-template-columns:34px 1fr 34px;align-items:center;min-height:112px;padding:3px 0
+}
+.rung-num{text-align:center;font-size:10px;font-weight:800;color:#7b8794}
+.rung-wire{position:relative;min-height:106px;display:flex;align-items:center}
+.rung-wire::before{content:"";position:absolute;left:0;right:0;top:50%;height:3px;background:var(--wire);transform:translateY(-50%)}
+.rung-wire.powered::before{background:var(--green);box-shadow:0 0 8px rgba(47,158,68,.35)}
+.rung-content{position:relative;z-index:2;width:100%;display:flex;justify-content:space-evenly;align-items:center;gap:10px;padding:0 12px}
+.element{min-width:78px;text-align:center;background:#fff;color:#263746;position:relative}
+.element .tag{display:block;font-size:10px;font-weight:800;color:#536473;margin-bottom:2px}
+.symbol{font-family:"Courier New",monospace;font-weight:800;font-size:17px;white-space:nowrap}
+.element.on{color:var(--green)}.element.off{color:var(--red)}
+.compare{border:2px solid #778592;border-radius:6px;padding:6px 7px;min-width:110px;font-size:11px;font-weight:800;background:#fff}
+.compare.on{border-color:var(--green);background:var(--greenSoft)}.compare.off{border-color:#e2aaaa;background:var(--redSoft)}
+.branch{min-width:190px;border-left:2px solid var(--wire);border-right:2px solid var(--wire);background:#fff;padding:2px 0}
+.branch-row{min-height:38px;display:flex;align-items:center;justify-content:center;position:relative}
+.branch-row::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--wire);z-index:-1}
+.branch-row.on::before{background:var(--green)}
 
-.slotwrap{border:2px dashed #8fb2ff;border-radius:8px;padding:5px;background:#f8fbff;min-width:96px;position}.slotwrap.correct{border-color:#8dd49d;background:#f4fbf5}.slotwrap.incorrect{border-color:#efabab;background:#fff6f6}.slotlabel{position;top:-9px;left:5px;background:#fff;padding:0 3px;font-size:8px;font-weight:800;color(--blue2)}.replace{margin-top:4px;border:1px solid #b9cdf8;border-radius:5px;background:#fff;color(--blue2);font-size:9px;font-weight:800;padding:3px 5px}
+.slotwrap{border:2px dashed #8fb2ff;border-radius:8px;padding:5px;background:#f8fbff;min-width:96px;position:relative}
+.slotwrap.correct{border-color:#8dd49d;background:#f4fbf5}.slotwrap.incorrect{border-color:#efabab;background:#fff6f6}
+.slotlabel{position:absolute;top:-9px;left:5px;background:#fff;padding:0 3px;font-size:8px;font-weight:800;color:var(--blue2)}
+.replace{margin-top:4px;border:1px solid #b9cdf8;border-radius:5px;background:#fff;color:var(--blue2);font-size:9px;font-weight:800;padding:3px 5px}
 
-.rung-tools{display;gap:5px;justify-content;margin:0 38px 4px;flex-wrap}.rung-tools button{font-size:9px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:#fff}
+.rung-tools{display:flex;gap:5px;justify-content:flex-end;margin:0 38px 4px;flex-wrap:wrap}
+.rung-tools button{font-size:9px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:#fff}
 
-.side-stack{display;gap:11px}.output-grid{display;gap:7px}.out{display;align-items;justify-content;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 9px}.outmeta{display;align-items;gap:8px}.lamp{width:25px;height:25px;border-radius:50%;background:#d2d6db;border:3px solid #b4bcc4}.lamp.on{background(--green);border-color:#2b8a3e;box-shadow:0 0 11px rgba(47,158,68,.5)}.out strong{font-size:11px}.out small{display;color(--muted);font-size:9px}.valpill{font-size:9px;font-weight:800;border-radius:999px;padding:3px 5px;background:#eef1f4;color:#687684}.valpill.on{background:#d3f9d8;color:#2b8a3e}
+.side-stack{display:grid;gap:11px}
+.output-grid{display:grid;gap:7px}
+.out{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 9px}
+.outmeta{display:flex;align-items:center;gap:8px}
+.lamp{width:25px;height:25px;border-radius:50%;background:#d2d6db;border:3px solid #b4bcc4}
+.lamp.on{background:var(--green);border-color:#2b8a3e;box-shadow:0 0 11px rgba(47,158,68,.5)}
+.out strong{font-size:11px}.out small{display:block;color:var(--muted);font-size:9px}
+.valpill{font-size:9px;font-weight:800;border-radius:999px;padding:3px 5px;background:#eef1f4;color:#687684}.valpill.on{background:#d3f9d8;color:#2b8a3e}
 
-.test-summary{display;gap:7px}.metric{display;justify-content;gap:8px;font-size:11px;padding-bottom:6px;border-bottom:1px solid var(--line)}.metric b.good{color(--green)}.metric b.bad{color(--red)}.feedback{border-radius:8px;padding:9px 10px;font-size:11px;font-weight:700}.feedback.neutral{background:#f2f5f7;color:#65727d}.feedback.good{background(--greenSoft);color:#287638}.feedback.bad{background(--redSoft);color(--red)}
+.test-summary{display:grid;gap:7px}
+.metric{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.metric b.good{color:var(--green)}.metric b.bad{color:var(--red)}
+.feedback{border-radius:8px;padding:9px 10px;font-size:11px;font-weight:700}
+.feedback.neutral{background:#f2f5f7;color:#65727d}.feedback.good{background:var(--greenSoft);color:#287638}.feedback.bad{background:var(--redSoft);color:var(--red)}
 
-.hints{display;gap:6px}.hint{border-left:4px solid #d4dbe2;background:#fbfcfd;border-radius:0 7px 7px 0;padding:7px 8px;font-size:10px;color:#5e6b77}.hint.revealed{border-left-color(--amber);background(--amberSoft);color:#705415}
+.hints{display:grid;gap:6px}
+.hint{border-left:4px solid #d4dbe2;background:#fbfcfd;border-radius:0 7px 7px 0;padding:7px 8px;font-size:10px;color:#5e6b77}
+.hint.revealed{border-left-color:var(--amber);background:var(--amberSoft);color:#705415}
 
-.palette{position;inset:0;background(24,36,48,.44);display;place-items;padding:18px;z-index:60}.palette.hide{display}.palette-box{width(760px,96vw);max-height:82vh;overflow;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow(--shadow)}.palette-head{padding:12px 14px;border-bottom:1px solid var(--line);display;justify-content;align-items}.palette-head h3{font-size:14px;margin:0}.palette-grid{display;grid-template-columns(3,1fr);gap:8px;padding:12px}.choice{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;text-align}.choice.choice b{display;font-size:12px}.choice span{font-size:10px;color(--muted)}
+.palette{position:fixed;inset:0;background:rgba(24,36,48,.44);display:grid;place-items:center;padding:18px;z-index:60}
+.palette.hide{display:none}
+.palette-box{width:min(760px,96vw);max-height:82vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow)}
+.palette-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.palette-head h3{font-size:14px;margin:0}
+.palette-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}
+.choice{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;text-align:left}
+.choice:hover{border-color:#8eb0f5;background:#f7faff}.choice b{display:block;font-size:12px}.choice span{font-size:10px;color:var(--muted)}
 
-.toolbox{border-top:1px solid var(--line);padding:16px 22px;background:#fbfcfd}.tool-row{display;gap:7px;flex-wrap}.tool-row button{border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px 9px;font-size:11px;font-weight:700}
+.toolbox{border-top:1px solid var(--line);padding:16px 22px;background:#fbfcfd}
+.tool-row{display:flex;gap:7px;flex-wrap:wrap}
+.tool-row button{border:1px solid var(--line);border-radius:8px;background:#fff;padding:7px 9px;font-size:11px;font-weight:700}
 
-.bank{border-top:1px solid var(--line);padding:17px 22px;background:#fbfcfd}.bank-grid{display;grid-template-columns(3,1fr);gap:9px}.bank-card{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;cursor}.bank-card.bank-card.active{border-color(--blue);box-shadow 0 0 0 1px var(--blue)}.bank-card b{font-size:12px}.bank-card p{font-size:10px;color(--muted);margin:3px 0 6px}.tags{display;gap:4px;flex-wrap}.tags span{font-size:8px;font-weight:800;background:#eef2f6;border-radius:999px;padding:2px 5px;color:#61707d}
+.bank{border-top:1px solid var(--line);padding:17px 22px;background:#fbfcfd}
+.bank-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.bank-card{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;cursor:pointer}
+.bank-card:hover{border-color:#98b8f8}.bank-card.active{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.bank-card b{font-size:12px}.bank-card p{font-size:10px;color:var(--muted);margin:3px 0 6px}
+.tags{display:flex;gap:4px;flex-wrap:wrap}.tags span{font-size:8px;font-weight:800;background:#eef2f6;border-radius:999px;padding:2px 5px;color:#61707d}
 
-.footer{padding:12px 22px;border-top:1px solid var(--line);font-size:10px;color:#7b8794;display;justify-content;gap:8px;flex-wrap}.hide{display!important}
+.footer{padding:12px 22px;border-top:1px solid var(--line);font-size:10px;color:#7b8794;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.hide{display:none!important}
 
-@media(max-width:1100px){.main-grid{grid-template-columns:1fr}.bank-grid{grid-template-columns(2,1fr)}}@media(max-width:760px){.app{padding:8px}.stats{min-width:100%;grid-template-columns(4,1fr)}.bridge{grid-template-columns(2,1fr)}.notegrid{grid-template-columns:1fr}.bank-grid{grid-template-columns:1fr}.palette-grid{grid-template-columns:1fr}header,.topbar,.programbar,.bridge,.content,.toolbox,.bank,.footer{padding-left:14px;padding-right:14px}}
+@media(max-width:1100px){.main-grid{grid-template-columns:1fr}.bank-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+  .app{padding:8px}.stats{min-width:100%;grid-template-columns:repeat(4,1fr)}.bridge{grid-template-columns:repeat(2,1fr)}
+  .notegrid{grid-template-columns:1fr}.bank-grid{grid-template-columns:1fr}.palette-grid{grid-template-columns:1fr}
+  header,.topbar,.programbar,.bridge,.content,.toolbox,.bank,.footer{padding-left:14px;padding-right:14px}
+}
 
-/* Enhanced classroom features */.scan-focus{outline:3px solid rgba(28,100,242,.35);outline-offset:-3px;background(90deg,rgba(28,100,242,.05),transparent 75%);border-radius:8px;}.scan-focus .rung-num{color(--blue)}.scan-inspector{display;gap:7px}.scan-line{border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:#fbfcfd;font-size:10px;color:#536473}.scan-line b{color(--blue2)}.trace-list{display;gap:5px;margin-top:6px}.trace-item{display;justify-content;gap:8px;padding:5px 7px;border-radius:6px;background:#f3f5f7;font-size:10px}.trace-item.true{background(--greenSoft);color:#287638}.trace-item.false{background(--redSoft);color(--red)}.history-actions{display;gap:5px;flex-wrap}.history-actions button{opacity:.45;cursor}.test-details{border-top:1px solid var(--line);padding:18px 22px;background:#fff}.test-toolbar{display;gap:7px;flex-wrap;align-items;margin-bottom:10px}.test-table-wrap{overflow;border:1px solid var(--line);border-radius:9px;background:#fff}.test-table{width:100%;border-collapse;font-size:10px;min-width:760px}.test-table th,.test-table td{padding:7px 8px;border-bottom:1px solid var(--line);text-align;white-space}.test-table th{background:#f7f9fb;color:#52606d;font-size:9px;text-transform;letter-spacing:.04em}.test-table tr.pass td{color(--green);font-weight:800}.test-table tr.fail{background:#fff9f9}.test-table tr.fail td{color(--red);font-weight:800}.empty-tests{padding:18px;text-align;color(--muted);font-size:11px}.prediction-panel{border-top:1px solid var(--line);padding:18px 22px;background:#fbfcfd}.prediction-box{border:1px solid #cfe0ff;border-radius:11px;background:#fff;padding:13px;display;grid-template-columns(220px,1fr) minmax(260px,1fr);gap:14px}.prediction-box h3{font-size:14px;margin:0 0 4px}.prediction-box p{font-size:11px;color(--muted);margin:0 0 8px}.prediction-inputs{display;gap:5px;flex-wrap}.pred-chip{border:1px solid var(--line);border-radius:999px;padding:4px 7px;font-size:10px;background:#f8fafb}.pred-output-list{display;gap:6px}.pred-output{display;justify-content;gap:8px;align-items;border:1px solid var(--line);border-radius:8px;padding:7px 8px}.pred-output button{min-width:58px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:4px 7px;font-size:10px;font-weight:800}.pred-output button.on{background(--greenSoft);border-color:#9fd8ac;color:#287638}.prediction-result{min-height:18px;font-size:11px;font-weight:800;margin-top:8px}.rung-comment{margin:-1px 40px 8px;padding:6px 8px;border-left:3px solid #cbd6e0;background:#f9fbfc;border-radius:0 7px 7px 0;font-size:10px;color:#61707d}.workspace-tools{border-top:1px solid var(--line);padding:15px 22px;background(180deg,#fff,#fbfcfd)}.workspace-row{display;justify-content;gap:10px;align-items;flex-wrap}.save-status{font-size:10px;color(--muted)}.coverage-note{font-size:10px;color(--muted)}@media(max-width:800px){.prediction-box{grid-template-columns:1fr}}
+/* Enhanced classroom features */
+.scan-focus{
+  outline:3px solid rgba(28,100,242,.35);
+  outline-offset:-3px;
+  background:linear-gradient(90deg,rgba(28,100,242,.05),transparent 75%);
+  border-radius:8px;
+}
+.scan-focus .rung-num{color:var(--blue)}
+.scan-inspector{display:grid;gap:7px}
+.scan-line{
+  border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:#fbfcfd;
+  font-size:10px;color:#536473
+}
+.scan-line b{color:var(--blue2)}
+.trace-list{display:grid;gap:5px;margin-top:6px}
+.trace-item{
+  display:flex;justify-content:space-between;gap:8px;padding:5px 7px;border-radius:6px;
+  background:#f3f5f7;font-size:10px
+}
+.trace-item.true{background:var(--greenSoft);color:#287638}
+.trace-item.false{background:var(--redSoft);color:var(--red)}
+.history-actions{display:flex;gap:5px;flex-wrap:wrap}
+.history-actions button:disabled{opacity:.45;cursor:not-allowed}
+.test-details{border-top:1px solid var(--line);padding:18px 22px;background:#fff}
+.test-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.test-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px;background:#fff}
+.test-table{width:100%;border-collapse:collapse;font-size:10px;min-width:760px}
+.test-table th,.test-table td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.test-table th{background:#f7f9fb;color:#52606d;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+.test-table tr.pass td:last-child{color:var(--green);font-weight:800}
+.test-table tr.fail{background:#fff9f9}
+.test-table tr.fail td:last-child{color:var(--red);font-weight:800}
+.empty-tests{padding:18px;text-align:center;color:var(--muted);font-size:11px}
+.prediction-panel{border-top:1px solid var(--line);padding:18px 22px;background:#fbfcfd}
+.prediction-box{
+  border:1px solid #cfe0ff;border-radius:11px;background:#fff;padding:13px;
+  display:grid;grid-template-columns:minmax(220px,1fr) minmax(260px,1fr);gap:14px
+}
+.prediction-box h3{font-size:14px;margin:0 0 4px}
+.prediction-box p{font-size:11px;color:var(--muted);margin:0 0 8px}
+.prediction-inputs{display:flex;gap:5px;flex-wrap:wrap}
+.pred-chip{border:1px solid var(--line);border-radius:999px;padding:4px 7px;font-size:10px;background:#f8fafb}
+.pred-output-list{display:grid;gap:6px}
+.pred-output{
+  display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid var(--line);
+  border-radius:8px;padding:7px 8px
+}
+.pred-output button{min-width:58px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:4px 7px;font-size:10px;font-weight:800}
+.pred-output button.on{background:var(--greenSoft);border-color:#9fd8ac;color:#287638}
+.prediction-result{min-height:18px;font-size:11px;font-weight:800;margin-top:8px}
+.rung-comment{
+  margin:-1px 40px 8px;padding:6px 8px;border-left:3px solid #cbd6e0;background:#f9fbfc;
+  border-radius:0 7px 7px 0;font-size:10px;color:#61707d
+}
+.workspace-tools{
+  border-top:1px solid var(--line);padding:15px 22px;background:linear-gradient(180deg,#fff,#fbfcfd)
+}
+.workspace-row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.save-status{font-size:10px;color:var(--muted)}
+.coverage-note{font-size:10px;color:var(--muted)}
+@media(max-width:800px){
+  .prediction-box{grid-template-columns:1fr}
+}
 
-/* Iframe-ready layout and deterministic ladder placement /html,body{width:100%;min-width:0}body{overflow-x}.app{width:100%;min-width:0}.shell{min-width:0}.main-grid>{min-width:0}.panelbody{min-width:0}
 
-/* The ladder program owns horizontal scrolling when the host iframe is narrow. /.program{overflow-x;overflow-y;padding:10px 0 12px;scrollbar-gutter;overscroll-behavior-x;}/ Replace the old program-level rails. Each rung draws aligned rail segments sothe geometry remains correct while the program scrolls horizontally. /.program::before,.program::after{display}.rung{--rung-label:74px;--rung-tail:26px;position;grid-template-columns(--rung-label) minmax(700px,1fr) var(--rung-tail);min-width:800px;min-height:116px;padding:4px 0;}.rung::before,.rung::after{content:"";position;top:-5px;bottom:-5px;width:6px;background(--rail);border-radius:2px;z-index:4;pointer-events;}.rung::before{left(var(--rung-label) - 3px)}.rung::after{right(var(--rung-tail) - 3px)}.rung-num{padding:0 10px 0 6px;line-height:1.25;text-align;overflow;text-overflow;}.rung-num span{display;font-size:9px;font-weight:700;color(--muted);white-space}.rung-wire{min-height:108px;padding:0;overflow;}.rung-wire::before{left:0;right:0}.rung-content{--logic-cols:6;display;grid-template-columns(var(--logic-cols),minmax(92px,1fr)) minmax(112px,.92fr);grid-auto-flow;align-items;justify-items;gap:0;width:100%;min-width(var(--logic-cols) * 92px + 112px);padding:0 8px;}.rung-item{grid-row:1;position;z-index:2;min-width:0;width:100%;justify-self;}.element.rung-item{min-width:0;width:100%;padding:0 6px;}.element.coil-element{min-width:104px;justify-self;padding-left:8px;padding-right:8px;}.element .tag{max-width:100%;overflow;text-overflow;white-space;}.slotwrap.rung-item{width(100% - 10px);margin:0 5px;min-width:0;}.slotwrap .element{width:100%;min-width:0}.slotwrap>.branch{width:100%;min-width:0}.slotwrap>div[style="display: flex"]{width:100%;min-width:0;justify-content}.compare.rung-item{min-width:0;width(100% - 10px);margin:0 5px}.branch.rung-item{min-width:0;width(100% - 12px);margin:0 6px;}.branch-row{min-height:42px}.branch-row>.element{width(100% - 28px);min-width:0;padding-left:5px;padding-right:5px;}.branch-row>.slotwrap{width(100% - 24px);min-width:0}.rung-tools{margin-left:74px;margin-right:26px}.rung-comment{margin-left:74px;margin-right:26px}
+/* Iframe-ready layout and deterministic ladder placement */
+html,body{width:100%;min-width:0}
+body{overflow-x:hidden}
+.app{width:100%;min-width:0}
+.shell{min-width:0}
+.main-grid>*{min-width:0}
+.panelbody{min-width:0}
 
-/* Medium embedded widths: keep the ladder usable while stacking the inspector. */@media(max-width:1180px){.main-grid{grid-template-columns(0,1fr)}.side-stack{grid-template-columns(2,minmax(0,1fr));align-items}.side-stack>.panel{grid-column:1/-1}}@media(max-width:820px){.side-stack{grid-template-columns:1fr}.side-stack>.panel.notegrid{grid-template-columns:1fr}.stats{min-width:0;width:100%;grid-template-columns(4,minmax(0,1fr))}.bridge{grid-template-columns(2,minmax(0,1fr))}.topbar,.programbar{align-items}.tabs,.actions,.picker{max-width:100%}}@media(max-width:560px){.bridge{grid-template-columns:1fr 1fr}.stats{grid-template-columns(2,minmax(0,1fr))}.tab,.ghost,.primary,.secondary{min-height:34px;padding:0 9px;font-size:11px}select{max-width:100%;font-size:11px}}
+/* The ladder program owns horizontal scrolling when the host iframe is narrow. */
+.program{
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:10px 0 12px;
+  scrollbar-gutter:stable;
+  overscroll-behavior-x:contain;
+}
+/* Replace the old program-level rails. Each rung draws aligned rail segments so
+   the geometry remains correct while the program scrolls horizontally. */
+.program::before,.program::after{display:none}
+.rung{
+  --rung-label:74px;
+  --rung-tail:26px;
+  position:relative;
+  grid-template-columns:var(--rung-label) minmax(700px,1fr) var(--rung-tail);
+  min-width:800px;
+  min-height:116px;
+  padding:4px 0;
+}
+.rung::before,.rung::after{
+  content:"";
+  position:absolute;
+  top:-5px;
+  bottom:-5px;
+  width:6px;
+  background:var(--rail);
+  border-radius:2px;
+  z-index:4;
+  pointer-events:none;
+}
+.rung::before{left:calc(var(--rung-label) - 3px)}
+.rung::after{right:calc(var(--rung-tail) - 3px)}
+.rung-num{
+  padding:0 10px 0 6px;
+  line-height:1.25;
+  text-align:right;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.rung-num span{display:block;font-size:9px;font-weight:700;color:var(--muted);white-space:normal}
+.rung-wire{
+  min-height:108px;
+  padding:0;
+  overflow:visible;
+}
+.rung-wire::before{left:0;right:0}
+.rung-content{
+  --logic-cols:6;
+  display:grid;
+  grid-template-columns:repeat(var(--logic-cols),minmax(92px,1fr)) minmax(112px,.92fr);
+  grid-auto-flow:column;
+  align-items:center;
+  justify-items:stretch;
+  gap:0;
+  width:100%;
+  min-width:calc(var(--logic-cols) * 92px + 112px);
+  padding:0 8px;
+}
+.rung-item{
+  grid-row:1;
+  position:relative;
+  z-index:2;
+  min-width:0;
+  width:100%;
+  justify-self:stretch;
+}
+.element.rung-item{
+  min-width:0;
+  width:100%;
+  padding:0 6px;
+}
+.element.coil-element{
+  min-width:104px;
+  justify-self:stretch;
+  padding-left:8px;
+  padding-right:8px;
+}
+.element .tag{
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.slotwrap.rung-item{
+  width:calc(100% - 10px);
+  margin:0 5px;
+  min-width:0;
+}
+.slotwrap .element{width:100%;min-width:0}
+.slotwrap>.branch{width:100%;min-width:0}
+.slotwrap>div[style*="display: flex"]{width:100%;min-width:0;justify-content:center}
+.compare.rung-item{min-width:0;width:calc(100% - 10px);margin:0 5px}
+.branch.rung-item{
+  min-width:0;
+  width:calc(100% - 12px);
+  margin:0 6px;
+}
+.branch-row{min-height:42px}
+.branch-row>.element{
+  width:calc(100% - 28px);
+  min-width:0;
+  padding-left:5px;
+  padding-right:5px;
+}
+.branch-row>.slotwrap{width:calc(100% - 24px);min-width:0}
+.rung-tools{margin-left:74px;margin-right:26px}
+.rung-comment{margin-left:74px;margin-right:26px}
 
-/* Embedded presentation. The page still scrolls normally inside a fixed-heightiframe, while a host can optionally listen to the resize postMessage below. */html.embedded body{background:#fff}html.embedded .app{max-width;padding:0}html.embedded .shell{border:0;border-radius:0;box-shadow}html.embedded header{padding:14px 16px 12px;gap:10px}html.embedded h1{font-size:20px}html.embedded .sub{font-size:12px;max-width:780px}html.embedded .stats{min-width:300px}html.embedded .topbar,html.embedded .programbar{padding:8px 14px}html.embedded .bridge{padding:8px 14px}html.embedded .content{padding:14px}html.embedded .workspace-tools,html.embedded .toolbox,html.embedded .test-details,html.embedded .prediction-panel,html.embedded .bank{padding:14px}html.embedded .footer{padding:10px 14px}@media(max-width:900px){html.embedded header{display;grid-template-columns:1fr}html.embedded .stats{min-width:0;width:100%}}
+/* Medium embedded widths: keep the ladder usable while stacking the inspector. */
+@media(max-width:1180px){
+  .main-grid{grid-template-columns:minmax(0,1fr)}
+  .side-stack{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .side-stack>.panel:first-child{grid-column:1/-1}
+}
+@media(max-width:820px){
+  .side-stack{grid-template-columns:1fr}
+  .side-stack>.panel:first-child{grid-column:auto}
+  .notegrid{grid-template-columns:1fr}
+  .stats{min-width:0;width:100%;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .bridge{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topbar,.programbar{align-items:flex-start}
+  .tabs,.actions,.picker{max-width:100%}
+}
+@media(max-width:560px){
+  .bridge{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tab,.ghost,.primary,.secondary{min-height:34px;padding:0 9px;font-size:11px}
+  select{max-width:100%;font-size:11px}
+}
+
+/* Embedded presentation. The page still scrolls normally inside a fixed-height
+   iframe, while a host can optionally listen to the resize postMessage below. */
+html.embedded body{background:#fff}
+html.embedded .app{max-width:none;padding:0}
+html.embedded .shell{border:0;border-radius:0;box-shadow:none}
+html.embedded header{padding:14px 16px 12px;gap:10px}
+html.embedded h1{font-size:20px}
+html.embedded .sub{font-size:12px;max-width:780px}
+html.embedded .stats{min-width:300px}
+html.embedded .topbar,html.embedded .programbar{padding:8px 14px}
+html.embedded .bridge{padding:8px 14px}
+html.embedded .content{padding:14px}
+html.embedded .workspace-tools,
+html.embedded .toolbox,
+html.embedded .test-details,
+html.embedded .prediction-panel,
+html.embedded .bank{padding:14px}
+html.embedded .footer{padding:10px 14px}
+@media(max-width:900px){
+  html.embedded header{display:grid;grid-template-columns:1fr}
+  html.embedded .stats{min-width:0;width:100%}
+}
+
+/* Explicit questions: page guide, mode guide, unit question and model answer */
+:where(button,select,input,a,summary,[tabindex]):focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+abbr[title]{text-decoration:underline dotted;cursor:help}
+.qsub{display:block;margin-top:2px;font-size:10.5px;font-style:italic;font-weight:600;color:#536473;text-transform:none;letter-spacing:0}
+.section-q{margin:-4px 0 10px;font-size:11px;font-style:italic;font-weight:600;color:#536473}
+.stats-help{grid-column:1/-1;margin:2px 0 0;font-size:10.5px;line-height:1.45;color:var(--muted);text-align:left}
+.pq{padding:16px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fbfcff,#fff)}
+.pq-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pq-kicker{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue2)}
+.pq h2{font-size:19px;line-height:1.3;letter-spacing:-.02em;margin:3px 0 0;max-width:1000px}
+.pq-grid{display:grid;grid-template-columns:1.5fr 1.1fr 1fr;gap:10px;margin-top:12px;align-items:start}
+.pq-stack{display:grid;gap:8px;min-width:0}
+details.pq-col>summary{cursor:pointer;list-style:revert}
+details.pq-col>summary h3{display:inline;margin:0}
+details.pq-col[open]>summary{margin-bottom:6px}
+.pq-col{border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px;font-size:12px;min-width:0}
+.pq-col h3{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#7b8794;margin:0 0 6px}
+.pq-col ol,.pq-col ul{margin:0;padding-left:18px;display:grid;gap:5px}
+.pq-subs a{color:var(--ink);font-weight:700;text-decoration:none}
+.pq-subs a:hover{text-decoration:underline}
+.pq-subs small{display:block;color:var(--muted);font-size:10.5px}
+.qstate{display:inline-block;margin-left:4px;font-size:9px;font-weight:800;padding:1px 6px;border-radius:999px;background:#e9eef3;color:#66737f;vertical-align:1px;white-space:nowrap}
+.qstate.done{background:#d3f9d8;color:#2b8a3e}
+.pq-progress{margin-top:7px;font-size:11px;color:var(--muted)}
+.modeguide{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1.2fr) minmax(0,1fr);gap:12px;padding:10px 22px;border-bottom:1px solid var(--line);background:var(--blueSoft)}
+.modeguide>div{font-size:12px;color:#425466;min-width:0}
+.mg-k{display:block;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--blue2)}
+.mg-q{display:block;font-size:14px;font-weight:800;line-height:1.3;color:var(--ink)}
+.mg-status{margin-top:4px;font-size:11px;font-weight:700;color:var(--blue2)}
+.unitq{margin-top:10px;border:1px solid #cfe0ff;border-left:4px solid var(--blue);border-radius:0 9px 9px 0;background:#f7faff;padding:9px 11px;font-size:12px;color:#425466}
+.uq-q{font-size:14px;font-weight:800;color:var(--ink);margin:0 0 4px;line-height:1.35}
+.unitq ul{margin:5px 0 0;padding-left:18px;display:grid;gap:2px}
+.rule-head{margin-top:10px;font-size:11px;color:var(--muted)}
+.rule-map{float:right;margin-left:8px;font-size:10px;font-weight:800;color:#7b8794}
+.answerbox{margin-top:10px;border:1px dashed #b8c2cc;border-radius:9px;padding:9px 11px;font-size:12px;background:#fff;color:#536473}
+.answerbox.open{border:1px solid #9fd8ac;background:var(--greenSoft);color:#1f4d2b}
+.answerbox h4{margin:0 0 4px;font-size:12.5px;color:var(--ink)}
+.answerbox p{margin:0 0 6px}
+.answerbox ul{margin:3px 0 6px;padding-left:18px}
+.mistake{margin-top:6px;border-left:3px solid var(--amber);background:var(--amberSoft);padding:6px 8px;border-radius:0 7px 7px 0;color:#705415}
+.device .means{font-size:9.5px;color:#7b8794;margin-top:2px;max-width:190px}
+
+/* Self-explaining results: narrative, outputs, inspector, slot report */
+.left-stack{display:grid;gap:13px;min-width:0}
+.slot-report{display:grid;gap:5px;margin-top:8px;font-size:11px}
+.slot-report:empty{display:none}
+.slot-report>b{font-size:11.5px}
+.slot-report div{border-left:4px solid #b8c2cc;background:#fbfcfd;border-radius:0 7px 7px 0;padding:6px 8px}
+.slot-report .ok{border-left-color:var(--green);background:var(--greenSoft);color:#1f4d2b}
+.slot-report .no{border-left-color:var(--red);background:var(--redSoft);color:#8f1d1d}
+.story{display:grid;gap:8px;font-size:12px}
+.story-cause{border:1px solid var(--line);border-radius:8px;background:#fbfcfd;padding:8px 10px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.chips>span:first-child{font-size:10.5px;color:var(--muted)}
+.chip{font-size:10px;font-weight:800;border-radius:999px;padding:2px 7px;background:#eef2f6;color:#52606d}
+.chip.in{background:#e3ecff;color:var(--blue2)}.chip.up{background:#d3f9d8;color:#2b8a3e}.chip.down{background:#ffe3e3;color:#c92a2a}
+.story-steps{margin:0;padding-left:22px;display:grid;gap:7px}
+.story-steps>li::marker{font-weight:800;color:var(--blue2)}
+.story-rung{border:1px solid var(--line);border-left:4px solid #b8c2cc;border-radius:0 8px 8px 0;padding:7px 9px;background:#fff}
+.story-rung.on{border-left-color:var(--green)}
+.story-rung.changed{box-shadow:inset 0 0 0 1px #ffc078}
+.story-tests{list-style:none;margin:5px 0 0;padding:0;display:grid;gap:3px}
+.story-tests li{font-size:11px;padding:3px 7px;border-radius:6px;background:#f3f5f7;color:#3e4c59}
+.story-tests li.t{background:var(--greenSoft);color:#1f5f2e}.story-tests li.f{background:var(--redSoft);color:#8f1d1d}
+.story-tests ul{list-style:none;margin:3px 0 0 10px;padding:0;display:grid;gap:3px}
+.src{font-size:10px;color:#5f6c78;font-style:italic}
+.story-why{margin-top:4px;font-size:11px;color:#425466}
+.story-note{border-left:4px solid var(--amber);background:var(--amberSoft);border-radius:0 8px 8px 0;padding:7px 9px;color:#705415;font-size:11px}
+.story-note.bad{border-left-color:var(--red);background:var(--redSoft);color:#8f1d1d}
+.tf{font-weight:800}
+.chg{display:inline-block;font-size:9.5px;font-weight:800;color:#a14d00;background:#fff4e6;border-radius:999px;padding:1px 6px;margin-left:4px}
+.out .mean{display:block;font-size:10px;color:#425466;margin-top:1px}
+.legend-note{font-size:10px;color:var(--muted);margin:0 0 7px}
+.ev-note{font-size:11px;color:var(--muted);margin:6px 0 0}
+
+/* Visual evidence: chain, truth table, interaction map, comparison/sequence map, scan history */
+.evidence{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:13px;margin-top:13px;align-items:start}
+.evidence>.wide{grid-column:1/-1}
+.chain{display:flex;flex-wrap:wrap;gap:5px;align-items:stretch}
+.chain-step{flex:1 1 112px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:#fbfcfd;font-size:11px}
+.chain-step b{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#7b8794}
+.chain-step .v{display:block;font-weight:800;color:var(--ink)}
+.chain-step small{display:block;font-size:9.5px;color:#5f6c78}
+.chain-step.on{border-color:#9fd8ac;background:var(--greenSoft)}
+.chain-step.off{border-color:#efc1c1;background:#fffafa}
+.chain-arrow{align-self:center;color:#7b8794;font-weight:800;font-size:12px}
+.tt-wrap{overflow:auto;max-height:430px;border:1px solid var(--line);border-radius:8px}
+.tt{border-collapse:collapse;width:100%;font-size:11px;font-variant-numeric:tabular-nums}
+.tt th,.tt td{padding:4px 7px;border-bottom:1px solid var(--line);text-align:center;white-space:nowrap}
+.tt th{position:sticky;top:0;background:#f7f9fb;font-size:10px;color:#52606d;z-index:1}
+.tt th small{display:block;font-weight:600;font-size:8.5px;color:#7b8794}
+.tt .prev{background:#faf8ff}
+.tt th.prev{background:#f1edff}
+.tt td.one{font-weight:800;color:#2b8a3e}.tt td.zero{color:#7b8794}
+.tt tr.now td{background:#fff3bf}
+.tt td.chk{text-align:left}
+.tt tr.diff td.chk{color:var(--red);font-weight:800}
+.imap{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:11px}
+.imap li{border:1px solid var(--line);border-radius:7px;padding:6px 8px;background:#fbfcfd}
+.imap .same{color:#2b8a3e;font-weight:800}.imap .prevscan{color:var(--purple);font-weight:800}.imap .never{color:var(--red);font-weight:800}
+.cmpmap{display:grid;gap:11px}
+.cmp-row{font-size:11px}
+.cmp-bar{position:relative;height:16px;border-radius:5px;background:#ffe3e3;margin-top:4px;overflow:hidden;border:1px solid #efc1c1}
+.cmp-zone{position:absolute;top:0;bottom:0;background:#b2f2bb}
+.cmp-mark{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;background:var(--ink)}
+.cmp-scale{display:flex;justify-content:space-between;font-size:9px;color:#7b8794;margin-top:1px}
+.seqmap{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.seq-step{border:2px solid var(--line);border-radius:9px;padding:6px 9px;font-size:11px;background:#fff;min-width:92px;text-align:center}
+.seq-step.active{border-color:var(--green);background:var(--greenSoft)}
+.seq-step b{display:block;font-size:12px}
+.seq-arrow{font-size:10px;color:#52606d;text-align:center;max-width:130px;line-height:1.3}
+.seq-arrow .need{display:block;font-weight:700}
+.seq-arrow .need.met{color:#2b8a3e}.seq-arrow .need.unmet{color:var(--red)}
+.seq-status{margin-top:9px;display:grid;gap:5px}
+.hist-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.hist{display:block}
+.th-label{font-size:10px;fill:#33414e;font-weight:700}
+.th-axis{font-size:9px;fill:#5f6c78}
+.th-grid{stroke:#eef1f4}
+.th-wave{fill:none;stroke-width:2}
+.th-wave.in{stroke:var(--blue)}.th-wave.out{stroke:var(--green)}.th-wave.mem{stroke:var(--purple)}
+.th-fill.in{fill:rgba(28,100,242,.12)}.th-fill.out{fill:rgba(47,158,68,.15)}.th-fill.mem{fill:rgba(103,65,217,.13)}
+.th-now{fill:rgba(245,159,0,.18)}
+.th-val{font-size:9px;fill:var(--blue2);font-weight:700}
+
+/* Tests that explain themselves */
+.verdict{border:1px solid var(--line);border-radius:9px;background:#fbfcfd;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#33414e}
+.verdict:empty{display:none}
+.verdict.good{border-color:#9fd8ac;background:var(--greenSoft)}
+.verdict.bad{border-color:#efabab;background:var(--redSoft)}
+.verdict h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.verdict ul{margin:4px 0 0;padding-left:18px;display:grid;gap:3px}
+.verdict .stale{margin-top:6px;font-weight:800;color:#8a6200}
+.test-table-wrap{max-height:470px}
+.test-table th{position:sticky;top:0;z-index:1}
+.test-table td.ask{white-space:normal;min-width:230px;max-width:320px;color:#33414e}
+.test-table .neq{color:var(--red);font-weight:800;text-decoration:underline}
+.why-btn{margin-left:5px;border:1px solid #b9cdf8;border-radius:5px;background:#fff;color:var(--blue2);font-size:9.5px;font-weight:800;padding:2px 6px}
+.case-explain{margin-top:10px;border:1px solid #cfe0ff;border-radius:10px;padding:11px 12px;font-size:12px;background:#fff;color:#33414e}
+.case-explain h4{margin:0 0 4px;font-size:13px;color:var(--ink)}
+.ce-wrap{overflow-x:auto}
+.case-explain table{border-collapse:collapse;font-size:11px;margin:7px 0;width:100%;min-width:420px}
+.case-explain th,.case-explain td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
+.case-explain th{background:#f7f9fb;font-size:10px;color:#52606d}
+.case-explain tr.bad td{background:#fff6f6}
+.ce-box{border-radius:8px;padding:8px 10px;margin-top:7px}
+.ce-box.good{background:var(--greenSoft);color:#1f5f2e}.ce-box.bad{background:var(--redSoft);color:#8f1d1d}.ce-box.check{background:var(--amberSoft);color:#705415}
+.ce-box ul{margin:4px 0 0;padding-left:18px;display:grid;gap:3px}
+.pred-explain{display:grid;gap:5px;margin-top:8px;font-size:11px}
+.pred-explain:empty{display:none}
+.pred-explain div{border-radius:7px;padding:6px 8px}
+.pred-explain .ok{background:var(--greenSoft);color:#1f5f2e}.pred-explain .no{background:var(--redSoft);color:#8f1d1d}
+.bank-card .bq{font-size:10px;color:var(--blue2);font-weight:700;margin:3px 0 4px}
+.bank-state{display:inline-block;font-size:9px;font-weight:800;border-radius:999px;padding:2px 6px;margin-left:6px;background:#eef2f6;color:#61707d;vertical-align:1px}
+.bank-state.done{background:#d3f9d8;color:#2b8a3e}
+
+/* Whole-picture sections: glossary and end summary */
+.understand{border-top:1px solid var(--line);padding:17px 22px;background:#fff}
+.understand>details>summary{cursor:pointer;font-size:13px;font-weight:800}
+.glossary{columns:2 320px;column-gap:20px;margin:10px 0 0}
+.glossary>div{break-inside:avoid;padding:6px 0;border-bottom:1px solid #eef1f4;font-size:12px}
+.glossary dt{font-weight:800}.glossary dd{margin:1px 0 0;color:#425466}
+.glossary div:target{background:var(--amberSoft)}
+.summary-list{margin:8px 0 0;padding-left:20px;display:grid;gap:8px;font-size:12px}
+.summary-list .ans{color:#1f4d2b}.summary-list .todo{color:var(--muted)}
+.summary-programs{margin:10px 0 0;padding-left:20px;display:grid;gap:4px;font-size:12px}
+
+.uq-goal{margin-top:7px;font-size:12px;color:#5a4d7d}
+.uq-goal:empty{display:none}
+.teacher-fold{margin-top:8px;font-size:12px}
+.teacher-fold>summary{cursor:pointer;font-weight:700;color:#536473;font-size:11px}
+.teacher-fold .note{margin-top:5px}
+.rules-box{margin-bottom:12px}
+.rules-box .rule-head{margin:0 0 6px}
+.evidence-sec{border-top:1px solid var(--line);padding:18px 22px;background:#fbfcfd}
+.evidence-sec .evidence{margin-top:0}
+.fold-panel>summary{list-style:none;cursor:pointer}
+.fold-panel>summary::-webkit-details-marker{display:none}
+.fold-panel>summary h3::before{content:"▾ ";color:#7b8794}
+.fold-panel:not([open])>summary h3::before{content:"▸ "}
+.fold-panel:not([open])>summary{border-bottom:0}
+.hist-foot{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.hist-foot button{flex:none;margin-top:6px}
+@media(max-width:1100px){.pq-grid{grid-template-columns:1fr 1fr}.pq-stack{grid-column:1/-1}}
+@media(max-width:820px){.modeguide{grid-template-columns:1fr;gap:6px}.evidence{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.pq,.modeguide,.understand,.evidence-sec{padding-left:14px;padding-right:14px}}
+@media(max-width:560px){.chain-arrow{display:none}.pq-grid{grid-template-columns:1fr}.pq h2{font-size:16px}.pq-top{flex-direction:column}.rule-map{float:none;display:block;margin:3px 0 0}}
+html.embedded .pq,html.embedded .modeguide,html.embedded .understand,html.embedded .evidence-sec{padding-left:14px;padding-right:14px}
 
 </style>
 </head>
@@ -85,15 +602,35 @@ h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
 <header>
   <div>
     <h1>Multi-Rung Ladder Logic Studio</h1>
-    <p class="sub">Translate complete IF–THEN programs into interacting ladder rungs. Solve guided slots, repair incorrect programs, or build and test your own multi-rung solution.</p>
+    <p class="sub">Translate complete <abbr title="A rule in words: IF these conditions are true THEN switch this output ON">IF–THEN</abbr> programs into interacting ladder <abbr title="One line of ladder logic between the two power rails: conditions on the left, a coil on the right">rungs</abbr>. Solve guided slots, repair incorrect programs, or build and test your own multi-rung solution.</p>
   </div>
   <div class="stats">
-    <div class="stat"><b id="rungCount">0</b><span>Rungs</span></div>
-    <div class="stat"><b id="solvedCount">0</b><span>Solved</span></div>
-    <div class="stat"><b id="testCount">0</b><span>Tests</span></div>
-    <div class="stat"><b id="passRate">—</b><span>Behavior</span></div>
+    <div class="stat" title="Number of rungs on the ladder shown now"><b id="rungCount">0</b><span>Rungs</span></div>
+    <div class="stat" title="Programs whose guided solution you checked correct in Solve or Repair mode (saved in this browser)"><b id="solvedCount">0</b><span>Solved</span></div>
+    <div class="stat" title="Test suites you have run in this session"><b id="testCount">0</b><span>Tests</span></div>
+    <div class="stat" title="Share of cases that passed in the last test suite you ran"><b id="passRate">—</b><span>Behavior</span></div>
+    <p id="statsHelp" class="stats-help"></p>
   </div>
 </header>
+
+<section id="pageQuestion" class="pq" aria-labelledby="pqTitle">
+  <div class="pq-top">
+    <div>
+      <span class="pq-kicker">What question does this page answer?</span>
+      <h2 id="pqTitle">How do I turn a set of IF–THEN rules into a multi-rung ladder program — and how do the rungs affect each other on every PLC scan?</h2>
+    </div>
+    <button id="pqToggle" class="tiny" aria-expanded="true" aria-controls="pqBody">Hide guide</button>
+  </div>
+  <div id="pqBody" class="pq-grid">
+    <div class="pq-col"><h3>Sub-questions this page answers</h3><ol id="pqSubs" class="pq-subs"></ol><div id="pqProgress" class="pq-progress"></div></div>
+    <div class="pq-col"><h3>How to use this page</h3><ol id="pqSteps"></ol></div>
+    <div class="pq-stack">
+      <details class="pq-col"><summary><h3>By the end you can…</h3></summary><ul id="pqOutcomes"></ul></details>
+      <details class="pq-col"><summary><h3>What you should already know</h3></summary><ul id="pqPrereq"></ul></details>
+      <div class="pq-col pq-progress" style="margin:0">Unsure of a word? See the <a href="#glossarySection">glossary</a> at the bottom of the page.</div>
+    </div>
+  </div>
+</section>
 
 <div class="topbar">
   <div class="tabs">
@@ -111,12 +648,18 @@ h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
   </div>
 </div>
 
-<div class="bridge">
-  <div><b>IF</b>contact / compare</div>
-  <div><b>AND</b>series path</div>
-  <div><b>OR</b>parallel branch</div>
-  <div><b>THEN</b>coil</div>
-  <div><b>PROGRAM</b>multiple scanned rungs</div>
+<div id="modeGuide" class="modeguide">
+  <div><span class="mg-k">This mode trains the question</span><span id="mgQuestion" class="mg-q"></span></div>
+  <div><span class="mg-k">What to do</span><span id="mgTodo"></span></div>
+  <div><span class="mg-k">You are done when</span><span id="mgDone"></span><div id="mgStatus" class="mg-status" aria-live="polite"></div></div>
+</div>
+
+<div class="bridge" aria-label="How rule words become ladder symbols">
+  <div title="Each IF condition becomes a contact (bit test) or a comparison instruction"><b>IF</b>contact / compare</div>
+  <div title="AND: conditions placed one after another in series — all must be TRUE"><b>AND</b>series path</div>
+  <div title="OR: alternative paths in parallel — one TRUE path is enough"><b>OR</b>parallel branch</div>
+  <div title="THEN: the coil on the right writes the rung result into its bit"><b>THEN</b>coil</div>
+  <div title="All rungs are solved top to bottom on every scan"><b>PROGRAM</b>multiple scanned rungs</div>
 </div>
 
 <div class="programbar">
@@ -136,75 +679,169 @@ h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
 </div>
 
 <div class="content">
-  <div class="notegrid">
-    <div id="teacherNote" class="note teacher"></div>
-    <div id="studentGoal" class="note student"></div>
-  </div>
-
-  <div class="section-title"><span>1. Inputs</span><small>Change the field states and watch all rungs scan together</small></div>
-  <div id="inputs" class="inputs"></div>
-  <div id="presets" class="presetrow"></div>
-
   <div class="scenario">
     <h2 id="programTitle"></h2>
     <p id="programScenario"></p>
+    <div id="unitQuestion" class="unitq"></div>
+    <div id="studentGoal" class="uq-goal"></div>
+    <div id="unitAnswer" class="answerbox" aria-live="polite"></div>
+    <details class="teacher-fold"><summary>Teacher note</summary><div id="teacherNote" class="note teacher"></div></details>
+  </div>
+
+  <div class="section-title"><span>1. Inputs</span><small>Change the field states and watch all rungs scan together</small></div>
+  <p class="section-q">This section answers: Which field signals is the PLC reading on this scan? (toggle = digital bit, 1 = ON / 0 = OFF; slider = analog value)</p>
+  <div id="inputs" class="inputs"></div>
+  <div id="presets" class="presetrow"></div>
+
+  <div class="section-title"><span>2. Rules, ladder and scan result</span><small>Rule n is programmed on rung n</small></div>
+  <p class="section-q">This section answers: Which rule is TRUE, which rungs are TRUE, and why did the last scan give these outputs?</p>
+  <div class="rules-box">
+    <div class="rule-head">The rules in words. A green rule (marked “output ON”) is TRUE in the reference program right now.</div>
     <div id="ruleList" class="rule-list"></div>
   </div>
 
   <div class="main-grid">
-    <div class="panel">
+    <div class="left-stack">
+    <div id="programPanel" class="panel">
       <div class="panelhead">
-        <h3 id="programHeading">Ladder program</h3>
+        <div><h3 id="programHeading">Ladder program</h3><span class="qsub">Which instructions are TRUE on this scan, and what does each coil write?</span></div>
         <div class="actions">
           <span id="scanStatus" class="status">Program scanned</span>
           <button id="checkStructure" class="primary hide">Check guided solution</button>
         </div>
       </div>
       <div class="panelbody">
+        <p class="legend-note">Green wire = the rung is TRUE (power reaches the coil). Green contact = TRUE, red = FALSE. Contacts and comparisons show the bit values after this scan.</p>
         <div id="ladderProgram" class="program"></div>
-        <div id="feedback" class="feedback neutral">In Learn mode, inspect how each IF–THEN rule maps to its own rung.</div>
+        <div id="feedback" class="feedback neutral" aria-live="polite">This is the reference ladder: nothing to fix. Behavior test results will appear in this box.</div>
+        <div id="slotReport" class="slot-report" aria-live="polite"></div>
       </div>
     </div>
 
-<div class="side-stack">
-  <div class="panel">
-    <div class="panelhead"><h3>Outputs and internal bits</h3><span class="status">live</span></div>
-    <div class="panelbody"><div id="outputs" class="output-grid"></div></div>
-  </div>
+    <div id="storyPanel" class="panel">
+      <div class="panelhead">
+        <div><h3>What just happened?</h3><span class="qsub">Why did the last scan give these outputs — rung by rung, in scan order?</span></div>
+        <span id="storyStatus" class="status">scan 0</span>
+      </div>
+      <div class="panelbody"><div id="story" class="story" aria-live="polite"></div></div>
+    </div>
+    </div>
 
-  <div class="panel">
-    <div class="panelhead"><h3>Behavior test summary</h3><span id="behaviorStatus" class="status">not tested</span></div>
-    <div class="panelbody">
-      <div class="test-summary">
-        <div class="metric"><span>Test cases</span><b id="testedCases">0</b></div>
-        <div class="metric"><span>Passed</span><b id="passedCases">0</b></div>
-        <div class="metric"><span>Failed</span><b id="failedCases">0</b></div>
+    <div class="side-stack">
+      <div class="panel">
+        <div class="panelhead"><div><h3>Outputs and internal bits</h3><span class="qsub">What is each output commanded to do — and does your ladder agree with the reference?</span></div><span class="status">live</span></div>
+        <div class="panelbody"><p class="legend-note">Lamp = reference program. MATCH = your ladder writes the same value; DIFF = it does not.</p><div id="outputs" class="output-grid"></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panelhead"><div><h3>Behavior test summary</h3><span class="qsub">In how many tested situations does your ladder behave like the reference?</span></div><span id="behaviorStatus" class="status">not tested</span></div>
+        <div class="panelbody">
+          <div class="test-summary">
+            <div class="metric" title="Situations checked; a multi-scan sequence counts as one case"><span>Test cases</span><b id="testedCases">0</b></div>
+            <div class="metric" title="Every output and internal bit matched the reference"><span>Passed</span><b id="passedCases">0</b></div>
+            <div class="metric" title="At least one output or internal bit differed from the reference"><span>Failed</span><b id="failedCases">0</b></div>
+          </div>
+          <p id="metricHelp" class="ev-note"></p>
+        </div>
+      </div>
+
+      <div id="scanPanel" class="panel">
+        <div class="panelhead"><div><h3>Scan inspector</h3><span class="qsub">What happens inside ONE scan, one rung at a time?</span></div><span id="scanInspectorStatus" class="status">ready</span></div>
+        <div class="panelbody">
+          <div id="scanInspector" class="scan-inspector" aria-live="polite">
+            <div class="scan-line">Use <b>Step scan</b> to inspect one rung at a time.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panelhead"><div><h3>Hints</h3><span class="qsub">What should I think about if I am stuck?</span></div><button id="hintBtn" class="tiny">Reveal next</button></div>
+        <div class="panelbody"><div id="hints" class="hints"></div></div>
       </div>
     </div>
-  </div>
-
-  <div class="panel">
-    <div class="panelhead"><h3>Scan inspector</h3><span id="scanInspectorStatus" class="status">ready</span></div>
-    <div class="panelbody">
-      <div id="scanInspector" class="scan-inspector">
-        <div class="scan-line">Use <b>Step scan</b> to inspect one rung at a time.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="panelhead"><h3>Hints</h3><button id="hintBtn" class="tiny">Reveal next</button></div>
-    <div class="panelbody"><div id="hints" class="hints"></div></div>
   </div>
 </div>
 
+<section id="builderToolbox" class="toolbox hide">
+  <div class="section-title"><span>Flexible builder toolbox</span><small>Add or edit rungs; behavior tests allow logically equivalent solutions</small></div>
+  <p class="section-q">This section answers: Which instructions can I add? New conditions go into the last rung, just before its coil; use “＋ condition” on a rung to edit another rung.</p>
+  <div class="tool-row">
+    <button data-add="NO">＋ NO contact</button>
+    <button data-add="NC">＋ NC contact</button>
+    <button data-add="PAR">＋ OR branch</button>
+    <button data-add="CMP">＋ comparison</button>
+    <button data-add="COIL">＋ coil</button>
+    <button id="addRung">＋ Add rung</button>
   </div>
-</div>
+</section>
+
+<section id="evidenceSection" class="evidence-sec">
+  <div class="section-title"><span>3. Evidence: tables, maps and traces</span><small>Click a heading to fold or unfold it</small></div>
+  <p class="section-q">This section answers: What does the whole program do — for every input combination and over time — and how does a signal get from the field to a machine?</p>
+  <div class="evidence">
+    <details id="chainPanel" class="panel fold-panel wide" open>
+      <summary class="panelhead"><div><h3>Big picture: from field device to actuator</h3><span class="qsub">How does one real signal travel through the PLC to a machine in this program?</span></div><span class="status">reference · live</span></summary>
+      <div class="panelbody"><div id="chain" class="chain"></div><p id="chainNote" class="ev-note"></p></div>
+    </details>
+    <details id="truthPanel" class="panel fold-panel" open>
+      <summary class="panelhead"><div><h3>Truth table</h3><span class="qsub">What does your ladder output for every combination of digital inputs?</span></div><span id="truthStatus" class="status">live</span></summary>
+      <div class="panelbody"><div id="truthTable"></div></div>
+    </details>
+    <details id="interactPanel" class="panel fold-panel" open>
+      <summary class="panelhead"><div><h3>Rung interaction map</h3><span class="qsub">Which rung reads a bit written by another rung — from this scan or the previous one?</span></div></summary>
+      <div class="panelbody"><div id="interactMap"></div></div>
+    </details>
+    <details id="mapPanel" class="panel fold-panel wide" open>
+      <summary class="panelhead"><div><h3 id="mapTitle">Comparison map</h3><span id="mapQ" class="qsub"></span></div></summary>
+      <div class="panelbody"><div id="stateMap"></div></div>
+    </details>
+    <details id="historyPanel" class="panel fold-panel wide" open>
+      <summary class="panelhead"><div><h3>Scan history (timing trace)</h3><span class="qsub">How did inputs, internal bits and outputs change from scan to scan?</span></div></summary>
+      <div class="panelbody"><div id="scanHistory" class="hist-wrap"></div>
+        <div class="hist-foot"><p class="ev-note">One column per scan, oldest on the left; the shaded column is the current scan. High line = 1, low line = 0. Blue = input, green = output, purple = internal bit; analog values are printed. The last 30 scans are kept.</p><button id="clearHistoryBtn" class="tiny">Clear history</button></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section id="testSection" class="test-details">
+  <div class="section-title"><span>4. Detailed behavior tests</span><small>See exactly which states pass or fail</small></div>
+  <p class="section-q">This section answers: Which tested situations pass or fail — and why? Press <b>Why?</b> on any row for the full explanation.</p>
+  <div class="test-toolbar">
+    <button id="runDefinedTests" class="primary">Run lesson tests</button>
+    <button id="runCoverageTests" class="secondary">Generate broader coverage</button>
+    <span id="coverageNote" class="coverage-note">Coverage combines digital truth-table states with sampled analog thresholds.</span>
+  </div>
+  <div id="testVerdict" class="verdict" aria-live="polite"></div>
+  <div id="testDetails" class="test-table-wrap">
+    <div class="empty-tests">Run a test suite to see detailed expected-versus-student results.</div>
+  </div>
+  <div id="caseExplain" class="case-explain hide" aria-live="polite" tabindex="-1"></div>
+</section>
+
+<section id="predictionSection" class="prediction-panel">
+  <div class="section-title"><span>5. Prediction challenge</span><small>Predict outputs before revealing the scan result</small></div>
+  <div class="prediction-box">
+    <div>
+      <h3 id="predictionTitle">New operating-state challenge</h3>
+      <p><b>Question:</b> The PLC starts from power-up (every output and internal bit = 0), reads the inputs below and runs <b>one scan</b> of the reference program. What will each output be? Set each button to your prediction, then press <b>Check prediction</b>.</p>
+      <div id="predictionInputs" class="prediction-inputs"></div>
+      <div class="actions" style="margin-top:9px">
+        <button id="newPredictionBtn" class="secondary">New state</button>
+        <button id="checkPredictionBtn" class="primary">Check prediction</button>
+      </div>
+      <div id="predictionResult" class="prediction-result" aria-live="polite"></div>
+      <div id="predictionExplain" class="pred-explain"></div>
+    </div>
+    <div id="predictionOutputs" class="pred-output-list"></div>
+  </div>
+</section>
 
 <section class="workspace-tools">
   <div class="workspace-row">
     <div>
-      <div class="section-title" style="margin-bottom:5px"><span>Student workspace</span><small>Save, restore, or transfer a program</small></div>
+      <div class="section-title" style="margin-bottom:5px"><span>6. Student workspace</span><small>Save, restore, or transfer a program</small></div>
+      <p class="section-q" style="margin:0 0 6px">This section answers: How do I keep my ladder, or hand it in as a file?</p>
       <div class="history-actions">
         <button id="saveWorkBtn" class="secondary">Save work</button>
         <button id="loadWorkBtn" class="secondary">Restore saved</button>
@@ -217,50 +854,23 @@ h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
   </div>
 </section>
 
-<section id="builderToolbox" class="toolbox hide">
-  <div class="section-title"><span>Flexible builder toolbox</span><small>Add or edit rungs; behavior tests allow logically equivalent solutions</small></div>
-  <div class="tool-row">
-    <button data-add="NO">＋ NO contact</button>
-    <button data-add="NC">＋ NC contact</button>
-    <button data-add="PAR">＋ OR branch</button>
-    <button data-add="CMP">＋ comparison</button>
-    <button data-add="COIL">＋ coil</button>
-    <button id="addRung">＋ Add rung</button>
-  </div>
-</section>
-
-<section class="test-details">
-  <div class="section-title"><span>Detailed behavior tests</span><small>See exactly which states pass or fail</small></div>
-  <div class="test-toolbar">
-    <button id="runDefinedTests" class="primary">Run lesson tests</button>
-    <button id="runCoverageTests" class="secondary">Generate broader coverage</button>
-    <span id="coverageNote" class="coverage-note">Coverage combines digital truth-table states with sampled analog thresholds.</span>
-  </div>
-  <div id="testDetails" class="test-table-wrap">
-    <div class="empty-tests">Run a test suite to see detailed expected-versus-student results.</div>
-  </div>
-</section>
-
-<section class="prediction-panel">
-  <div class="section-title"><span>Prediction challenge</span><small>Predict outputs before revealing the scan result</small></div>
-  <div class="prediction-box">
-    <div>
-      <h3 id="predictionTitle">New operating-state challenge</h3>
-      <p>Generate a state, predict each output, then check your answer.</p>
-      <div id="predictionInputs" class="prediction-inputs"></div>
-      <div class="actions" style="margin-top:9px">
-        <button id="newPredictionBtn" class="secondary">New state</button>
-        <button id="checkPredictionBtn" class="primary">Check prediction</button>
-      </div>
-      <div id="predictionResult" class="prediction-result"></div>
-    </div>
-    <div id="predictionOutputs" class="pred-output-list"></div>
-  </div>
-</section>
-
 <section class="bank">
-  <div class="section-title"><span>Multi-rung program bank</span><small>Progress from independent outputs to interaction, memory, and sequencing</small></div>
+  <div class="section-title"><span>7. Multi-rung program bank</span><small>Progress from independent outputs to interaction, memory, and sequencing</small></div>
+  <p class="section-q">This section answers: Which program should I do next? Work through them in order; each card shows the question it trains.</p>
   <div id="bankGrid" class="bank-grid"></div>
+</section>
+
+<section id="glossarySection" class="understand">
+  <details class="fold">
+    <summary>Glossary — what does each PLC term on this page mean?</summary>
+    <dl id="glossary" class="glossary"></dl>
+  </details>
+</section>
+
+<section id="summarySection" class="understand">
+  <div class="section-title"><span>Summary</span><small>Updates as you work</small></div>
+  <p class="section-q">This section answers: Which of this page's questions have I answered, and what is the short answer to each?</p>
+  <div id="summaryBody"></div>
 </section>
 
 <div class="footer">
@@ -269,7 +879,7 @@ h1{font-size:25px;letter-spacing:-.035em;margin:0 0 5px}
 </div>
 </div></div>
 
-<div id="palette" class="palette hide" role="dialog" aria-modal="true">
+<div id="palette" class="palette hide" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
   <div class="palette-box">
     <div class="palette-head">
       <h3 id="paletteTitle">Choose replacement</h3>
@@ -301,10 +911,17 @@ const programs=[
  scenario:"A tank has a fill pump, full lamp, and low-level alarm. Each IF–THEN rule becomes its own rung and all rungs run every scan.",
  teacher:"Use this first multi-rung example to establish that the PLC scans every rung. Ask which outputs can be ON simultaneously.",
  goal:"Translate three independent rules into three independent rungs and choose the correct comparison directions.",
+ question:"How do three separate IF–THEN rules become three rungs that all run on every scan — and can more than one output be ON at the same time?",
+ lookFor:"the rules (green = TRUE), the ladder, the comparison map and “What just happened?”.",
+ subQuestions:["Why does Stop use an NC contact —|/|— on the pump rung?","Which comparison direction (<, ≤, ≥) matches each level rule?","Why does the pump stay OFF at 92 % even with Start ON?","Can the pump and the low-level alarm be ON in the same scan?"],
+ modelAnswer:"Each rule is one rung. Rung 1 = NO X0 Start AND NC X1 Stop AND LEVEL < 90 % → Y0. Rung 2 = LEVEL ≥ 95 % → Y1. Rung 3 = LEVEL ≤ 15 % → Y2. “NOT Stop” becomes NC X1, which passes power only while X1 = 0. A comparison is a TRUE/FALSE instruction placed in series like a contact; at 92 % the test 92 < 90 is FALSE, so the pump stays OFF. No rung reads another rung's coil, so the three outputs are independent: with Start ON at 10 %, the pump (Y0) and the low alarm (Y2) are both ON in the same scan.",
+ takeaways:["One IF–THEN rule = one rung ending in one coil.","NOT on a bit = NC contact; an analog limit = a comparison in series.","Every rung is solved on every scan, so several outputs can be ON together."],
+ mistake:"Using an NO contact for Stop (the pump would then run only while Stop is held), or writing LEVEL > 95 instead of LEVEL ≥ 95 (at exactly 95 % the lamp would stay OFF).",
+ chain:{device:"Level transmitter (4–20 mA)",tag:"LEVEL",rungs:[0],actuator:"Fill-pump contactor"},
  inputs:[
-  {key:"X0",label:"Start X0",type:"digital",value:false},
-  {key:"X1",label:"Stop X1",type:"digital",value:false},
-  {key:"LEVEL",label:"Tank level",type:"analog",unit:"%",min:0,max:100,step:1,value:40}
+  {key:"X0",label:"Start X0",type:"digital",value:false,means:"1 = Start pressed"},
+  {key:"X1",label:"Stop X1",type:"digital",value:false,means:"1 = Stop pressed"},
+  {key:"LEVEL",label:"Tank level",type:"analog",unit:"%",min:0,max:100,step:1,value:40,means:"from the level transmitter: 0 % empty, 100 % full"}
  ],
  outputs:[
   {key:"Y0",label:"Fill Pump Y0"},{key:"Y1",label:"Full Lamp Y1"},{key:"Y2",label:"Low Alarm Y2"}
@@ -331,16 +948,21 @@ const programs=[
   RUNG("Low Alarm",SERIES([{slot:"d"},COIL("Y2","Low Alarm")]))
  ],
  slots:{
-  a:{prompt:"Rung 1: choose Stop permissive",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")]},
-  b:{prompt:"Rung 1: choose pump level comparison",correct:CMP("LEVEL","Level","<",90,"%"),choices:[CMP("LEVEL","Level","<",90,"%"),CMP("LEVEL","Level",">=",90,"%"),CMP("LEVEL","Level","<=",15,"%")]},
-  c:{prompt:"Rung 2: choose full-level comparison",correct:CMP("LEVEL","Level",">=",95,"%"),choices:[CMP("LEVEL","Level",">=",95,"%"),CMP("LEVEL","Level","<",95,"%"),CMP("LEVEL","Level","<=",15,"%")]},
-  d:{prompt:"Rung 3: choose low-level comparison",correct:CMP("LEVEL","Level","<=",15,"%"),choices:[CMP("LEVEL","Level","<=",15,"%"),CMP("LEVEL","Level",">=",15,"%"),CMP("LEVEL","Level","<",90,"%")]}
+  a:{prompt:"Rung 1 (Fill Pump): which instruction lets the pump run only while Stop X1 is NOT pressed?",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")],
+   why:["NO X1 passes power only while Stop IS pressed — the pump would run only while someone holds Stop down.","NC X1 passes power while X1 = 0 (Stop not pressed) and opens the rung as soon as Stop is pressed.","NC X0 tests Start, not Stop. With NO X0 already in series, the rung would need X0 = 1 and X0 = 0 at the same time, so the pump could never run."]},
+  b:{prompt:"Rung 1 (Fill Pump): which comparison allows filling only below 90 %?",correct:CMP("LEVEL","Level","<",90,"%"),choices:[CMP("LEVEL","Level","<",90,"%"),CMP("LEVEL","Level",">=",90,"%"),CMP("LEVEL","Level","<=",15,"%")],
+   why:["LEVEL < 90 % is TRUE while there is still room; at 90 % and above it opens the rung and the pump stops.","LEVEL ≥ 90 % is the opposite: the pump would fill only when the tank is already nearly full.","LEVEL ≤ 15 % is the low-alarm condition: the pump would stop filling as soon as the level rises above 15 %."]},
+  c:{prompt:"Rung 2 (Full Lamp): which comparison turns the lamp ON at 95 % and above?",correct:CMP("LEVEL","Level",">=",95,"%"),choices:[CMP("LEVEL","Level",">=",95,"%"),CMP("LEVEL","Level","<",95,"%"),CMP("LEVEL","Level","<=",15,"%")],
+   why:["LEVEL ≥ 95 % is TRUE at exactly 95 % and at every level above it.","LEVEL < 95 % is the inverse — the lamp would be ON at every level except “full”.","LEVEL ≤ 15 % belongs to the low-level alarm, not to the full lamp."]},
+  d:{prompt:"Rung 3 (Low Alarm): which comparison turns the alarm ON at 15 % and below?",correct:CMP("LEVEL","Level","<=",15,"%"),choices:[CMP("LEVEL","Level","<=",15,"%"),CMP("LEVEL","Level",">=",15,"%"),CMP("LEVEL","Level","<",90,"%")],
+   why:["LEVEL ≤ 15 % is TRUE at exactly 15 % and at every level below it.","LEVEL ≥ 15 % is TRUE for almost every level — the alarm would sound whenever the tank is NOT low.","LEVEL < 90 % is the pump's limit: the alarm would sound at any level below 90 %."]}
  },
  hints:["Each output has its own rung.","Stop is a NOT condition: use NC X1.","Check the direction of each level comparison.","The program may have more than one output ON at the same time."],
  tests:[
   {X0:false,X1:false,LEVEL:40},{X0:true,X1:false,LEVEL:40},{X0:true,X1:true,LEVEL:40},
   {X0:true,X1:false,LEVEL:92},{X0:false,X1:false,LEVEL:97},{X0:false,X1:false,LEVEL:10}
- ]
+ ],
+ testAsk:["Idle at 40 % with Start not pressed: do all three outputs stay OFF?","Start pressed, Stop not pressed, level 40 %: does the fill pump run?","Start AND Stop pressed at 40 %: does Stop win and keep the pump OFF?","Start pressed at 92 %: does the pump stay OFF because 92 % is not below the 90 % limit?","Level 97 %: does the full lamp turn ON (97 ≥ 95)?","Level 10 %: does the low-level alarm turn ON (10 ≤ 15)?"]
 },
 {
  id:"conveyor",title:"Conveyor cell — motor, gate, and fault",difficulty:"Core",
@@ -348,12 +970,19 @@ const programs=[
  scenario:"The conveyor motor runs only under safe conditions. A sorting gate needs an object and a running motor. A fault lamp turns on for E-Stop OR an open guard.",
  teacher:"This program demonstrates rung interaction: the gate rung reads Y0, which was set by the motor rung earlier in the scan.",
  goal:"Understand series permissives, output-state contacts, and OR branches across multiple rungs.",
+ question:"How can one rung use the result of another rung in the same scan — and how do AND (series) and OR (parallel) appear in a multi-rung program?",
+ lookFor:"rung 2 (Sorting Gate), the rung interaction map and “What just happened?” — it says where the Y0 value read by the gate rung came from.",
+ subQuestions:["Why are Stop and E-Stop NC contacts on the motor rung?","Why may the gate rung use Y0 — an output — as a contact?","Why does the fault rung need a parallel branch?","What would change if the gate rung were scanned before the motor rung?"],
+ modelAnswer:"Rung 1 (Motor) is one series AND path: NO X0 Start, NC X1 Stop, NC X3 E-Stop, NO X4 Guard Closed → Y0. Rung 2 (Gate) is NO X2 Object in series with NO Y0: an output bit can be tested like any other bit, and because rung 1 is solved first, rung 2 reads the Y0 value written earlier in the same scan. Rung 3 (Fault) is a parallel OR branch of NO X3 (E-Stop active) and NC X4 (guard NOT closed) → Y2. If the gate rung came before the motor rung, it would read Y0 from the previous scan, so the gate would react one scan later.",
+ takeaways:["Series = AND, parallel branch = OR.","A coil written on an earlier rung is visible to later rungs in the same scan.","“Guard open” is written as NC X4 when X4 means “guard closed”."],
+ mistake:"Using a coil —( )— of Y0 in the gate rung instead of a contact: a coil writes a bit, it does not test it. Or putting E-Stop and the open guard in series, so the fault lamp needs both faults at once.",
+ chain:{device:"Object photo-eye",tag:"X2",rungs:[1],actuator:"Sorting-gate solenoid valve"},
  inputs:[
-  {key:"X0",label:"Start X0",type:"digital",value:false},
-  {key:"X1",label:"Stop X1",type:"digital",value:false},
-  {key:"X2",label:"Object X2",type:"digital",value:false},
-  {key:"X3",label:"E-Stop X3",type:"digital",value:false},
-  {key:"X4",label:"Guard Closed X4",type:"digital",value:true}
+  {key:"X0",label:"Start X0",type:"digital",value:false,means:"1 = Start pressed"},
+  {key:"X1",label:"Stop X1",type:"digital",value:false,means:"1 = Stop pressed"},
+  {key:"X2",label:"Object X2",type:"digital",value:false,means:"1 = object in front of the photo-eye"},
+  {key:"X3",label:"E-Stop X3",type:"digital",value:false,means:"1 = E-Stop active"},
+  {key:"X4",label:"Guard Closed X4",type:"digital",value:true,means:"1 = guard door closed"}
  ],
  outputs:[
   {key:"Y0",label:"Motor Y0"},{key:"Y1",label:"Gate Y1"},{key:"Y2",label:"Fault Y2"}
@@ -380,14 +1009,18 @@ const programs=[
   RUNG("Fault",SERIES([{slot:"d"},COIL("Y2","Fault")]))
  ],
  slots:{
-  a:{prompt:"Motor rung: choose Stop condition",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")]},
-  b:{prompt:"Motor rung: choose E-Stop condition",correct:NC("X3","E-Stop"),choices:[NO("X3","E-Stop"),NC("X3","E-Stop"),NC("X4","Guard")]},
-  c:{prompt:"Gate rung: choose motor-running contact",correct:NO("Y0","Motor Y0"),choices:[NO("Y0","Motor Y0"),NC("Y0","Motor Y0"),COIL("Y0","Motor")]},
-  d:{prompt:"Fault rung: choose OR structure",correct:PAR([NO("X3","E-Stop"),NC("X4","Guard")]),choices:[
+  a:{prompt:"Motor rung: which instruction stops the motor while Stop X1 is pressed?",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")],
+   why:["NO X1 passes power only while Stop IS pressed — the motor would need Stop held down to run.","NC X1 passes power while Stop is not pressed and breaks the rung when it is.","NC X0 tests Start again, not Stop: with NO X0 already in series the rung could never be TRUE."]},
+  b:{prompt:"Motor rung: which instruction stops the motor while E-Stop X3 is active?",correct:NC("X3","E-Stop"),choices:[NO("X3","E-Stop"),NC("X3","E-Stop"),NC("X4","Guard")],
+   why:["NO X3 would let the motor run only while E-Stop is active — the opposite of safe.","NC X3 passes power only while E-Stop X3 = 0 (not active).","NC X4 tests the guard, not E-Stop: with NO X4 also in series the rung could never be TRUE, and E-Stop would not be checked at all."]},
+  c:{prompt:"Gate rung: which instruction checks that the motor is running?",correct:NO("Y0","Motor Y0"),choices:[NO("Y0","Motor Y0"),NC("Y0","Motor Y0"),COIL("Y0","Motor")],
+   why:["NO Y0 tests the motor output bit; it is TRUE while Y0 = 1, i.e. while the motor rung is TRUE.","NC Y0 is TRUE while the motor is OFF — the gate would move only when the conveyor is stopped.","A coil writes a bit; it does not test one. Here it adds no condition, so the gate would move whenever an object is present — even with the motor stopped."]},
+  d:{prompt:"Fault rung: which structure turns the fault lamp ON for E-Stop active OR guard open?",correct:PAR([NO("X3","E-Stop"),NC("X4","Guard")]),choices:[
     SERIES([NO("X3","E-Stop"),NC("X4","Guard")]),
     PAR([NO("X3","E-Stop"),NC("X4","Guard")]),
     PAR([NC("X3","E-Stop"),NO("X4","Guard")])
-  ]}
+  ],
+   why:["Series means AND: the lamp would need E-Stop active AND the guard open at the same time.","A parallel branch is OR: either NO X3 (E-Stop active) or NC X4 (guard not closed) lights the lamp.","Both contacts are inverted: this branch is TRUE when E-Stop is clear OR the guard is closed — the lamp would be ON in normal operation."]}
  },
  hints:["The motor rung is all AND logic: a series path.","The gate rung may use Y0 as a contact.","The fault rule contains OR: use parallel paths.","Rung order matters here because the gate reads Y0."],
  tests:[
@@ -397,7 +1030,8 @@ const programs=[
   {X0:true,X1:true,X2:true,X3:false,X4:true},
   {X0:true,X1:false,X2:true,X3:true,X4:true},
   {X0:false,X1:false,X2:false,X3:false,X4:false}
- ]
+ ],
+ testAsk:["At rest with the guard closed: do motor, gate and fault lamp all stay OFF?","Start with Stop, E-Stop and guard all healthy: does the motor run (and nothing else)?","Motor running and an object present: does the sorting gate operate in the same scan?","Stop pressed while Start and an object are present: do the motor AND the gate stay OFF?","E-Stop active with Start and an object present: do motor and gate stay OFF and does the fault lamp turn ON?","Guard open at rest: does the fault lamp turn ON?"]
 },
 {
  id:"hvac",title:"HVAC — heater, cooler, and fan",difficulty:"Core",
@@ -405,10 +1039,17 @@ const programs=[
  scenario:"The heater and cooler respond to temperature relative to a setpoint. The fan runs whenever either heating or cooling is active.",
  teacher:"Use this to show that comparison blocks are Boolean conditions and that the fan rung can read two previous outputs through a parallel branch.",
  goal:"Build two comparison rungs and one OR rung based on output states.",
+ question:"How do comparison instructions decide between heating and cooling, and how can a fan rung combine two outputs with OR?",
+ lookFor:"the comparison boxes in rungs 1–2 (they show both numbers), the comparison map, and the branch on rung 3.",
+ subQuestions:["Why does neither the heater nor the cooler run between SP − 1 and SP + 1?","What happens at exactly TEMP = SP − 1 (21 °C with SP 22 °C)?","Why can the fan rung read Y0 and Y1 in the same scan?","What does Enable X0 do to each rung?"],
+ modelAnswer:"Rung 1: NO X0 Enable in series with TEMP < SP − 1 → Y0 Heater. Rung 2: NO X0 in series with TEMP > SP + 1 → Y1 Cooler. Rung 3: a parallel branch NO Y0 OR NO Y1 → Y2 Fan. A comparison is a TRUE/FALSE instruction, just like a contact. Between SP − 1 and SP + 1 (a 2 °C deadband) both comparisons are FALSE, so the system idles instead of switching rapidly between heating and cooling. At exactly SP − 1 the strict “<” is FALSE, so the heater stays OFF. The fan rung is below rungs 1 and 2, so it reads the heater and cooler bits written earlier in the same scan.",
+ takeaways:["A comparison box is a condition that gives TRUE or FALSE.","Strict < and > exclude the limit itself; the deadband stops heater/cooler chatter.","“Fan if heater OR cooler” = a parallel branch of their NO output contacts."],
+ mistake:"Swapping the comparisons (heater on TEMP > SP + 1), or putting NO Y0 and NO Y1 in series for the fan — it would need heating AND cooling at once, which never happens.",
+ chain:{device:"Room temperature sensor",tag:"TEMP",rungs:[0],actuator:"Heater contactor"},
  inputs:[
-  {key:"X0",label:"Enable X0",type:"digital",value:true},
-  {key:"TEMP",label:"Temperature",type:"analog",unit:"°C",min:10,max:35,step:.5,value:22},
-  {key:"SP",label:"Setpoint",type:"analog",unit:"°C",min:16,max:28,step:.5,value:22}
+  {key:"X0",label:"Enable X0",type:"digital",value:true,means:"1 = system enabled"},
+  {key:"TEMP",label:"Temperature",type:"analog",unit:"°C",min:10,max:35,step:.5,value:22,means:"measured room temperature"},
+  {key:"SP",label:"Setpoint",type:"analog",unit:"°C",min:16,max:28,step:.5,value:22,means:"desired room temperature"}
  ],
  outputs:[{key:"Y0",label:"Heater Y0"},{key:"Y1",label:"Cooler Y1"},{key:"Y2",label:"Fan Y2"}],
  presets:[
@@ -433,23 +1074,27 @@ const programs=[
   RUNG("Fan",SERIES([{slot:"c"},COIL("Y2","Fan")]))
  ],
  slots:{
-  a:{prompt:"Heater rung: choose heating comparison",correct:DYN("TEMP","SP",-1,"Temp < SP−1","<"),choices:[
+  a:{prompt:"Heater rung: which comparison turns heating ON when the room is colder than SP − 1?",correct:DYN("TEMP","SP",-1,"Temp < SP−1","<"),choices:[
     DYN("TEMP","SP",-1,"Temp < SP−1","<"),DYN("TEMP","SP",1,"Temp > SP+1",">"),DYN("TEMP","SP",0,"Temp > SP",">")
-  ]},
-  b:{prompt:"Cooler rung: choose cooling comparison",correct:DYN("TEMP","SP",1,"Temp > SP+1",">"),choices:[
+  ],
+   why:["TEMP < SP − 1 is TRUE only when the room is more than 1 °C below the setpoint.","TEMP > SP + 1 is the cooling condition: the heater would run when the room is already too warm.","TEMP > SP would heat whenever it is warmer than the setpoint — the wrong direction, and with no deadband."]},
+  b:{prompt:"Cooler rung: which comparison turns cooling ON when the room is warmer than SP + 1?",correct:DYN("TEMP","SP",1,"Temp > SP+1",">"),choices:[
     DYN("TEMP","SP",-1,"Temp < SP−1","<"),DYN("TEMP","SP",1,"Temp > SP+1",">"),DYN("TEMP","SP",0,"Temp < SP","<")
-  ]},
-  c:{prompt:"Fan rung: choose Heater OR Cooler structure",correct:PAR([NO("Y0","Heater"),NO("Y1","Cooler")]),choices:[
+  ],
+   why:["TEMP < SP − 1 is the heating condition: the cooler would run when the room is cold.","TEMP > SP + 1 is TRUE only when the room is more than 1 °C above the setpoint.","TEMP < SP would cool whenever it is colder than the setpoint — the wrong direction, and with no deadband."]},
+  c:{prompt:"Fan rung: which structure runs the fan while the heater OR the cooler is ON?",correct:PAR([NO("Y0","Heater"),NO("Y1","Cooler")]),choices:[
     SERIES([NO("Y0","Heater"),NO("Y1","Cooler")]),
     PAR([NO("Y0","Heater"),NO("Y1","Cooler")]),
     PAR([NC("Y0","Heater"),NC("Y1","Cooler")])
-  ]}
+  ],
+   why:["Series means AND: the fan would need heating and cooling at the same time, which never happens.","A parallel branch of NO Y0 and NO Y1 is TRUE when either output is ON.","NC contacts invert the bits: the fan would run whenever at least one of them is OFF — almost always."]}
  },
  hints:["Comparison blocks behave like Boolean conditions.","Heating and cooling each have their own rung.","The fan is Y0 OR Y1, so use a parallel branch.","Output bits may be used as contacts."],
  tests:[
   {X0:true,TEMP:22,SP:22},{X0:true,TEMP:19,SP:22},{X0:true,TEMP:25,SP:22},
   {X0:false,TEMP:19,SP:22},{X0:false,TEMP:25,SP:22},{X0:true,TEMP:21,SP:22}
- ]
+ ],
+ testAsk:["At the setpoint (22 °C, SP 22 °C): do heater, cooler and fan all stay OFF?","19 °C with SP 22 °C (below SP − 1 = 21 °C): do the heater and the fan turn ON?","25 °C with SP 22 °C (above SP + 1 = 23 °C): do the cooler and the fan turn ON?","Disabled at 19 °C: does everything stay OFF although it is cold?","Disabled at 25 °C: does everything stay OFF although it is warm?","Exactly SP − 1 (21 °C): does the heater stay OFF because 21 < 21 is FALSE?"]
 },
 {
  id:"motorpair",title:"Forward / reverse motor interlock",difficulty:"Extension",
@@ -457,9 +1102,16 @@ const programs=[
  scenario:"Forward and reverse coils must never energize together. Each rung blocks itself when the opposite output is active.",
  teacher:"This is a classic two-rung interaction exercise. Ask students to explain the role of each NC output contact.",
  goal:"Build symmetric interlock rungs using the opposite output as an NC permissive.",
+ question:"How do two rungs block each other so that forward and reverse can never be ON together — and which one wins when both are requested?",
+ lookFor:"the NC output contacts in both rungs, “What just happened?” (it says whether each interlock contact read this scan's or the previous scan's value) and the truth table's “prev” column.",
+ subQuestions:["Why is the interlock an NC contact of the OPPOSITE output?","What happens when both requests are ON at once from rest?","Why does the forward rung read Y1 from the previous scan, but the reverse rung reads Y0 from this scan?","What goes wrong if a rung uses an NC contact of its own coil?"],
+ modelAnswer:"Rung 1: NO X0 Forward request in series with NC Y1 → Y0. Rung 2: NO X1 Reverse request in series with NC Y0 → Y1. Each NC output contact passes power only while the opposite direction is OFF, so Y0 and Y1 can never both be 1 at the end of a scan. When both requests come on together from rest, rung 1 is solved first: it reads Y1 = 0 (kept from the previous scan) and turns Y0 ON; rung 2 then reads the new Y0 = 1 and stays OFF, so forward wins because of rung order. If reverse was already running, rung 1 reads Y1 = 1 and stays OFF, so the direction already running keeps priority. (Real drives also need a hardware interlock on the contactors.)",
+ takeaways:["An NC contact of the opposite output is a software interlock.","Rung order decides what a contact reads: a coil above it = this scan, a coil below it = the previous scan.","Safety-relevant interlocks are duplicated in hardware; the PLC interlock alone is not enough."],
+ mistake:"Using an NC contact of the rung's own coil (NC Y0 on the Y0 rung): the coil switches itself OFF on the next scan, so the output flickers ON and OFF every scan.",
+ chain:{device:"Forward push-button",tag:"X0",rungs:[0],actuator:"Forward contactor (motor turns forward)"},
  inputs:[
-  {key:"X0",label:"Forward request X0",type:"digital",value:false},
-  {key:"X1",label:"Reverse request X1",type:"digital",value:false}
+  {key:"X0",label:"Forward request X0",type:"digital",value:false,means:"1 = forward requested"},
+  {key:"X1",label:"Reverse request X1",type:"digital",value:false,means:"1 = reverse requested"}
  ],
  outputs:[{key:"Y0",label:"Forward Y0"},{key:"Y1",label:"Reverse Y1"}],
  presets:[
@@ -481,13 +1133,16 @@ const programs=[
   RUNG("Reverse",SERIES([NO("X1","Reverse Req"),{slot:"b"},COIL("Y1","Reverse")]))
  ],
  slots:{
-  a:{prompt:"Forward rung: choose reverse interlock",correct:NC("Y1","Reverse Y1"),choices:[NO("Y1","Reverse Y1"),NC("Y1","Reverse Y1"),NC("Y0","Forward Y0")]},
-  b:{prompt:"Reverse rung: choose forward interlock",correct:NC("Y0","Forward Y0"),choices:[NO("Y0","Forward Y0"),NC("Y0","Forward Y0"),NC("Y1","Reverse Y1")]}
+  a:{prompt:"Forward rung: which contact blocks forward while reverse Y1 is ON?",correct:NC("Y1","Reverse Y1"),choices:[NO("Y1","Reverse Y1"),NC("Y1","Reverse Y1"),NC("Y0","Forward Y0")],
+   why:["NO Y1 would allow forward only while reverse is already running — it requires the conflict instead of preventing it.","NC Y1 passes power only while reverse is OFF, so forward can never start while reverse runs.","NC Y0 tests the rung's own coil: the coil switches itself OFF on the next scan (the output flickers), and reverse is not checked at all."]},
+  b:{prompt:"Reverse rung: which contact blocks reverse while forward Y0 is ON?",correct:NC("Y0","Forward Y0"),choices:[NO("Y0","Forward Y0"),NC("Y0","Forward Y0"),NC("Y1","Reverse Y1")],
+   why:["NO Y0 would allow reverse only while forward is already running.","NC Y0 passes power only while forward is OFF, so reverse can never start while forward runs.","NC Y1 tests the rung's own coil: reverse would switch itself OFF on the next scan, and forward is not checked."]}
  },
  hints:["Each direction needs its own rung.","The forward rung checks that reverse is OFF.","The reverse rung checks that forward is OFF.","The interlock contacts are NC output contacts."],
  tests:[
   {X0:false,X1:false},{X0:true,X1:false},{X0:false,X1:true},{X0:true,X1:true}
- ]
+ ],
+ testAsk:["No request: do both directions stay OFF?","Forward request only: does the motor run forward?","Reverse request only: does the motor run in reverse?","Both requests at once from rest: does only ONE direction run (forward, because rung 1 is solved first)?"]
 },
 {
  id:"sealstatus",title:"Seal-in motor with running lamp",difficulty:"Extension",
@@ -495,9 +1150,19 @@ const programs=[
  scenario:"Start latches Motor Y0 through its own holding contact. Stop releases the latch. A second rung turns on running lamp Y1 whenever Y0 is on.",
  teacher:"This program introduces memory plus a dependent status rung. Use step-by-step input changes to demonstrate persistence.",
  goal:"Understand a holding branch and a second rung that monitors the latched output.",
+ question:"How does a rung remember that Start was pressed after the button is released — and how does a second rung show that memory?",
+ lookFor:"the holding branch (Start OR Hold Y0) on rung 1, the run/stop state map, the scan history and the truth table's “Y0 prev” column.",
+ subQuestions:["Why does the motor stay ON after Start is released?","Which scan's value does the Hold Y0 contact read?","Why must Stop be an NC contact in series with the WHOLE branch?","Why does the running lamp turn ON in the same scan as the motor?"],
+ modelAnswer:"Rung 1: a parallel branch NO X0 Start OR NO Y0 (holding contact), in series with NC X1 Stop → Y0. Pressing Start makes the Start path TRUE, so Y0 = 1 is written. On every later scan the Hold Y0 contact reads the 1 kept from the previous scan, so the rung stays TRUE after Start is released — that is the memory (seal-in). Pressing Stop opens NC X1, which is in series with both paths, so Y0 drops to 0 and the holding path opens as well. Rung 2 reads Y0 after rung 1 has written it, so the lamp Y1 follows Y0 in the same scan.",
+ takeaways:["Seal-in = Start in parallel with an NO contact of the coil's own bit.","The holding contact reads the value written on the previous scan.","Stop must be in series with BOTH paths, otherwise it cannot break the latch."],
+ mistake:"Putting Start and the hold contact in series: the motor then needs Start AND already running, so it can never start. Using NC Y0 as the hold contact turns the motor ON without Start and then makes it flicker every scan.",
+ chain:{device:"Start push-button",tag:"X0",rungs:[0,1],actuator:"Running lamp"},
+ stateMap:{title:"Run / stop state map",q:"Which state is the motor in, and what is it waiting for?",
+  steps:[{key:null,label:"Stopped",sub:"Y0 = 0"},{key:"Y0",label:"Running",sub:"Y0 = 1, lamp Y1 ON"}],
+  transitions:[{from:0,to:1,need:[["X0",true,"Start X0 = 1"],["X1",false,"Stop X1 = 0"]]},{from:1,to:0,need:[["X1",true,"Stop X1 = 1"]]}]},
  inputs:[
-  {key:"X0",label:"Start X0",type:"digital",value:false},
-  {key:"X1",label:"Stop X1",type:"digital",value:false}
+  {key:"X0",label:"Start X0",type:"digital",value:false,means:"1 = Start pressed (a push-button: release it again)"},
+  {key:"X1",label:"Stop X1",type:"digital",value:false,means:"1 = Stop pressed"}
  ],
  outputs:[{key:"Y0",label:"Motor Y0"},{key:"Y1",label:"Running Lamp Y1"}],
  presets:[
@@ -519,19 +1184,23 @@ const programs=[
   RUNG("Running Lamp",SERIES([{slot:"c"},COIL("Y1","Run Lamp")]))
  ],
  slots:{
-  a:{prompt:"Seal-in rung: choose holding structure",correct:PAR([NO("X0","Start"),NO("Y0","Hold Y0")]),choices:[
+  a:{prompt:"Seal-in rung: which structure starts the motor with Start AND keeps it ON after Start is released?",correct:PAR([NO("X0","Start"),NO("Y0","Hold Y0")]),choices:[
     SERIES([NO("X0","Start"),NO("Y0","Hold Y0")]),
     PAR([NO("X0","Start"),NO("Y0","Hold Y0")]),
     PAR([NO("X0","Start"),NC("Y0","Hold Y0")])
-  ]},
-  b:{prompt:"Seal-in rung: choose Stop permissive",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")]},
-  c:{prompt:"Lamp rung: choose running-state contact",correct:NO("Y0","Motor Y0"),choices:[NO("Y0","Motor Y0"),NC("Y0","Motor Y0"),NO("X0","Start")]}
+  ],
+   why:["Series means AND: the motor would need Start AND be already running, so it can never start from rest.","Start OR Hold Y0: Start begins it, and the holding contact keeps the rung TRUE after Start is released.","NC Y0 is TRUE while the motor is OFF: the motor turns ON without Start and then switches itself OFF again on the next scan."]},
+  b:{prompt:"Seal-in rung: which instruction lets Stop X1 break the latch?",correct:NC("X1","Stop"),choices:[NO("X1","Stop"),NC("X1","Stop"),NC("X0","Start")],
+   why:["NO X1 would let the motor run only while Stop is held down.","NC X1 is in series with both paths and opens the rung when Stop is pressed, which also releases the holding contact.","NC X0 tests Start, not Stop: pressing Start opens the rung, so the motor can never start, and Stop is ignored."]},
+  c:{prompt:"Lamp rung: which contact shows that the motor is running?",correct:NO("Y0","Motor Y0"),choices:[NO("Y0","Motor Y0"),NC("Y0","Motor Y0"),NO("X0","Start")],
+   why:["NO Y0 is TRUE while the motor bit is 1, so the lamp shows the latched state.","NC Y0 lights the lamp while the motor is stopped — the opposite of “running”.","NO X0 follows the Start button: the lamp would go out as soon as Start is released, although the motor keeps running."]}
  },
  hints:["The first rung needs memory: X0 OR Y0.","OR becomes a parallel branch.","The Stop condition is NC X1.","The lamp rung simply reads Y0 as an NO contact."],
  tests:[
   {sequence:[{X0:false,X1:false},{X0:true,X1:false},{X0:false,X1:false}]},
   {sequence:[{X0:true,X1:false},{X0:false,X1:false},{X0:false,X1:true}]}
- ]
+ ],
+ testAsk:["Press Start, then release it (3 scans): does the motor latch ON and keep the lamp ON after Start is released?","Start, release, then press Stop (3 scans): does Stop break the latch and switch both the motor and the lamp OFF?"]
 },
 {
  id:"sequence",title:"Three-stage process sequence",difficulty:"Advanced",
@@ -539,11 +1208,26 @@ const programs=[
  scenario:"A simplified batch process uses internal step bits M0, M1, and M2: Start sets Fill step, Full sensor advances to Mix, Timer Done advances to Drain, and Empty ends the cycle.",
  teacher:"This is a conceptual sequence example using internal bits as state. It is intentionally simplified for teaching state transitions.",
  goal:"See how several rungs and internal bits can represent process stages.",
+ question:"How can internal step bits (M0, M1, M2) and several rungs represent the stages of a process, so that each stage starts, holds and ends at the right moment?",
+ lookFor:"the sequence map (active step and the condition it is waiting for), the scan history, and rungs 1–3 (step bits) versus rungs 4–6 (outputs).",
+ subQuestions:["How does each step bit start, hold itself, and end?","Why are the outputs on separate rungs that only read M0, M1 and M2?","Why must the inputs be applied in order: Start → Full → Timer Done → Empty?","What happens in this simplified program if Full X1 turns ON while no step is active?"],
+ modelAnswer:"Rungs 1–3 are three seal-in rungs, one per step: (entry condition OR hold contact of the step bit) AND NC exit condition → step bit. Fill M0 starts with Start X0 and ends with Full X1; Mix M1 starts with Full X1 and ends with Timer Done X2; Drain M2 starts with Timer Done X2 and ends with Empty X3. Rungs 4–6 map each step bit to its physical output (M0 → Fill Valve Y0, M1 → Mixer Y1, M2 → Drain Valve Y2), so every output has exactly one coil. Because Full X1 both ends Fill (NC X1 on rung 1) and starts Mix (NO X1 on rung 2), the hand-over happens in one scan. In this simplified version a step's entry does not check that the previous step was active, so Full X1 alone starts Mix even from idle; a production sequence would add the previous step bit (e.g. NO M0) to each entry path.",
+ takeaways:["An internal M bit stores state but drives no terminal.","Each step = a seal-in rung: (entry OR hold) AND NOT exit.","Map step bits to outputs on separate rungs, so each output has one coil."],
+ mistake:"Forgetting the NC exit condition: the step bit then latches forever and two steps stay active together. Or driving the fill valve directly from Start X0 — it would close as soon as Start is released.",
+ chain:{device:"Tank-full level switch",tag:"X1",rungs:[1,4],actuator:"Mixer motor"},
+ stateMap:{title:"Sequence map",q:"Which step is active, and which condition is it waiting for?",
+  steps:[{key:null,label:"Idle",sub:"no step bit ON"},{key:"M0",label:"Fill",sub:"M0 → Fill Valve Y0"},{key:"M1",label:"Mix",sub:"M1 → Mixer Y1"},{key:"M2",label:"Drain",sub:"M2 → Drain Valve Y2"}],
+  transitions:[
+   {from:0,to:1,need:[["X0",true,"Start X0 = 1"],["X1",false,"Full X1 = 0"]]},
+   {from:1,to:2,need:[["X1",true,"Full X1 = 1"],["X2",false,"Timer Done X2 = 0"]]},
+   {from:2,to:3,need:[["X2",true,"Timer Done X2 = 1"],["X3",false,"Empty X3 = 0"]]},
+   {from:3,to:0,need:[["X3",true,"Empty X3 = 1"]]}
+  ]},
  inputs:[
-  {key:"X0",label:"Start X0",type:"digital",value:false},
-  {key:"X1",label:"Full X1",type:"digital",value:false},
-  {key:"X2",label:"Timer Done X2",type:"digital",value:false},
-  {key:"X3",label:"Empty X3",type:"digital",value:false}
+  {key:"X0",label:"Start X0",type:"digital",value:false,means:"1 = Start pressed"},
+  {key:"X1",label:"Full X1",type:"digital",value:false,means:"1 = tank-full switch made"},
+  {key:"X2",label:"Timer Done X2",type:"digital",value:false,means:"1 = mixing time over (a simulated input, not a TON)"},
+  {key:"X3",label:"Empty X3",type:"digital",value:false,means:"1 = tank-empty switch made"}
  ],
  outputs:[
   {key:"M0",label:"Fill Step M0",internal:true},
@@ -585,24 +1269,31 @@ const programs=[
   RUNG("Drain Valve",SERIES([{slot:"f"},COIL("Y2","Drain Valve")]))
  ],
  slots:{
-  a:{prompt:"Fill step: choose start/hold branch",correct:PAR([NO("X0","Start"),NO("M0","Hold M0")]),choices:[
+  a:{prompt:"Fill step rung: which branch starts M0 with Start and keeps it ON until the tank is full?",correct:PAR([NO("X0","Start"),NO("M0","Hold M0")]),choices:[
     SERIES([NO("X0","Start"),NO("M0","Hold M0")]),PAR([NO("X0","Start"),NO("M0","Hold M0")]),PAR([NO("X0","Start"),NC("M0","Hold M0")])
-  ]},
-  b:{prompt:"Mix step: choose full/hold branch",correct:PAR([NO("X1","Full"),NO("M1","Hold M1")]),choices:[
+  ],
+   why:["Series means AND: M0 would need Start AND be ON already, so the step can never begin.","Start OR Hold M0: Start enters the step, and the hold contact keeps it until NC Full X1 opens the rung.","NC M0 is TRUE while the step is OFF: M0 switches itself ON without Start and then OFF again on the next scan."]},
+  b:{prompt:"Mix step rung: which branch starts M1 when the tank is full and keeps it ON until the timer is done?",correct:PAR([NO("X1","Full"),NO("M1","Hold M1")]),choices:[
     SERIES([NO("X1","Full"),NO("M1","Hold M1")]),PAR([NO("X1","Full"),NO("M1","Hold M1")]),PAR([NC("X1","Full"),NO("M1","Hold M1")])
-  ]},
-  c:{prompt:"Drain step: choose timer/hold branch",correct:PAR([NO("X2","Timer Done"),NO("M2","Hold M2")]),choices:[
+  ],
+   why:["Series means AND: M1 would need Full AND be ON already, so mixing can never begin.","Full X1 OR Hold M1: the full signal enters Mix, and the hold contact keeps it until NC Timer Done X2 opens the rung.","NC X1 is TRUE while the tank is NOT full: Mix would start immediately at idle instead of when the tank is full."]},
+  c:{prompt:"Drain step rung: which branch starts M2 when the timer is done and keeps it ON until the tank is empty?",correct:PAR([NO("X2","Timer Done"),NO("M2","Hold M2")]),choices:[
     SERIES([NO("X2","Timer Done"),NO("M2","Hold M2")]),PAR([NO("X2","Timer Done"),NO("M2","Hold M2")]),PAR([NC("X2","Timer Done"),NO("M2","Hold M2")])
-  ]},
-  d:{prompt:"Fill output rung: choose Fill Step contact",correct:NO("M0","Fill Step M0"),choices:[NO("M0","Fill Step M0"),NC("M0","Fill Step M0"),NO("M1","Mix Step M1")]},
-  e:{prompt:"Mixer output rung: choose Mix Step contact",correct:NO("M1","Mix Step M1"),choices:[NO("M1","Mix Step M1"),NC("M1","Mix Step M1"),NO("M2","Drain Step M2")]},
-  f:{prompt:"Drain output rung: choose Drain Step contact",correct:NO("M2","Drain Step M2"),choices:[NO("M2","Drain Step M2"),NC("M2","Drain Step M2"),NO("M0","Fill Step M0")]}
+  ],
+   why:["Series means AND: M2 would need Timer Done AND be ON already, so draining can never begin.","Timer Done X2 OR Hold M2: the timer signal enters Drain, and the hold contact keeps it until NC Empty X3 opens the rung.","NC X2 is TRUE while the timer is NOT done: Drain would start immediately at idle."]},
+  d:{prompt:"Fill Valve rung: which contact opens the fill valve during the Fill step?",correct:NO("M0","Fill Step M0"),choices:[NO("M0","Fill Step M0"),NC("M0","Fill Step M0"),NO("M1","Mix Step M1")],
+   why:["NO M0 is TRUE while the Fill step is active.","NC M0 opens the fill valve whenever Fill is NOT active — including at idle, while mixing and while draining.","NO M1 is the Mix step: the tank would be filled while mixing instead of during the Fill step."]},
+  e:{prompt:"Mixer rung: which contact runs the mixer during the Mix step?",correct:NO("M1","Mix Step M1"),choices:[NO("M1","Mix Step M1"),NC("M1","Mix Step M1"),NO("M2","Drain Step M2")],
+   why:["NO M1 is TRUE while the Mix step is active.","NC M1 runs the mixer whenever Mix is NOT active — including an empty tank at idle.","NO M2 is the Drain step: the mixer would run while the tank drains."]},
+  f:{prompt:"Drain Valve rung: which contact opens the drain valve during the Drain step?",correct:NO("M2","Drain Step M2"),choices:[NO("M2","Drain Step M2"),NC("M2","Drain Step M2"),NO("M0","Fill Step M0")],
+   why:["NO M2 is TRUE while the Drain step is active.","NC M2 opens the drain whenever Drain is NOT active — the tank could never fill.","NO M0 is the Fill step: the tank would drain while it is being filled."]}
  },
  hints:["Each stage uses a start condition OR its own holding bit.","Each stage has an NC transition condition that ends it.","The last three rungs map M0, M1, and M2 to their physical outputs.","Internal M bits can behave like output bits in logic.","This is a simplified teaching sequence, not a complete production sequence controller."],
  tests:[
   {sequence:[{X0:false,X1:false,X2:false,X3:false},{X0:true,X1:false,X2:false,X3:false},{X0:false,X1:false,X2:false,X3:false}]},
   {sequence:[{X0:true,X1:false,X2:false,X3:false},{X0:false,X1:true,X2:false,X3:false},{X0:false,X1:false,X2:true,X3:false},{X0:false,X1:false,X2:false,X3:true}]}
- ]
+ ],
+ testAsk:["Press and release Start (3 scans): does the Fill step M0 latch and keep the fill valve open after Start is released?","Full batch (Start → Full → Timer Done → Empty, 4 scans): does each event hand over to the next step, and does Empty end with everything OFF?"]
 }
 ];
 
@@ -610,6 +1301,9 @@ let currentIndex=0,mode="learn",state={},targetMemoryState={},studentMemoryState
 let testRuns=0,solved=new Set(JSON.parse(localStorage.getItem("multiRungSolved")||"[]"));
 let historyStack=[],redoStack=[],manualScanIndex=-1,manualScanMem={},autoScanTimer=null,lastTestDetails=[];
 let predictionState=null,predictionAnswers={};
+// Explanation state: scan history for the timing trace, the last traces for the narrative, and the last test run.
+const HISTORY_MAX=30;
+let scanLog=[],scanNo=0,lastStudentBefore={},manualWrittenAt={},lastTestRun=null,paletteReturn=null;
 const $=id=>document.getElementById(id);
 
 function current(){return programs[currentIndex]}
@@ -627,9 +1321,13 @@ function loadProgram(i){
  $("programTitle").textContent=p.title;
  $("programScenario").textContent=p.scenario;
  $("teacherNote").innerHTML="<b>Teacher note:</b> "+p.teacher;
- $("studentGoal").innerHTML="<b>Student goal:</b> "+p.goal;
+ $("studentGoal").innerHTML="<b>Your task:</b> "+p.goal;
  $("prevProgram").disabled=currentIndex===0;
  $("nextProgram").disabled=currentIndex===programs.length-1;
+ // Clear the old ladder first so the power-up scan in resetInputs() does not run the previous program's rungs.
+ studentProgram=[];
+ clearTestResults("No results for this program yet. Run a test suite.");
+ renderUnit();
  resetInputs();
  resetProgramForMode();
  renderBank();
@@ -644,6 +1342,7 @@ function resetInputs(){
  state={};targetMemoryState={};studentMemoryState={};
  p.inputs.forEach(i=>state[i.key]=i.value);
  p.outputs.forEach(o=>{targetMemoryState[o.key]=false;studentMemoryState[o.key]=false});
+ resetScanHistory();
  renderInputs();
  scanAndRender();
 }
@@ -663,10 +1362,13 @@ function resetProgramForMode(){
    studentProgram=clone(p.correct);
  }
  renderHints();
- predictionState=null;predictionAnswers={};
+ // Show a fresh challenge immediately: the shown state and the checked state must always be the same one.
+ newPredictionChallenge();
  manualScanIndex=-1;manualScanMem={};
  current().outputs.forEach(o=>manualScanMem[o.key]=false);
  historyStack=[];redoStack=[];updateHistoryButtons();
+ $("slotReport").innerHTML="";
+ resetScanHistory();
  scanAndRender();
 }
 
@@ -676,11 +1378,11 @@ function renderInputs(){
  p.inputs.forEach(inp=>{
    const w=document.createElement("div");w.className="device "+(inp.type==="analog"?"analog":"");
    if(inp.type==="digital"){
-     w.innerHTML=`<div class="name">${inp.label}</div><button class="toggle ${state[inp.key]?"on":""}" aria-pressed="${state[inp.key]}"></button><div class="state">${state[inp.key]?"ON":"OFF"}</div>`;
+     w.innerHTML=`<div class="name">${inp.label}</div><button class="toggle ${state[inp.key]?"on":""}" aria-pressed="${state[inp.key]}" aria-label="${inp.label}"></button><div class="state">${inputStateText(inp)}</div>${inp.means?`<div class="means">${inp.means}</div>`:""}`;
      const b=w.querySelector("button"),s=w.querySelector(".state");
-     b.onclick=()=>{state[inp.key]=!state[inp.key];b.classList.toggle("on",state[inp.key]);b.setAttribute("aria-pressed",state[inp.key]);s.textContent=state[inp.key]?"ON":"OFF";scanAndRender()};
+     b.onclick=()=>{state[inp.key]=!state[inp.key];b.classList.toggle("on",state[inp.key]);b.setAttribute("aria-pressed",state[inp.key]);s.textContent=inputStateText(inp);scanAndRender()};
    }else{
-     w.innerHTML=`<div class="name">${inp.label}</div><input type="range" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${state[inp.key]}"><div class="value">${fmt(state[inp.key],inp.unit)}</div>`;
+     w.innerHTML=`<div class="name">${inp.label}</div><input type="range" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${state[inp.key]}" aria-label="${inp.label}"><div class="value">${fmt(state[inp.key],inp.unit)}</div>${inp.means?`<div class="means">${inp.means}</div>`:""}`;
      const r=w.querySelector("input"),v=w.querySelector(".value");
      r.oninput=()=>{state[inp.key]=parseFloat(r.value);v.textContent=fmt(state[inp.key],inp.unit);scanAndRender()};
    }
@@ -748,23 +1450,26 @@ function executeProgram(program,inputs,initialMem={}){
 }
 
 function scanAndRender(){
+ const targetBefore={...targetMemoryState},studentBefore={...studentMemoryState};
  const target=executeProgram(current().correct,state,targetMemoryState);
  const student=executeProgram(studentProgram,state,studentMemoryState);
  targetMemoryState={...target.mem};
  studentMemoryState={...student.mem};
  renderRules(target.mem);
  renderProgram(student.rungStates,student.mem);
- renderOutputs(target.mem,student.mem);
+ renderOutputs(target.mem,student.mem,studentBefore);
  $("scanStatus").textContent="Program scanned";
  $("scanStatus").className="status good";
+ renderUnderstanding(targetBefore,studentBefore);
  updateStats();
 }
 
 function renderRules(targetMem){
  const p=current();
  $("ruleList").innerHTML=p.rules.map((r,i)=>{
-   const active=targetMem[p.correct[i]&&coilOf(p.correct[i].logic)?.var]||false;
-   return `<div class="rule ${active?"active":""}"><b>Rule ${i+1}.</b> ${r.text(state,targetMem)}</div>`;
+   const coil=p.correct[i]&&coilOf(p.correct[i].logic);
+   const active=targetMem[coil?.var]||false;
+   return `<div class="rule ${active?"active":""}"><b>Rule ${i+1}.</b> ${r.text(state,targetMem)}<span class="rule-map">→ rung ${i+1} · ${coil?coil.var:""} ${active?"output ON":"output OFF"}</span></div>`;
  }).join("");
 }
 
@@ -883,10 +1588,11 @@ function renderNode(node,rungIndex,itemIndex,studentMem){
  const e=document.createElement("div");e.textContent="?";return e;
 }
 
-function renderOutputs(targetMem,studentMem){
+function renderOutputs(targetMem,studentMem,prevMem){
  $("outputs").innerHTML=current().outputs.map(o=>{
    const t=!!targetMem[o.key],s=!!studentMem[o.key],same=t===s;
-   return `<div class="out"><div class="outmeta"><div class="lamp ${t?"on":""}"></div><div><strong>${o.label}</strong><small>Target ${t?"ON":"OFF"} · Student ${s?"ON":"OFF"}</small></div></div><span class="valpill ${same?"on":""}">${same?"MATCH":"DIFF"}</span></div>`;
+   const changed=prevMem&&!!prevMem[o.key]!==s?`<span class="chg">${bit(prevMem[o.key])} → ${bit(s)} this scan</span>`:"";
+   return `<div class="out"><div class="outmeta"><div class="lamp ${t?"on":""}"></div><div><strong>${o.label}</strong>${changed}<small>Reference ${t?"ON":"OFF"} · Your ladder ${s?"ON":"OFF"}</small><span class="mean">${outputMeaning(o,s)}</span></div></div><span class="valpill ${same?"on":""}">${same?"MATCH":"DIFF"}</span></div>`;
  }).join("");
 }
 
@@ -917,7 +1623,9 @@ function renderPaletteChoices(choices){
    b.innerHTML=`<b>${choiceTitle(c)}</b><span>${choiceDescription(c)}</span>`;
    b.onclick=()=>applyChoice(c);$("paletteGrid").appendChild(b);
  });
+ if($("palette").classList.contains("hide"))paletteReturn=document.activeElement;
  $("palette").classList.remove("hide");
+ const first=$("paletteGrid").querySelector("button");if(first)first.focus();
 }
 function applyChoice(c){
  pushHistory();
@@ -936,7 +1644,11 @@ function applyChoice(c){
  }
  closePalette();scanAndRender();
 }
-function closePalette(){$("palette").classList.add("hide");activeEdit=null}
+function closePalette(){
+ $("palette").classList.add("hide");activeEdit=null;
+ if(paletteReturn&&document.contains(paletteReturn))paletteReturn.focus();
+ paletteReturn=null;
+}
 
 function conditionChoices(){
  const p=current(),keys=p.inputs.map(i=>i.key),outs=p.outputs.map(o=>o.key);
@@ -957,14 +1669,16 @@ function choiceTitle(n){
  if(n.kind==="coil")return `Coil ${n.label}`;
  if(n.kind==="compare")return `${n.label} ${n.op.replace("<=","≤").replace(">=","≥")} ${n.value}${n.unit}`;
  if(n.kind==="dynamic")return n.label;
- if(n.kind==="group")return n.mode==="parallel"?"Parallel OR branch":"Series AND group";
+ // Name the contents of a group, so that two different OR branches never look identical in the palette.
+ if(n.kind==="group")return (n.mode==="parallel"?"Parallel OR branch: ":"Series AND group: ")+n.items.map(choiceTitle).join(n.mode==="parallel"?" OR ":" AND ");
  return "Element";
 }
 function choiceDescription(n){
- if(n.kind==="contact")return n.type==="NO"?"True while bit is ON":"True while bit is OFF";
- if(n.kind==="coil")return "Writes an output or internal bit";
- if(n.kind==="compare"||n.kind==="dynamic")return "Boolean comparison instruction";
- if(n.kind==="group")return n.mode==="parallel"?"Any path may pass power":"All conditions must pass power";
+ if(n.kind==="contact")return n.type==="NO"?`TRUE while ${n.var} = 1 (bit ON)`:`TRUE while ${n.var} = 0 (bit OFF) — NOT ${n.var}`;
+ if(n.kind==="coil")return `Writes the rung result into ${n.var}`;
+ if(n.kind==="compare")return `TRUE when ${n.var} ${opText(n.op)} ${fmt(n.value,n.unit)}`;
+ if(n.kind==="dynamic")return `TRUE when ${n.left} ${n.op} ${n.right}${n.offset?(n.offset<0?" − ":" + ")+Math.abs(n.offset):""}`;
+ if(n.kind==="group")return n.mode==="parallel"?"Any one TRUE path passes power (OR)":"Every condition must be TRUE (AND)";
  return "";
 }
 
@@ -977,6 +1691,8 @@ function checkStructure(){
  $("feedback").className="feedback "+(ok?"good":"bad");
  $("feedback").textContent=ok?"Correct guided structure. Now run behavior tests to verify the entire program.":"Some guided slots are still wrong. Use the red outlines and hints to revise them.";
  if(ok){solved.add(current().id);localStorage.setItem("multiRungSolved",JSON.stringify([...solved]));updateStats()}
+ renderSlotReport(ok);
+ if(ok){markAnswered(mode);renderUnit();renderBank();renderSummary()}
 }
 
 function evaluateTestSuite(tests){
@@ -1016,36 +1732,175 @@ function applyTestSummary(result,label="test suite"){
  $("passRate").textContent=rate+"%";
  $("feedback").className="feedback "+(result.failed===0?"good":"bad");
  $("feedback").textContent=result.failed===0
-   ?`Excellent: the student program matches the target across the ${label}.`
-   :`The program failed ${result.failed} of ${result.total} cases. Open the detailed table below to inspect the mismatches.`;
+   ?`Excellent: your ladder matches the reference program across the ${label}.`
+   :`Your ladder failed ${result.failed} of ${result.total} cases. Section 4 below explains the first failing case.`;
+ if(lastTestRun){lastTestRun.result=result;lastTestRun.label=label}
  renderTestDetails(result.details);
+ if(mode==="build"&&result.failed===0&&programDiffers())markAnswered("build");
  updateStats();
 }
 
+// Remember what was tested, so explanations still describe that run if the ladder is edited afterwards.
+function startTestRun(kind,tests){
+ lastTestRun={kind,tests,info:tests.info||null,mode,programTitle:current().title,sig:programSig(),program:resolveProgram(studentProgram)};
+ qProgress.ran[kind]=true;saveQ();
+ if(qProgress.ran.lesson&&qProgress.ran.coverage)markAnswered("tests");
+}
+
 function runBehaviorTests(){
+ startTestRun("lesson",current().tests);
  applyTestSummary(evaluateTestSuite(current().tests),"lesson test suite");
+}
+
+function clearTestResults(message){
+ lastTestRun=null;lastTestDetails=[];
+ $("testDetails").innerHTML=`<div class="empty-tests">${message}</div>`;
+ $("testVerdict").innerHTML="";$("testVerdict").className="verdict";
+ $("caseExplain").classList.add("hide");$("caseExplain").innerHTML="";
+}
+
+function caseAsk(d,caseIndex){
+ const p=current();
+ if(lastTestRun&&lastTestRun.kind==="lesson"&&p.testAsk&&p.testAsk[d.index])return p.testAsk[d.index];
+ const inp=d.type==="sequence"?d.steps[0].inputs:d.inputs;
+ const notes=boundaryNotes(inp);
+ return `Do all outputs match the reference for this input combination?${notes.length?" "+notes.join(" "):""}`;
+}
+
+// Name analog values that sit on, or one step next to, a comparison limit of the reference program.
+function boundaryNotes(inp){
+ const p=current(),notes=[];
+ p.correct.forEach(r=>leafList(r.logic).forEach(n=>{
+   let key,limit,label;
+   if(n.kind==="compare"){key=n.var;limit=n.value;label=`${n.label} ${opText(n.op)} ${fmt(n.value,n.unit)}`}
+   else if(n.kind==="dynamic"&&inp[n.right]!==undefined){key=n.left;limit=inp[n.right]+n.offset;label=`${n.label} (= ${fmt(limit,unitOf(n.left))})`}
+   else return;
+   if(inp[key]===undefined)return;
+   const info=tagInfo(key),d=inp[key]-limit,step=(info&&info.step)||1;
+   if(Math.abs(d)<1e-9)notes.push(`${key} is exactly at the limit of “${label}”.`);
+   else if(Math.abs(d)<=step+1e-9)notes.push(`${key} is just ${d<0?"below":"above"} the limit of “${label}”.`);
+ }));
+ return [...new Set(notes)];
 }
 
 function renderTestDetails(details){
  if(!details.length){$("testDetails").innerHTML='<div class="empty-tests">No test results yet.</div>';return}
  const rows=[];
+ const tagList=(outs,which,other)=>outs.map(x=>{const v=x[which]?1:0,diff=x.target!==x.student;return diff&&other?`<span class="neq" title="differs from the reference">${x.key}:${v}</span>`:`${x.key}:${v}`}).join(" ");
  details.forEach((d,caseIndex)=>{
+   const why=`<button class="why-btn" data-why="${caseIndex}" aria-controls="caseExplain">Why?</button>`;
    if(d.type==="sequence"){
      d.steps.forEach((step,stepIndex)=>{
        const inputs=Object.entries(step.inputs).map(([k,v])=>`${k}=${formatTestValue(v)}`).join(", ");
-       const expected=step.outputs.map(x=>`${x.key}:${x.target?1:0}`).join(" ");
-       const actual=step.outputs.map(x=>`${x.key}:${x.student?1:0}`).join(" ");
        const pass=step.outputs.every(x=>x.target===x.student);
-       rows.push(`<tr class="${pass?"pass":"fail"}"><td>S${caseIndex+1}.${stepIndex+1}</td><td>${inputs}</td><td>${expected}</td><td>${actual}</td><td>${pass?"PASS":"FAIL"}</td></tr>`);
+       const ask=stepIndex===0?esc(caseAsk(d,caseIndex)):`<span class="src">step ${stepIndex+1} of ${d.steps.length}: ${esc(stepChange(d.steps[stepIndex-1].inputs,step.inputs))}</span>`;
+       rows.push(`<tr class="${pass?"pass":"fail"}"><td>S${caseIndex+1}.${stepIndex+1}${stepIndex===0?why:""}</td><td class="ask">${ask}</td><td>${inputs}</td><td>${tagList(step.outputs,"target")}</td><td>${tagList(step.outputs,"student",true)}</td><td>${pass?"PASS":"FAIL"}</td></tr>`);
      });
    }else{
      const inputs=Object.entries(d.inputs).map(([k,v])=>`${k}=${formatTestValue(v)}`).join(", ");
-     const expected=d.outputs.map(x=>`${x.key}:${x.target?1:0}`).join(" ");
-     const actual=d.outputs.map(x=>`${x.key}:${x.student?1:0}`).join(" ");
-     rows.push(`<tr class="${d.pass?"pass":"fail"}"><td>${caseIndex+1}</td><td>${inputs}</td><td>${expected}</td><td>${actual}</td><td>${d.pass?"PASS":"FAIL"}</td></tr>`);
+     rows.push(`<tr class="${d.pass?"pass":"fail"}"><td>${caseIndex+1}${why}</td><td class="ask">${esc(caseAsk(d,caseIndex))}</td><td>${inputs}</td><td>${tagList(d.outputs,"target")}</td><td>${tagList(d.outputs,"student",true)}</td><td>${d.pass?"PASS":"FAIL"}</td></tr>`);
    }
  });
- $("testDetails").innerHTML=`<table class="test-table"><thead><tr><th>Case</th><th>Inputs</th><th>Expected</th><th>Student</th><th>Result</th></tr></thead><tbody>${rows.join("")}</tbody></table>`;
+ $("testDetails").innerHTML=`<table class="test-table"><thead><tr><th>Case</th><th>What this case asks</th><th>Inputs</th><th>Expected (reference)</th><th>Your ladder</th><th>Result</th></tr></thead><tbody>${rows.join("")}</tbody></table>`;
+ renderVerdict();
+ const firstFail=details.findIndex(d=>!d.pass);
+ if(firstFail>=0)showCaseExplain(firstFail,false);
+ else{$("caseExplain").classList.add("hide");$("caseExplain").innerHTML=""}
+}
+
+function stepChange(a,b){
+ const ch=Object.keys(b).filter(k=>a[k]!==b[k]).map(k=>`${k} ${formatTestValue(a[k])} → ${formatTestValue(b[k])}`);
+ return ch.length?ch.join(", "):"inputs unchanged — one more scan";
+}
+
+function renderVerdict(){
+ const run=lastTestRun;if(!run||!run.result)return;
+ const r=run.result,allPass=r.failed===0,hasSeq=run.tests.some(t=>t.sequence),hasState=run.tests.some(t=>!t.sequence);
+ const how=[];
+ if(hasState)how.push("Each single-state case starts from power-up (every output and internal bit = 0), applies the inputs and runs ONE scan of both programs.");
+ if(hasSeq)how.push("Each sequence case (S1, S2 …) runs several scans in order and keeps every bit between scans, so it tests memory: holding contacts and step bits.");
+ if(run.kind==="coverage"&&run.info){
+   const a=Object.entries(run.info.samples).map(([k,v])=>`${k} at ${v.map(x=>fmt(x)).join(", ")}`).join("; ");
+   how.push(`Coverage: all ${run.info.digital} combinations of the digital inputs${a?`, each also tried with ${a} (values at and next to every limit)`:""} — ${run.tests.length} cases. They start from power-up, so memory behavior is tested by the lesson sequence cases, not here.`);
+ }
+ let meaning;
+ if(allPass){
+   const diff=differingRungs();
+   meaning=`<b>What passing everything means:</b> in every tested situation your ladder writes exactly the same value as the reference to every output and internal bit. It is strong evidence, not a proof for untested values — ${run.kind==="lesson"?"run “Generate broader coverage” to try many more states.":"the lesson cases add the multi-scan (memory) checks."}`;
+   if(run.mode==="learn")meaning+=" <b>Note:</b> in Learn mode the ladder IS the reference, so every case must pass — switch to Solve, Repair or Build to test your own work.";
+   else if(!diff.length)meaning+=" Your ladder is identical to the reference.";
+   else meaning+=` <b>Why a different drawing can pass:</b> your ladder is drawn differently from the reference (rung ${diff.join(", ")}), yet every case passes. The tests compare behavior, not drawings, so a logically equivalent program is accepted — for example the same series conditions in another order (A AND B = B AND A), or OR paths swapped.`;
+ }else meaning=`<b>What a FAIL means:</b> in each failing case at least one output or internal bit of your ladder differs from the reference. The explanation of the first failing case is open below the table; press <b>Why?</b> on any other row.`;
+ const stale=run.sig!==programSig()?`<div class="stale">Your ladder has changed since this run — run the tests again to see current results.</div>`:"";
+ $("testVerdict").className="verdict "+(allPass?"good":"bad");
+ $("testVerdict").innerHTML=`<h4>${esc(run.label)} — ${r.passed} of ${r.total} cases pass (${run.programTitle}, ${run.mode} mode)</h4><div>${meaning}</div><ul>${how.map(h=>`<li>${h}</li>`).join("")}</ul>${stale}`;
+}
+
+// Re-run one case with traces, then explain it: the question, the inputs, expected vs your ladder per tag, and why.
+function showCaseExplain(ci,focus=true){
+ const run=lastTestRun,d=lastTestDetails[ci];if(!run||!d)return;
+ const p=current(),steps=d.type==="sequence"?d.steps.map(s=>s.inputs):[d.inputs];
+ let refMem={},stuMem={};const rows=[];
+ steps.forEach((inp,si)=>{
+   const rt=traceScan(p.correct,inp,refMem),st=traceScan(run.program,inp,stuMem);
+   refMem=rt.mem;stuMem=st.mem;
+   rows.push({si,inp,rt,st,tags:p.outputs.map(o=>({o,exp:!!rt.mem[o.key],got:!!st.mem[o.key]}))});
+ });
+ const fail=rows.find(r=>r.tags.some(t=>t.exp!==t.got));
+ const inText=inp=>Object.entries(inp).map(([k,v])=>`${k} = ${typeof v==="boolean"?bit(v):fmt(v,unitOf(k))}`).join(", ");
+ let h=`<h4>${d.type==="sequence"?"Sequence S"+(ci+1):"Case "+(ci+1)} — ${d.pass?"PASS":"FAIL"}</h4>`;
+ h+=`<div><b>Question:</b> ${esc(caseAsk(d,ci))}</div>`;
+ h+=d.type==="sequence"
+   ?`<div><b>Steps applied</b> (memory kept between scans, starting from power-up): ${rows.map(r=>`scan ${r.si+1}: ${inText(r.inp)}`).join(" → ")}</div>`
+   :`<div><b>Inputs applied:</b> ${inText(d.inputs)} — starting from power-up (all bits 0), one scan.</div>`;
+ const show=fail||rows[rows.length-1];
+ h+=`<div class="ce-wrap"><table><thead><tr><th>Tag</th><th>Expected (reference)</th><th>Your ladder</th><th>Match</th><th>Why the reference gives this value${d.type==="sequence"?` (scan ${show.si+1})`:""}</th></tr></thead><tbody>${show.tags.map(t=>{
+   const w=lastWriter(show.rt,t.o.key);
+   return `<tr class="${t.exp===t.got?"":"bad"}"><td><b>${t.o.key}</b> ${esc(shortName(t.o))}</td><td>${bit(t.exp)}</td><td>${bit(t.got)}</td><td>${t.exp===t.got?"✓ same":"✗ differs"}</td><td>${w?`rung ${w.i+1} ${esc(w.name)}: ${rungWhyShort(w,show.inp)}`:"no rung writes it"}</td></tr>`;
+ }).join("")}</tbody></table></div>`;
+ if(!fail){
+   const outs=show.tags.filter(t=>t.exp).map(t=>t.o.key);
+   h+=`<div class="ce-box good"><b>What this proves:</b> ${d.type==="sequence"?`over ${rows.length} scans in a row, your ladder gives the same values as the reference after every scan, so its memory (holding contacts / step bits) works for this sequence.`:`for exactly these inputs, your ladder writes the same value as the reference to all ${show.tags.length} bits (${outs.length?outs.join(", ")+" = 1, the rest 0":"all 0"}).`} It says nothing about other input states — the other cases cover those.</div>`;
+ }else{
+   const bad=fail.tags.filter(t=>t.exp!==t.got);
+   h+=`<div class="ce-box bad"><b>What went wrong${d.type==="sequence"?` (first at scan ${fail.si+1})`:""}:</b><ul>${bad.map(t=>{
+     const rw=lastWriter(fail.rt,t.o.key),sw=lastWriter(fail.st,t.o.key);
+     return `<li><b>${t.o.key}</b>: expected ${bit(t.exp)}, your ladder wrote ${bit(t.got)}. Reference: ${rw?`rung ${rw.i+1} is ${rw.on?"TRUE":"FALSE"} — ${rungWhyShort(rw,fail.inp)}`:"—"}. Your ladder: ${sw?`rung ${sw.i+1} (${esc(sw.name)}) is ${sw.on?"TRUE":"FALSE"} — ${rungWhyShort(sw,fail.inp)}`:`no rung writes ${t.o.key}, so it stays 0`}.</li>`;
+   }).join("")}</ul></div>`;
+   h+=`<div class="ce-box check"><b>What to check:</b><ul>${bad.map(t=>`<li>${checkAdvice(t.o.key,fail,d.type==="sequence"&&fail.si>0)}</li>`).join("")}</ul></div>`;
+ }
+ const box=$("caseExplain");box.innerHTML=h;box.classList.remove("hide");
+ if(focus){box.focus({preventScroll:true});box.scrollIntoView({block:"nearest",behavior:"smooth"})}
+}
+
+// Guidance that points at the evidence (which rung, which instruction) without printing the answer.
+function checkAdvice(key,row,laterScan){
+ const rw=lastWriter(row.rt,key),sw=lastWriter(row.st,key);
+ const writers=row.st.rungs.filter(r=>r.write&&r.write.var===key);
+ if(!sw)return `Add a rung that ends in a ${key} coil.`;
+ if(writers.length>1)return `${key} is written by rungs ${writers.map(r=>r.i+1).join(" and ")}; the last write in the scan wins. Keep exactly one coil per bit.`;
+ const sl=leafTraces(sw.tree),rl=rw?leafTraces(rw.tree):[];
+ if(sl.some(t=>t.kind==="blank"))return `Rung ${sw.i+1} still has an empty slot, and an empty slot is always FALSE. Fill it with Replace.`;
+ const keysOf=t=>t.kind==="contact"?[t.n.var]:t.kind==="compare"?[t.n.var]:t.kind==="dynamic"?[t.n.left]:[];
+ const sk=new Set(sl.flatMap(keysOf)),rk=new Set(rl.flatMap(keysOf));
+ const tips=[];
+ [...rk].filter(k=>!sk.has(k)).forEach(k=>tips.push(`The rule for ${key} depends on ${k} (${esc(tagLabel(k))}), but your rung ${sw.i+1} does not test ${k} at all.`));
+ [...sk].filter(k=>!rk.has(k)).forEach(k=>tips.push(`Your rung ${sw.i+1} tests ${k}, which the rule for ${key} does not use.`));
+ sl.forEach(t=>{
+   const k=keysOf(t)[0];if(!k||!rk.has(k))return;
+   const same=rl.find(r=>keysOf(r)[0]===k&&deepEqual(r.n,t.n));if(same)return;
+   if(t.kind==="contact")tips.push(`Check the contact on ${k}: here ${k} = ${bit(t.bit)} and your ${t.n.type} contact gives ${t.value?"TRUE":"FALSE"}. Should this condition pass when ${k} is 1, or when it is 0?`);
+   else tips.push(`Check the comparison on ${k}: ${leafShort(t,row.inp)}. Is the direction (<, ≤, >, ≥) and the limit what the rule says?`);
+ });
+ if(!tips.length&&rw&&JSON.stringify(rw.tree.n)!==JSON.stringify(sw.tree.n)){
+   tips.push(`Your rung ${sw.i+1} uses the right instructions but connects them differently. Which conditions must ALL be TRUE (series) and which are alternatives (parallel OR branch)?`);
+ }
+ if(!tips.length){
+   const mem=sl.filter(t=>t.kind==="contact"&&t.src!=="input");
+   tips.push(mem.length?`Rung ${sw.i+1} matches the rule, but it reads ${mem.map(t=>`${t.n.var} = ${bit(t.bit)} (${srcText(t)})`).join(", ")}. Check the rung that writes ${mem.map(t=>t.n.var).join("/")} and the rung order.`:`Compare rung ${sw.i+1} with rule ${rw?rw.i+1:""} word by word.`);
+ }
+ if(laterScan)tips.push(`This first goes wrong on a later scan of the sequence, so check what should keep ${key} at its value between scans (a holding contact) or end it (an NC exit condition).`);
+ return tips.join(" ");
 }
 
 function formatTestValue(v){return typeof v==="boolean"?(v?"ON":"OFF"):v}
@@ -1058,7 +1913,10 @@ function collectAnalogThresholds(node,map={}){
  }
  if(node.kind==="dynamic"){
    if(!map[node.left])map[node.left]=new Set();
-   const base=state[node.right]??0;map[node.left].add(base+node.offset);
+   // Use the program's default setpoint: the generated cases hold the setpoint at that default,
+   // so the samples land exactly on the limits that are tested (and the suite is reproducible).
+   const ref=current().inputs.find(i=>i.key===node.right);
+   const base=(ref?ref.value:state[node.right])??0;map[node.left].add(base+node.offset);
  }
  if(node.kind==="group")node.items.forEach(n=>collectAnalogThresholds(n,map));
  return map;
@@ -1070,11 +1928,15 @@ function generateCoverageTests(){
  const analog=p.inputs.filter(i=>i.type==="analog");
  const maxDigital=Math.min(1<<digital.length,64);
  const thresholdMap={};p.correct.forEach(r=>collectAnalogThresholds(r.logic,thresholdMap));
- const analogScenarios=[{}];
+ const analogScenarios=[{}],samples={};
  analog.forEach(inp=>{
-   const vals=new Set([inp.min,inp.value,inp.max]);
+   // Limit samples come first, so the cap can never drop a limit
+   // (sorting first and keeping the lowest 8 values used to drop the tank's 95 % full-lamp limit).
+   const vals=new Set();
    (thresholdMap[inp.key]||[]).forEach(v=>{vals.add(v);vals.add(Math.max(inp.min,v-(inp.step||1)));vals.add(Math.min(inp.max,v+(inp.step||1)))});
-   const arr=[...vals].filter(v=>Number.isFinite(v)).sort((a,b)=>a-b).slice(0,8);
+   [inp.min,inp.value,inp.max].forEach(v=>vals.add(v));
+   const arr=[...vals].filter(v=>Number.isFinite(v)).slice(0,12).sort((a,b)=>a-b);
+   samples[inp.key]=arr;
    arr.forEach(v=>analogScenarios.push({[inp.key]:v}));
  });
  const tests=[];
@@ -1088,12 +1950,16 @@ function generateCoverageTests(){
      tests.push(full);
    });
  }
- return tests.slice(0,128);
+ const out=tests.slice(0,128);
+ out.info={digital:maxDigital,samples};
+ return out;
 }
 
 function runCoverageTests(){
  const tests=generateCoverageTests();
- $("coverageNote").textContent=`Generated ${tests.length} coverage cases for this program.`;
+ const a=Object.values(tests.info.samples).reduce((n,v)=>n+v.length,0);
+ $("coverageNote").textContent=`Generated ${tests.length} coverage cases: ${tests.info.digital} digital combination${tests.info.digital===1?"":"s"}${a?` × (default analog values + ${a} analog samples around the limits)`:""}.`;
+ startTestRun("coverage",tests);
  applyTestSummary(evaluateTestSuite(tests),"generated coverage suite");
 }
 
@@ -1130,7 +1996,7 @@ function resetManualScan(){
  current().outputs.forEach(o=>manualScanMem[o.key]=false);
  $("scanInspectorStatus").textContent="ready";
  $("scanInspectorStatus").className="status";
- $("scanInspector").innerHTML='<div class="scan-line">Use <b>Step scan</b> to inspect one rung at a time.</div>';
+ $("scanInspector").innerHTML='<div class="scan-line">Use <b>Step scan</b> to inspect one rung at a time. The inspector replays the <b>next</b> scan in slow motion: it starts from the bits kept after the last scan and solves rung 1, 2, 3 … in order. <b>Full scan</b> runs all rungs at once; <b>Auto scan</b> steps every 0.7 s.</div>';
 }
 function describeNode(node,mem,inputs,items=[]){
  node=resolve(node);if(!node)return items;
@@ -1151,17 +2017,30 @@ function stepScan(){
  if(manualScanIndex<0||manualScanIndex>=studentProgram.length-1){
    if(manualScanIndex>=studentProgram.length-1)resetManualScan();
    manualScanIndex=0;
+   // A PLC keeps its bits between scans: replay the next scan from the bits retained after the last scan,
+   // not from all-zero memory (which contradicted the live ladder for latched programs).
+   manualScanMem={...studentMemoryState};manualWrittenAt={};
  }else manualScanIndex++;
  const rung=studentProgram[manualScanIndex];
+ // Describe every instruction with the value it reads BEFORE this rung writes its coil.
+ const trace=describeNode(rung.logic,manualScanMem,state,[]);
+ const writers=writerMap(studentProgram);
+ const reads=leafTraces(traceNode(rung.logic,manualScanMem,state,{writtenAt:manualWrittenAt,writers,rung:manualScanIndex})).filter(t=>t.kind==="contact"&&t.src!=="input");
  const on=nodeValue(rung.logic,manualScanMem,state);
  const coil=coilOf(rung.logic);
- if(coil)manualScanMem[coil.var]=on;
- const trace=describeNode(rung.logic,manualScanMem,state,[]);
+ const old=coil?!!manualScanMem[coil.var]:false;
+ if(coil){manualScanMem[coil.var]=on;manualWrittenAt[coil.var]=manualScanIndex}
+ const last=manualScanIndex===studentProgram.length-1;
  $("scanInspectorStatus").textContent=`rung ${manualScanIndex+1}/${studentProgram.length}`;
  $("scanInspectorStatus").className="status warn";
- $("scanInspector").innerHTML=`<div class="scan-line"><b>${rung.name||"Rung "+(manualScanIndex+1)}</b><br>Rung result: ${on?"TRUE / energized":"FALSE / not energized"}${coil?`<br>Writes ${coil.var} = ${on?1:0}`:""}</div><div class="trace-list">${trace.map(t=>`<div class="trace-item ${t.value?"true":"false"}"><span>${t.label}</span><b>${t.value?"TRUE":"FALSE"}</b></div>`).join("")}</div>`;
+ const readText=reads.length?`<br>Bits read from memory: ${[...new Set(reads.map(t=>`${t.n.var} = ${bit(t.bit)} (${srcText(t)})`))].join("; ")}`:"";
+ const nextText=last
+   ?`<b>Scan complete.</b> The output image now goes to the outputs: ${current().outputs.map(o=>`${o.key} = ${bit(manualScanMem[o.key])}`).join(", ")}. The next Step scan starts a new scan.`
+   :`Next: rung ${manualScanIndex+2}${coil?` will already see ${coil.var} = ${on?1:0}`:""}.`;
+ $("scanInspector").innerHTML=`<div class="scan-line"><b>${esc(rung.name||"Rung "+(manualScanIndex+1))}</b> — rung ${manualScanIndex+1} of ${studentProgram.length}<br>Rung result: ${on?"TRUE / energized":"FALSE / not energized"}${coil?`<br>Writes ${coil.var} = ${on?1:0} ${old===on?"(unchanged)":`(was ${bit(old)})`}`:""}${readText}</div><div class="trace-list">${trace.map(t=>`<div class="trace-item ${t.value?"true":"false"}"><span>${esc(t.label)}</span><b>${t.value?"TRUE":"FALSE"}</b></div>`).join("")}</div><div class="scan-line">${nextText}</div>`;
  const student=executeProgram(studentProgram,state,studentMemoryState);
  renderProgram(student.rungStates,student.mem);
+ if(last)markAnswered("scan");
 }
 function fullManualScan(){
  resetManualScan();
@@ -1220,9 +2099,10 @@ function newPredictionChallenge(){
  $("predictionInputs").innerHTML=Object.entries(predictionState).map(([k,v])=>`<span class="pred-chip">${k} = ${formatTestValue(v)}</span>`).join("");
  renderPredictionOutputs();
  $("predictionResult").textContent="";
+ $("predictionExplain").innerHTML="";
 }
 function renderPredictionOutputs(){
- $("predictionOutputs").innerHTML=current().outputs.map(o=>`<div class="pred-output"><span>${o.label}</span><button data-pred-output="${o.key}" class="${predictionAnswers[o.key]?"on":""}">${predictionAnswers[o.key]?"ON":"OFF"}</button></div>`).join("");
+ $("predictionOutputs").innerHTML=current().outputs.map(o=>`<div class="pred-output"><span>${o.label}</span><button data-pred-output="${o.key}" class="${predictionAnswers[o.key]?"on":""}" aria-pressed="${!!predictionAnswers[o.key]}" aria-label="Your prediction for ${o.label}">${predictionAnswers[o.key]?"ON":"OFF"}</button></div>`).join("");
  document.querySelectorAll("[data-pred-output]").forEach(b=>b.onclick=()=>{const k=b.dataset.predOutput;predictionAnswers[k]=!predictionAnswers[k];renderPredictionOutputs()});
 }
 function checkPrediction(){
@@ -1233,6 +2113,8 @@ function checkPrediction(){
   ?`Review: ${wrong.map(o=>o.key).join(", ")} ${wrong.length===1?"does":"do"} not match the target scan.`
   :"Correct prediction. Every output matches the target program.";
  $("predictionResult").style.color=wrong.length?"var(--red)":"var(--green)";
+ explainPrediction();
+ if(!wrong.length)markAnswered("predict");
 }
 
 function renderHints(){
@@ -1247,10 +2129,13 @@ function setMode(m){
  $("modeStatus").textContent=m==="learn"?"Learn mode":m==="solve"?"Solve mode":m==="repair"?"Repair mode":"Free builder";
  $("checkStructure").classList.toggle("hide",m==="learn"||m==="build");
  $("builderToolbox").classList.toggle("hide",m!=="build");
- $("programHeading").textContent=m==="build"?"Student-built multi-rung program":m==="learn"?"Correct ladder program":"Guided multi-rung program";
+ $("programHeading").textContent=m==="build"?"Your ladder — built freely":m==="learn"?"Reference ladder program":"Your ladder — guided slots";
  $("feedback").className="feedback neutral";
- $("feedback").textContent=m==="learn"?"Inspect how each IF–THEN rule maps to a rung and how later rungs may read earlier outputs.":m==="solve"?"Fill the missing ladder elements across all rungs, then check structure and behavior.":m==="repair"?"Several elements are intentionally wrong. Repair the whole program.":"Edit, add, remove, duplicate, and reorder rungs. Behavior tests accept logically equivalent programs.";
- resetInputs();resetProgramForMode();updateStats();
+ // The mode guide above says what to do; this box only reports results, so it does not repeat the instructions.
+ $("feedback").textContent=m==="learn"?"This is the reference ladder: nothing to fix. Behavior test results will appear in this box.":m==="build"?"Your build starts as a copy of the reference. Behavior test results will appear in this box.":"Results of Check guided solution and of the behavior tests will appear in this box.";
+ // Clear the old mode's ladder so the power-up scan in resetInputs() does not run it.
+ studentProgram=[];
+ resetInputs();resetProgramForMode();renderModeGuide();updateStats();
 }
 
 function bindRungTools(){
@@ -1276,11 +2161,489 @@ function updateStats(){
  $("solvedCount").textContent=solved.size;
  $("testCount").textContent=testRuns;
  $("rungCount").textContent=studentProgram.length||0;
+ renderStatsHelp();renderModeGuide();renderMetricHelp();
 }
 
 function renderBank(){
- $("bankGrid").innerHTML=programs.map((p,i)=>`<div class="bank-card ${i===currentIndex?"active":""}" data-bank="${i}"><b>${i+1}. ${p.title}</b><p>${p.scenario}</p><div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div></div>`).join("");
- document.querySelectorAll("[data-bank]").forEach(c=>c.onclick=()=>loadProgram(Number(c.dataset.bank)));
+ $("bankGrid").innerHTML=programs.map((p,i)=>`<div class="bank-card ${i===currentIndex?"active":""}" data-bank="${i}" role="button" tabindex="0" aria-pressed="${i===currentIndex}"><b>${i+1}. ${p.title}</b><span class="bank-state ${solved.has(p.id)?"done":""}">${solved.has(p.id)?"solved":"not solved yet"}</span><p class="bq">Q: ${p.question}</p><p>${p.scenario}</p><div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join("")}</div></div>`).join("");
+ document.querySelectorAll("[data-bank]").forEach(c=>{c.onclick=()=>loadProgram(Number(c.dataset.bank));c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click()}}});
+}
+
+// ---------- Explicit questions: page guide, mode guide and glossary text ----------
+const pageGuide={
+ subs:[
+  {id:"learn",q:"How does each IF–THEN rule become its own rung?",where:"programPanel",whereLabel:"Rules + ladder, in Learn mode",how:"in Learn mode, change an input (or press a preset) and compare each rule with its rung",
+   answer:"Each rule gets one rung: its IF conditions become contacts and comparisons on the left (in series for AND, in a parallel branch for OR), and its THEN becomes the coil on the right. Rule n is programmed on rung n."},
+  {id:"scan",q:"In what order does the PLC solve the rungs, and how does a later rung read a bit written by an earlier rung?",where:"scanPanel",whereLabel:"Scan inspector + “What just happened?”",how:"press Step scan until the inspector reaches the last rung (or press Full scan)",
+   answer:"Every scan: READ inputs → SOLVE rung 1, 2, 3 … top to bottom → UPDATE outputs. A coil written on rung n is seen by the rungs below it in the same scan; rungs above it (and the rung itself) see the new value only on the next scan."},
+  {id:"solve",q:"Which instruction (NO, NC, comparison, OR branch) completes each rung?",where:"modeGuide",whereLabel:"Solve mode",how:"in Solve mode, fill every slot and press Check guided solution until every slot is green",
+   answer:"Translate each word of the rule: a bit that must be 1 → NO contact; NOT / Stop / an interlock → NC contact; an analog limit → a comparison in the right direction; “either … or” → a parallel OR branch; “and” → series."},
+  {id:"repair",q:"Why does a faulty program fail, and what fixes it?",where:"modeGuide",whereLabel:"Repair mode + test explanations",how:"in Repair mode, run the tests, read why cases fail, fix every slot and press Check guided solution",
+   answer:"A faulty instruction makes at least one tested situation produce a wrong output. The FAIL explanation names the rung and the instruction whose TRUE/FALSE differs from what the rule needs; replacing it restores the required behavior."},
+  {id:"tests",q:"How can I show that a whole program behaves correctly — not just for the inputs on screen now?",where:"testSection",whereLabel:"Section 4: behavior tests",how:"run the lesson tests and “Generate broader coverage” at least once",
+   answer:"Behavior tests give the same inputs to the reference and to your ladder and compare every output and internal bit. Lesson tests cover the important situations, including multi-scan sequences for memory; coverage adds every digital combination with analog values at and next to each limit. Passing means identical outputs in every tested state."},
+  {id:"predict",q:"Can I predict every output for a new input state before the PLC scans it?",where:"predictionSection",whereLabel:"Section 5: prediction challenge",how:"get one prediction challenge completely right",
+   answer:"Yes — by doing the scan in your head: read the inputs, solve rung 1 and write its coil, then solve rung 2 using that new bit, and so on to the last rung."},
+  {id:"build",q:"Can I write my own program that behaves correctly — even if it is drawn differently?",where:"modeGuide",whereLabel:"Build freely mode",how:"in Build freely, change the ladder and then make a whole test suite pass",
+   answer:"Yes. The tests compare behavior, not drawings, so any logically equivalent program passes — for example series conditions in a different order, or OR paths swapped."}
+ ],
+ outcomes:["Translate a set of IF–THEN rules into one rung per output with NO/NC contacts, comparisons, series (AND) and parallel (OR) paths.","Explain for any input state why each rung is TRUE or FALSE and what each coil writes.","Predict how rung order changes what a contact reads: this scan's value or the previous scan's.","Use output contacts, holding (seal-in) contacts, interlocks and step bits to make rungs interact.","Find and fix a faulty instruction with behavior tests, and say what a passing test suite proves."],
+ steps:["Program 1 in Learn mode: toggle the inputs and read “What just happened?” (5 min).","Press Step scan a few times to watch one scan rung by rung (3 min).","Switch to Solve: fill every slot, Check guided solution, then Run behavior tests (5–10 min).","Try Repair: run the tests first, read why cases FAIL, then fix the slots (5 min).","Do a Prediction challenge before checking (3 min).","Optional: Build freely — change the ladder and prove with tests that it still works (10 min).","Repeat for programs 2–6 in the bank order. All six take about 60–90 min."],
+ prereq:["A bit is 0 (OFF) or 1 (ON). X = inputs, Y = outputs, M = internal memory bits.","NO contact —| |— is TRUE while its bit is 1; NC contact —|/|— is TRUE while its bit is 0.","Contacts in series = AND; parallel branches = OR.","A coil —( )— writes the rung result (1 or 0) into its bit on every scan.","The PLC repeats READ inputs → SOLVE rungs top to bottom → UPDATE outputs every few milliseconds."]
+};
+const modeGuide={
+ learn:{q:"How does each IF–THEN rule map to a rung?",todo:"The reference (correct) program is shown. Change inputs or press a preset, compare each rule with the rung of the same number, then read “What just happened?”. Use Step scan to see the order.",done:"you can point to the rung and the instruction for every part of every rule, and say why each rung is TRUE or FALSE."},
+ solve:{q:"Which instruction completes this rung?",todo:"Each dashed REPLACEABLE slot is empty (an empty slot is always FALSE). Click Replace, choose an instruction, then press Check guided solution and Run behavior tests.",done:"Check guided solution turns every slot green — the program counts as Solved and its model answer unlocks — and the lesson tests pass."},
+ repair:{q:"Why does this program fail, and what fixes it?",todo:"Every REPLACEABLE slot holds a deliberate bug. Run the behavior tests first and read why cases FAIL, then replace the faulty instructions and press Check guided solution.",done:"every slot is green; the repair report under the ladder then explains what each bug was and why the fix works."},
+ build:{q:"Can I write a program that behaves correctly?",todo:"Build starts from a copy of the reference program. Edit, add, delete, duplicate or reorder rungs and elements, then run the lesson tests and the broader coverage. Tests compare behavior, not drawings.",done:"your changed ladder passes a whole test suite. Also break it on purpose and see which tests catch it."}
+};
+const glossary=[
+ {id:"scan",term:"PLC scan (scan cycle)",def:"One pass of the program: READ all inputs into the input image → SOLVE the rungs from top to bottom → UPDATE the outputs from the output image. A real PLC repeats it every few milliseconds; this simulator runs one scan each time you change something."},
+ {id:"inimage",term:"Input image",def:"The copy of every input value taken at the start of a scan. All rungs in that scan see the same input values."},
+ {id:"outimage",term:"Output image",def:"The table of output and internal bits that coils write during the scan. The outputs are sent to the output module after the last rung."},
+ {id:"rung",term:"Rung",def:"One line of ladder logic between the left and right power rails: conditions on the left, a coil on the right."},
+ {id:"no",term:"NO contact —| |—",def:"Normally open. A bit test that is TRUE (passes power) while its bit is 1."},
+ {id:"nc",term:"NC contact —|/|—",def:"Normally closed. A bit test that is TRUE while its bit is 0 — the ladder form of NOT. Real-world note: here Stop X1 = 1 means “Stop pressed”. Real stop buttons are usually wired normally closed (fail-safe), so their input is 1 when NOT pressed and the program then uses an NO contact."},
+ {id:"coil",term:"Coil —( )—",def:"Writes the rung result into its bit on every scan: 1 if power reaches it, 0 if not."},
+ {id:"series",term:"Series (AND)",def:"Instructions one after another on the same path. Power passes only if all of them are TRUE."},
+ {id:"parallel",term:"Parallel branch (OR)",def:"Two or more alternative paths. Power passes if at least one path is TRUE."},
+ {id:"compare",term:"Comparison instruction",def:"Tests an analog value against a limit (e.g. LEVEL < 90 %) and behaves like a contact: TRUE or FALSE. A strict < or > excludes the limit itself; ≤ and ≥ include it."},
+ {id:"analog",term:"Analog input",def:"A value with many levels (e.g. 0–100 % or °C) from a transmitter, converted into a number by an analog input module."},
+ {id:"mbit",term:"Internal bit (M)",def:"A memory bit with no physical terminal, used for states such as process steps."},
+ {id:"outcontact",term:"Output contact",def:"A contact that tests an output bit (e.g. NO Y0 on another rung), so one rung can depend on another rung's result."},
+ {id:"permissive",term:"Permissive",def:"A condition that must be TRUE before an output may turn ON, e.g. NC Stop or Guard Closed."},
+ {id:"sealin",term:"Seal-in (holding) contact",def:"An NO contact of the coil's own bit, in parallel with Start. It keeps the rung TRUE after Start is released, until a series condition such as NC Stop opens."},
+ {id:"interlock",term:"Interlock",def:"A condition that stops two outputs from being ON together, e.g. NC Y1 on the Y0 rung and NC Y0 on the Y1 rung."},
+ {id:"order",term:"Scan order (rung order)",def:"Rungs are solved top to bottom. A bit written on rung n is seen by later rungs in the same scan, and by earlier rungs only on the next scan."},
+ {id:"prev",term:"Previous-scan value",def:"The value a bit kept from the end of the last scan. A contact above the coil that writes the bit (or on the coil's own rung) reads this value."},
+ {id:"step",term:"Step bit (sequence)",def:"An internal bit that is 1 while one stage of a process is active. Each step has an entry condition, a holding contact and an exit condition."},
+ {id:"sp",term:"Setpoint (SP)",def:"The target value of a controlled quantity, e.g. the desired room temperature."},
+ {id:"deadband",term:"Deadband",def:"A band around the setpoint where nothing switches (here SP − 1 to SP + 1), so the heater and cooler do not switch on and off rapidly."},
+ {id:"reference",term:"Reference program",def:"The correct program built into this page. Lamps, tests, the prediction check and the “vs reference” columns compare your ladder with it."},
+ {id:"test",term:"Behavior test",def:"Gives the same inputs to the reference program and to your ladder and compares every output and internal bit."},
+ {id:"coverage",term:"Coverage test",def:"Automatically generated cases: every combination of the digital inputs, combined with analog values at and next to each limit. Each starts from power-up and runs one scan."},
+ {id:"equivalent",term:"Logically equivalent",def:"Two programs that give the same outputs for every input state, even if drawn differently (A AND B = B AND A)."},
+ {id:"truth",term:"Truth table",def:"A table of every input combination and the resulting outputs."},
+ {id:"powerup",term:"Power-up state",def:"Before the first scan every output and internal bit is 0. Single-state test cases and the prediction challenge start here."},
+ {id:"unstable",term:"Unstable rung (oscillation)",def:"A rung whose result flips on every scan, typically because it reads its own coil through an NC contact. A real PLC would make that output flicker."},
+ {id:"estop",term:"E-Stop",def:"Emergency stop. On real machines it acts through hard-wired safety circuits (safety relays), not only through PLC logic."}
+];
+
+// ---------- Small text helpers ----------
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function bit(v){return v?1:0}
+function opText(op){return String(op).replace("<=","≤").replace(">=","≥")}
+function tagInfo(k){const p=current();return p.inputs.find(i=>i.key===k)||p.outputs.find(o=>o.key===k)||null}
+function tagLabel(k){const t=tagInfo(k);return t?t.label:k}
+function shortName(t){return t.label.replace(t.key,"").trim()||t.key}
+function unitOf(k){const t=tagInfo(k);return t&&t.unit?t.unit:""}
+function inputStateText(inp){return `${state[inp.key]?"ON":"OFF"} → ${inp.key} = ${bit(state[inp.key])}`}
+function outputMeaning(o,v){
+ const name=shortName(o);
+ if(o.internal)return v?`${o.key} = 1: internal memory bit — ${name} is active (no terminal)`:`${o.key} = 0: internal memory bit — ${name} not active`;
+ return v?`${o.key} = 1: the PLC commands ${name} ON (a command, not proof it runs)`:`${o.key} = 0: ${name} is commanded OFF`;
+}
+function readStore(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function writeStore(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+
+// ---------- Question progress (new key; the existing keys are untouched) ----------
+const QKEY="multiRungQuestionProgress";
+let qProgress={answered:[],ran:{}};
+try{const q=JSON.parse(readStore(QKEY)||"{}");qProgress.answered=Array.isArray(q.answered)?q.answered:[];qProgress.ran=q.ran||{}}catch(e){}
+function saveQ(){writeStore(QKEY,JSON.stringify(qProgress))}
+function markAnswered(id){
+ if(!pageGuide.subs.some(s=>s.id===id)||qProgress.answered.includes(id))return;
+ qProgress.answered.push(id);saveQ();renderPageGuide();renderSummary();renderModeGuide();
+}
+
+function renderPageGuide(){
+ const done=new Set(qProgress.answered);
+ $("pqSubs").innerHTML=pageGuide.subs.map(s=>`<li><a href="#${s.where}">${s.q}</a> <span class="qstate ${done.has(s.id)?"done":""}">${done.has(s.id)?"answered":"open"}</span><small>Where: ${s.whereLabel}</small></li>`).join("");
+ $("pqProgress").textContent=`${pageGuide.subs.filter(s=>done.has(s.id)).length} of ${pageGuide.subs.length} answered (saved in this browser). The summary at the bottom of the page repeats each short answer.`;
+ $("pqOutcomes").innerHTML=pageGuide.outcomes.map(t=>`<li>${t}</li>`).join("");
+ $("pqSteps").innerHTML=pageGuide.steps.map(t=>`<li>${t}</li>`).join("");
+ $("pqPrereq").innerHTML=pageGuide.prereq.map(t=>`<li>${t}</li>`).join("");
+}
+function setGuideHidden(hidden){
+ $("pqBody").classList.toggle("hide",hidden);
+ $("pqToggle").textContent=hidden?"Show guide":"Hide guide";
+ $("pqToggle").setAttribute("aria-expanded",String(!hidden));
+ writeStore("multiRungGuideHidden",hidden?"1":"0");
+}
+function modeStatusText(){
+ const p=current(),ids=Object.keys(p.slots);
+ if(mode==="learn")return qProgress.answered.includes("learn")?"Status: answered — you have changed an input in Learn mode.":"Status: not yet — change any input and read “What just happened?”.";
+ if(mode==="solve")return `Status: ${ids.filter(id=>slotSelections[id]&&slotSelections[id].kind!=="blank").length} of ${ids.length} slots filled · ${solved.has(p.id)?"this program is solved":"not solved yet"}.`;
+ if(mode==="repair")return `Status: you have changed ${ids.filter(id=>!deepEqual(slotSelections[id],p.slots[id].choices[p.slots[id].choices.length-1])).length} of ${ids.length} slots · ${solved.has(p.id)?"this program is repaired":"not repaired yet"}.`;
+ return `Status: ${studentProgram.length} rungs · ${programDiffers()?"your ladder differs from the reference":"still identical to the reference — change something, then test it"}.`;
+}
+function renderModeGuide(){
+ const g=modeGuide[mode];if(!g)return;
+ $("mgQuestion").textContent=g.q;$("mgTodo").textContent=g.todo;$("mgDone").textContent=g.done;
+ $("mgStatus").textContent=modeStatusText();
+}
+function renderStatsHelp(){
+ const left=programs.filter(p=>!solved.has(p.id)).length;
+ const last=lastTestRun&&lastTestRun.result?`last suite: ${lastTestRun.label}, ${lastTestRun.programTitle}`:"no suite run yet";
+ $("statsHelp").innerHTML=`<b>Rungs</b> on the ladder now · <b>Solved</b>: ${solved.size} of ${programs.length} programs checked correct${left?` (${left} to go)`:" — all done"} · <b>Tests</b>: suites run this session · <b>Behavior</b>: cases passed in the last suite (${esc(last)}).`;
+}
+function renderMetricHelp(){
+ const r=lastTestRun;
+ if(!r||!r.result){$("metricHelp").textContent="Not tested yet. Run behavior tests gives the same inputs to the reference and to your ladder and compares every output. Explanations appear in section 4.";return}
+ $("metricHelp").textContent=`Last run: ${r.label} on ${r.programTitle} (${r.mode} mode). Passed = every output and internal bit matched the reference; Failed = at least one differed. Explanations: section 4.${r.sig!==programSig()?" Your ladder has changed since — run the tests again.":""}`;
+}
+function renderUnit(){
+ const p=current(),open=solved.has(p.id);
+ $("unitQuestion").innerHTML=`<p class="uq-q"><span class="kw">Question:</span> ${p.question}</p><div><b>Where to look for the answer:</b> ${p.lookFor}</div><details><summary>Sub-questions to think about (${p.subQuestions.length})</summary><ul>${p.subQuestions.map(q=>`<li>${q}</li>`).join("")}</ul></details>`;
+ $("unitAnswer").className="answerbox"+(open?" open":"");
+ $("unitAnswer").innerHTML=open
+  ?`<h4>Model answer (unlocked — you solved this program)</h4><p>${p.modelAnswer}</p><b>Key takeaways</b><ul>${p.takeaways.map(t=>`<li>${t}</li>`).join("")}</ul><div class="mistake"><b>Common mistake:</b> ${p.mistake}</div>`
+  :`<h4>Model answer — locked</h4>It unlocks when <b>Check guided solution</b> confirms every slot of this program in Solve or Repair mode (saved in this browser). Answer the question in your own words first.`;
+}
+function renderSummary(){
+ const done=new Set(qProgress.answered),n=pageGuide.subs.filter(s=>done.has(s.id)).length;
+ $("summaryBody").innerHTML=`<p class="ev-note" style="margin-top:0">You have answered <b>${n} of ${pageGuide.subs.length}</b> questions${n===pageGuide.subs.length?" — the whole page is done.":"."}</p><ol class="summary-list">${pageGuide.subs.map(s=>`<li><b>${s.q}</b> <span class="qstate ${done.has(s.id)?"done":""}">${done.has(s.id)?"answered":"open"}</span><br>${done.has(s.id)?`<span class="ans">${s.answer}</span>`:`<span class="todo">Not yet — ${s.how}.</span>`}</li>`).join("")}</ol><b style="display:block;margin-top:12px;font-size:12px">Programs</b><ul class="summary-programs">${programs.map(p=>`<li>${solved.has(p.id)?"✓ solved":"○ not solved yet"} — <b>${p.title}</b>${solved.has(p.id)?`: ${p.takeaways[0]}`:""}</li>`).join("")}</ul>`;
+}
+function renderGlossary(){
+ $("glossary").innerHTML=glossary.map(g=>`<div id="g-${g.id}"><dt>${g.term}</dt><dd>${g.def}</dd></div>`).join("");
+}
+
+// ---------- Program comparison helpers ----------
+function resolveDeep(node){
+ if(node&&node.slot)return resolveDeep(clone(slotSelections[node.slot]||{kind:"blank",label:"Choose"}));
+ if(node&&node.kind==="group")return {...node,items:node.items.map(resolveDeep)};
+ return clone(node);
+}
+function resolveProgram(program){return program.map(r=>({...clone(r),logic:resolveDeep(r.logic)}))}
+function programSig(){return JSON.stringify([studentProgram,slotSelections])}
+function programDiffers(){return JSON.stringify(resolveProgram(studentProgram).map(r=>r.logic))!==JSON.stringify(current().correct.map(r=>r.logic))}
+function differingRungs(){
+ const prog=lastTestRun?lastTestRun.program:resolveProgram(studentProgram),ref=current().correct,out=[];
+ for(let i=0;i<Math.max(prog.length,ref.length);i++)if(!prog[i]||!ref[i]||JSON.stringify(prog[i].logic)!==JSON.stringify(ref[i].logic))out.push(i+1);
+ return out;
+}
+
+// ---------- Scan trace: the same scan as executeProgram(), plus the reason for every result ----------
+function writerMap(program){const w={};program.forEach((r,i)=>{const c=coilOf(r.logic);if(c)(w[c.var]=w[c.var]||[]).push(i)});return w}
+function countCoils(node){const n=resolve(node);if(!n)return 0;if(n.kind==="coil")return 1;if(n.kind==="group")return n.items.reduce((s,x)=>s+countCoils(x),0);return 0}
+function leafList(node,out=[]){const n=resolve(node);if(!n)return out;if(n.kind==="group")n.items.forEach(x=>leafList(x,out));else if(n.kind!=="coil")out.push(n);return out}
+function traceNode(node,mem,inputs,ctx){
+ const n=resolve(node),slot=node&&node.slot;
+ if(!n||n.kind==="blank")return {kind:"blank",value:false,slot,n:{kind:"blank"}};
+ const value=!!nodeValue(n,mem,inputs);
+ if(n.kind==="contact"){
+   const fromInput=n.var in inputs,ws=ctx.writers[n.var]||[];
+   return {kind:"contact",n,value,bit:!!(fromInput?inputs:mem)[n.var],src:fromInput?"input":n.var in ctx.writtenAt?"this":"prev",by:ctx.writtenAt[n.var],later:ws.find(j=>j>=ctx.rung),rung:ctx.rung,never:!fromInput&&!ws.length,slot};
+ }
+ if(n.kind==="group")return {kind:n.mode,n,value,children:n.items.map(x=>traceNode(x,mem,inputs,ctx)),slot};
+ return {kind:n.kind,n,value,slot};
+}
+function traceScan(program,inputs,initialMem={}){
+ const mem={...initialMem};
+ current().outputs.forEach(o=>{if(!(o.key in mem))mem[o.key]=false});
+ const before={...mem},writtenAt={},writers=writerMap(program);
+ const rungs=program.map((r,i)=>{
+   const memAt={...mem};
+   const tree=traceNode(r.logic,mem,inputs,{writtenAt,writers,rung:i});
+   const on=nodeValue(r.logic,mem,inputs);
+   const c=coilOf(r.logic);
+   let write=null;
+   if(c){write={var:c.var,old:!!mem[c.var],value:!!on};mem[c.var]=on;writtenAt[c.var]=i}
+   return {i,name:r.name||`Rung ${i+1}`,on:!!on,write,tree,memAt,logic:r.logic,coils:countCoils(r.logic)};
+ });
+ return {before,mem,rungs};
+}
+function leafTraces(t,out=[]){if(!t)return out;if(t.children)t.children.forEach(c=>leafTraces(c,out));else if(t.kind!=="coil")out.push(t);return out}
+function rungTop(rt){const t=rt.tree;if(t.kind==="series")return t.children.filter(c=>c.kind!=="coil");if(t.kind==="coil")return [];return [t]}
+function lastWriter(tr,key){let w=null;tr.rungs.forEach(r=>{if(r.write&&r.write.var===key)w=r});return w}
+function srcText(t){
+ if(t.src==="input")return "input image";
+ if(t.src==="this")return `written by rung ${t.by+1} earlier in this scan`;
+ if(t.never)return "no rung writes this bit, so it stays 0";
+ if(t.later===t.rung)return "kept from the previous scan — this rung's own coil";
+ if(t.later!==undefined)return `kept from the previous scan — rung ${t.later+1} writes it later`;
+ return "kept from the previous scan";
+}
+function instrName(n){
+ if(!n||n.kind==="blank")return "empty slot";
+ if(n.kind==="contact")return `${n.type} ${n.var}${n.label&&n.label!==n.var?" ("+n.label+")":""}`;
+ if(n.kind==="compare")return `${n.label} ${opText(n.op)} ${fmt(n.value,n.unit)}`;
+ if(n.kind==="dynamic")return n.label;
+ if(n.kind==="coil")return `coil ${n.var}`;
+ if(n.kind==="group")return n.mode==="parallel"?"OR branch":"series group";
+ return "element";
+}
+function leafShort(t,inputs){
+ const TF=t.value?"TRUE":"FALSE",n=t.n;
+ if(t.kind==="blank")return "empty slot → FALSE";
+ if(t.kind==="contact")return `${esc(instrName(n))} reads ${n.var} = ${bit(t.bit)} → ${TF}`;
+ if(t.kind==="compare")return `${n.var} ${fmt(inputs[n.var],n.unit)} ${opText(n.op)} ${fmt(n.value,n.unit)} → ${TF}`;
+ if(t.kind==="dynamic"){const u=unitOf(n.left);return `${n.left} ${fmt(inputs[n.left],u)} ${n.op} ${n.right}${n.offset?(n.offset<0?" − ":" + ")+Math.abs(n.offset):""} = ${fmt(inputs[n.right]+n.offset,u)} → ${TF}`}
+ if(t.kind==="parallel"){const k=t.children.findIndex(c=>c.value);return `OR branch → ${TF} (${k>=0?`path ${k+1}: ${leafShort(t.children[k],inputs)}`:"no path passes"})`}
+ if(t.kind==="series")return `(${t.children.filter(c=>c.kind!=="coil").map(c=>leafShort(c,inputs)).join(" AND ")})`;
+ if(t.kind==="coil")return `coil ${n.var} (not a condition)`;
+ return TF;
+}
+function rungWhyShort(rt,inputs){
+ const top=rungTop(rt);
+ if(!top.length)return "no conditions, so it is always TRUE";
+ if(rt.on)return top.map(t=>leafShort(t,inputs)).join(" AND ");
+ return "blocked by "+top.filter(t=>!t.value).map(t=>leafShort(t,inputs)).join("; ");
+}
+
+// ---------- "What just happened?" narrative ----------
+function testSentence(t,inputs){
+ const TF=`<b class="tf">${t.value?"TRUE":"FALSE"}</b>`,n=t.n;
+ if(t.kind==="blank")return `Empty slot → ${TF}: an empty slot never passes power. Use Replace to fill it.`;
+ if(t.kind==="contact"){
+   const rule=n.type==="NO"?(t.value?"an NO contact passes power while its bit is 1":"an NO contact is open while its bit is 0"):(t.value?"an NC contact passes power while its bit is 0":"an NC contact opens while its bit is 1");
+   return `${esc(instrName(n))} reads ${n.var} = ${bit(t.bit)} <span class="src">(${srcText(t)})</span> → ${TF} — ${rule}.`;
+ }
+ if(t.kind==="compare"||t.kind==="dynamic")return `Comparison ${esc(n.label)}: ${leafShort(t,inputs).replace(/ → (TRUE|FALSE)$/,"")} → ${TF}`;
+ if(t.kind==="coil")return `Coil ${n.var} placed among the conditions — a coil writes a bit, it does not test one.`;
+ return TF;
+}
+function testLine(t,inputs,prefix=""){
+ const cls=t.value?"t":"f",TF=`<b class="tf">${t.value?"TRUE":"FALSE"}</b>`;
+ if(t.kind==="parallel"){
+   const k=t.children.findIndex(c=>c.value);
+   return `<li class="${cls}">${prefix}OR branch (parallel) → ${TF}: ${k>=0?`path ${k+1} passes power — one TRUE path is enough`:"no path passes power"}<ul>${t.children.map((c,i)=>testLine(c,inputs,`Path ${i+1}: `)).join("")}</ul></li>`;
+ }
+ if(t.kind==="series")return `<li class="${cls}">${prefix}series (AND) → ${TF}<ul>${t.children.filter(c=>c.kind!=="coil").map(c=>testLine(c,inputs)).join("")}</ul></li>`;
+ return `<li class="${cls}">${prefix}${testSentence(t,inputs)}</li>`;
+}
+function rungWhyHTML(rt){
+ const top=rungTop(rt);
+ if(!top.length)return "No conditions: an empty rung always passes power to its coil.";
+ if(rt.on)return top.length===1?"Its only condition is TRUE, so power reaches the coil.":`All ${top.length} conditions in series are TRUE (AND), so power reaches the coil.`;
+ return `Blocked by ${top.filter(t=>!t.value).map(t=>`<b>${esc(instrName(t.n))}</b>`).join(" and ")} — in series, one FALSE condition is enough to stop the power.`;
+}
+function storyNotes(st){
+ const notes=[],p=current();
+ st.rungs.forEach(rt=>{
+   const w=rt.write;if(!w)return;
+   if(rt.on&&w.old&&w.value){
+     const own=leafTraces(rt.tree).find(t=>t.kind==="contact"&&t.n.var===w.var&&t.n.type==="NO"&&t.value&&t.src==="prev");
+     if(own&&!nodeValue(rt.logic,{...rt.memAt,[w.var]:false},state))notes.push(`<b>${w.var} stays 1 because of memory:</b> the holding contact ${esc(instrName(own.n))} read ${w.var} = 1 from the previous scan. Without it, rung ${rt.i+1} would be FALSE now.`);
+   }
+   if(!rt.on&&!w.value){
+     const top=rungTop(rt),falses=top.filter(t=>!t.value);
+     const inputTrue=leafTraces(rt.tree).filter(t=>t.value&&(t.kind==="compare"||t.kind==="dynamic"||(t.kind==="contact"&&t.src==="input")));
+     if(falses.length&&inputTrue.length&&falses.every(t=>t.kind==="contact"&&t.src!=="input"))notes.push(`<b>${w.var} stays 0 although ${inputTrue.map(t=>esc(instrName(t.n))).join(" and ")} ${inputTrue.length>1?"are":"is"} TRUE:</b> ${falses.map(t=>`${esc(instrName(t.n))} reads ${t.n.var} = ${bit(t.bit)} (${srcText(t)})`).join("; ")} and blocks rung ${rt.i+1}.`);
+   }
+   if(rt.coils>1)notes.push(`<b>Rung ${rt.i+1} has ${rt.coils} coils.</b> This simulator writes only the last one (${w.var}). Give each output its own rung.`);
+ });
+ Object.entries(writerMap(studentProgram)).filter(([k,v])=>v.length>1).forEach(([k,v])=>notes.push(`<b>${k} is written by rungs ${v.map(i=>i+1).join(" and ")}.</b> The last write in the scan wins (rung ${v[v.length-1]+1}), so the earlier rung has no effect. Use one coil per bit.`));
+ const next=executeProgram(studentProgram,state,st.mem).mem;
+ const flip=p.outputs.filter(o=>!!next[o.key]!==!!st.mem[o.key]);
+ if(flip.length)notes.push(`<span class="bad"></span><b>Unstable:</b> with the same inputs, the next scan would change ${flip.map(o=>`${o.key} ${bit(st.mem[o.key])} → ${bit(next[o.key])}`).join(", ")}. A real PLC scans continuously, so ${flip.length>1?"these outputs":"this output"} would flicker every scan — usually caused by a contact of a rung's own coil (e.g. NC Y0 on the Y0 rung).`);
+ return notes;
+}
+function renderStory(st,info){
+ const p=current();
+ const chips=[...info.inChanges.map(c=>`<span class="chip in">${c.key} ${c.analog?fmt(c.from,c.unit):bit(c.from)} → ${c.analog?fmt(c.to,c.unit):bit(c.to)}</span>`),
+   ...info.bitChanges.map(c=>`<span class="chip ${c.to?"up":"down"}">${c.key} ${bit(c.from)} → ${bit(c.to)}</span>`)];
+ let h=`<div class="story-cause"><b>Scan ${info.n}.</b> ${info.cause}<div class="chips"><span>Changed since the previous scan:</span>${chips.length?chips.join(""):'<span class="chip">nothing changed</span>'}</div></div>`;
+ h+=`<ol class="story-steps"><li><b>READ</b> — the inputs are copied into the input image: ${p.inputs.map(i=>`${i.key} = ${i.type==="analog"?fmt(state[i.key],i.unit):bit(state[i.key])}`).join(", ")}. Every rung below uses these same values.</li>`;
+ st.rungs.forEach(rt=>{
+   const w=rt.write,ch=w&&w.old!==w.value;
+   const wt=w?` · coil writes <b>${w.var} = ${bit(w.value)}</b>${ch?`<span class="chg">changed ${bit(w.old)} → ${bit(w.value)}</span>`:' <span class="src">(unchanged)</span>'}`:" · no coil, so this rung writes nothing";
+   h+=`<li><div class="story-rung ${rt.on?"on":""} ${ch?"changed":""}"><div><b>SOLVE rung ${rt.i+1} · ${esc(rt.name)}</b> → <b class="tf">${rt.on?"TRUE":"FALSE"}</b>${wt}</div><ul class="story-tests">${rungTop(rt).map(t=>testLine(t,state)).join("")}</ul><div class="story-why">${rungWhyHTML(rt)}</div></div></li>`;
+ });
+ h+=`<li><b>UPDATE</b> — the output image goes to the output module: ${p.outputs.map(o=>`${o.key} = ${bit(st.mem[o.key])}`).join(", ")}. The Outputs panel says what each value commands.</li></ol>`;
+ h+=storyNotes(st).map(n=>n.startsWith('<span class="bad">')?`<div class="story-note bad">${n}</div>`:`<div class="story-note">${n}</div>`).join("");
+ $("story").innerHTML=h;
+ $("storyStatus").textContent=`scan ${info.n}`;
+}
+
+function resetScanHistory(){scanLog=[];scanNo=0}
+// Called after every live scan: record it, find its cause, and refresh every explanation view.
+function renderUnderstanding(targetBefore,studentBefore){
+ const p=current();
+ const st=traceScan(studentProgram,state,studentBefore);
+ const tt=traceScan(p.correct,state,targetBefore);
+ const last=scanLog[scanLog.length-1],sig=programSig();
+ const inChanges=last?p.inputs.filter(i=>last.inputs[i.key]!==state[i.key]).map(i=>({key:i.key,from:last.inputs[i.key],to:state[i.key],analog:i.type==="analog",unit:i.unit||""})):[];
+ const bitChanges=p.outputs.filter(o=>!!st.before[o.key]!==!!st.mem[o.key]).map(o=>({key:o.key,from:!!st.before[o.key],to:!!st.mem[o.key]}));
+ let cause;
+ if(!last)cause=p.outputs.some(o=>st.before[o.key])
+   ?"First scan after <b>Reset program</b>: the ladder was reloaded, but every bit kept the value it had before."
+   :"First scan after a reset, a program load or a mode change: like a PLC power-up, every output and internal bit starts at 0.";
+ else if(inChanges.length)cause=`You changed ${inChanges.map(c=>`${c.key} (${esc(tagLabel(c.key))})`).join(", ")}, so the PLC scanned with the new input values.`;
+ else if(sig!==last.sig){cause="Your ladder changed (Replace, edit, undo or restore), so the PLC scanned the new program with the same inputs.";$("slotReport").innerHTML=""}
+ else cause="The PLC scanned again with nothing changed.";
+ scanNo++;
+ scanLog.push({n:scanNo,inputs:{...state},mem:{...st.mem},sig});
+ if(scanLog.length>HISTORY_MAX)scanLog.shift();
+ lastStudentBefore=studentBefore;
+ renderStory(st,{n:scanNo,cause,inChanges,bitChanges});
+ renderTruthTable();renderInteractions();renderMaps(st);renderHistory();renderChain(tt);
+ if(inChanges.length&&mode==="learn")markAnswered("learn");
+}
+
+// ---------- Visual evidence ----------
+function prevScanBits(program){
+ const w=writerMap(program),keys=new Set(current().inputs.map(i=>i.key)),out=new Set();
+ program.forEach((r,i)=>leafList(r.logic).forEach(n=>{if(n.kind==="contact"&&!keys.has(n.var)&&w[n.var]&&!w[n.var].some(j=>j<i))out.add(n.var)}));
+ return out;
+}
+function renderTruthTable(){
+ const p=current(),digital=p.inputs.filter(i=>i.type==="digital"),analog=p.inputs.filter(i=>i.type==="analog");
+ const pset=new Set([...prevScanBits(p.correct),...prevScanBits(studentProgram)]);
+ const prev=p.outputs.map(o=>o.key).filter(k=>pset.has(k));
+ const cols=[...digital.map(i=>i.key),...prev],nc=cols.length;
+ if(nc>5){
+   $("truthTable").innerHTML=`<p class="ev-note" style="margin-top:0">This program has ${digital.length} digital inputs and ${prev.length} bits remembered from the previous scan (${prev.join(", ")}): ${1<<nc} combinations — too many for one readable table. The sequence map and the scan history show the same logic step by step.</p>`;
+   $("truthStatus").textContent="too large";return;
+ }
+ const rows=[];let nDiff=0;
+ for(let m=0;m<(1<<nc);m++){
+   const vals=cols.map((k,c)=>!!((m>>(nc-1-c))&1));
+   const inp={...state},mem={};p.outputs.forEach(o=>mem[o.key]=false);
+   cols.forEach((k,c)=>{if(c<digital.length)inp[k]=vals[c];else mem[k]=vals[c]});
+   const s=executeProgram(studentProgram,inp,mem).mem,r=executeProgram(p.correct,inp,mem).mem;
+   const diff=p.outputs.filter(o=>!!s[o.key]!==!!r[o.key]).map(o=>o.key);if(diff.length)nDiff++;
+   const now=digital.every(i=>!!state[i.key]===inp[i.key])&&prev.every(k=>!!lastStudentBefore[k]===mem[k]);
+   rows.push(`<tr class="${now?"now":""} ${diff.length?"diff":""}"${now?' aria-current="true"':""}>${vals.map((v,c)=>`<td class="${c>=digital.length?"prev ":""}${v?"one":"zero"}">${bit(v)}</td>`).join("")}${p.outputs.map(o=>`<td class="${s[o.key]?"one":"zero"}">${bit(s[o.key])}</td>`).join("")}<td class="chk">${diff.length?"≠ "+diff.join(", "):"✓ same"}${now?" · <b>now</b>":""}</td></tr>`);
+ }
+ const head=`<tr>${digital.map(i=>`<th scope="col" title="${esc(i.label)}">${i.key}<small>input</small></th>`).join("")}${prev.map(k=>`<th scope="col" class="prev" title="value kept from the previous scan">${k}<small>prev scan</small></th>`).join("")}${p.outputs.map(o=>`<th scope="col" title="${esc(o.label)}">${o.key}<small>after scan</small></th>`).join("")}<th scope="col">vs reference</th></tr>`;
+ const notes=["Each row is one scan of your ladder from those values; the highlighted row marked “now” is the last scan."];
+ if(analog.length)notes.push(`Analog inputs are held at their current values (${analog.map(i=>`${i.key} = ${fmt(state[i.key],i.unit)}`).join(", ")}); move a slider and the table updates.`);
+ if(prev.length)notes.push(`“prev scan” columns are bits kept from the previous scan: the program reads ${prev.join(", ")} before rewriting ${prev.length>1?"them":"it"}, so the result also depends on what happened before — that is memory.`);
+ notes.push("✓ same = your ladder gives the reference outputs for that row; ≠ Y1 = Y1 differs.");
+ $("truthTable").innerHTML=`<div class="tt-wrap"><table class="tt"><thead>${head}</thead><tbody>${rows.join("")}</tbody></table></div><p class="ev-note">${notes.join(" ")}</p>`;
+ $("truthStatus").textContent=nDiff?`${nDiff} row${nDiff>1?"s":""} differ`:"all rows match";
+ $("truthStatus").className="status "+(nDiff?"bad":"good");
+}
+function renderInteractions(){
+ const prog=studentProgram,w=writerMap(prog),keys=new Set(current().inputs.map(i=>i.key)),items=[];
+ prog.forEach((r,i)=>{
+   const seen=new Set();
+   leafList(r.logic).forEach(n=>{
+     if(n.kind!=="contact"||keys.has(n.var)||seen.has(n.var))return;seen.add(n.var);
+     const ws=w[n.var]||[],before=ws.filter(j=>j<i);let src;
+     if(!ws.length)src=`<span class="never">never written</span> — no rung has a ${n.var} coil, so it is always 0`;
+     else if(before.length){const j=before[before.length-1];src=`<span class="same">same scan</span> — written by rung ${j+1} (${esc(prog[j].name||"")}) just above`}
+     else if(ws.includes(i))src=`<span class="prevscan">previous scan</span> — its own coil (holding or self contact)`;
+     else src=`<span class="prevscan">previous scan</span> — rung ${ws[0]+1} (${esc(prog[ws[0]].name||"")}) writes it further down`;
+     items.push(`<li><b>Rung ${i+1} ${esc(r.name||"")}</b> reads <b>${n.var}</b> ← ${src}</li>`);
+   });
+ });
+ $("interactMap").innerHTML=items.length
+  ?`<ul class="imap">${items.join("")}</ul><p class="ev-note">“Same scan” = the coil is above the contact, so the new value is used at once. “Previous scan” = the coil is below it (or is the rung's own coil), so the contact still sees the value from the last scan. Reordering rungs changes this.</p>`
+  :`<p class="ev-note" style="margin-top:0">No rung reads another rung's coil: every rung depends only on the inputs, so the rungs are independent and their order does not change any result.</p>`;
+}
+function renderMaps(st){
+ const p=current();
+ if(p.stateMap){
+   $("mapPanel").classList.remove("hide");$("mapTitle").textContent=p.stateMap.title;$("mapQ").textContent=p.stateMap.q;
+   $("stateMap").innerHTML=sequenceMapHTML(p.stateMap,st.mem);return;
+ }
+ const leaves=[];p.correct.forEach((r,i)=>leafList(r.logic).forEach(n=>{if(n.kind==="compare"||n.kind==="dynamic")leaves.push({n,i,name:r.name})}));
+ if(!leaves.length){$("mapPanel").classList.add("hide");return}
+ $("mapPanel").classList.remove("hide");$("mapTitle").textContent="Comparison map";$("mapQ").textContent="Where on the scale is each comparison TRUE, and where is the value now?";
+ $("stateMap").innerHTML=`<div class="cmpmap">${leaves.map(({n,i,name})=>{
+   const key=n.kind==="compare"?n.var:n.left,inp=tagInfo(key),u=inp.unit||"",min=inp.min,max=inp.max;
+   const lim=n.kind==="compare"?n.value:state[n.right]+n.offset,below=n.op.startsWith("<"),strict=n.op==="<"||n.op===">";
+   const v=state[key],on=!!nodeValue(n,{},state),pct=x=>Math.max(0,Math.min(100,(x-min)/(max-min)*100));
+   const lo=below?min:lim,hi=below?lim:max;
+   const label=n.kind==="compare"?`${key} ${opText(n.op)} ${fmt(lim,u)}`:`${key} ${n.op} ${n.right}${n.offset<0?" − ":" + "}${Math.abs(n.offset)} (= ${fmt(lim,u)} now)`;
+   return `<div class="cmp-row"><b>Rung ${i+1} ${esc(name)}: ${label}</b> — now ${key} = ${fmt(v,u)} → <b class="tf">${on?"TRUE":"FALSE"}</b> <span class="src">(the limit ${fmt(lim,u)} itself is ${strict?"FALSE":"TRUE"})</span><div class="cmp-bar" aria-hidden="true"><div class="cmp-zone" style="left:${pct(lo)}%;width:${pct(hi)-pct(lo)}%"></div><div class="cmp-mark" style="left:${pct(v)}%"></div></div><div class="cmp-scale"><span>${fmt(min,u)}</span><span>limit ${fmt(lim,u)}</span><span>${fmt(max,u)}</span></div></div>`;
+ }).join("")}</div><p class="ev-note">Green = range where the comparison is TRUE, red = FALSE; the black mark is the current value.</p>`;
+}
+function sequenceMapHTML(sm,mem){
+ const keyed=sm.steps.filter(s=>s.key&&mem[s.key]);
+ const active=sm.steps.map(s=>s.key?!!mem[s.key]:!keyed.length);
+ const needHTML=t=>t.need.map(([k,v,l])=>{const ok=!!state[k]===v;return `<span class="need ${ok?"met":"unmet"}">${l} ${ok?"✓":"✗"}</span>`}).join("");
+ let h='<div class="seqmap">';
+ sm.steps.forEach((s,i)=>{
+   h+=`<div class="seq-step ${active[i]?"active":""}"><b>${s.label}</b>${s.sub}<br><span class="tf">${active[i]?"ACTIVE":"inactive"}</span></div>`;
+   sm.transitions.filter(t=>t.from===i).forEach(t=>{h+=`<div class="seq-arrow">→ ${t.to<i?`back to ${sm.steps[t.to].label}`:""}${needHTML(t)}</div>`});
+ });
+ h+="</div><div class=\"seq-status\">";
+ sm.steps.forEach((s,i)=>{
+   if(!active[i])return;
+   sm.transitions.filter(t=>t.from===i).forEach(t=>{
+     const unmet=t.need.filter(([k,v])=>!!state[k]!==v);
+     h+=`<div class="story-note">${unmet.length?`<b>${s.label} is active</b> — to move on to ${sm.steps[t.to].label}, the PLC is waiting for ${unmet.map(([k,v,l])=>`${l} (now ${k} = ${bit(state[k])})`).join(" and ")}.`:`<b>${s.label} is active</b> and the condition for ${sm.steps[t.to].label} is met — on the reference ladder this scan would already have moved on, so check the rungs for this step.`}</div>`;
+   });
+ });
+ if(keyed.length>1)h+=`<div class="story-note bad"><b>${keyed.length} steps are active at once (${keyed.map(s=>s.key).join(", ")}).</b> This simplified program does not check that the previous step was active, so applying the inputs out of order can do this.</div>`;
+ return h+"</div><p class=\"ev-note\">✓ = the condition is TRUE now, ✗ = not yet. Arrows show the transition conditions taken from the rungs (entry contact, and the NC exit contact that must still be closed).</p>";
+}
+function renderHistory(){
+ const p=current(),L=scanLog;
+ if(!L.length){$("scanHistory").innerHTML='<p class="ev-note" style="padding:8px">No scans recorded yet.</p>';return}
+ const sigs=[...p.inputs.map(i=>({key:i.key,name:shortName(i),cls:"in",analog:i.type==="analog"})),...p.outputs.map(o=>({key:o.key,name:shortName(o),cls:o.internal?"mem":"out"}))];
+ const LW=132,CW=34,RH=22,T=18,W=LW+L.length*CW+8,H=T+sigs.length*RH+34,nx=LW+(L.length-1)*CW;
+ let s=`<svg class="hist" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Scan history: ${L.length} scans of ${sigs.length} signals; the last column is the current scan">`;
+ s+=`<rect class="th-now" x="${nx}" y="${T-14}" width="${CW}" height="${sigs.length*RH+14}"/><text class="th-axis" x="${nx+CW/2}" y="${T-4}" text-anchor="middle">now</text>`;
+ sigs.forEach((g,r)=>{
+   const y=T+r*RH;
+   s+=`<line class="th-grid" x1="0" x2="${W}" y1="${y+RH}" y2="${y+RH}"/><text class="th-label" x="4" y="${y+RH/2+4}">${esc((g.key+" "+g.name).slice(0,21))}</text>`;
+   if(g.analog){L.forEach((e,i)=>{s+=`<text class="th-val" x="${LW+i*CW+CW/2}" y="${y+RH/2+4}" text-anchor="middle">${fmt(e.inputs[g.key])}</text>`});return}
+   const hi=y+4,lo=y+RH-5;let d="";
+   L.forEach((e,i)=>{const v=g.cls==="in"?e.inputs[g.key]:e.mem[g.key],yy=v?hi:lo,x0=LW+i*CW;d+=(i?"L":"M")+x0+" "+yy+"L"+(x0+CW)+" "+yy;if(v)s+=`<rect class="th-fill ${g.cls}" x="${x0}" y="${hi}" width="${CW}" height="${lo-hi}"/>`});
+   s+=`<path class="th-wave ${g.cls}" d="${d}"/>`;
+ });
+ const ay=T+sigs.length*RH;
+ L.forEach((e,i)=>{s+=`<text class="th-axis" x="${LW+i*CW+CW/2}" y="${ay+13}" text-anchor="middle">${e.n}</text>`});
+ s+=`<text class="th-axis" x="4" y="${ay+13}">scan number</text><text class="th-axis" x="4" y="${ay+27}">time → (one column per scan)</text></svg>`;
+ const box=$("scanHistory");box.innerHTML=s;box.scrollLeft=box.scrollWidth;
+}
+function renderChain(tt){
+ const p=current(),c=p.chain;
+ if(!c){$("chainPanel").classList.add("hide");return}
+ $("chainPanel").classList.remove("hide");
+ const inp=tagInfo(c.tag),analog=inp.type==="analog",v=state[c.tag],steps=[];
+ steps.push({k:"Field device",v:c.device,s:analog?`measures ${fmt(v,inp.unit)}`:(v?"ON — signal present":"OFF — no signal"),on:analog?null:!!v});
+ steps.push({k:"Input module",v:analog?"Analog input module":"Digital input module",s:analog?"turns the 4–20 mA signal into a number":"turns 24 V / 0 V into 1 / 0"});
+ steps.push({k:"Input image",v:`${c.tag} = ${analog?fmt(v,inp.unit):bit(v)}`,s:"copied at the start of the scan"});
+ let readKey=c.tag,lastW=null;
+ c.rungs.forEach((ri,idx)=>{
+   const rt=tt.rungs[ri];if(!rt)return;
+   const leaf=leafTraces(rt.tree).find(t=>t.n&&(t.n.var===readKey||t.n.left===readKey));
+   steps.push({k:"Instruction",v:leaf?instrName(leaf.n):"—",s:leaf?leafShort(leaf,state):"",on:leaf?leaf.value:null});
+   steps.push({k:`Rung ${ri+1} result`,v:rt.on?"TRUE":"FALSE",s:rt.on?"power reaches the coil":"no power reaches the coil",on:rt.on});
+   const w=rt.write;if(!w)return;lastW=w;
+   const o=tagInfo(w.var),more=idx<c.rungs.length-1;
+   steps.push({k:o&&o.internal?"Internal bit":"Output image bit",v:`${w.var} = ${bit(w.value)}`,s:more?`read by rung ${c.rungs[idx+1]+1} in the same scan`:"sent to the output module after the last rung",on:w.value});
+   readKey=w.var;
+ });
+ const fin=!!(lastW&&lastW.value);
+ steps.push({k:"Output module",v:"Digital output module",s:fin?"switches its output ON":"output stays OFF"});
+ steps.push({k:"Actuator",v:c.actuator,s:fin?"commanded ON":"OFF",on:fin});
+ $("chain").innerHTML=steps.map((x,i)=>`${i?'<span class="chain-arrow" aria-hidden="true">→</span>':""}<div class="chain-step ${x.on===true?"on":x.on===false?"off":""}"><b>${i+1} · ${x.k}</b><span class="v">${esc(x.v)}</span><small>${x.s}</small></div>`).join("");
+ $("chainNote").textContent=`The chain follows the reference program with the live inputs: change ${c.tag} or the other inputs of rung ${c.rungs[0]+1} and every box updates. A 1 in the output image is a command; it does not prove the machine actually moved.`;
+}
+
+// ---------- Slot report and prediction explanations ----------
+function renderSlotReport(ok){
+ const p=current();
+ if(mode!=="solve"&&mode!=="repair"){$("slotReport").innerHTML="";return}
+ const rows=Object.entries(p.slots).map(([id,s])=>{
+   const sel=slotSelections[id],ci=s.choices.findIndex(c=>deepEqual(c,sel)),right=deepEqual(sel,s.correct);
+   const ri=studentProgram.findIndex(r=>JSON.stringify(r.logic).includes(`"slot":"${id}"`));
+   const where=`Rung ${ri+1} (${esc(studentProgram[ri]?.name||"")})`;
+   if(right){
+     const bi=s.choices.length-1,cix=s.choices.findIndex(c=>deepEqual(c,s.correct));
+     return mode==="repair"
+      ?`<div class="ok"><b>${where} — fixed.</b> The bug was <b>${esc(choiceTitle(s.choices[bi]))}</b>: ${s.why[bi]} The fix, <b>${esc(choiceTitle(s.correct))}</b>: ${s.why[cix]}</div>`
+      :`<div class="ok"><b>${where} — ${esc(choiceTitle(sel))} is correct.</b> ${s.why[cix]}</div>`;
+   }
+   if(!sel||sel.kind==="blank")return `<div class="no"><b>${where}:</b> this slot is still empty — an empty slot is always FALSE.</div>`;
+   return `<div class="no"><b>${where} — ${esc(choiceTitle(sel))} is not right.</b> ${ci>=0?s.why[ci]:"This element does not match what the rule needs."}${mode==="repair"&&ci===s.choices.length-1?" (This is still the original bug.)":""}</div>`;
+ });
+ $("slotReport").innerHTML=`<b>${ok?(mode==="repair"?"Repair report — what each bug was and why the fix works:":"Why each choice is right:"):"Check result for each slot:"}</b>${rows.join("")}`;
+}
+function explainPrediction(){
+ const p=current(),tr=traceScan(p.correct,predictionState,{});
+ $("predictionExplain").innerHTML=p.outputs.map(o=>{
+   const exp=!!tr.mem[o.key],you=!!predictionAnswers[o.key],ok=exp===you,w=lastWriter(tr,o.key);
+   let why=w?`Rung ${w.i+1} (${esc(w.name)}) is ${w.on?"TRUE":"FALSE"}: ${rungWhyShort(w,predictionState)}.`:"";
+   if(!ok&&w){const mem=leafTraces(w.tree).filter(t=>t.kind==="contact"&&t.src!=="input");if(mem.length)why+=` Remember: ${mem.map(t=>`${t.n.var} = ${bit(t.bit)} is ${srcText(t)}`).join("; ")} — and this scan starts from power-up, where every bit is 0.`}
+   return `<div class="${ok?"ok":"no"}"><b>${o.label}: ${ok?"✓ correct":"✗ mismatch"}</b> — you predicted ${you?"ON":"OFF"}, the scan gives ${exp?"ON":"OFF"}. ${why}</div>`;
+ }).join("");
 }
 
 $("undoBtn").onclick=undo;
@@ -1300,7 +2663,11 @@ $("checkPredictionBtn").onclick=checkPrediction;
 document.addEventListener("keydown",e=>{
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"){e.preventDefault();e.shiftKey?redo():undo()}
  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="y"){e.preventDefault();redo()}
+ if(e.key==="Escape"&&!$("palette").classList.contains("hide"))closePalette();
 });
+$("testDetails").addEventListener("click",e=>{const b=e.target.closest("[data-why]");if(b)showCaseExplain(Number(b.dataset.why))});
+$("clearHistoryBtn").onclick=()=>{scanLog=scanLog.slice(-1);renderHistory()};
+$("pqToggle").onclick=()=>setGuideHidden(!$("pqBody").classList.contains("hide"));
 $("closePalette").onclick=closePalette;
 $("palette").onclick=e=>{if(e.target===$("palette"))closePalette()};
 $("checkStructure").onclick=checkStructure;
@@ -1335,10 +2702,13 @@ document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{if(studentProg
  setTimeout(notifyParent,0);
 })();
 
+renderPageGuide();
+renderGlossary();
+renderSummary();
+setGuideHidden(readStore("multiRungGuideHidden")==="1");
 buildSelect();
 loadProgram(0);
 setMode("learn");
 </script>
-
 </body>
 </html>

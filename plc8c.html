@@ -290,17 +290,164 @@
       .task,.coach{box-shadow:none}.ladder-network{min-width:0}
     }
   
-    .course-constraint{border:2px solid #1468a8;border-radius:14px;background:#f5faff;padding:12px 14px;margin-bottom:12px}
-    .course-constraint h3{margin:0 0 4px;color:#13314d;font-size:.98rem}
-    .course-constraint p{margin:3px 0;color:#44566c;font-size:.78rem}
-    .course-sequence{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-    .course-chip{border:1px solid #b7c4d1;border-radius:999px;padding:4px 8px;background:#fff;color:#56677a;font-size:.68rem;font-weight:800}
-    .course-chip.active{border-color:#1468a8;background:#eaf4fc;color:#0c5c96}
-    .course-chip.done{border-color:#08785a;background:#e7f6f0;color:#075b45}
-    .course-chip.locked{opacity:.55}
     .course-requirement{margin-top:8px;border-left:4px solid #9b5700;background:#fff4d8;border-radius:8px;padding:7px 9px;color:#714409;font-size:.72rem}
     .progress-step:disabled{cursor:not-allowed;opacity:.48}
-    
+
+    /* Question-first layer: page question, lesson question, narrative, evidence, self-explaining tests */
+    a:focus-visible,summary:focus-visible{outline:3px solid rgba(20,104,168,.3);outline-offset:2px}
+    .section-q{margin:4px 0 0;color:#2d4057;font-size:.76rem;max-width:80ch}
+    .section-q b{margin-right:5px;color:var(--blue);font-size:.62rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+    .task .section-q,.coach .section-q{margin:-1px 0 7px}
+    .outputs .section-q,.tests .section-q{margin:-3px 0 8px}
+    .page-question{border:2px solid var(--navy);border-radius:var(--radius);background:#fff;margin-bottom:12px;box-shadow:var(--shadow)}
+    .page-question>summary{display:grid;gap:4px;padding:12px 14px;background:linear-gradient(180deg,#f5faff,#fff);list-style:none}
+    .page-question>summary::-webkit-details-marker{display:none}
+    .pq-kicker{display:flex;justify-content:space-between;gap:8px;color:var(--blue);font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .pq-kicker::after{content:"Hide ▲";color:var(--muted);letter-spacing:0;text-transform:none;font-weight:800}
+    .page-question:not([open]) .pq-kicker::after{content:"Show ▼"}
+    .pq-main{color:var(--navy);font-size:clamp(1.04rem,2.5vw,1.32rem);font-weight:900;line-height:1.25}
+    .pq-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 16px;padding:2px 14px 14px;border-top:1px solid #dce4ec}
+    .pq-wide{grid-column:1/-1}
+    .pq-more{margin:8px 0 0;border-radius:10px}
+    .pq-more>summary{font-size:.76rem}
+    .pq-more-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 16px;padding:0 12px 10px;border-top:1px solid #dce4ec}
+    .pq-intro{margin:0 0 6px;color:#44566c;font-size:.78rem}
+    main>.course-requirement{margin:0 0 12px}
+    .state-map{display:grid;gap:8px;padding:0 13px 12px}
+    .pq-body h3{margin:10px 0 5px;color:var(--navy);font-size:.82rem}
+    .pq-list,.pq-steps,.pq-outcomes,.pq-prereqs{margin:0;padding-left:20px;display:grid;gap:5px;font-size:.76rem;color:#3f5167}
+    .pq-list{list-style:none;padding-left:0}
+    .pq-list a{color:#0c5c96;font-weight:700}
+    .pq-status{display:inline-block;margin-right:4px;border-radius:999px;padding:1px 6px;background:#edf1f5;color:#56677a;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.03em}
+    .pq-list li.done .pq-status{background:var(--green-soft);color:#075b45}
+    .pq-list li.here .pq-status{background:var(--blue-soft);color:#0c5c96}
+    .pq-answer{display:block;margin-top:3px;border-left:3px solid var(--green);padding-left:7px;color:#175c49}
+    .pq-time{margin:6px 0 0;color:var(--muted);font-size:.72rem}
+    .pq-jump{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;padding-top:9px;border-top:1px dashed #d3dce5}
+    .pq-jump span{align-self:center;color:var(--muted);font-size:.68rem;font-weight:800}
+    .pq-jump a{border:1px solid #b7c4d1;border-radius:999px;padding:3px 9px;background:#fff;color:#0c5c96;font-size:.68rem;font-weight:800;text-decoration:none}
+    .pq-jump a:hover{border-color:var(--blue);background:var(--blue-soft)}
+    .lesson-question{border:1px solid #b9d3ea;border-left:6px solid var(--blue);border-radius:var(--radius);background:var(--blue-soft);padding:11px 13px;margin-bottom:12px;scroll-margin-top:8px}
+    .lq-label{margin:0;color:var(--blue);font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+    .lq-text{margin:2px 0 6px;color:var(--navy);font-size:clamp(1rem,2.4vw,1.16rem);font-weight:900;line-height:1.3}
+    .lq-where{margin:0 0 8px;color:#2f4b66;font-size:.76rem}
+    .lq-subs{margin:0;padding-left:20px;display:grid;gap:4px;font-size:.76rem;color:#33475e}
+    .lq-subs a{color:#0c5c96;font-weight:700;white-space:nowrap}
+    .lq-mark{display:inline-block;margin-left:4px;border-radius:999px;padding:0 6px;background:#fff;color:#56677a;font-size:.6rem;font-weight:900;text-transform:uppercase}
+    .lq-mark.ok{background:var(--green-soft);color:#075b45}
+    .term{border:0;border-bottom:1px dotted currentColor;background:none;padding:0;color:inherit;font:inherit;font-weight:inherit;cursor:help}
+    .term:hover,.term:focus-visible{color:var(--blue)}
+    .def-bar{margin-top:8px;border-left:4px solid var(--purple);border-radius:8px;background:var(--purple-soft);padding:7px 9px;color:#4b2f7a;font-size:.74rem}
+    .narrative,.evidence,.lesson-summary{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;scroll-margin-top:8px}
+    .narrative{border-top:5px solid var(--green)}.evidence{border-top:5px solid var(--purple)}.lesson-summary{border-top:5px solid var(--green)}
+    .narrative-body,.evidence-body,.summary-body{border-top:1px solid #dce4ec;padding:10px 13px 13px}
+    .evidence-body,.summary-body{display:grid;gap:12px}
+    .nar-head{margin:0 0 6px;color:var(--navy);font-size:.84rem;font-weight:900}
+    .nar-sub{margin:0 0 4px;color:#53657a;font-size:.72rem;font-weight:800}
+    .nar-changes{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 8px;padding:0;list-style:none}
+    .chg{border:1px solid #e0b25a;border-radius:999px;background:var(--amber-soft);color:#714409;padding:2px 8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.68rem;font-weight:800;overflow-wrap:anywhere}
+    .chg.none{border-color:#cbd5df;background:#f2f5f8;color:#536477;font-family:inherit}
+    .nar-insights{margin:0 0 9px;padding:0;list-style:none;display:grid;gap:4px}
+    .nar-insights li{border-left:4px solid var(--amber);background:var(--amber-soft);border-radius:8px;padding:6px 8px;color:#714409;font-size:.74rem}
+    .nar-chain{margin:0;padding-left:22px;display:grid;gap:7px;font-size:.74rem;color:#3f5167}
+    .nar-chain>li>b:first-child{color:var(--navy)}
+    .nar-rungs{margin:4px 0 0;padding-left:16px;display:grid;gap:4px}
+    .nar-rungs li{overflow-wrap:anywhere}
+    .nar-more{margin:5px 0 0;border:1px dashed #cbd5df;border-radius:8px}
+    .nar-more summary{padding:5px 8px;font-size:.7rem}
+    .nar-more .nar-rungs{padding:0 10px 8px 26px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.95em}
+    .is-new{border-radius:4px;background:var(--amber-soft);color:#714409;padding:0 3px;font-weight:800}
+    .ev-note{margin:0;color:var(--muted);font-size:.72rem}
+    .ev-title{margin:0 0 5px;color:var(--navy);font-size:.82rem;font-weight:900}
+    .section-head>div{flex:1;min-width:0}
+    .truth-wrap{overflow-x:auto;border:1px solid #d1dae4;border-radius:10px}
+    .truth caption{caption-side:bottom;padding:6px;text-align:left}
+    .truth{width:100%;border-collapse:collapse;font-size:.72rem;text-align:center}
+    .truth th{background:#f2f5f8;color:var(--navy);padding:5px 6px;font-size:.65rem;border-bottom:1px solid #d1dae4;white-space:nowrap}
+    .truth td{padding:4px 6px;border-bottom:1px solid #e6ebf0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .truth td.why{font-family:inherit;text-align:left;color:#53657a;font-size:.68rem}
+    .truth td.out1{color:var(--green);font-weight:900}
+    .truth tr.now td{background:var(--blue-soft);font-weight:800}
+    .truth tr.now td.now-cell{color:var(--blue)}
+    .truth tr.mismatch td{background:var(--red-soft);color:#842018}
+    .timing{border:1px solid #d1dae4;border-radius:10px;padding:8px;background:#fff}
+    .trace-row,.trace-axis{display:grid;grid-template-columns:104px minmax(0,1fr) 62px;gap:6px;align-items:center}
+    .trace-row{min-height:25px;border-bottom:1px solid #eef2f6}
+    .trace-tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.64rem;font-weight:900;color:#2d4057;overflow-wrap:anywhere}
+    .trace-svg{display:block;width:100%;height:22px;background:#fbfcfd}
+    .trace-svg .hi{fill:rgba(8,120,90,.16);stroke:none}
+    .trace-svg .ln{fill:none;stroke:#08785a;stroke-width:2}
+    .trace-svg .num{fill:rgba(20,104,168,.14);stroke:none}
+    .trace-svg .num-ln{fill:none;stroke:#1468a8;stroke-width:2}
+    .trace-svg .nowcol{fill:rgba(20,104,168,.22)}
+    .trace-svg .mark{stroke:#9b5700;stroke-width:1;stroke-dasharray:3 2}
+    .trace-val{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.64rem;font-weight:900;text-align:right;color:#526479}
+    .trace-axis{padding-top:5px;font-size:.63rem;color:#607185}
+    .trace-axis>span:nth-child(2){display:flex;justify-content:space-between;gap:6px}
+    .trace-events{margin:6px 0 0;padding-left:18px;display:grid;gap:2px;font-size:.7rem;color:#4a5d72}
+    .sm-flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px}
+    .sm-step{border:1px solid #cbd5df;border-radius:10px;background:#f8fafc;padding:7px 8px;font-size:.7rem;color:#4b5e73;min-width:0}
+    .sm-step.active{border:2px solid var(--green);background:var(--green-soft);color:#175c49}
+    .sm-name{display:flex;justify-content:space-between;gap:6px;align-items:center;color:var(--navy);font-size:.76rem;font-weight:900}
+    .sm-badge{flex:none;border-radius:999px;padding:1px 6px;background:#edf1f5;color:#56677a;font-size:.58rem;font-weight:900}
+    .sm-step.active .sm-badge{background:var(--green);color:#fff}
+    .sm-next{margin-top:5px;border-top:1px dashed #cbd5df;padding-top:4px}
+    .sm-next b,.sm-does b{color:#2d4057}
+    .sm-block{border-left:5px solid var(--amber);background:var(--amber-soft);border-radius:9px;padding:8px 10px;color:#714409;font-size:.76rem}
+    .reader-rung{margin:0 0 6px;color:#2d4057;font-size:.72rem;font-weight:800}
+    .reader-list{margin:0 0 10px;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px}
+    .reader-step{width:100%;min-height:34px;border:1px solid #cbd5df;border-radius:8px;background:#fff;padding:4px 7px;text-align:left;font-size:.68rem;color:#4b5e73}
+    .reader-step b{color:var(--navy)}
+    .reader-step.current{border-color:var(--blue);background:var(--blue-soft);box-shadow:inset 0 0 0 1px var(--blue)}
+    .reader-step.done b::after{content:" ✓";color:var(--green)}
+    .output-meaning{grid-column:2/-1;margin-top:-3px;color:#5b6d81;font-size:.67rem}
+    .q-chips{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 7px}
+    .q-chip{min-height:30px;min-width:46px;border:1px solid #c9b48a;border-radius:999px;background:#fff;color:#6b5520;padding:2px 8px;font-size:.66rem;font-weight:900}
+    .q-chip.current{border-color:var(--amber);background:var(--amber-soft);box-shadow:inset 0 0 0 1px var(--amber)}
+    .q-chip.ok{border-color:var(--green);background:var(--green-soft);color:#075b45}
+    .feedback p{margin:5px 0 0;font-size:inherit;color:inherit}
+    .test-cards{display:grid;gap:7px;margin-top:8px}
+    .test-card{border:1px solid #d1dae4;border-left:5px solid var(--green);border-radius:9px;background:#fff;padding:8px 9px;font-size:.72rem;color:#3f5167;min-width:0}
+    .test-card.fail{border-left-color:var(--red);background:#fffafa}
+    .tc-head{display:flex;gap:7px;align-items:center;flex-wrap:wrap;color:var(--navy)}
+    .tc-badge{border-radius:999px;padding:1px 7px;background:var(--green);color:#fff;font-size:.62rem;font-weight:900}
+    .test-card.fail .tc-badge{background:var(--red)}
+    .tc-ask{margin:4px 0}
+    .tc-steps{margin:2px 0 6px;padding-left:18px;color:#4f6176}
+    .tc-cp{margin:6px 0 3px;color:#2d4057;font-weight:800}
+    .tc-table-wrap{overflow-x:auto}
+    .tc-table{width:100%;border-collapse:collapse;font-size:.68rem}
+    .tc-table th,.tc-table td{border-bottom:1px solid #e3e9ef;padding:3px 5px;text-align:left}
+    .tc-table th{background:#f5f7fa;color:var(--navy)}
+    .tc-table tr.bad td{background:var(--red-soft);color:#842018;font-weight:800}
+    .tc-proves,.tc-check{margin:6px 0 0;padding-left:7px}
+    .tc-proves{border-left:3px solid var(--green);color:#175c49}
+    .tc-check{border-left:3px solid var(--red);color:#842018}
+    .summary-body{font-size:.76rem;color:#3f5167}
+    .summary-body h4{margin:0 0 4px;color:var(--navy);font-size:.82rem}
+    .answered-list{margin:0;padding-left:20px;display:grid;gap:6px}
+    .answered-list b{display:block;color:var(--navy)}
+    .model-answer{border-left:5px solid var(--green);background:var(--green-soft);border-radius:9px;padding:9px 10px;color:#175c49}
+    .model-answer p{margin:0}
+    .takeaways{margin:0;padding-left:20px;display:grid;gap:3px}
+    .mistake{border-left:5px solid var(--red);background:var(--red-soft);border-radius:9px;padding:8px 10px;color:#6f302a}
+    .summary-q{margin-left:5px;color:var(--muted);font-size:.7rem;font-weight:600}
+    .glossary dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:7px 14px}
+    .glossary dl>div{font-size:.71rem;color:#506278}
+    .glossary dt{color:#2d4158;font-size:.74rem;font-weight:900}
+    .glossary dd{margin:0}
+    @media(max-width:700px){
+      .pq-body,.pq-more-body{grid-template-columns:1fr}
+    }
+    @media(max-width:500px){
+      .page-question>summary,.pq-body{padding-inline:10px}
+      .narrative-body,.evidence-body,.summary-body{padding-inline:10px}
+      .trace-row,.trace-axis{grid-template-columns:78px minmax(0,1fr) 50px;gap:4px}
+      .sm-flow{grid-template-columns:1fr}
+      .reader-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .state-map{padding-inline:9px}
+    }
 </style>
 </head>
 <body>
@@ -322,12 +469,42 @@
 
   <main>
 
-    <section class="course-constraint" id="courseConstraint" aria-label="Required course sequence">
-      <h3 id="courseConstraintTitle"></h3>
-      <p id="courseConstraintIntro"></p>
-      <div class="course-sequence" id="courseSequence"></div>
-      <div class="course-requirement" id="courseRequirement"></div>
-    </section>
+    <details class="page-question" id="pageQuestion" open>
+      <summary>
+        <span class="pq-kicker">What question does this page answer?</span>
+        <span class="pq-main">How does a PLC turn real machine signals into output commands — one instruction, one rung and one scan at a time?</span>
+      </summary>
+      <div class="pq-body" id="courseConstraint">
+        <div class="pq-wide">
+          <h3 id="courseConstraintTitle"></h3>
+          <p class="pq-intro" id="courseConstraintIntro"></p>
+          <p class="pq-intro"><b>The lesson questions, in the required order.</b> Each lesson unlocks when the one before it is complete; its short answer appears here once you have answered it.</p>
+          <ol class="pq-list" id="courseSequence"></ol>
+        </div>
+        <details class="pq-more pq-wide" id="pageMore">
+          <summary>By the end you can… · What you should already know · How to use each lesson</summary>
+          <div class="pq-more-body">
+        <div>
+          <h3>By the end you can…</h3>
+          <ul class="pq-outcomes" id="pageOutcomes"></ul>
+          <h3>What you should already know</h3>
+          <ul class="pq-prereqs" id="pagePrereqs"></ul>
+        </div>
+        <div>
+          <h3>How to use each lesson</h3>
+          <ol class="pq-steps" id="pageSteps"></ol>
+          <p class="pq-time" id="pageTime"></p>
+        </div>
+          </div>
+        </details>
+        <nav class="pq-jump" aria-label="Jump to a part of the current lesson">
+          <span>Jump to:</span>
+          <a href="#secQuestion">Lesson question</a><a href="#secTaskCoach">Task &amp; coach</a><a href="#secConnection">Machine ↔ PLC</a><a href="#secControls">Conditions</a><a href="#secLadder">Ladder</a><a href="#secNarrative">What just happened?</a><a href="#secEvidence">Evidence</a><a href="#secReader">Rung reader</a><a href="#secResults">Data &amp; tests</a><a href="#secSummary">Summary</a><a href="#secGlossary">Glossary</a>
+        </nav>
+      </div>
+    </details>
+    <div class="course-requirement" id="courseRequirement"></div>
+
     <section class="lesson-head">
       <div class="lesson-headline">
         <h2 id="lessonTitle"></h2>
@@ -336,27 +513,31 @@
       <p id="lessonScenario"></p>
     </section>
 
+    <section class="lesson-question" id="secQuestion" aria-labelledby="lessonQuestionLabel">
+      <p class="lq-label" id="lessonQuestionLabel">Question this lesson answers</p>
+      <p class="lq-text" id="lessonQuestionText"></p>
+      <p class="lq-where"><b>Where to look for the answer:</b> <span id="lessonQuestionWhere"></span></p>
+      <ol class="lq-subs" id="lessonSubQuestions"></ol>
+      <div class="def-bar" id="defBar" aria-live="polite" hidden></div>
+    </section>
+
     <details class="concept-bridge" id="conceptBridge" open>
       <summary>Keep these PLC words separate</summary>
-      <div class="concept-grid">
-        <div class="concept-card"><b>Physical device</b>A real sensor, switch, motor or valve installed on the machine.</div>
-        <div class="concept-card"><b>Bit and tag</b>A bit stores 0 or 1. A tag is the meaningful name used to identify that data.</div>
-        <div class="concept-card"><b>Condition</b>A requirement that can be true or false, such as “the guard is closed.”</div>
-        <div class="concept-card"><b>Contact instruction</b>Software that reads a Boolean bit and returns a true-or-false test result.</div>
-        <div class="concept-card"><b>Rung result</b>The final true-or-false answer obtained after the PLC evaluates the rung.</div>
-        <div class="concept-card"><b>Coil instruction</b>Software that writes the rung result to a Boolean bit. It is not automatically the physical motor or valve.</div>
-      </div>
+      <div class="concept-grid" id="conceptGrid"></div>
     </details>
 
-    <section class="top-teaching" aria-label="Task and Coach">
+    <section class="top-teaching" id="secTaskCoach" aria-label="Task and Coach">
       <article class="task">
         <p class="kicker"><span class="kicker-num"><span>1</span></span>Task</p>
+        <p class="section-q"><b>Question</b><em>What must I do and be able to explain in this lesson?</em></p>
         <h3 id="taskTitle"></h3>
         <p id="taskText"></p>
         <ul id="taskChecks"></ul>
       </article>
       <article class="coach">
         <div class="question-meta"><span class="kicker"><span class="kicker-num"><span>2</span></span>Coach</span><span id="questionCount"></span></div>
+        <p class="section-q"><b>Question</b><em>Can I predict what the PLC does before I test it?</em></p>
+        <div class="q-chips" id="questionChips" aria-label="Coach questions"></div>
         <h3 id="questionText"></h3>
         <p id="questionContext"></p>
         <div class="question-options" id="questionOptions"></div>
@@ -369,11 +550,12 @@
       </article>
     </section>
 
-    <section class="connection" aria-labelledby="connectionHeading">
+    <section class="connection" id="secConnection" aria-labelledby="connectionHeading">
       <div class="section-head">
         <div>
           <h3 id="connectionHeading">Machine ↔ PLC connection</h3>
           <p>The machine creates signals; PLC data and instructions represent them.</p>
+          <p class="section-q"><b>Question</b><em>What is the machine doing, and which PLC data represents it right now?</em></p>
         </div>
       </div>
       <div class="connection-body">
@@ -392,11 +574,12 @@
       </div>
     </section>
 
-    <section class="controls" aria-labelledby="conditionsHeading">
+    <section class="controls" id="secControls" aria-labelledby="conditionsHeading">
       <div class="section-head">
         <div>
           <h3 id="conditionsHeading">Set the conditions</h3>
           <p>Every change runs one scan. Time-based cases also provide a controlled time step.</p>
+          <p class="section-q"><b>Question</b><em>Which input values — and how much time — does the PLC get on the next scan?</em></p>
         </div>
         <button class="btn ghost" type="button" id="resetLesson">Reset</button>
       </div>
@@ -409,13 +592,15 @@
         <span class="time-readout" id="timeReadout"></span>
       </div>
       <div class="state-strip" id="stateStrip" hidden></div>
+      <div class="state-map" id="stateMap" hidden></div>
     </section>
 
-    <section class="ladder-panel" aria-labelledby="ladderHeading">
+    <section class="ladder-panel" id="secLadder" aria-labelledby="ladderHeading">
       <div class="section-head">
         <div>
           <h3 id="ladderHeading">Ladder program</h3>
           <p>Click an instruction to see exactly what it reads, tests, or writes.</p>
+          <p class="section-q"><b>Question</b><em>Which instructions are TRUE on this scan, and what does each right-side instruction write?</em></p>
         </div>
       </div>
       <div class="logic-path-note"><b>Green path = TRUE logic.</b><span>It is a visualization only. No water or electrical power flows through the software diagram; the CPU is evaluating stored data and instructions.</span></div>
@@ -432,15 +617,47 @@
       <div class="selected-detail" id="instructionDetail"></div>
     </section>
 
-    <section class="reader" aria-labelledby="readerHeading">
+    <section class="narrative" id="secNarrative" aria-labelledby="narrativeHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="narrativeHeading">What just happened?</h3>
+          <p>Generated from the PLC model after every input change, scan or time step: READ → SOLVE → UPDATE, cause before effect.</p>
+          <p class="section-q"><b>Question</b><em>What did the PLC read, decide and write — and what changed since the previous step?</em></p>
+        </div>
+      </div>
+      <div class="narrative-body">
+        <div id="narrativeLive" aria-live="polite"></div>
+        <ol class="nar-chain" id="narrativeChain"></ol>
+      </div>
+    </section>
+
+    <section class="evidence" id="secEvidence" aria-labelledby="evidenceHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="evidenceHeading">Evidence</h3>
+          <p id="evidenceIntro"></p>
+          <p class="section-q"><b>Question</b><em id="evidenceQuestion"></em></p>
+        </div>
+        <button class="btn ghost" type="button" id="clearTrace">Clear diagram</button>
+      </div>
+      <div class="evidence-body">
+        <div id="truthTable" hidden></div>
+        <div id="timingDiagram" hidden></div>
+      </div>
+    </section>
+
+    <section class="reader" id="secReader" aria-labelledby="readerHeading">
       <div class="section-head">
         <div>
           <h3 id="readerHeading">Seven-question rung reader</h3>
-          <p>Use the same method for every rung instead of guessing from its shape.</p>
+          <p>Use the same method for every rung instead of guessing from its shape. Ask these seven questions in order:</p>
+          <p class="section-q"><b>Question</b><em>How do I read any rung systematically instead of guessing from its shape?</em></p>
         </div>
       </div>
       <div class="reader-body">
-        <div class="reader-progress" id="readerProgress"></div>
+        <ol class="reader-list" id="readerList"></ol>
+        <p class="reader-rung" id="readerRung"></p>
+        <div class="reader-progress" id="readerProgress" hidden></div>
         <p class="reader-question" id="readerQuestion"></p>
         <p class="reader-help" id="readerHelp"></p>
         <div id="readerAnswer"></div>
@@ -452,17 +669,29 @@
       </div>
     </section>
 
-    <section class="outputs-tests">
+    <section class="outputs-tests" id="secResults">
       <article class="outputs">
         <h3 class="mini-title">PLC data after the scan</h3>
+        <p class="section-q"><b>Question</b><em>What value does every tag hold now, and what does that value mean?</em></p>
         <div class="output-list" id="outputList"></div>
       </article>
       <article class="tests">
         <h3 class="mini-title">Prove the behavior</h3>
+        <p class="section-q"><b>Question</b><em>Does this program behave correctly in every required case?</em></p>
         <p class="test-summary" id="testSummary"></p>
         <button class="btn primary" type="button" id="runTests">Run reference tests</button>
         <div class="test-result" id="testResult" aria-live="polite"></div>
       </article>
+    </section>
+
+    <section class="lesson-summary" id="secSummary" aria-labelledby="summaryHeading">
+      <div class="section-head">
+        <div>
+          <h3 id="summaryHeading">Lesson summary — the answer, after the work</h3>
+          <p class="section-q"><b>Question</b><em>What is the answer to this lesson’s question, and what should I remember?</em></p>
+        </div>
+      </div>
+      <div class="summary-body" id="lessonSummary"></div>
     </section>
 
     <aside class="misconception">
@@ -470,12 +699,12 @@
       <p id="misconceptionText"></p>
     </aside>
 
-    <details>
-      <summary>Symbol and data reference</summary>
-      <div class="reference"><div class="reference-grid" id="referenceGrid"></div></div>
+    <details class="glossary-box" id="secGlossary">
+      <summary>Glossary of PLC terms and symbols <span class="summary-q">— What does each term on this page mean?</span></summary>
+      <div class="reference glossary"><dl id="referenceGrid"></dl></div>
     </details>
     <details>
-      <summary>Why this matters in a real machine</summary>
+      <summary>Why this matters in a real machine <span class="summary-q">— What changes outside the classroom model?</span></summary>
       <div class="reference" id="realWorldNote"></div>
     </details>
 
@@ -520,9 +749,16 @@
   function renderCourseControl(){
     $("courseConstraintTitle").textContent=COURSE_TITLE;
     $("courseConstraintIntro").textContent=COURSE_INTRO;
-    $("courseSequence").innerHTML=COURSE_ALLOWED.map((idx,pos)=>{const done=lessonComplete(idx), unlocked=lessonUnlocked(idx);return `<span class="course-chip ${idx===lessonIndex?"active":""} ${done?"done":""} ${!unlocked?"locked":""}">${pos+1} · ${esc(lessons[idx].short)}${done?" ✓":!unlocked?" · locked":""}</span>`}).join("");
-    const qDone=lessonQuestionsComplete(lessonIndex), testsDone=passedTests[current().id]===true;
-    $("courseRequirement").innerHTML=`<b>Required before the next lesson unlocks:</b> all coach questions correct (${qDone?"complete":"incomplete"}) and all reference tests passed (${testsDone?"complete":"incomplete"}).`;
+    renderPageQuestion();
+    const lesson=current(),pos=allowedPosition(lessonIndex),next=COURSE_ALLOWED[pos+1];
+    const total=lesson.questions.length,correct=lesson.questions.filter((_,qi)=>courseCorrect[lesson.id]?.[qi]===true).length;
+    const qDone=lessonQuestionsComplete(lessonIndex), testsDone=passedTests[lesson.id]===true;
+    const testsState=testsDone?"passed":passedTests[lesson.id]===false?"the last run failed":"not run yet";
+    $("courseRequirement").innerHTML=lessonComplete(lessonIndex)
+      ?`<b>✓ Lesson ${pos+1} is complete:</b> ${total} of ${total} coach questions correct and all ${lesson.tests.length} reference tests passed. ${next===undefined?"This is the last lesson in this course.":`Lesson ${pos+2} · ${esc(lessons[next].short)} is unlocked.`} The model answer is in the lesson summary.`
+      :`<b>Required before the next lesson unlocks:</b> all coach questions correct (${qDone?"complete":"incomplete"} — ${correct} of ${total}) and all reference tests passed (${testsDone?"complete":"incomplete"} — ${testsState}${lesson.puzzle?"; run them on your Guided build":""}). ${next===undefined?"This is the last lesson in this course.":`Then lesson ${pos+2} · ${esc(lessons[next].short)} unlocks.`} Progress is saved in this browser.`;
+    renderLessonQuestion();
+    renderSummary();
   }
 
   const lessons=[
@@ -539,16 +775,42 @@
       puzzle:[R("Detect box","IF SENSOR is ON, THEN MOTOR command is ON",[SLOT("a")],A("coil","MOTOR","Motor command"))],
       slots:{a:{prompt:"The rung must be true when SENSOR = 1.",correct:C("SENSOR","Box detected"),choices:[C("SENSOR","Box detected"),C("SENSOR","No box","NC"),C("MOTOR","Motor command")]}},
       questions:[
-        {q:"What does the SENSOR contact instruction actually read?",context:"Separate the physical photoelectric sensor from the program instruction.",options:["The box itself","The stored SENSOR bit","The MOTOR output terminal"],answer:1,hint:"The input module first converts the electrical signal into stored PLC data.",why:"Correct: the physical sensor creates an electrical signal; the contact instruction reads the stored SENSOR bit."},
-        {q:"SENSOR = 1. What will the ordinary MOTOR coil write?",context:"The contact is N.O. and therefore true when its bit is 1.",options:["MOTOR = 0","MOTOR = 1","No value until the next day"],answer:1,hint:"Contacts read; coils write the rung result.",why:"The contact test is true, so the rung result is true and the ordinary coil writes MOTOR = 1."},
-        {q:"Does MOTOR = 1 prove the conveyor is physically moving?",context:"Think about the difference between command and feedback.",options:["Yes, always","Only if the sensor is N.C.","No; a feedback input would be required"],answer:2,hint:"A failed contactor or tripped overload can prevent motion even with a valid command.",why:"MOTOR = 1 proves only that the PLC issued a command. Real motion needs a separate feedback signal."}
+        {q:"What does the SENSOR contact instruction on Rung 1 actually read?",context:"The photoelectric sensor is wired to input %I0.1. Separate the physical device from the program instruction.",options:["The box itself","The stored SENSOR bit","The MOTOR output terminal"],answer:1,hint:"The input module first converts the electrical signal into stored PLC data.",why:"Correct: the physical sensor creates an electrical signal; the contact instruction reads the stored SENSOR bit.",
+          explain:["The program never “sees” the box. The sensor reacts to the box; the input module turns that into a stored bit, and only that bit is tested.","The input module stores the field signal as SENSOR (%I0.1) in the input image; the contact instruction tests that stored bit.","MOTOR (%Q0.0) is the output command written by the coil. The SENSOR contact does not read any output terminal."]},
+        {q:"Given SENSOR = 1, what does the ordinary MOTOR coil write on this scan?",context:"Rung 1 is one N.O. test of SENSOR followed by the MOTOR coil. An N.O. test is TRUE when its bit is 1.",options:["MOTOR = 0","MOTOR = 1","No value until the next day"],answer:1,hint:"Contacts read; coils write the rung result.",why:"The contact test is true, so the rung result is true and the ordinary coil writes MOTOR = 1.",
+          explain:["MOTOR = 0 would need a FALSE rung, but the N.O. test of SENSOR = 1 is TRUE.","TRUE test → TRUE rung → the ordinary coil writes MOTOR = 1 during this scan.","There is no delay: the coil writes during the same program scan, and the output module is updated at the end of that scan."]},
+        {q:"MOTOR = 1. Does that prove the conveyor is physically moving?",context:"MOTOR is an output command (%Q0.0). Think about the difference between a command and feedback.",options:["Yes, always","Only if the sensor is N.C.","No; a feedback input would be required"],answer:2,hint:"A failed contactor or tripped overload can prevent motion even with a valid command.",why:"MOTOR = 1 proves only that the PLC issued a command. Real motion needs a separate feedback signal.",
+          explain:["A tripped overload, failed contactor or broken belt can stop the conveyor while MOTOR is still 1.","How the sensor is wired says nothing about whether the motor really turns.","MOTOR = 1 only proves that the PLC issued the command. An auxiliary contact, current sensor or speed sensor wired to an input is needed to confirm motion."]}
       ],
       tests:[
-        {name:"No box",steps:[{inputs:{SENSOR:false},dt:0}],expect:{MOTOR:false}},
-        {name:"Box detected",steps:[{inputs:{SENSOR:true},dt:0}],expect:{MOTOR:true}}
+        {name:"No box",steps:[{inputs:{SENSOR:false},dt:0}],expect:{MOTOR:false},
+          ask:"With no box at the sensor, does the PLC keep the motor command OFF?",proves:"The N.O. test of SENSOR is FALSE at SENSOR = 0, so the ordinary coil writes MOTOR = 0.",check:"Check that Rung 1 tests SENSOR with an N.O. contact (not N.C., and not a MOTOR contact)."},
+        {name:"Box detected",steps:[{inputs:{SENSOR:true},dt:0}],expect:{MOTOR:true},
+          ask:"With a box at the sensor, does the PLC command the motor ON?",proves:"SENSOR = 1 makes the N.O. test TRUE and the coil writes MOTOR = 1 in the same scan.",check:"Check the contact tag (SENSOR) and type (N.O.). An N.C. test or a MOTOR contact fails this case."}
       ],
       misconception:"The ladder contact is not the physical sensor, and the ladder coil is not the physical motor. They are software instructions that read and write PLC data.",
-      real:"The output command normally energizes a starter or contactor circuit. A motor-running auxiliary contact, current sensor or speed sensor is needed if the PLC must confirm that the motor actually moved."
+      real:"The output command normally energizes a starter or contactor circuit. A motor-running auxiliary contact, current sensor or speed sensor is needed if the PLC must confirm that the motor actually moved.",
+      question:"How does one physical box sensor become a MOTOR command inside the PLC?",
+      where:"the data chain in Machine ↔ PLC connection and “What just happened?” after you toggle the box sensor; then the truth table and the reference tests.",
+      subQuestions:[
+        {q:"What does the SENSOR contact instruction actually read?",a:"The stored SENSOR bit in the input image (%I0.1) — not the box and not the sensor itself.",at:"secConnection",track:"q0"},
+        {q:"What does the MOTOR coil write when SENSOR = 1, and when SENSOR = 0?",a:"The coil writes the rung result on every scan: SENSOR = 1 → MOTOR = 1; SENSOR = 0 → MOTOR = 0.",at:"secEvidence",track:"q1"},
+        {q:"Does MOTOR = 1 prove that the conveyor moves?",a:"No. MOTOR = 1 is a command in the output image; proof of motion needs a separate feedback input.",at:"secResults",track:"q2"},
+        {q:"Does the rung behave correctly with and without a box?",a:"Yes — the reference tests show MOTOR = 0 with no box and MOTOR = 1 with a box.",at:"secResults",track:"tests"}
+      ],
+      modelAnswer:"The photoelectric sensor switches its output when a box blocks the beam. The input module turns that field signal into the bit SENSOR (%I0.1), which is copied into the input image at the start of every scan. The N.O. contact instruction asks “is SENSOR = 1?” and returns TRUE or FALSE; that test is the whole rung condition. The ordinary coil writes the rung result into the output-image bit MOTOR (%Q0.0), and at output update the output module switches the motor-starter circuit. MOTOR = 1 is a command — only a feedback signal could prove that the conveyor actually turns.",
+      takeaways:["A contact reads a stored bit; a coil writes a stored bit. Neither is the physical device.","An ordinary coil rewrites its bit on every scan: rung TRUE → 1, rung FALSE → 0.","An output bit is a command, not evidence of motion."],
+      mistake:"Putting a MOTOR contact on the rung to “switch the motor on”. A contact only tests a bit: the rung must test the cause (SENSOR) and the coil must write the effect (MOTOR).",
+      refresher:"A contact reads a stored input bit; a coil writes the rung result to an output bit, which is a command, not proof of motion.",
+      outcome:"Trace one signal from the physical sensor through the input image, the contact test and the coil to the output command.",
+      minutes:10,
+      bigPicture:{device:"Photoelectric box sensor",actuator:"Motor starter → conveyor motor"},
+      testsMeaning:"The rung makes MOTOR follow SENSOR in both states: no box → command OFF, box → command ON.",
+      truth:true,
+      insights:[
+        (s,p)=>p&&p.i.SENSOR!==s.i.SENSOR?`SENSOR changed ${p.i.SENSOR?1:0} → ${s.i.SENSOR?1:0}, so the N.O. test became ${s.i.SENSOR?"TRUE":"FALSE"} and the coil wrote MOTOR = ${s.m.MOTOR?1:0} in the same scan — no delay.`:null,
+        s=>s.m.MOTOR?"MOTOR = 1 is a command to the motor starter. The PLC has no feedback input here, so it cannot know whether the conveyor really turns.":null
+      ]
     },
     {
       id:"logic",short:"AND / OR / NOT",title:"2 · Combine AND, OR and NOT on one rung",level:"Foundation",
@@ -576,19 +838,55 @@
         b:{prompt:"The path must pass only while FAULT = 0.",correct:C("FAULT","No fault","NC"),choices:[C("FAULT","Fault","NO"),C("FAULT","No fault","NC"),C("GUARD","Guard","NC")]}
       },
       questions:[
-        {q:"Which ladder structure represents FOOT OR PANEL?",context:"Either trigger is allowed to complete that part of the path.",options:["Series contacts","Parallel branches","Two output coils"],answer:1,hint:"Imagine two alternative routes between the same left and right points.",why:"Parallel branches implement OR because either complete branch can continue the logical path."},
-        {q:"FAULT = 0. What result does an N.C. FAULT instruction return?",context:"N.C. is a software test for zero.",options:["TRUE","FALSE","Analog"],answer:0,hint:"An N.C. instruction asks: is this addressed bit OFF?",why:"The N.C. test is true while FAULT = 0. It becomes false when FAULT = 1."},
-        {q:"Where must the GUARD contact be placed?",context:"The guard must not be bypassed by either trigger.",options:["In series with the whole branch","Only beside FOOT","On a parallel path around everything"],answer:0,hint:"Every possible route to the coil must pass through GUARD.",why:"GUARD belongs in series with the complete request branch so neither FOOT nor PANEL can bypass it."}
+        {q:"Which ladder structure represents FOOT OR PANEL?",context:"Either the foot switch or the panel button may request the press; one of them is enough.",options:["Series contacts","Parallel branches","Two output coils"],answer:1,hint:"Imagine two alternative routes between the same left and right points.",why:"Parallel branches implement OR because either complete branch can continue the logical path.",
+          explain:["Series contacts implement AND: FOOT and PANEL would both have to be 1 at the same time.","Two parallel branches between the same two points implement OR: one TRUE branch is enough to continue the path.","Two coils would write two separate bits. They do not combine the two requests into one condition."]},
+        {q:"FAULT = 0. What result does the N.C. FAULT instruction return?",context:"An N.C. (normally closed) contact is a software test that asks “is this bit 0?”.",options:["TRUE","FALSE","Analog"],answer:0,hint:"An N.C. instruction asks: is this addressed bit OFF?",why:"The N.C. test is true while FAULT = 0. It becomes false when FAULT = 1.",
+          explain:["The N.C. test is TRUE while FAULT = 0, so a healthy machine lets the path continue.","FALSE is the result at FAULT = 1 — that is how an active fault blocks the press.","A contact instruction tests one Boolean bit; it never returns an analog value."]},
+        {q:"Where must the GUARD contact be placed?",context:"The guard must block the press for both the foot switch and the panel button.",options:["In series with the whole branch","Only beside FOOT","On a parallel path around everything"],answer:0,hint:"Every possible route to the coil must pass through GUARD.",why:"GUARD belongs in series with the complete request branch so neither FOOT nor PANEL can bypass it.",
+          explain:["In series with the whole branch, every route to the coil passes through GUARD, so no request can bypass it.","Beside FOOT only, a PANEL request would reach the coil without passing GUARD.","A parallel path is an alternative: GUARD = 1 alone would run the press, and the request branch would no longer need the guard."]}
       ],
       tests:[
-        {name:"Foot request",steps:[{inputs:{GUARD:true,FOOT:true,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:true}},
-        {name:"Panel request",steps:[{inputs:{GUARD:true,FOOT:false,PANEL:true,FAULT:false},dt:0}],expect:{PRESS:true}},
-        {name:"No request",steps:[{inputs:{GUARD:true,FOOT:false,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:false}},
-        {name:"Guard open",steps:[{inputs:{GUARD:false,FOOT:true,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:false}},
-        {name:"Fault active",steps:[{inputs:{GUARD:true,FOOT:true,PANEL:false,FAULT:true},dt:0}],expect:{PRESS:false}}
+        {name:"Foot request",steps:[{inputs:{GUARD:true,FOOT:true,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:true},
+          ask:"Does a foot request run the press when the guard is closed and there is no fault?",proves:"The FOOT branch of the OR completes the path and both permissives (GUARD, NOT FAULT) pass.",check:"Check that FOOT sits in a parallel branch with PANEL and that FAULT is tested with an N.C. contact."},
+        {name:"Panel request",steps:[{inputs:{GUARD:true,FOOT:false,PANEL:true,FAULT:false},dt:0}],expect:{PRESS:true},
+          ask:"Does the panel button work as an alternative to the foot switch?",proves:"PANEL alone completes the OR branch, so the two requests really are alternatives (parallel).",check:"If this fails but the foot test passes, FOOT and PANEL are probably in series (AND)."},
+        {name:"No request",steps:[{inputs:{GUARD:true,FOOT:false,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:false},
+          ask:"Does the press stay OFF when nobody requests it?",proves:"The permissives alone (GUARD = 1, FAULT = 0) never start the press; a request is required.",check:"Check that no permissive (GUARD or FAULT) sits in a parallel branch that bypasses the requests."},
+        {name:"Guard open",steps:[{inputs:{GUARD:false,FOOT:true,PANEL:false,FAULT:false},dt:0}],expect:{PRESS:false},
+          ask:"Does the press stay OFF when the guard is open, even with a request?",proves:"GUARD is in series with the whole request branch, so no request can bypass it.",check:"Check that GUARD is in series before the OR branch, not inside it or around it."},
+        {name:"Fault active",steps:[{inputs:{GUARD:true,FOOT:true,PANEL:false,FAULT:true},dt:0}],expect:{PRESS:false},
+          ask:"Does an active fault block the press even with a request?",proves:"The N.C. FAULT test is FALSE at FAULT = 1 and breaks every path to the coil.",check:"Check that FAULT is tested with N.C. (TRUE only at 0), not N.O."}
       ],
       misconception:"Normally open and normally closed describe how the instruction tests a stored bit. They do not, by themselves, describe the mechanical construction of the field device.",
-      real:"A teaching rung can show the Boolean requirement, but a real hazardous press needs a validated safety system. A standard PLC program is not a substitute for the required safety hardware and risk assessment."
+      real:"A teaching rung can show the Boolean requirement, but a real hazardous press needs a validated safety system. A standard PLC program is not a substitute for the required safety hardware and risk assessment.",
+      question:"How do series, parallel and N.C. tests combine on one rung so that the press runs only when it is requested and safe?",
+      where:"the truth table (all 16 input combinations), the ladder program and “What just happened?” after each preset.",
+      subQuestions:[
+        {q:"Which ladder structure gives FOOT OR PANEL?",a:"Two parallel branches: either TRUE branch completes that part of the path.",at:"secLadder",track:"q0"},
+        {q:"What does an N.C. test of FAULT return when FAULT = 0, and when FAULT = 1?",a:"TRUE when FAULT = 0, FALSE when FAULT = 1 — it asks “is FAULT off?”.",at:"secLadder",track:"q1"},
+        {q:"Why must GUARD be in series with the whole request branch?",a:"So that every route to the coil passes through GUARD; neither FOOT nor PANEL can bypass the guard.",at:"secEvidence",track:"q2"},
+        {q:"For which input combinations is PRESS = 1?",a:"Only when GUARD = 1, FAULT = 0 and at least one of FOOT or PANEL = 1 — 3 of the 16 rows.",at:"secEvidence",track:"tests"}
+      ],
+      modelAnswer:"The rung is GUARD AND (FOOT OR PANEL) AND NOT FAULT. Requirements that must all be true are contacts in series; the two alternative requests are parallel branches, so either one completes that part of the path; the N.C. contact on FAULT is TRUE only while FAULT = 0. Because GUARD and the N.C. FAULT test are in series with the whole request branch, no request can bypass them: PRESS = 1 in exactly 3 of the 16 input combinations.",
+      takeaways:["Series = AND: every instruction on the path must be TRUE.","Parallel = OR: one TRUE branch is enough.","N.C. = NOT: the test is TRUE when its bit is 0.","Permissives (GUARD, NOT FAULT) go in series with the whole request branch."],
+      mistake:"Placing GUARD beside only one request, or around the branch in parallel. Then FOOT or PANEL can complete a path with the guard open.",
+      refresher:"Series contacts are AND, parallel branches are OR, an N.C. test is NOT; permissives go in series with the whole request branch.",
+      outcome:"Translate a Boolean requirement into series contacts, a parallel branch and an N.C. test, and check it with a truth table.",
+      minutes:12,
+      bigPicture:{device:"Guard switch, foot switch, panel button, fault relay",actuator:"Press solenoid valve"},
+      testsMeaning:"PRESS = 1 exactly when a request is present, the guard is closed and no fault is active — every permissive blocks every request path.",
+      truth:true,
+      insights:[
+        s=>{
+          if(!(s.i.FOOT||s.i.PANEL)||s.m.PRESS)return null;
+          const why=[!s.i.GUARD?"GUARD = 0 (guard open)":"",s.i.FAULT?"FAULT = 1 makes the N.C. test FALSE":""].filter(Boolean);
+          return why.length?`A request is present, but PRESS stays 0 because ${why.join(" and ")}. Both permissives are in series with the whole request branch.`
+            :"A request is present and both permissives pass, yet PRESS stays 0: the request branch of this rung does not give a TRUE path. FOOT and PANEL must be parallel alternatives.";
+        },
+        s=>s.i.FOOT&&s.i.PANEL&&s.m.PRESS?"FOOT and PANEL are both 1. OR needs only one TRUE branch, so the result is the same as with a single request.":null,
+        s=>!s.i.FOOT&&!s.i.PANEL&&s.i.GUARD&&!s.i.FAULT&&!s.m.PRESS?"Both permissives pass (GUARD = 1, FAULT = 0), but PRESS stays 0: permissives allow the press; they never request it.":null,
+        s=>!s.i.FOOT&&!s.i.PANEL&&s.m.PRESS?"PRESS = 1 although neither FOOT nor PANEL requests it: a permissive is completing the path on its own. Check the parallel branch.":null
+      ]
     },
     {
       id:"holding",short:"Holding circuit",title:"3 · Keep a momentary Start command ON",level:"Core",
@@ -603,7 +901,7 @@
         {tag:"OL_OK",address:"%I0.3",label:"Overload circuit healthy",value:true,onText:"1 · Overload healthy",offText:"0 · Overload tripped"}
       ],
       data:[
-        {tag:"RUN_REQUEST",address:"%M0.0",label:"Stored run request",type:"internal"},
+        {tag:"RUN_REQUEST",address:"%M0.0",label:"Stored run request",type:"internal",meaningOn:"a run request is stored; the holding contact keeps it until a permissive drops",meaningOff:"no run request is stored; only a Start press can set it"},
         {tag:"M1",address:"%Q0.0",label:"Conveyor motor command",type:"output"},
         {tag:"RUN_LAMP",address:"%Q0.1",label:"Run-request indicator",type:"output"}
       ],
@@ -638,20 +936,60 @@
       },
       holding:true,
       questions:[
-        {q:"What happens on the first scan while Start is pressed?",context:"All three healthy permissive bits are 1 and START_PB becomes 1.",options:["The upper branch becomes true and the ordinary coil writes RUN_REQUEST = 1","The physical Start button becomes a software coil","RUN_REQUEST remains 0 until a timer finishes"],answer:0,hint:"Follow STOP_OK, GUARD_OK, OL_OK and the upper Start branch to the coil.",why:"The required permissives and the Start branch are true, so the rung result is true and the ordinary coil writes RUN_REQUEST = 1."},
-        {q:"Why does RUN_REQUEST stay 1 after Start is released?",context:"Look at what the lower branch reads on the following scan.",options:["The coil secretly tells the contact to close","The holding contact reads the same RUN_REQUEST bit that the coil wrote in the previous scan","The physical Start button remains electrically pressed"],answer:1,hint:"The coil writes data; the holding contact reads that stored data on the next scan.",why:"After START_PB returns to 0, the RUN_REQUEST contact reads 1 and provides the alternative true path. The coil continues writing RUN_REQUEST = 1."},
-        {q:"Why is STOP_OK shown as an N.O. software test?",context:"The physical Stop button is commonly wired with normally closed hardware contacts, but the tag is defined as a healthy-state bit.",options:["Because STOP_OK must equal 1 while the stop circuit is healthy","Because all physical N.C. switches require N.C. ladder tests","Because the PLC ignores physical wiring"],answer:0,hint:"The ladder instruction is selected according to the meaning of the stored bit.",why:"STOP_OK = 1 means the healthy condition is present. An N.O. software test asks whether that healthy bit equals 1."},
-        {q:"What occurs when STOP_OK changes to 0?",context:"STOP_OK is in series before both holding branches.",options:["The complete rung becomes false and the coil writes RUN_REQUEST = 0","Only the Start branch is affected","The motor remains commanded on forever"],answer:0,hint:"Every possible path to the coil must pass through STOP_OK.",why:"STOP_OK = 0 breaks the complete logical path. The ordinary coil writes RUN_REQUEST = 0; the motor and lamp rungs then also become false."}
+        {q:"Start is pressed for the first time. What happens on that scan?",context:"STOP_OK = 1, GUARD_OK = 1 and OL_OK = 1. START_PB changes to 1, and RUN_REQUEST is still 0 from the previous scan.",options:["The upper branch becomes true and the ordinary coil writes RUN_REQUEST = 1","The physical Start button becomes a software coil","RUN_REQUEST remains 0 until a timer finishes"],answer:0,hint:"Follow STOP_OK, GUARD_OK, OL_OK and the upper Start branch to the coil.",why:"The required permissives and the Start branch are true, so the rung result is true and the ordinary coil writes RUN_REQUEST = 1.",
+          explain:["All series permissives are TRUE and the upper START_PB branch is TRUE, so the rung is TRUE and the coil writes RUN_REQUEST = 1 in this scan.","A physical button never becomes an instruction. Pressing it only changes the input bit START_PB from 0 to 1.","There is no timer in this circuit. The coil writes 1 in the very scan in which the rung is TRUE."]},
+        {q:"Start is released (START_PB = 0). Why does RUN_REQUEST stay 1?",context:"RUN_REQUEST = 1 was written on the previous scan. Look at what the lower (holding) branch reads now.",options:["The coil secretly tells the contact to close","The holding contact reads the same RUN_REQUEST bit that the coil wrote in the previous scan","The physical Start button remains electrically pressed"],answer:1,hint:"The coil writes data; the holding contact reads that stored data on the next scan.",why:"After START_PB returns to 0, the RUN_REQUEST contact reads 1 and provides the alternative true path. The coil continues writing RUN_REQUEST = 1.",
+          explain:["Coils and contacts do not send messages to each other. A coil writes a bit; contacts read bits.","The holding contact reads RUN_REQUEST = 1, written by the coil on the previous scan, so the lower branch keeps the path TRUE.","START_PB = 0 now: the button is released, so the upper Start branch is FALSE."]},
+        {q:"Why is STOP_OK shown as an N.O. software test?",context:"The physical Stop button is wired with normally closed hardware contacts, so the input reads 1 while Stop is NOT pressed. The tag is named for that healthy state.",options:["Because STOP_OK must equal 1 while the stop circuit is healthy","Because all physical N.C. switches require N.C. ladder tests","Because the PLC ignores physical wiring"],answer:0,hint:"The ladder instruction is selected according to the meaning of the stored bit.",why:"STOP_OK = 1 means the healthy condition is present. An N.O. software test asks whether that healthy bit equals 1.",
+          explain:["STOP_OK = 1 means “stop circuit healthy”. An N.O. test asks “is that bit 1?”, so the rung requires the healthy state.","The ladder contact type follows the meaning of the stored bit, not the hardware contact. An N.C. test here would be TRUE only while Stop is pressed.","The wiring decides what 0 and 1 mean for the bit; the program then only reads the bit. The PLC does not ignore wiring."]},
+        {q:"The run request is held ON. What happens when STOP_OK changes to 0?",context:"STOP_OK is in series before both the Start branch and the holding branch.",options:["The complete rung becomes false and the coil writes RUN_REQUEST = 0","Only the Start branch is affected","The motor remains commanded on forever"],answer:0,hint:"Every possible path to the coil must pass through STOP_OK.",why:"STOP_OK = 0 breaks the complete logical path. The ordinary coil writes RUN_REQUEST = 0; the motor and lamp rungs then also become false.",
+          explain:["The series path is broken, so the coil writes RUN_REQUEST = 0; M1 and RUN_LAMP follow it to 0 on the next rungs.","STOP_OK is in series before the parallel branch, so it also cuts the holding branch.","An ordinary coil rewrites RUN_REQUEST on every scan; a FALSE rung writes 0 and the hold is lost."]}
       ],
       tests:[
-        {name:"Start and release holds",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:true,M1:true,RUN_LAMP:true}},
-        {name:"Stop breaks the hold",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false,RUN_LAMP:false}},
-        {name:"Guard opening stops",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:false,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false}},
-        {name:"Overload trip stops",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:false},dt:0}],expect:{RUN_REQUEST:false,M1:false}},
-        {name:"Restoring healthy inputs does not restart",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false}}
+        {name:"Start and release holds",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:true,M1:true,RUN_LAMP:true},
+          ask:"After Start is pressed and released, does the run request stay ON?",proves:"The holding contact reads RUN_REQUEST from the previous scan and keeps the path TRUE without START_PB.",check:"Check the parallel branch START_PB OR RUN_REQUEST, and check that M1 reads RUN_REQUEST, not START_PB."},
+        {name:"Stop breaks the hold",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false,RUN_LAMP:false},
+          ask:"Does pressing Stop end a held run request?",proves:"STOP_OK is in series before both branches, so STOP_OK = 0 makes the whole rung FALSE.",check:"Check that STOP_OK is in series with the whole parallel branch, not only with START_PB."},
+        {name:"Guard opening stops",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:false,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false},
+          ask:"Does opening the guard end the run request?",proves:"GUARD_OK = 0 breaks the series path exactly like STOP_OK, and the motor command drops.",check:"Check that GUARD_OK is a series N.O. test on the hold rung."},
+        {name:"Overload trip stops",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:false},dt:0}],expect:{RUN_REQUEST:false,M1:false},
+          ask:"Does an overload trip end the run request?",proves:"OL_OK = 0 breaks the series path and the motor command drops.",check:"Check that OL_OK is a series N.O. test on the hold rung."},
+        {name:"Restoring healthy inputs does not restart",steps:[{inputs:{START_PB:true,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:false,GUARD_OK:true,OL_OK:true},dt:0},{inputs:{START_PB:false,STOP_OK:true,GUARD_OK:true,OL_OK:true},dt:0}],expect:{RUN_REQUEST:false,M1:false},
+          ask:"After a stop, does restoring STOP_OK restart the motor by itself?",proves:"Once RUN_REQUEST = 0, the holding contact reads 0; only a new Start press can set the request again.",check:"Check that RUN_REQUEST is written by an ordinary coil (not SET) and that the holding contact reads RUN_REQUEST, not a permissive."}
       ],
       misconception:"The RUN_REQUEST coil does not send a separate message to its contact. The coil and contact use the same PLC bit: the coil writes RUN_REQUEST; the holding contact reads RUN_REQUEST on the following scan.",
-      real:"The holding rung stores an operating request, while M1 is a separate physical output command. Real emergency-stop, guard and overload protection must use the required safety-rated hardware or safety controller and must not rely only on an ordinary PLC program."
+      real:"The holding rung stores an operating request, while M1 is a separate physical output command. Real emergency-stop, guard and overload protection must use the required safety-rated hardware or safety controller and must not rely only on an ordinary PLC program.",
+      question:"How does a momentary Start button keep the motor running after it is released — and what stops it again?",
+      where:"the timing diagram (START_PB, RUN_REQUEST and M1 scan by scan), the state strip and “What just happened?” while you click presets 1 → 4.",
+      subQuestions:[
+        {q:"What happens on the first scan while Start is pressed?",a:"All permissives are 1 and START_PB = 1, so the upper branch completes the path and the coil writes RUN_REQUEST = 1.",at:"secNarrative",track:"q0"},
+        {q:"Why does RUN_REQUEST stay 1 after Start is released?",a:"The holding contact reads RUN_REQUEST — the bit the coil wrote on the previous scan — and keeps the path TRUE.",at:"secEvidence",track:"q1"},
+        {q:"Why is STOP_OK an N.O. test although the Stop button is wired N.C.?",a:"The tag means “stop circuit healthy”; the program asks whether that healthy bit is 1.",at:"secLadder",track:"q2"},
+        {q:"What breaks the hold?",a:"STOP_OK, GUARD_OK or OL_OK = 0 makes the series path FALSE, so the coil writes RUN_REQUEST = 0 and M1 drops.",at:"secNarrative",track:"q3"},
+        {q:"Does restoring the permissives restart the motor?",a:"No. RUN_REQUEST is already 0, so the holding contact reads 0; a new Start press is required.",at:"secResults",track:"tests"}
+      ],
+      modelAnswer:"On the scan where START_PB = 1 and STOP_OK, GUARD_OK and OL_OK are all 1, the upper branch completes the path and the ordinary coil writes RUN_REQUEST = 1. On the following scans the parallel holding contact reads that same RUN_REQUEST bit, written on the previous scan, so the path stays TRUE after Start is released. Any healthy-state permissive going to 0 breaks the series path in front of both branches: the coil writes RUN_REQUEST = 0, the holding contact then reads 0, and the request does not come back when the permissive is restored — the operator must press Start again. M1 and RUN_LAMP simply follow RUN_REQUEST.",
+      takeaways:["A holding (seal-in) contact reads the bit its own coil wrote on the previous scan.","Permissives go in series in front of both the Start branch and the holding branch.","After a stop, restoring the permissives does not restart: a new Start press is required.","Choose N.O. or N.C. from the meaning of the stored bit, not from the field wiring."],
+      mistake:"Putting STOP_OK only in the Start branch. The holding branch then bypasses the stop, and the motor cannot be stopped once it is running.",
+      refresher:"A holding contact reads the bit its coil wrote on the previous scan; series permissives break the hold, and a new Start press is needed to restart.",
+      outcome:"Explain scan by scan how a holding contact keeps a momentary Start request and how series permissives break it.",
+      minutes:15,
+      bigPicture:{device:"Start push button, stop/guard/overload circuits",actuator:"Conveyor motor contactor and run lamp"},
+      testsMeaning:"Start-and-release holds the request, each of the three permissives breaks it, and restoring a permissive does not restart the motor.",
+      trace:["START_PB","STOP_OK","GUARD_OK","OL_OK","RUN_REQUEST","M1"],
+      insights:[
+        (s,p)=>p&&p.i.START_PB&&!s.i.START_PB&&p.m.RUN_REQUEST&&s.m.RUN_REQUEST?"RUN_REQUEST stays 1 although START_PB went 1 → 0: the holding contact read the RUN_REQUEST bit written on the previous scan, so the lower branch kept the path TRUE.":null,
+        (s,p)=>p&&!p.i.START_PB&&s.i.START_PB&&p.m.RUN_REQUEST?"RUN_REQUEST was already 1. Pressing Start again changes nothing: both branches are TRUE now.":null,
+        s=>{
+          const open=["STOP_OK","GUARD_OK","OL_OK"].filter(tag=>!s.i[tag]);
+          if(!open.length)return null;
+          return s.i.START_PB?`Start is pressed, but RUN_REQUEST stays ${s.m.RUN_REQUEST?1:0}: ${open.join(", ")} = 0 is in series in front of both branches, so no path can reach the coil.`
+            :`${open.join(", ")} = 0 breaks the series path in front of both branches, so the coil writes RUN_REQUEST = ${s.m.RUN_REQUEST?1:0}.`;
+        },
+        (s,p)=>p&&["STOP_OK","GUARD_OK","OL_OK"].some(tag=>!p.i[tag])&&["STOP_OK","GUARD_OK","OL_OK"].every(tag=>s.i[tag])&&!s.i.START_PB&&!s.m.RUN_REQUEST?"All permissives are healthy again, but RUN_REQUEST stays 0: the holding contact reads RUN_REQUEST = 0, so only a new Start press can set it.":null,
+        s=>s.m.RUN_REQUEST&&s.m.M1&&!s.i.START_PB?"M1 follows RUN_REQUEST on Rung 2 in the same scan. The stored request and the physical motor command are separate bits.":null,
+        s=>s.m.RUN_REQUEST&&!s.m.M1?"RUN_REQUEST = 1 but M1 = 0: the motor rung is not reading RUN_REQUEST. Check the instruction on Rung 2.":null
+      ]
     },
     {
       id:"timer",short:"TON timer",title:"4 · Warn for three seconds before starting",level:"Core",
@@ -684,18 +1022,49 @@
       },
       timer:true,
       questions:[
-        {q:"At T_WARN.ET = 2.9 s, what is T_WARN.Q?",context:"The preset is 3.0 seconds.",options:["0 / not done","1 / done","2.9 / analog"],answer:0,hint:"Q changes only when elapsed time reaches the preset.",why:"At 2.9 seconds the preset has not been reached, so Q remains 0."},
-        {q:"Which contact sense keeps HORN on before the preset?",context:"The horn must run while Q = 0.",options:["N.O. T_WARN.Q","N.C. T_WARN.Q","N.O. M1"],answer:1,hint:"An N.C. instruction is true while its referenced bit is zero.",why:"N.C. T_WARN.Q is true while Q = 0 and becomes false when the timer completes."},
-        {q:"Why should T_WARN be enabled from ST rather than HORN?",context:"HORN turns off when the timer becomes done.",options:["To avoid the timer immediately losing its enable and resetting","Because timers cannot read outputs","To make Q analog"],answer:0,hint:"A standard TON resets ET and Q when its enabling path becomes false.",why:"If HORN enabled the timer, HORN turning off at completion would remove the timer enable, reset Q and destabilize the logic."}
+        {q:"T_WARN.ET = 2.9 s. What is T_WARN.Q?",context:"ST has been 1 for 2.9 s without interruption, and the preset PT is 3.0 s.",options:["0 / not done","1 / done","2.9 / analog"],answer:0,hint:"Q changes only when elapsed time reaches the preset.",why:"At 2.9 seconds the preset has not been reached, so Q remains 0.",
+          explain:["ET has not reached PT yet, so the done bit is still 0.","Q becomes 1 only when ET reaches PT = 3.0 s — another 0.1 s from now.","Q is a Boolean done bit (0 or 1). The number 2.9 is ET, the elapsed time."]},
+        {q:"Which contact sense keeps HORN on before the preset is reached?",context:"The horn must sound while T_WARN.Q = 0 and stop when Q = 1. ST is also in series on the horn rung.",options:["N.O. T_WARN.Q","N.C. T_WARN.Q","N.O. M1"],answer:1,hint:"An N.C. instruction is true while its referenced bit is zero.",why:"N.C. T_WARN.Q is true while Q = 0 and becomes false when the timer completes.",
+          explain:["N.O. T_WARN.Q is TRUE only when Q = 1, so the horn would sound after the warning instead of during it.","N.C. T_WARN.Q is TRUE while Q = 0 and turns FALSE when the timer is done.","M1 is 0 during the warning, so an N.O. M1 test would keep the horn OFF exactly when it should sound."]},
+        {q:"Why is T_WARN enabled from ST rather than from HORN?",context:"HORN turns off at the moment the timer becomes done.",options:["To avoid the timer immediately losing its enable and resetting","Because timers cannot read outputs","To make Q analog"],answer:0,hint:"A standard TON resets ET and Q when its enabling path becomes false.",why:"If HORN enabled the timer, HORN turning off at completion would remove the timer enable, reset Q and destabilize the logic.",
+          explain:["HORN drops when Q = 1. If HORN were the enable, the TON would lose its enable, reset ET and Q, turn HORN back on — and the logic would oscillate.","Timers can be enabled from output bits; the problem is that this particular output disappears at the transition.","Q is always a Boolean done bit, whatever enables the timer."]}
       ],
       tests:[
-        {name:"Disabled reset",steps:[{inputs:{ST:false},dt:0}],expect:{HORN:false,M1:false,"T_WARN.Q":false,"T_WARN.ET":0}},
-        {name:"Warning interval",steps:[{inputs:{ST:true},dt:2.5}],expect:{HORN:true,M1:false,"T_WARN.Q":false}},
-        {name:"Preset reached",steps:[{inputs:{ST:true},dt:3}],expect:{HORN:false,M1:true,"T_WARN.Q":true}},
-        {name:"Disable resets TON",steps:[{inputs:{ST:true},dt:3},{inputs:{ST:false},dt:0}],expect:{HORN:false,M1:false,"T_WARN.Q":false,"T_WARN.ET":0}}
+        {name:"Disabled reset",steps:[{inputs:{ST:false},dt:0}],expect:{HORN:false,M1:false,"T_WARN.Q":false,"T_WARN.ET":0},
+          ask:"With ST = 0, are the horn, the conveyor and the timer all OFF?",proves:"Without an enable the TON holds ET = 0 and Q = 0, and both output commands are OFF.",check:"Check that the timer is enabled by ST and that both the HORN and the M1 rung contain ST in series."},
+        {name:"Warning interval",steps:[{inputs:{ST:true},dt:2.5}],expect:{HORN:true,M1:false,"T_WARN.Q":false},
+          ask:"Halfway through the warning (2.5 s), is the horn ON and the conveyor still OFF?",proves:"Before ET reaches PT, Q = 0: the N.C. Q test passes HORN and the N.O. Q test blocks M1.",check:"Check that the horn rung uses N.C. T_WARN.Q and the conveyor rung uses N.O. T_WARN.Q."},
+        {name:"Preset reached",steps:[{inputs:{ST:true},dt:3}],expect:{HORN:false,M1:true,"T_WARN.Q":true},
+          ask:"At 3.0 s, does the horn stop and the conveyor start?",proves:"At ET = PT, Q = 1 switches both rungs in the same scan: horn OFF, conveyor ON.",check:"If HORN stays on or M1 stays off, the contact senses on Rungs 2 and 3 are swapped or the enable is unstable (for example, enabled from HORN)."},
+        {name:"Disable resets TON",steps:[{inputs:{ST:true},dt:3},{inputs:{ST:false},dt:0}],expect:{HORN:false,M1:false,"T_WARN.Q":false,"T_WARN.ET":0},
+          ask:"After the timer is done, does ST = 0 reset it?",proves:"The TON is non-retentive: IN = 0 sets ET = 0 and Q = 0 immediately.",check:"Check that the timer enable is ST only."}
       ],
       misconception:"A TON is not simply a delayed coil. It has an enabling condition, accumulated elapsed time and a done status bit that later instructions can read.",
-      real:"A standard non-retentive TON resets elapsed time and Q when its enable goes false. Confirm the exact timer semantics of the PLC platform used in the course."
+      real:"A standard non-retentive TON resets elapsed time and Q when its enable goes false. Confirm the exact timer semantics of the PLC platform used in the course.",
+      question:"How does a TON timer delay the conveyor by three seconds, and what do IN, PT, ET and Q mean at each moment?",
+      where:"the timing diagram (ST, T_WARN.ET, T_WARN.Q, HORN, M1) and the timer line of “What just happened?” while you press Advance 0.5 s.",
+      subQuestions:[
+        {q:"At ET = 2.9 s with PT = 3.0 s, what is Q?",a:"Q = 0. Q becomes 1 only when ET reaches PT.",at:"secEvidence",track:"q0"},
+        {q:"How can one done bit both stop the horn and start the conveyor?",a:"An N.C. test of T_WARN.Q passes HORN while Q = 0; an N.O. test passes M1 once Q = 1.",at:"secLadder",track:"q1"},
+        {q:"Why is the timer enabled from ST and not from HORN?",a:"HORN turns off when Q = 1; as the enable it would reset ET and Q immediately and the logic would oscillate.",at:"secNarrative",track:"q2"},
+        {q:"What happens to ET and Q when ST returns to 0?",a:"A non-retentive TON resets at once: ET = 0 and Q = 0.",at:"secResults",track:"tests"}
+      ],
+      modelAnswer:"ST enables TON T_WARN (IN = 1). While IN stays 1, the elapsed time ET counts up toward the preset PT = 3.0 s and the done bit Q stays 0, so the N.C. test of T_WARN.Q is TRUE: HORN = 1 and M1 = 0. In the scan in which ET reaches 3.0 s, Q becomes 1: the N.C. test turns FALSE (HORN = 0) and the N.O. test turns TRUE (M1 = 1). If ST returns to 0, the non-retentive TON resets ET to 0 and Q to 0. The enable must come from ST, not from HORN, because HORN drops exactly when Q becomes 1.",
+      takeaways:["TON: IN = enable, PT = preset, ET = elapsed time, Q = done (ET has reached PT).","Q is still 0 at 2.9 s and becomes 1 only when ET reaches PT.","N.C. Q means “not done yet”; N.O. Q means “done”.","A non-retentive TON resets ET and Q as soon as IN = 0."],
+      mistake:"Enabling the timer from the HORN output. HORN drops when Q = 1, which removes the enable, resets the timer and makes the horn and the conveyor flicker.",
+      refresher:"A TON counts ET while IN = 1; Q = 1 when ET reaches PT; IN = 0 resets ET and Q.",
+      outcome:"Predict TON IN, ET and Q at any moment and use Q in both the N.O. and the N.C. sense.",
+      minutes:12,
+      bigPicture:{device:"Process-enable switch",actuator:"Warning horn, then conveyor 1 motor"},
+      testsMeaning:"The horn sounds for exactly the 3 s preset, the conveyor starts when Q = 1, and switching ST off resets the timer.",
+      trace:["ST","T_WARN.ET","T_WARN.Q","HORN","M1"],
+      insights:[
+        (s,p)=>p&&!p.i.ST&&s.i.ST&&!Number(s.m["T_WARN.ET"])?"ST went 0 → 1, so the TON is enabled (IN = 1). This input-change scan takes 0 s, so ET is still 0. Press Advance to let time pass.":null,
+        s=>s.i.ST&&!s.m["T_WARN.Q"]&&s.m.HORN&&!s.m.M1?"HORN = 1 because the N.C. test of T_WARN.Q is TRUE while Q = 0. M1 stays 0 until Q = 1.":null,
+        (s,p)=>p&&!p.m["T_WARN.Q"]&&s.m["T_WARN.Q"]&&!s.m.HORN&&s.m.M1?"T_WARN.Q went 0 → 1 when ET reached PT = 3.0 s. In that same scan the N.C. Q test blocked HORN and the N.O. Q test passed M1 — one bit, two opposite senses.":null,
+        (s,p)=>p&&p.m["T_WARN.Q"]&&s.m["T_WARN.Q"]?"Q stays 1 while ST stays 1: ET is held at PT and the conveyor keeps running.":null,
+        (s,p)=>p&&p.i.ST&&!s.i.ST&&Number(p.m["T_WARN.ET"])>0?`ST = 0 removed the TON enable: ET reset from ${formatNumber(p.m["T_WARN.ET"])} s to 0 and Q to 0 (non-retentive TON).`:null
+      ]
     },
     {
       id:"cascade",short:"Why stages matter",title:"5 · Diagnose the output-cascade failure",level:"Diagnostic",
@@ -705,7 +1074,7 @@
       checks:["Locate the exact scan where TRL resets.","Explain why a temporary physical output is poor stage memory.","Use an internal stage bit to separate memory from action."],
       inputs:[{tag:"ST",address:"%I0.0",label:"Process enable",value:false}],
       data:[
-        {tag:"STEP_LOAD",address:"%M0.1",label:"Stored loading stage",type:"internal"},
+        {tag:"STEP_LOAD",address:"%M0.1",label:"Stored loading stage",type:"internal",meaningOn:"loading is the active stage; this SET memory survives GT dropping",meaningOff:"the loading stage has not been stored"},
         {tag:"TRO.ET",address:"timer data",label:"Position elapsed",type:"timer",numeric:true},
         {tag:"TRO.Q",address:"timer status",label:"Position done",type:"status"},
         {tag:"TRL.ET",address:"timer data",label:"Load elapsed",type:"timer",numeric:true},
@@ -735,16 +1104,46 @@
       slots:{a:{prompt:"The repaired timer needs a condition that remains true for the full loading stage.",correct:C("STEP_LOAD","Loading stage"),choices:[C("GT","Gate output"),C("STEP_LOAD","Loading stage"),C("TRO.Q","Position incomplete","NC")]}},
       timer:true,groups:["Flawed cascade","State-based repair"],
       questions:[
-        {q:"What happens to GT when TRO reaches 2.0 seconds?",context:"GT is controlled through N.C. TRO.Q.",options:["GT turns off","GT latches on","GT becomes a timer"],answer:0,hint:"TRO.Q changes from 0 to 1, so its N.C. instruction changes from true to false.",why:"TRO.Q = 1 opens the N.C. software path, so the ordinary GT coil writes 0."},
-        {q:"Why can the GT-enabled loading timer never finish?",context:"A non-retentive TON needs a continuously true enable.",options:["GT disappears when positioning completes, so TRL resets","TRL has no preset","Output tags cannot be read"],answer:0,hint:"Watch the input of the loading timer at the exact moment GT drops.",why:"The gate command is temporary. When GT becomes 0, the timer’s enable is false and ET/Q reset."},
-        {q:"What is the purpose of STEP_LOAD?",context:"Separate process memory from physical action.",options:["It stores that loading is the active stage","It is a physical limit switch","It directly proves robot motion"],answer:0,hint:"An internal M bit can remain true even after the gate output turns off.",why:"STEP_LOAD explicitly remembers the current process stage, allowing the timer and output logic to depend on stable state."}
+        {q:"What happens to GT when TRO reaches 2.0 seconds?",context:"The gate rung is GT = ST AND NOT TRO.Q, and ST stays 1.",options:["GT turns off","GT latches on","GT becomes a timer"],answer:0,hint:"TRO.Q changes from 0 to 1, so its N.C. instruction changes from true to false.",why:"TRO.Q = 1 opens the N.C. software path, so the ordinary GT coil writes 0.",
+          explain:["TRO.Q changes 0 → 1, the N.C. TRO.Q test becomes FALSE and the ordinary GT coil writes 0.","An ordinary coil never latches: it writes the current rung result on every scan.","GT is an output bit. Only a TON instruction creates timer data (ET and Q)."]},
+        {q:"Why can the GT-enabled loading timer TRL never finish?",context:"TRL is a non-retentive TON with PT = 5 s. In the flawed design its only enable is GT.",options:["GT disappears when positioning completes, so TRL resets","TRL has no preset","Output tags cannot be read"],answer:0,hint:"Watch the input of the loading timer at the exact moment GT drops.",why:"The gate command is temporary. When GT becomes 0, the timer’s enable is false and ET/Q reset.",
+          explain:["GT is ON only while positioning runs. TRL counts for about 2 s, then GT drops at the TRO preset, TRL loses its enable and ET and Q reset — it never reaches 5 s.","TRL has a 5 s preset. The problem is its enable, not its preset.","Contacts can read output bits. The problem is that this output turns off at the transition."]},
+        {q:"What is the purpose of STEP_LOAD in the repaired design?",context:"STEP_LOAD is internal memory (%M0.1), SET by ST AND TRO.Q. Separate process memory from physical action.",options:["It stores that loading is the active stage","It is a physical limit switch","It directly proves robot motion"],answer:0,hint:"An internal M bit can remain true even after the gate output turns off.",why:"STEP_LOAD explicitly remembers the current process stage, allowing the timer and output logic to depend on stable state.",
+          explain:["It remembers that loading is the active stage, even after GT turns off, so TRL has a stable enable.","STEP_LOAD is an internal %M bit, not a field device.","A stage bit records what the program intends. Only a feedback sensor proves robot motion."]}
       ],
       tests:[
-        {name:"Flawed cascade stalls",variant:"flawed",steps:[{inputs:{ST:true},dt:7}],expect:{RL:false,"TRL.Q":false}},
-        {name:"Repaired loading persists",variant:"repaired",steps:[{inputs:{ST:true},dt:2},{inputs:{ST:true},dt:5}],expect:{"STEP_LOAD":true,"TRL.Q":true}}
+        {name:"Flawed cascade stalls",variant:"flawed",steps:[{inputs:{ST:true},dt:7}],expect:{RL:false,"TRL.Q":false},
+          ask:"Does the flawed GT-enabled design fail to load, even after 7 s?",proves:"The failure is real and reproducible: TRL loses its enable when GT drops at 2 s, so TRL.Q and RL stay 0.",check:"This test runs only the Flawed cascade rungs. If RL turned on, the flawed rungs no longer match the design being diagnosed."},
+        {name:"Repaired loading persists",variant:"repaired",steps:[{inputs:{ST:true},dt:2},{inputs:{ST:true},dt:5}],expect:{"STEP_LOAD":true,"TRL.Q":true},
+          ask:"Does the repaired design keep STEP_LOAD and finish the 5 s loading timer?",proves:"STEP_LOAD (SET at TRO.Q) stays 1 after GT drops, so TRL accumulates the full 5 s and TRL.Q = 1.",check:"Check that the repaired loading timer is enabled by STEP_LOAD — not by GT and not by N.C. TRO.Q."}
       ],
       misconception:"A physical output command is not reliable sequence memory. It may turn off at the very transition that the next timer or operation needs.",
-      real:"Use internal stage/state bits to represent the process. Derive physical outputs from those states, and document the transition and reset conditions for every stage."
+      real:"Use internal stage/state bits to represent the process. Derive physical outputs from those states, and document the transition and reset conditions for every stage.",
+      question:"Why does a timer enabled from a temporary output never finish — and how does a stored stage bit repair it?",
+      where:"the timing diagram of GT and TRL.ET in the Flawed cascade tab, then in the State-based repair tab, and “What just happened?” at the 2 s event (use Run to next event).",
+      subQuestions:[
+        {q:"What happens to GT when TRO reaches 2.0 s?",a:"TRO.Q = 1 makes the N.C. TRO.Q test FALSE, so the ordinary GT coil writes 0.",at:"secEvidence",track:"q0"},
+        {q:"Why can the GT-enabled loading timer never finish?",a:"GT is TRL’s only enable and is ON only during positioning. TRL counts to about 2 s, then resets when GT drops; it never reaches 5 s.",at:"secNarrative",track:"q1"},
+        {q:"What does STEP_LOAD store, and why does that fix the timer?",a:"STEP_LOAD is SET memory meaning “loading is the active stage”. It stays 1 after GT drops, so TRL times its full 5 s.",at:"secLadder",track:"q2"},
+        {q:"Does the repaired design load while the flawed one stalls?",a:"Yes: RL and TRL.Q never turn on in the flawed design; the repair reaches TRL.Q = 1 with STEP_LOAD = 1.",at:"secResults",track:"tests"}
+      ],
+      modelAnswer:"In the flawed design GT is ON only while TRO is still timing, so the loading timer TRL — whose only enable is GT — starts counting during positioning. At 2.0 s TRO.Q = 1 turns the N.C. TRO.Q test FALSE, the coil writes GT = 0 and TRL loses its enable in that same scan, resetting ET and Q. TRL never reaches its 5 s preset, so RL never turns on: the cascade stalls. The repair stores the process stage instead: ST AND TRO.Q SETs STEP_LOAD, which stays 1 after GT drops, so TRL times the full 5 s and RL follows STEP_LOAD AND NOT TRL.Q. Physical outputs are actions derived from stages; they are not memory.",
+      takeaways:["A TON needs an enable that stays TRUE for its whole interval.","An output that turns off at a transition is useless as sequence memory.","Store the active stage in an internal bit (SET/RESET), then derive timers and outputs from it."],
+      mistake:"Chaining the next timer from the previous step’s output (GT) because it is “on at the right time”. It turns off exactly when the next step needs it.",
+      refresher:"Never use a temporary output as stage memory: SET an internal stage bit and enable the next timer from it.",
+      outcome:"Diagnose an output-cascade failure from its timing diagram and repair it with a stored stage bit.",
+      minutes:15,
+      bigPicture:{device:"Process-enable switch",actuator:"Gate actuator, then robot load"},
+      testsMeaning:"The diagnosis is reproducible (the flawed design never loads) and the stage-bit repair keeps the loading stage until TRL is done.",
+      trace:["ST","TRO.ET","TRO.Q","GT","TRL.ET","TRL.Q","STEP_LOAD","RL"],
+      insights:[
+        (s,p)=>programVariant==="flawed"&&p&&p.m.GT&&!s.m.GT&&s.m["TRO.Q"]?`GT went 1 → 0 at the TRO preset. TRL (enabled only by GT) had counted ${formatNumber(scanHistory[scanHistory.length-2]?.mem["TRL.ET"]||0)} s and was reset to 0 in the same scan: the loading timer lost its enable at the very moment it was needed.`:null,
+        s=>programVariant==="flawed"&&s.m.GT&&Number(s.m["TRL.ET"])>0?"TRL is counting only because GT is ON during positioning. It started at the wrong moment and will reset when GT drops at 2 s.":null,
+        s=>programVariant==="flawed"&&s.i.ST&&s.m["TRO.Q"]&&!s.m.GT&&!Number(s.m["TRL.ET"])?"Cascade failure: TRL stays reset because its only enable, GT, is 0 now. RL can never turn on, however long you wait.":null,
+        s=>programVariant!=="flawed"&&s.m.STEP_LOAD&&!s.m.GT&&Number(s.m["TRL.ET"])>0&&!s.m["TRL.Q"]?"STEP_LOAD stays 1 (SET memory) although GT dropped, so TRL keeps counting from stable stage memory while the robot loads.":null,
+        (s,p)=>programVariant!=="flawed"&&p&&p.m.STEP_LOAD&&s.m.STEP_LOAD&&s.t>p.t&&!Number(s.m["TRL.ET"])&&!s.m["TRL.Q"]?"STEP_LOAD = 1 and time has passed, but TRL is not counting: the repaired loading timer must be enabled by STEP_LOAD.":null,
+        s=>programVariant!=="flawed"&&s.m.STEP_LOAD&&s.m["TRL.Q"]?"TRL.Q = 1 after the full 5 s in the loading stage: the N.C. TRL.Q test now turns RL off — loading is complete.":null
+      ]
     },
     {
       id:"sequence",short:"Production sequence",title:"6 · Trace the four-stage production cell",level:"Sequence",
@@ -757,7 +1156,7 @@
         {tag:"SN",address:"%I0.1",label:"Part sensor",value:false}
       ],
       data:[
-        {tag:"NEW_PART",address:"%M0.0",label:"One-scan arrival pulse",type:"status"},
+        {tag:"NEW_PART",address:"%M0.0",label:"One-scan arrival pulse",type:"status",meaningOn:"a new 0 → 1 edge occurred on THIS scan only",meaningOff:"no new arrival edge on this scan (SN may still be 1)"},
         {tag:"STEP_POS",address:"%M0.1",label:"Positioning stage",type:"internal"},
         {tag:"STEP_LOAD",address:"%M0.2",label:"Robot-loading stage",type:"internal"},
         {tag:"STEP_CNC",address:"%M0.3",label:"CNC stage",type:"internal"},
@@ -807,18 +1206,59 @@
       ],
       puzzle:null,slots:{},timer:true,sequence:true,groups:["Start / stop","Position","Load","CNC","Unload","Outputs"],
       questions:[
-        {q:"Why is NEW_PART a one-scan rising-edge pulse instead of the level of SN?",context:"The same part may keep the sensor on for many scans.",options:["To prevent repeated cycles while SN stays 1","To make SN analog","To reset every timer"],answer:0,hint:"A level remains true; an edge marks one new event.",why:"The pulse occurs only on the 0→1 transition, so one persistent sensor signal cannot repeatedly restart the sequence."},
-        {q:"Which data creates the transition from positioning to loading?",context:"STEP_POS enables TRO.",options:["TRO.Q","GT","M1"],answer:0,hint:"The timer done bit becomes 1 at the positioning preset.",why:"TRO.Q sets STEP_LOAD and resets STEP_POS. The physical gate output is an action, not the stored transition memory."},
-        {q:"What should turning ST off during any stage do?",context:"Outputs are derived from stored stage bits.",options:["Reset every stage and turn commands off","Pause and resume the same stage automatically","Only stop Conveyor 1"],answer:0,hint:"Look for the master reset rung group.",why:"NOT ST resets all stage bits. Timer enables and stage-derived outputs then become false, producing a predictable stop."},
-        {q:"Why should only one STEP bit be active?",context:"Each stage represents one mutually exclusive process state.",options:["To prevent conflicting actions and make the state diagnosable","Because the PLC has only one memory bit","To make timers analog"],answer:0,hint:"Two active stages can command incompatible actuators.",why:"Mutual exclusion prevents overlapping actions and makes the state strip a trustworthy diagnostic view."}
+        {q:"Why is NEW_PART a one-scan rising-edge pulse instead of the level of SN?",context:"The same part can keep the sensor at SN = 1 for many scans while it sits there.",options:["To prevent repeated cycles while SN stays 1","To make SN analog","To reset every timer"],answer:0,hint:"A level remains true; an edge marks one new event.",why:"The pulse occurs only on the 0→1 transition, so one persistent sensor signal cannot repeatedly restart the sequence.",
+          explain:["The pulse occurs only on the 0 → 1 transition, so one part starts exactly one cycle.","SN stays a Boolean input. An edge detector does not change its data type.","Timers are reset by their own enables and by the master reset, not by the arrival pulse."]},
+        {q:"Which data creates the transition from positioning to loading?",context:"STEP_POS = 1 enables the timer TRO (PT = 2 s) and the gate output GT.",options:["TRO.Q","GT","M1"],answer:0,hint:"The timer done bit becomes 1 at the positioning preset.",why:"TRO.Q sets STEP_LOAD and resets STEP_POS. The physical gate output is an action, not the stored transition memory.",
+          explain:["TRO.Q = 1 SETs STEP_LOAD and RESETs STEP_POS in the same scan.","GT is the action of the positioning stage. It turns off at the transition and is not memory.","M1 follows ST only and has nothing to do with stage transitions."]},
+        {q:"What should turning ST off during any stage do?",context:"Outputs are derived from the stored stage bits, and the Start / stop group contains a NOT ST master-reset rung.",options:["Reset every stage and turn commands off","Pause and resume the same stage automatically","Only stop Conveyor 1"],answer:0,hint:"Look for the master reset rung group.",why:"NOT ST resets all stage bits. Timer enables and stage-derived outputs then become false, producing a predictable stop.",
+          explain:["NOT ST resets every STEP bit; the timers lose their enables and the stage-driven outputs become 0.","The stage bits are cleared, so there is nothing to resume: a new part edge is needed after ST returns.","The master reset clears every stage, so GT, RL, CNS, RU and M2 turn off as well — not only M1."]},
+        {q:"Why should only one STEP bit be active at a time?",context:"Each STEP bit represents one mutually exclusive process state of the main cell.",options:["To prevent conflicting actions and make the state diagnosable","Because the PLC has only one memory bit","To make timers analog"],answer:0,hint:"Two active stages can command incompatible actuators.",why:"Mutual exclusion prevents overlapping actions and makes the state strip a trustworthy diagnostic view.",
+          explain:["One active stage prevents conflicting actuator commands and makes the state strip a trustworthy diagnosis.","A PLC has thousands of memory bits. One-active-stage is a design rule, not a hardware limit.","The number of stages does not change timers; Q stays a Boolean done bit."]}
       ],
       tests:[
-        {name:"Normal 2–5–10–3 s cycle",special:"normal"},
-        {name:"Stop resets every stage",special:"stop"},
-        {name:"Persistent SN does not retrigger",special:"persistent"}
+        {name:"Normal 2–5–10–3 s cycle",special:"normal",
+          ask:"Does one part go Position → Load → CNC → Unload → Idle with the right action in each stage?",proves:"Every transition fires on the active stage’s done bit, each stage drives its own action, and the cell returns to idle.",check:"Find the first checkpoint that failed and look at the transition rungs (SET next / RESET current) of the stage before it."},
+        {name:"Stop resets every stage",special:"stop",
+          ask:"Does ST = 0 in the middle of a cycle clear every stage and every command?",proves:"The master-reset rung on NOT ST clears all STEP bits, and every stage-derived output follows.",check:"Check the master stop rung (N.C. ST → RESET all stages)."},
+        {name:"Persistent SN does not retrigger",special:"persistent",
+          ask:"If the part stays at the sensor (SN = 1 throughout), does the cell stay idle after one cycle?",proves:"Only a 0 → 1 edge creates NEW_PART, so a constant SN = 1 cannot start a second cycle.",check:"Check that Start positioning uses NEW_PART (edge), not SN (level)."}
       ],
       misconception:"Do not use temporary physical outputs as the only memory of a process stage. Store the state explicitly, then derive timers and outputs from that state.",
-      real:"The exact same-scan result depends on rung order and the PLC platform’s instruction semantics. Organize the program into clear groups for input conditioning, transitions, timers and outputs, and verify behavior through simulation."
+      real:"The exact same-scan result depends on rung order and the PLC platform’s instruction semantics. Organize the program into clear groups for input conditioning, transitions, timers and outputs, and verify behavior through simulation.",
+      question:"How do stage bits, timer done bits and a rising-edge pulse move one part through Position → Load → CNC → Unload with exactly one stage active?",
+      where:"the step map (active step and what blocks the next transition), the timing diagram of the STEP bits, and “What just happened?” after each Run to next event.",
+      subQuestions:[
+        {q:"Why is NEW_PART a one-scan rising-edge pulse instead of the SN level?",a:"SN can stay 1 for many scans; the 0 → 1 edge marks one arrival, so one part starts only one cycle.",at:"secEvidence",track:"q0"},
+        {q:"Which data moves the cell from one stage to the next?",a:"The active stage’s timer done bit (TRO.Q, TRL.Q, TRCNC.Q, TRU.Q) SETs the next STEP bit and RESETs the current one.",at:"secControls",track:"q1"},
+        {q:"What does turning ST off do during any stage?",a:"The master-reset rung clears every STEP bit; timers and stage-driven outputs turn off.",at:"secLadder",track:"q2"},
+        {q:"Why must only one STEP bit be active?",a:"Stages are mutually exclusive: one active bit avoids conflicting actuator commands and keeps the state diagnosable.",at:"secControls",track:"q3"},
+        {q:"Do the full cycle, the stop and the persistent sensor behave correctly?",a:"Yes: the reference tests check the 2–5–10–3 s cycle, the master stop and that SN = 1 does not retrigger.",at:"secResults",track:"tests"}
+      ],
+      modelAnswer:"A rising edge of SN (with ST = 1) produces the one-scan pulse NEW_PART. If every STEP bit is 0, NEW_PART SETs STEP_POS. Each stage bit enables its own TON and its action output (GT, RL, CNS, then RU + M2). When that timer’s done bit becomes 1, two rungs SET the next stage bit and RESET the current one, so exactly one STEP bit is 1 at a time: Position 2 s → Load 5 s → CNC 10 s → Unload 3 s → Idle. A persistent SN = 1 cannot restart the cycle because no new 0 → 1 edge occurs, and ST = 0 resets every stage, which turns all stage-driven outputs off.",
+      takeaways:["An edge (R_TRIG) turns a level into one event: one part, one cycle.","Each stage = one stored STEP bit + its own timer + its own actions.","Transition = done bit of the active stage: SET next, RESET current.","A master reset on NOT ST gives a predictable stop."],
+      mistake:"Starting the cycle from the SN level instead of the NEW_PART edge. A part that stays at the sensor would then restart the cycle again and again.",
+      refresher:"Store each stage in one STEP bit; the active stage’s timer done bit sets the next stage and resets the current one; an edge starts one cycle per part.",
+      outcome:"Trace a four-stage sequence through its STEP bits, timers and transitions, and say what is blocking the next transition.",
+      minutes:20,
+      bigPicture:{device:"Part sensor SN and cell-enable switch ST",actuator:"Gate, robot, CNC and Conveyor 2"},
+      testsMeaning:"The sequence runs every stage in order with the right action, stops cleanly on ST = 0 and starts exactly one cycle per part.",
+      trace:["ST","SN","NEW_PART","STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","GT","RL","CNS","RU","M2"],
+      stateMap:{
+        steps:[
+          {name:"IDLE",does:"No stage active; the cell waits for a part.",next:"POSITION",when:"ST = 1 AND NEW_PART (rising edge of ST AND SN) AND every STEP bit = 0"},
+          {name:"POSITION",tag:"STEP_POS",timer:"TRO",does:"GT opens the gate while TRO.Q = 0.",next:"LOAD",when:"TRO.Q = 1 (after 2 s)"},
+          {name:"LOAD",tag:"STEP_LOAD",timer:"TRL",does:"RL: the robot loads while TRL.Q = 0.",next:"CNC",when:"TRL.Q = 1 (after 5 s)"},
+          {name:"CNC",tag:"STEP_CNC",timer:"TRCNC",does:"CNS: the CNC machines while TRCNC.Q = 0.",next:"UNLOAD",when:"TRCNC.Q = 1 (after 10 s)"},
+          {name:"UNLOAD",tag:"STEP_UNLOAD",timer:"TRU",does:"RU and M2 unload while TRU.Q = 0.",next:"IDLE",when:"TRU.Q = 1 (after 3 s)"}
+        ],
+        reset:"From any stage: ST = 0 → the master-reset rung clears every STEP bit (back to IDLE)."
+      },
+      insights:[
+        s=>s.m.NEW_PART?"NEW_PART = 1 for this one scan only (rising edge of SN). On the next scan it returns to 0, even if SN stays 1.":null,
+        s=>s.i.ST&&s.i.SN&&!s.m.NEW_PART&&!["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>s.m[tag])?"SN is still 1, but NEW_PART stays 0: the rising-edge instruction needs SN to go 0 → 1 again, so the idle cell does not restart.":null,
+        (s,p)=>p&&!s.i.ST&&["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>p.m[tag])?"ST = 0: the master-reset rung cleared every STEP bit, so the timers lost their enables and every stage-driven output turned off.":null,
+        (s,p)=>p&&!p.i.ST&&s.i.ST&&!s.i.SN?"ST = 1 enables the cell and Conveyor 1 (M1 follows ST only). No stage starts until ST AND SN rises from 0 to 1 — a new part at the sensor.":null
+      ]
     },
     {
       id:"busycell",short:"Busy-cell arrivals",title:"7 · Handle a new part while the cell is busy",level:"Applied sequence",
@@ -831,12 +1271,12 @@
         {tag:"SN",address:"%I0.1",label:"New-part sensor",value:false,onText:"1 · Part at sensor",offText:"0 · Sensor clear"}
       ],
       data:[
-        {tag:"NEW_PART",address:"%M1.0",label:"One-scan arrival pulse",type:"status"},
-        {tag:"CELL_BUSY",address:"%M1.1",label:"Load, CNC or unload active",type:"status"},
-        {tag:"PART_WAITING",address:"%M1.2",label:"One stored waiting part",type:"internal"},
-        {tag:"START_WAITING",address:"%M1.3",label:"One-scan release of waiting part",type:"status"},
-        {tag:"BYPASS_ACTIVE",address:"%M1.4",label:"Direct-to-Conveyor-2 transfer",type:"internal"},
-        {tag:"INFEED_HOLD",address:"%M1.5",label:"Stop Conveyor 1 request",type:"status"},
+        {tag:"NEW_PART",address:"%M1.0",label:"One-scan arrival pulse",type:"status",meaningOn:"a new 0 → 1 edge occurred on THIS scan only",meaningOff:"no new arrival edge on this scan (SN may still be 1)"},
+        {tag:"CELL_BUSY",address:"%M1.1",label:"Load, CNC or unload active",type:"status",meaningOn:"LOAD, CNC or UNLOAD is active right now (recalculated every scan)",meaningOff:"no busy main stage on this scan"},
+        {tag:"PART_WAITING",address:"%M1.2",label:"One stored waiting part",type:"internal",meaningOn:"one arrival is stored and waits for the idle cell",meaningOff:"the one waiting place is free"},
+        {tag:"START_WAITING",address:"%M1.3",label:"One-scan release of waiting part",type:"status",meaningOn:"the waiting part is released on THIS scan",meaningOff:"no release on this scan"},
+        {tag:"BYPASS_ACTIVE",address:"%M1.4",label:"Direct-to-Conveyor-2 transfer",type:"internal",meaningOn:"a new part is being transferred straight to Conveyor 2 (no CNC)",meaningOff:"no bypass transfer in progress"},
+        {tag:"INFEED_HOLD",address:"%M1.5",label:"Stop Conveyor 1 request",type:"status",meaningOn:"a part is at the sensor while the cell is busy, so Conveyor 1 must stop",meaningOff:"no reason to hold Conveyor 1"},
         {tag:"STEP_POS",address:"%M0.1",label:"Positioning stage",type:"internal"},
         {tag:"STEP_LOAD",address:"%M0.2",label:"Robot-loading stage",type:"internal"},
         {tag:"STEP_CNC",address:"%M0.3",label:"CNC stage",type:"internal"},
@@ -904,19 +1344,70 @@
       ],
       puzzle:null,slots:{},timer:true,sequence:true,busyExtension:true,groups:["Arrival logic","Position","Load","CNC","Unload","CNC bypass","Outputs"],
       questions:[
-        {q:"A new part arrives while the robot is loading. What must the program do?",context:"The robot is not free to bypass the new part immediately.",options:["Store PART_WAITING and stop M1","Start a second CNC timer immediately","Ignore the sensor until the current cycle ends"],answer:0,hint:"The arrival pulse lasts one scan, so a stored bit is needed to remember it.",why:"PART_WAITING preserves one arrival while INFEED_HOLD stops Conveyor 1. When the main cell returns idle, START_WAITING begins the next normal cycle."},
-        {q:"A new part arrives while STEP_CNC = 1. Which path handles it?",context:"The exercise says to load that new part onto Conveyor 2 and skip its CNC operation.",options:["PART_WAITING only","BYPASS_ACTIVE with RU and M2","Reset the current STEP_CNC"],answer:1,hint:"The current part remains in the CNC; the new part takes a separate transfer path.",why:"BYPASS_ACTIVE enables a three-second robot transfer to Conveyor 2 while the original CNC stage continues."},
-        {q:"Why is CELL_BUSY an ordinary-coil status bit rather than a retained SET bit?",context:"It should describe what the main-stage bits mean right now.",options:["It must follow LOAD OR CNC OR UNLOAD every scan","It has to remember a past busy condition forever","It represents a physical switch"],answer:0,hint:"Status should clear automatically when its source conditions clear.",why:"The ordinary coil recalculates CELL_BUSY every scan from the current stage bits."},
-        {q:"What limitation comes from using one Boolean PART_WAITING bit?",context:"A Boolean bit can remember only yes or no.",options:["The model can buffer only one waiting arrival","The timer can count only one second","The CNC cannot be stopped"],answer:0,hint:"It is a one-place queue, not a counter or FIFO.",why:"A second arrival while PART_WAITING is already 1 cannot be represented separately. A real multi-part buffer needs a counter, queue or additional tracking data."}
+        {q:"A new part arrives while the robot is loading (STEP_LOAD = 1). What must the program do?",context:"The robot is busy, so it cannot transfer the new part now. NEW_PART lasts for only one scan.",options:["Store PART_WAITING and stop M1","Start a second CNC timer immediately","Ignore the sensor until the current cycle ends"],answer:0,hint:"The arrival pulse lasts one scan, so a stored bit is needed to remember it.",why:"PART_WAITING preserves one arrival while INFEED_HOLD stops Conveyor 1. When the main cell returns idle, START_WAITING begins the next normal cycle.",
+          explain:["PART_WAITING (SET) stores the one arrival and INFEED_HOLD stops M1; START_WAITING later begins a normal cycle.","There is only one CNC. A second CNC timer would model a machine that does not exist.","Ignoring the pulse loses the part: NEW_PART is already 0 on the next scan."]},
+        {q:"A new part arrives while STEP_CNC = 1. Which path handles it?",context:"The exercise says: load that new part onto Conveyor 2 and skip its CNC operation. The robot is free while the CNC works.",options:["PART_WAITING only","BYPASS_ACTIVE with RU and M2","Reset the current STEP_CNC"],answer:1,hint:"The current part remains in the CNC; the new part takes a separate transfer path.",why:"BYPASS_ACTIVE enables a three-second robot transfer to Conveyor 2 while the original CNC stage continues.",
+          explain:["Waiting would hold the part until the whole cycle ends, but the specification asks for a direct bypass during CNC.","BYPASS_ACTIVE runs RU and M2 for the 3 s TBYPASS transfer while the original CNC stage continues.","The part inside the CNC must finish; resetting STEP_CNC would abort its machining."]},
+        {q:"Why is CELL_BUSY an ordinary-coil status bit rather than a retained SET bit?",context:"CELL_BUSY = STEP_LOAD OR STEP_CNC OR STEP_UNLOAD. It should describe what the main-stage bits mean right now.",options:["It must follow LOAD OR CNC OR UNLOAD every scan","It has to remember a past busy condition forever","It represents a physical switch"],answer:0,hint:"Status should clear automatically when its source conditions clear.",why:"The ordinary coil recalculates CELL_BUSY every scan from the current stage bits.",
+          explain:["An ordinary coil recalculates LOAD OR CNC OR UNLOAD every scan, so CELL_BUSY clears by itself when the cell is no longer busy.","A SET bit would stay 1 after the cell becomes idle and would need an extra reset rung — a stale status.","CELL_BUSY is an internal status bit (%M1.1), not a field device."]},
+        {q:"What limitation comes from using one Boolean PART_WAITING bit?",context:"A Boolean bit can remember only yes or no.",options:["The model can buffer only one waiting arrival","The timer can count only one second","The CNC cannot be stopped"],answer:0,hint:"It is a one-place queue, not a counter or FIFO.",why:"A second arrival while PART_WAITING is already 1 cannot be represented separately. A real multi-part buffer needs a counter, queue or additional tracking data.",
+          explain:["It is a one-place queue: a second arrival while PART_WAITING = 1 cannot be stored separately.","The timers are independent of PART_WAITING; their presets are seconds, not part counts.","ST = 0 still stops the CNC through the master reset."]}
       ],
       tests:[
-        {name:"Arrival during loading is stored and later released",special:"busy_load"},
-        {name:"Arrival during CNC bypasses to Conveyor 2",special:"busy_cnc"},
-        {name:"Arrival during unloading is stored and later released",special:"busy_unload"},
-        {name:"Stop clears both main and auxiliary states",special:"busy_stop"}
+        {name:"Arrival during loading is stored and later released",special:"busy_load",
+          ask:"A part arrives during LOAD: is it stored, is M1 stopped, and does it start a cycle later?",proves:"The one-scan arrival became stored PART_WAITING, INFEED_HOLD stopped M1 in the same scan, and START_WAITING released the part into a normal cycle once the cell was idle.",check:"Check the Store a waiting part rung (NEW_PART AND (LOAD OR UNLOAD) AND NOT PART_WAITING) and the two release rungs."},
+        {name:"Arrival during CNC bypasses to Conveyor 2",special:"busy_cnc",
+          ask:"A part arrives during CNC: does it bypass to Conveyor 2 while the CNC keeps working?",proves:"BYPASS_ACTIVE drives RU and M2 for 3 s in parallel with STEP_CNC, then ends by itself without disturbing the CNC stage.",check:"Check Start CNC bypass, the TBYPASS timer, Finish bypass and the RU/M2 output rungs."},
+        {name:"Arrival during unloading is stored and later released",special:"busy_unload",
+          ask:"A part arrives during UNLOAD: is it stored and released after the unload?",proves:"PART_WAITING survives the unload, and START_WAITING sets STEP_POS as soon as the cell becomes idle.",check:"Check that STEP_UNLOAD is in the waiting branch and that the release requires every STEP bit = 0 and no bypass."},
+        {name:"Stop clears both main and auxiliary states",special:"busy_stop",
+          ask:"Does ST = 0 clear the main stages, the waiting/bypass memory and every output?",proves:"The master reset clears main and auxiliary states, so no remembered arrival can restart the cell later.",check:"Check that the master-reset tag list includes PART_WAITING and BYPASS_ACTIVE."}
       ],
       misconception:"BUSY, PART_WAITING and BYPASS_ACTIVE are not physical devices. They are program states. The main stage and the bypass state may be active at the same time because the bypass is an explicitly modeled parallel activity, not a second main process stage.",
-      real:"The slide exercise states the required behavior but does not define queue capacity, robot travel time, confirmation sensors or resource conflicts. This teaching implementation assumes one waiting place, a robot that is free during CNC, and a three-second bypass transfer. A real design must add pickup/drop confirmation, jam handling, robot arbitration, capacity limits and validated safety functions."
+      real:"The slide exercise states the required behavior but does not define queue capacity, robot travel time, confirmation sensors or resource conflicts. This teaching implementation assumes one waiting place, a robot that is free during CNC, and a three-second bypass transfer. A real design must add pickup/drop confirmation, jam handling, robot arbitration, capacity limits and validated safety functions.",
+      question:"What should the cell do when a new part arrives while it is still busy — and how does the program remember that arrival?",
+      where:"the step map (main stage plus WAITING, BYPASS and M1 HOLD), the timing diagram of NEW_PART, PART_WAITING, BYPASS_ACTIVE and M1, and “What just happened?” right after a new SN edge.",
+      subQuestions:[
+        {q:"What happens when a part arrives during loading or unloading?",a:"NEW_PART SETs PART_WAITING (one stored arrival) and INFEED_HOLD stops M1 while SN = 1; the part starts a normal cycle when the main cell is idle.",at:"secControls",track:"q0"},
+        {q:"What happens when a part arrives during CNC?",a:"NEW_PART SETs BYPASS_ACTIVE: RU and M2 transfer the new part to Conveyor 2 for 3 s while STEP_CNC continues.",at:"secControls",track:"q1"},
+        {q:"Why is CELL_BUSY an ordinary coil and not SET memory?",a:"It is a status that must follow LOAD OR CNC OR UNLOAD on every scan and clear by itself.",at:"secLadder",track:"q2"},
+        {q:"What is the limit of one PART_WAITING bit?",a:"It buffers only one waiting arrival; more parts need a counter or a FIFO.",at:"secNarrative",track:"q3"},
+        {q:"Do the load, CNC, unload and stop scenarios all behave as specified?",a:"Yes: the reference tests check each busy arrival and the master stop, checkpoint by checkpoint.",at:"secResults",track:"tests"}
+      ],
+      modelAnswer:"The one-scan NEW_PART pulse must be turned into stored state, because it is gone on the next scan. During LOAD or UNLOAD the robot is busy, so NEW_PART SETs PART_WAITING; when every main stage and the bypass are idle, START_WAITING pulses for one scan, SETs STEP_POS and RESETs PART_WAITING. During CNC the robot is free, so NEW_PART SETs BYPASS_ACTIVE: RU and M2 run for the 3 s TBYPASS transfer while STEP_CNC keeps running. In every busy case INFEED_HOLD = SN AND (CELL_BUSY OR PART_WAITING OR BYPASS_ACTIVE) turns M1 off in the same scan. CELL_BUSY is an ordinary-coil status, and one Boolean PART_WAITING can hold only one waiting part.",
+      takeaways:["Turn a one-scan event into stored state (SET) when it must be remembered.","Status bits (CELL_BUSY, INFEED_HOLD) are ordinary coils recalculated on every scan.","An auxiliary state (BYPASS) may run in parallel with one main stage when resources allow it.","One Boolean waiting bit is a one-place queue."],
+      mistake:"Using NEW_PART directly in the release logic. The pulse lasts one scan, so the arrival is forgotten long before the cell becomes idle.",
+      refresher:"Store a busy arrival as PART_WAITING (or start BYPASS during CNC), stop M1 with INFEED_HOLD, and release the waiting part when the cell is idle.",
+      outcome:"Extend a sequence with stored waiting and bypass states, and prove with tests that busy arrivals are handled.",
+      minutes:20,
+      bigPicture:{device:"New-part sensor SN and cell-enable switch ST",actuator:"Conveyor 1 infeed, robot transfer and Conveyor 2"},
+      testsMeaning:"Busy arrivals are never lost: they wait during LOAD/UNLOAD, bypass during CNC, stop the infeed, and the master stop clears every remembered state.",
+      trace:["ST","SN","NEW_PART","STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","PART_WAITING","START_WAITING","BYPASS_ACTIVE","INFEED_HOLD","M1","RU","M2"],
+      stateMap:{
+        steps:[
+          {name:"IDLE",does:"No main stage active; a waiting part is released here.",next:"POSITION",when:"ST AND NEW_PART AND every STEP bit = 0 AND BYPASS_ACTIVE = 0 — or START_WAITING releases a waiting part"},
+          {name:"POSITION",tag:"STEP_POS",timer:"TRO",does:"GT opens the gate while TRO.Q = 0.",next:"LOAD",when:"TRO.Q = 1 (after 2 s)"},
+          {name:"LOAD",tag:"STEP_LOAD",timer:"TRL",does:"RL: the robot loads while TRL.Q = 0. The robot is busy.",next:"CNC",when:"TRL.Q = 1 (after 5 s)"},
+          {name:"CNC",tag:"STEP_CNC",timer:"TRCNC",does:"CNS: the CNC machines while TRCNC.Q = 0. The robot is free.",next:"UNLOAD",when:"TRCNC.Q = 1 (after 10 s)"},
+          {name:"UNLOAD",tag:"STEP_UNLOAD",timer:"TRU",does:"RU and M2 unload the main part while TRU.Q = 0. The robot is busy.",next:"IDLE",when:"TRU.Q = 1 (after 3 s)"}
+        ],
+        aux:[
+          {name:"WAITING",tag:"PART_WAITING",does:"Remembers one arrival that came while the robot was busy.",enter:"NEW_PART while STEP_LOAD or STEP_UNLOAD = 1 (and no part already waiting)",leave:"START_WAITING: ST AND every STEP bit = 0 AND BYPASS_ACTIVE = 0"},
+          {name:"BYPASS",tag:"BYPASS_ACTIVE",timer:"TBYPASS",does:"RU and M2 carry the new part to Conveyor 2 without CNC.",enter:"NEW_PART while STEP_CNC = 1",leave:"TBYPASS.Q = 1 (after 3 s)"},
+          {name:"M1 HOLD",tag:"INFEED_HOLD",does:"Stops Conveyor 1 (M1 = 0).",enter:"SN = 1 AND (CELL_BUSY OR PART_WAITING OR BYPASS_ACTIVE)",leave:"recalculated every scan: drops as soon as that condition is FALSE"}
+        ],
+        reset:"From any state: ST = 0 → the master reset clears every STEP bit, PART_WAITING and BYPASS_ACTIVE."
+      },
+      insights:[
+        (s,p)=>s.m.NEW_PART&&(s.m.STEP_LOAD||s.m.STEP_UNLOAD)&&s.m.PART_WAITING&&!(p&&p.m.PART_WAITING)?"NEW_PART arrived while the robot is busy (LOAD/UNLOAD). The pulse will be gone on the next scan, so it was stored as PART_WAITING (SET). INFEED_HOLD = 1 stops M1 while SN = 1.":null,
+        s=>s.m.NEW_PART&&s.m.STEP_CNC&&s.m.BYPASS_ACTIVE?"NEW_PART arrived during CNC, so BYPASS_ACTIVE was SET: RU and M2 transfer the new part to Conveyor 2 for 3 s while STEP_CNC keeps running.":null,
+        (s,p)=>p&&p.m.PART_WAITING&&s.m.NEW_PART&&(s.m.STEP_LOAD||s.m.STEP_UNLOAD)?"A second arrival while PART_WAITING is already 1 cannot be stored: one Boolean bit is a one-place queue.":null,
+        s=>s.m.START_WAITING?"START_WAITING = 1 for one scan: the main cell and the bypass are idle, so the waiting part is released — STEP_POS is SET and PART_WAITING is RESET.":null,
+        (s,p)=>p&&p.m.PART_WAITING&&!s.m.PART_WAITING&&s.m.STEP_POS?"The waiting part was released: START_WAITING pulsed, SET STEP_POS and RESET PART_WAITING. A normal cycle has started.":null,
+        s=>(s.m.PART_WAITING||s.m.BYPASS_ACTIVE||s.m.CELL_BUSY)&&!s.i.SN&&s.i.ST&&s.m.M1?"M1 runs although the cell is busy: INFEED_HOLD needs SN = 1, so the hold only applies while a part is at the sensor.":null,
+        s=>s.i.ST&&s.i.SN&&!s.m.NEW_PART&&!s.m.INFEED_HOLD&&!["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>s.m[tag])&&!s.m.BYPASS_ACTIVE&&!s.m.PART_WAITING?"SN is still 1, but NEW_PART stays 0: only a new 0 → 1 edge counts as an arrival.":null,
+        (s,p)=>p&&!s.i.ST&&["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","PART_WAITING","BYPASS_ACTIVE"].some(tag=>p.m[tag])?"ST = 0: the master reset cleared the main stages and the auxiliary memory (PART_WAITING, BYPASS_ACTIVE), so every command is off.":null
+      ]
     }
   ];
 
@@ -940,11 +1431,14 @@
   let activeGroup="All rungs";
   let lastRungResults=[];
   let lastRungTraces=[];
-  let completedQuestions={};
+
   let passedTests={};
   let prevEdge={};
   let programVariant="repaired";
   let buildMode=false;
+  let scanHistory=[];
+  let actionStart=null;
+  const TRACE_CAP=400;
 
   function current(){return lessons[lessonIndex]}
   function value(tag,readMem=mem){
@@ -986,7 +1480,7 @@
     }
     if(node.kind==="group"){
       const results=node.items.map((item,i)=>testNode(item,readMem,events,`${path}${i+1}.`));
-      const result=node.mode==="parallel"?results.some(Boolean):results.every(Boolean);
+      const result=node.mode==="parallel"?results.some(Boolean):(results.length>0&&results.every(Boolean));
       events?.push({type:"combine",path,node,result,detail:`${node.mode==="parallel"?"OR":"AND"} combines ${results.map(x=>x?"T":"F").join(node.mode==="parallel"?" OR ":" AND ")} → ${result?"TRUE":"FALSE"}`});
       return result;
     }
@@ -1009,7 +1503,7 @@
     });
   }
   function displayedProgram(){
-    const base=programBase().map((r,index)=>({...r,_index:index}));
+    const base=executionProgram();
     if(current().id==="cascade"){
       return base.filter(r=>r.group===activeGroup);
     }
@@ -1017,7 +1511,7 @@
     return base;
   }
 
-  function applyAction(action,result,working,startMem,dt,events,rungName){
+  function applyAction(action,result,working,startMem,dt,events,rungName,commit=true){
     action=resolve(action);
     if(!action||action.kind==="slot"){
       events.push({type:"write",node:action,result:false,detail:"Missing right-side instruction: nothing is written"});
@@ -1040,7 +1534,7 @@
       const previous=!!prevEdge[action.tag];
       const pulse=!!result&&!previous;
       working[action.tag]=pulse;
-      prevEdge[action.tag]=!!result;
+      if(commit)prevEdge[action.tag]=!!result;
       events.push({type:"write",node:action,result:pulse,detail:`Rising-edge instruction: current=${result?1:0}, previous=${previous?1:0} → ${action.tag}=${pulse?1:0} for this scan`});
     }else if(action.kind==="timer"){
       const etTag=`${action.tag}.ET`,qTag=`${action.tag}.Q`;
@@ -1075,7 +1569,7 @@
       const before={...working};
       const result=testNode(G("series",rung.conditions),working,events);
       events.push({type:"rung",node:null,result,detail:`Rung result = ${result?"TRUE":"FALSE"}`});
-      applyAction(rung.action,result,working,startMem,dt,events,rung.name);
+      applyAction(rung.action,result,working,startMem,dt,events,rung.name,commit);
       results.push({index:rung._index,result});
       traces.push({index:rung._index,name:rung.name,result,events,before,after:{...working}});
     });
@@ -1084,20 +1578,49 @@
       lastRungResults=results;lastRungTraces=traces;
       traceEvents=traces.flatMap(trace=>trace.events.map((event,i)=>({...event,rungIndex:trace.index,rungName:trace.name,eventIndex:i})));
       traceIndex=-1;
+      recordScan();
     }
     return {mem:working,results,traces};
+  }
+
+  // Scan history feeds the timing diagram and the "What just happened?" change list (capped).
+  function recordScan(){
+    scanHistory.push({scan:scanNo,t:time,inputs:{...inputs},mem:{...mem}});
+    if(scanHistory.length>TRACE_CAP)scanHistory.splice(0,scanHistory.length-TRACE_CAP);
+  }
+  // Remember the state before a user action; fresh=true marks a new starting point (memory was cleared).
+  function noteAction(label,fresh=false){
+    actionStart={label,fresh,inputs:{...inputs},mem:{...mem},time,scanNo};
+  }
+  function restartModel(label){
+    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};scanHistory=[];
+    executeScan(0,true);
+    noteAction(label,true);
+  }
+
+  function openQuestion(index){
+    const lesson=current();
+    questionIndex=index;
+    if(courseCorrect[lesson.id]?.[index]){
+      questionChoice=lesson.questions[index].answer;questionChecked=true;
+    }else{
+      questionChoice=null;questionChecked=false;
+    }
+    questionHint=false;
   }
 
   function resetState(){
     const lesson=current();
     inputs={};lesson.inputs.forEach(input=>inputs[input.tag]=input.value);
     mem=blankMemory(lesson);
-    time=0;scanNo=0;selectedRung=0;selectedInstruction=null;traceEvents=[];traceIndex=-1;
-    readerIndex=0;readerRevealed=false;questionIndex=0;questionChoice=null;questionChecked=false;questionHint=false;
+    time=0;scanNo=0;selectedRung=0;selectedInstruction=null;traceEvents=[];traceIndex=-1;scanHistory=[];
+    readerIndex=0;readerRevealed=false;
+    openQuestion(Math.max(0,lesson.questions.findIndex((_,qi)=>courseCorrect[lesson.id]?.[qi]!==true)));
     activeGroup=lesson.groups?.[0]||"All rungs";
     programVariant=lesson.id==="cascade"?"flawed":"repaired";
     buildMode=false;prevEdge={};
     executeScan(0,true);
+    noteAction("Lesson reset: default inputs, memory cleared, one scan run",true);
   }
 
   function formatNumber(number){
@@ -1105,11 +1628,13 @@
     return Number.isInteger(n)?String(n):n.toFixed(1);
   }
 
-  function instructionResult(node,readMem=mem){
-    return testNode(node,readMem,null);
-  }
 
-  function setInputs(values){
+
+  function showValue(v){return typeof v==="number"?formatNumber(v):v?1:0}
+
+  function setInputs(values,prefix="Input change"){
+    const changed=Object.entries(values).filter(([tag,val])=>inputs[tag]!==val).map(([tag,val])=>`${tag} ${showValue(inputs[tag])} → ${showValue(val)}`);
+    noteAction(`${prefix}: ${changed.join(", ")||"no input value changed"}`);
     Object.assign(inputs,values);
     executeScan(0,true);
     setScanPhase("write");
@@ -1119,6 +1644,7 @@
 
   function advanceTime(dt){
     if(!current().timer)return;
+    noteAction(`Time advanced by ${formatNumber(dt)} s with unchanged inputs`);
     const steps=Math.max(1,Math.round(dt/.1));
     const slice=dt/steps;
     for(let i=0;i<steps;i++)executeScan(slice,true);
@@ -1127,6 +1653,7 @@
   }
 
   function runToNextEvent(){
+    noteAction("Run to next event: time advanced in 0.1 s scans until a stored, status or output bit changed");
     const before=eventSignature();
     for(let i=0;i<300;i++){
       executeScan(.1,true);
@@ -1149,6 +1676,8 @@
     lessonIndex=index;
     if(!selections[current().id])selections[current().id]={};
     resetState();
+    actionStart.label="Lesson opened: default inputs, memory cleared, first scan run";
+    $("testResult").innerHTML="";
     $("lessonSelect").value=lessonIndex;
     renderStatic();
     renderAll();
@@ -1160,14 +1689,30 @@
     const lesson=current();
     $("lessonTitle").textContent=lesson.title;
     $("lessonLevel").textContent=lesson.level;
-    $("lessonScenario").textContent=lesson.scenario;
+    $("lessonScenario").innerHTML=glossify(lesson.scenario);
+    $("lessonQuestionText").innerHTML=glossify(lesson.question);
+    $("lessonQuestionWhere").textContent=lesson.where;
+    $("defBar").hidden=true;
     $("taskTitle").textContent=lesson.taskTitle;
     $("taskText").textContent=lesson.task;
     $("taskChecks").innerHTML=lesson.checks.map(item=>`<li>${esc(item)}</li>`).join("");
     $("misconceptionText").textContent=lesson.misconception;
     $("realWorldNote").innerHTML=`<p style="margin:0;color:#506278;font-size:.74rem">${esc(lesson.real)}</p>`;
     $("timeControls").hidden=!lesson.timer;
-    $("stateStrip").hidden=!(lesson.sequence||lesson.holding);
+    // The step map replaces the compact state strip for sequences, so the same state is not shown twice.
+    $("stateStrip").hidden=!lesson.holding;
+    $("stateMap").hidden=!lesson.stateMap;
+    const evidence=lesson.truth?"truth":lesson.stateMap?"sequence":"timing";
+    $("evidenceHeading").textContent=evidence==="truth"?"Truth table":"Timing diagram";
+    $("evidenceIntro").textContent=evidence==="truth"
+      ?"Every input combination of this rung, evaluated by the same PLC model. The highlighted row is the input combination you have set now."
+      :`A scan-by-scan record of the inputs, stored bits, timer ET and outputs, built while you work.${evidence==="sequence"?" The step map for this sequence is in “Set the conditions”.":""}`;
+    $("evidenceQuestion").textContent=evidence==="truth"
+      ?"For every possible input combination, what does the rung write — and which requirement blocks it?"
+      :"How did inputs, memory, timers and outputs change scan by scan, and in what order?";
+    $("clearTrace").hidden=evidence==="truth";
+    $("truthTable").hidden=evidence!=="truth";
+    $("timingDiagram").hidden=evidence==="truth";
     $("rungTabs").hidden=!lesson.groups;
     $("toggleBuild").hidden=!lesson.puzzle;
     $("toggleBuild").textContent=buildMode?"Show worked program":"Guided build";
@@ -1191,6 +1736,9 @@
     renderOutputs();
     renderTime();
     renderStateStrip();
+    renderStateMap();
+    renderNarrative();
+    renderEvidence();
     postHeight();
   }
 
@@ -1207,7 +1755,10 @@
 
   function renderQuestions(){
     const lesson=current(),question=lesson.questions[questionIndex];
-    $("questionCount").textContent=`Question ${questionIndex+1} of ${lesson.questions.length}`;
+    const isCorrect=qi=>courseCorrect[lesson.id]?.[qi]===true;
+    const correctCount=lesson.questions.filter((_,qi)=>isCorrect(qi)).length;
+    $("questionCount").textContent=`Question ${questionIndex+1} of ${lesson.questions.length} · ${correctCount} correct`;
+    $("questionChips").innerHTML=lesson.questions.map((_,qi)=>`<button type="button" class="q-chip ${qi===questionIndex?"current":""} ${isCorrect(qi)?"ok":""}" data-question-jump="${qi}" aria-label="Question ${qi+1}: ${isCorrect(qi)?"answered correctly":"not yet answered correctly"}"${qi===questionIndex?' aria-current="true"':""}>Q${qi+1}${isCorrect(qi)?" ✓":""}</button>`).join("");
     $("questionText").textContent=question.q;
     $("questionContext").textContent=question.context;
     $("questionOptions").innerHTML=question.options.map((option,index)=>{
@@ -1222,7 +1773,13 @@
     $("questionNext").textContent=questionIndex===lesson.questions.length-1?"Restart questions":"Next question";
     if(questionChecked){
       const good=questionChoice===question.answer;
-      $("questionFeedback").innerHTML=`<div class="feedback ${good?"good":"bad"}"><b>${good?"Correct.":"Not quite."}</b> ${esc(question.why)}</div>`;
+      const reason=question.explain?.[question.answer]||question.why.replace(/^Correct:\s*/,"");
+      const progress=correctCount===lesson.questions.length
+        ?"All coach questions in this lesson are correct."
+        :`${correctCount} of ${lesson.questions.length} coach questions correct. Use the Q buttons above to reach the others; every one must be correct to unlock the next lesson.`;
+      $("questionFeedback").innerHTML=good
+        ?`<div class="feedback good"><b>Correct.</b> ${esc(reason)}<p>${esc(progress)}</p></div>`
+        :`<div class="feedback bad"><b>Not quite.</b> You chose “${esc(question.options[questionChoice])}”: ${esc(question.explain?.[questionChoice]||"this option does not match the rung.")}<p><b>Correct answer — “${esc(question.options[question.answer])}”:</b> ${esc(reason)}</p><p>This question stays open. Answer it again later (Q${questionIndex+1} button above); it must be answered correctly to unlock the next lesson.</p></div>`;
     }else if(questionHint){
       $("questionFeedback").innerHTML=`<div class="feedback hint"><b>Hint:</b> ${esc(question.hint)}</div>`;
     }else{
@@ -1235,7 +1792,7 @@
     questionChecked=true;
     const lesson=current();
     if(questionChoice===lesson.questions[questionIndex].answer){
-      completedQuestions[lesson.id]=Math.max(completedQuestions[lesson.id]||0,questionIndex+1);
+
       if(!courseCorrect[lesson.id])courseCorrect[lesson.id]={};
       courseCorrect[lesson.id][questionIndex]=true;
       saveCourseProgress();
@@ -1244,8 +1801,8 @@
   }
 
   function nextQuestion(){
-    questionIndex=(questionIndex+1)%current().questions.length;
-    questionChoice=null;questionChecked=false;questionHint=false;renderQuestions();postHeight();
+    openQuestion((questionIndex+1)%current().questions.length);
+    renderQuestions();postHeight();
   }
 
   function renderScenarios(){
@@ -1268,6 +1825,7 @@
     if(stage==="load")runModelTime(2.1);
     if(stage==="cnc")runModelTime(7.2);
     if(stage==="unload")runModelTime(17.3);
+    noteAction(`Jumped to ${stage.toUpperCase()}: the model ran one part from IDLE into this stage (see the timing diagram)`,true);
     setScanPhase("write");
     $("scanStatus").textContent=`Prepared ${stage.toUpperCase()} stage · create a new SN edge to test the busy-arrival logic`;
     renderStatic();renderAll();
@@ -1279,7 +1837,7 @@
       setupBusyStage(preset.special.replace("setup_",""));
       return;
     }
-    setInputs(preset.values||{});
+    setInputs(preset.values||{},`Preset “${preset.label}”`);
   }
 
   function renderInputs(){
@@ -1322,42 +1880,31 @@
       $("stateStrip").innerHTML=states.map(([name,active])=>`<div class="state-step ${active?"active":""}">${esc(name)}</div>`).join("");
       return;
     }
-    if(!lesson.sequence)return;
-    if(lesson.busyExtension){
-      const mainIdle=!["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>mem[tag]);
-      const states=[
-        ["IDLE",mainIdle&&!mem.BYPASS_ACTIVE],
-        ["POSITION",!!mem.STEP_POS],["LOAD",!!mem.STEP_LOAD],["CNC",!!mem.STEP_CNC],["UNLOAD",!!mem.STEP_UNLOAD],
-        ["BYPASS",!!mem.BYPASS_ACTIVE],["WAITING",!!mem.PART_WAITING],["M1 HOLD",!!mem.INFEED_HOLD]
-      ];
-      $("stateStrip").innerHTML=states.map(([name,active])=>`<div class="state-step ${active?"active":""}">${esc(name)}</div>`).join("");
-      return;
-    }
-    const states=[
-      ["IDLE",!["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].some(tag=>mem[tag])],
-      ["POSITION",!!mem.STEP_POS],["LOAD",!!mem.STEP_LOAD],["CNC",!!mem.STEP_CNC],["UNLOAD",!!mem.STEP_UNLOAD]
-    ];
-    $("stateStrip").innerHTML=states.map(([name,active])=>`<div class="state-step ${active?"active":""}">${esc(name)}</div>`).join("");
   }
 
+  // The whole signal chain of this lesson: device → input module/image → instruction → rung → output image/module → actuator.
   function renderDataChain(){
     const lesson=current();
-    const physical=lesson.inputs.map(i=>{
-      const state=inputs[i.tag]?(i.onText||"ON"):(i.offText||"OFF");
-      return `${i.label}: ${String(state).replace(/^\d\s*·\s*/,"")}`;
-    }).join(" · ");
-    const stored=lesson.inputs.map(i=>`${i.tag}=${inputs[i.tag]?1:0}`).join(" · ");
+    const physical=lesson.inputs.map(inputStateText).join(" · ");
+    const stored=lesson.inputs.map(i=>`${i.address} → ${i.tag}=${inputs[i.tag]?1:0}`).join(" · ");
     const activeTrace=lastRungTraces.find(x=>x.index===selectedRung)||lastRungTraces[0];
     const tests=(activeTrace?.events||[]).filter(e=>e.type==="test").map(e=>e.detail).slice(0,4).join("; ")||"Select or run a rung to see its tests.";
     const rungResults=lastRungResults.map(r=>`R${r.index+1}=${r.result?"T":"F"}`).join(" · ")||"No rung result yet";
     const internal=lesson.data.filter(d=>["internal","status"].includes(d.type)&&!d.numeric).map(d=>`${d.tag}=${mem[d.tag]?1:0}`).join(" · ")||"No internal/status bit listed";
-    const outputs=lesson.data.filter(d=>d.type==="output").map(d=>`${d.tag}=${mem[d.tag]?1:0}`).join(" · ")||"No physical output command listed";
+    const outs=lesson.data.filter(d=>d.type==="output");
+    const outputs=outs.map(d=>`${d.tag}=${mem[d.tag]?1:0} → ${d.address} ${mem[d.tag]?"ON":"OFF"}`).join(" · ")||"No physical output command listed";
+    const commanded=outs.filter(d=>mem[d.tag]).map(d=>d.tag);
     $("dataChain").innerHTML=`
-      <div class="chain-row"><div class="chain-label">Field hardware</div><div class="chain-value"><b>${esc(physical)}</b><span>Real switches and sensors create electrical input signals.</span></div></div>
-      <div class="chain-row"><div class="chain-label">Input image</div><div class="chain-value read"><b>${esc(stored)}</b><span>The program reads stored bits, not the hardware directly.</span></div></div>
-      <div class="chain-row"><div class="chain-label">Instruction tests</div><div class="chain-value logic"><b>${esc(tests)}</b><span>Contacts are software tests that return TRUE or FALSE.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Field device</div><div class="chain-value"><b>${esc(physical)}</b><span>${esc(lesson.bigPicture.device)}: real hardware that creates electrical input signals.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Input module → image</div><div class="chain-value read"><b>${esc(stored)}</b><span>The input module turns each signal into a bit; at READ the bits are copied into the input image. The program reads these stored bits, not the hardware.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Instruction tests</div><div class="chain-value logic"><b>${esc(tests)}</b><span>Rung ${(activeTrace?.index??0)+1}. Contacts are software tests that return TRUE or FALSE; click another rung to see its tests here.</span></div></div>
       <div class="chain-row"><div class="chain-label">Rung / memory</div><div class="chain-value logic"><b>${esc(rungResults)}</b><span>${esc(internal)}. Later rungs can read data written above them in the same scan.</span></div></div>
-      <div class="chain-row"><div class="chain-label">Output commands</div><div class="chain-value write"><b>${esc(outputs)}</b><span>An output value is a command. Separate feedback is required to prove physical motion.</span></div></div>`;
+      <div class="chain-row"><div class="chain-label">Output image → module</div><div class="chain-value write"><b>${esc(outputs)}</b><span>Coils write output-image bits; at UPDATE the output module switches the field circuits.</span></div></div>
+      <div class="chain-row"><div class="chain-label">Actuator</div><div class="chain-value write"><b>${esc(lesson.bigPicture.actuator)}: ${commanded.length?`commanded ON (${commanded.join(", ")})`:"all commands OFF"}</b><span>An output value is a command. Separate feedback is required to prove physical motion.</span></div></div>`;
+  }
+  function inputStateText(i){
+    const state=inputs[i.tag]?(i.onText||"ON"):(i.offText||"OFF");
+    return `${i.label}: ${String(state).replace(/^\d\s*·\s*/,"")}`;
   }
 
   function renderMachine(){
@@ -1685,7 +2232,7 @@
   function structureSentence(conditions){
     return conditions.map(node=>{
       node=resolve(node);
-      if(node.kind==="group")return `(${node.items.map(item=>item.tag||item.label||"instruction").join(node.mode==="parallel"?" OR ":" AND ")})`;
+      if(node.kind==="group")return `(${node.items.map(item=>item.kind==="group"?structureSentence([item]):(item.tag||item.label||"instruction")).join(node.mode==="parallel"?" OR ":" AND ")})`;
       return node.tag||"missing";
     }).join(" AND ");
   }
@@ -1701,6 +2248,9 @@
   }
 
   function renderReader(){
+    const rung=selectedRungData(),rungNo=programBase()[selectedRung]?selectedRung:(rung?._index??0);
+    $("readerList").innerHTML=readerPrompts.map(([title],index)=>`<li><button type="button" class="reader-step ${index===readerIndex?"current":""} ${index<readerIndex?"done":""}" data-reader-step="${index}"${index===readerIndex?' aria-current="step"':""}><b>${esc(title)}</b></button></li>`).join("");
+    $("readerRung").textContent=rung?`Reading Rung ${rungNo+1} · ${rung.name}. Click any rung in the ladder to read a different one.`:"";
     $("readerProgress").innerHTML=readerPrompts.map((_,index)=>`<span class="reader-dot ${index<readerIndex?"done":index===readerIndex?"current":""}"></span>`).join("");
     $("readerQuestion").textContent=readerPrompts[readerIndex][0];
     $("readerHelp").textContent=readerPrompts[readerIndex][1];
@@ -1709,8 +2259,29 @@
     $("nextReader").disabled=readerIndex===readerPrompts.length-1;
   }
 
+  function presetOf(timer,lesson=current()){
+    return lesson.program.map(r=>r.action).find(a=>a.kind==="timer"&&a.tag===timer)?.preset||1;
+  }
+  function isNumericTag(tag){return current().data.some(d=>d.tag===tag&&d.numeric)}
+  // Plain meaning of one stored value, shown next to it in "PLC data after the scan".
+  function meaningOf(item){
+    const v=mem[item.tag];
+    if(item.numeric){
+      const pt=presetOf(item.tag.replace(/\.ET$/,"")),et=Number(v||0);
+      if(et>=pt)return `ET has reached PT = ${formatNumber(pt)} s, so Q = 1 (done).`;
+      if(et>0)return `${formatNumber(et)} s of PT = ${formatNumber(pt)} s → ${formatNumber(pt-et)} s remaining; Q = 0 until ET reaches PT.`;
+      return `ET = 0: the timer is disabled (IN = 0) or has only just been enabled. PT = ${formatNumber(pt)} s.`;
+    }
+    if(v&&item.meaningOn)return item.meaningOn;
+    if(!v&&item.meaningOff)return item.meaningOff;
+    if(item.address==="timer status")return v?"done: ET has reached PT":"not done: ET has not reached PT, or the timer is disabled";
+    if(item.type==="output")return v?"the PLC commands this output ON — a command, not proof that the device acted":"command OFF — the output module de-energizes this output";
+    if(item.type==="internal")return v?`stored memory: “${item.label}” is active until something resets it`:`stored memory: “${item.label}” is not active`;
+    return v?"TRUE on this scan (recalculated every scan)":"FALSE on this scan (recalculated every scan)";
+  }
+
   function renderOutputs(){
-    const data=current().data;
+    const lesson=current(),data=lesson.data;
     $("outputList").innerHTML=data.map(item=>{
       const isNumber=item.numeric,raw=mem[item.tag]??(isNumber?0:false);
       const on=isNumber?Number(raw)>0:!!raw;
@@ -1718,46 +2289,333 @@
         <span class="led"></span>
         <span class="output-name"><b>${esc(item.label)}</b>${esc(item.type)} · ${esc(item.address)}</span>
         <span class="output-value">${esc(item.tag)}=${isNumber?formatNumber(raw):raw?1:0}${isNumber?"s":""}</span>
+        <span class="output-meaning">${esc(meaningOf(item))}</span>
       </div>`;
     }).join("");
-    $("testSummary").textContent=current().busyExtension?`${current().tests.length} checks cover busy arrivals during loading, CNC and unloading, plus stop reset.`:`${current().tests.length} checks cover normal operation${current().sequence?", stop reset and persistent-sensor behavior":", boundaries and failure conditions"}.`;
+    const cover=lesson.busyExtension?`${lesson.tests.length} checks cover busy arrivals during loading, CNC and unloading, plus stop reset.`:`${lesson.tests.length} checks cover normal operation${lesson.sequence?", stop reset and persistent-sensor behavior":", boundaries and failure conditions"}.`;
+    $("testSummary").textContent=`${cover} Each test starts from cleared memory, applies its steps and compares expected with actual values. All of them must pass to unlock the next lesson${lesson.puzzle?"; they run on your own Guided build":""}.`;
   }
 
+  // One source for every term: the vocabulary cards, the glossary and the click-to-define buttons.
+  const GLOSSARY=[
+    {term:"Physical device",core:true,def:"A real sensor, switch, motor or valve installed on the machine. It creates or receives an electrical signal; it is not a ladder instruction.",alias:["physical device"]},
+    {term:"Bit and tag",core:true,def:"A bit stores 0 or 1. A tag is the meaningful name used to identify that data, for example SENSOR."},
+    {term:"Condition",core:true,def:"A requirement that can be true or false, such as “the guard is closed.”"},
+    {term:"Contact instruction",core:true,def:"Software that reads a Boolean bit and returns a true-or-false test result. N.O. and N.C. are its two test senses.",alias:["contact instruction"]},
+    {term:"Rung result",core:true,def:"The final true-or-false answer obtained after the PLC evaluates all paths on one rung.",alias:["rung result"]},
+    {term:"Coil instruction",core:true,def:"Software that writes the rung result to a Boolean bit on every scan (TRUE → 1, FALSE → 0). It does not remember, and it is not automatically the physical motor or valve.",alias:["ordinary coil","coil"]},
+    {term:"Actuator",def:"A physical device driven through an output module: motor contactor, solenoid valve, horn, robot or CNC start input.",alias:["actuator"]},
+    {term:"Address (%I, %Q, %M)",def:"Where a bit is stored: %I = input image, %Q = output image, %M = internal memory. %I0.1 means input byte 0, bit 1."},
+    {term:"AND / series",def:"Instructions in series: the path is TRUE only if every instruction on it is TRUE.",alias:["series"]},
+    {term:"Auxiliary state",def:"A stored activity that may run at the same time as the one main stage, such as BYPASS_ACTIVE, when resources and interlocks allow it.",alias:["auxiliary state"]},
+    {term:"Command vs. feedback",def:"An output bit is a command. Only a separate input — auxiliary contact, current or speed sensor — proves that the device really acted.",alias:["feedback"]},
+    {term:"Done bit (Q)",def:"The TON output that becomes 1 when ET reaches PT and stays 1 while IN stays 1.",alias:["done bit"]},
+    {term:"Elapsed time (ET)",def:"The time a TON has accumulated while IN = 1. It never exceeds PT and returns to 0 when IN = 0.",alias:["ET"]},
+    {term:"Enable (IN)",def:"The TON input: the result of the rung condition in front of the timer.",alias:["IN"]},
+    {term:"Guided build",def:"Lesson mode in which you choose the missing (amber) instructions yourself. The reference tests then check your program.",alias:["Guided build"]},
+    {term:"Holding (seal-in) circuit",def:"An ordinary coil writes a bit that a parallel contact reads on the following scan, so a request stays ON after a momentary Start signal ends.",alias:["holding contact","holding circuit"]},
+    {term:"Input image",def:"The stored snapshot of all input bits, captured at the start (READ) of every scan. Instructions read this snapshot, not the terminals.",alias:["input image"]},
+    {term:"Input module",def:"Hardware that converts field voltages into input bits.",alias:["input module"]},
+    {term:"Master reset",def:"A rung that RESETs every stage bit at once — here whenever ST = 0.",alias:["master reset","master-reset"]},
+    {term:"N.C. test (normally closed contact)",def:"A contact instruction that is TRUE when its bit is 0 — a logical NOT. It says nothing about how the field device is wired.",alias:["N.C."]},
+    {term:"N.O. test (normally open contact)",def:"A contact instruction that is TRUE when its bit is 1.",alias:["N.O."]},
+    {term:"Non-retentive timer",def:"A TON that loses ET and Q as soon as IN = 0.",alias:["non-retentive"]},
+    {term:"OR / parallel branch",def:"Parallel branches between the same two points: the path is TRUE if at least one branch is TRUE.",alias:["parallel"]},
+    {term:"Output image",def:"The output bits written by the program. At UPDATE they are copied to the output module.",alias:["output image","output-image"]},
+    {term:"Output module",def:"Hardware that switches field circuits on or off from the output bits.",alias:["output module"]},
+    {term:"Permissive / interlock",def:"A condition that must be TRUE, in series, before an action is allowed — for example GUARD = 1 or FAULT = 0.",alias:["permissives","permissive"]},
+    {term:"Preset (PT)",def:"The time a TON must accumulate before Q becomes 1.",alias:["PT","preset"]},
+    {term:"Pulse (one-scan)",def:"A bit that is 1 for exactly one scan, such as NEW_PART or START_WAITING.",alias:["pulse"]},
+    {term:"Reference test",def:"An automated check: from cleared memory, inputs are applied scan by scan and the expected values are compared with the actual PLC data.",alias:["reference tests","reference test"]},
+    {term:"Rising edge (R_TRIG)",def:"An instruction whose output is TRUE for exactly one scan when its input changes from 0 to 1.",alias:["R_TRIG","rising edge","rising-edge"]},
+    {term:"Scan cycle",def:"READ the inputs into the input image → SOLVE the rungs from top to bottom → UPDATE the outputs, repeated continuously. Here an input change runs one 0 s scan; time steps run one scan per 0.1 s.",alias:["scan cycle"]},
+    {term:"SET / RESET",def:"SET stores 1 when its rung is TRUE and keeps it; RESET stores 0 when its rung is TRUE. While their rung is FALSE they change nothing. A basic holding circuit does not need them.",alias:["SET","RESET"]},
+    {term:"Stage (step) bit",def:"Internal memory bit that names the active step of a sequence, for example STEP_LOAD.",alias:["stage bits","stage bit"]},
+    {term:"Status bit",def:"A bit recalculated by an ordinary coil on every scan from other data, for example CELL_BUSY. It clears by itself.",alias:["status bit"]},
+    {term:"Timing diagram",def:"Signals drawn scan by scan, so you can see the order and duration of changes.",alias:["timing diagram"]},
+    {term:"TON (on-delay timer)",def:"Counts ET while IN = 1; Q = 1 once ET reaches PT; IN = 0 resets ET and Q.",alias:["TON"]},
+    {term:"Transition",def:"The condition that moves a sequence from one stage to the next — here the done bit of the active stage’s timer.",alias:["transition"]},
+    {term:"Truth table",def:"Every input combination with the resulting output; used to check combinational logic.",alias:["truth table"]},
+    {term:"Waiting bit (one-place queue)",def:"One Boolean storage place that remembers one pending part. More capacity needs a counter, a FIFO or part tracking.",alias:["waiting bit"]}
+  ];
+  const GLOSSARY_ALIAS={};
+  GLOSSARY.forEach((entry,i)=>(entry.alias||[]).forEach(word=>GLOSSARY_ALIAS[word]=i));
+  const GLOSSARY_RE=new RegExp(`(^|[^A-Za-z0-9_.%-])(${Object.keys(GLOSSARY_ALIAS).sort((a,b)=>b.length-a.length).map(word=>word.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|")})(?![A-Za-z0-9_])`,"g");
+  // Escape text and turn the first use of each glossary term into a click-to-define button.
+  function glossify(text){
+    const used=new Set();
+    return esc(text).replace(GLOSSARY_RE,(match,pre,word)=>{
+      const i=GLOSSARY_ALIAS[word];
+      if(used.has(i))return match;
+      used.add(i);
+      return `${pre}<button type="button" class="term" data-term="${i}" title="${esc(GLOSSARY[i].def)}">${word}</button>`;
+    });
+  }
+  function showDefinition(button){
+    const entry=GLOSSARY[Number(button.dataset.term)],host=button.closest(".lesson-head,.lesson-question,.summary-body");
+    if(!entry||!host)return;
+    let bar=host.querySelector(".def-bar");
+    if(!bar){bar=document.createElement("div");bar.className="def-bar";bar.setAttribute("aria-live","polite");host.appendChild(bar)}
+    bar.hidden=false;
+    bar.innerHTML=`<b>${esc(entry.term)}:</b> ${esc(entry.def)} <span class="summary-q">(all terms: Glossary at the end of the page)</span>`;
+    postHeight();
+  }
   function renderReference(){
-    const items=[
-      ["Physical device","Creates or receives an electrical field signal. It is not a ladder instruction."],
-      ["Input image","Stored snapshot of input channels captured at the beginning of the scan."],
-      ["Condition","A process or program requirement that can be evaluated as TRUE or FALSE."],
-      ["N.O. software test","A contact instruction that reads a Boolean tag and is TRUE when the bit is 1."],
-      ["N.C. software test","A contact instruction that reads a Boolean tag and is TRUE when the bit is 0."],
-      ["Rung result","The final TRUE/FALSE answer after the PLC evaluates all paths on one rung."],
-      ["Ordinary coil","A software instruction that writes the rung result to a bit every scan."],
-      ["Holding circuit","An ordinary coil writes a bit that a parallel contact reads on the following scan, maintaining the request after a momentary Start signal ends."],
-      ["SET / RESET","Separate memory instructions: SET stores 1; RESET later stores 0. They are not required for a basic holding circuit."],
-      ["TON timer","Accumulates ET while enabled; Q becomes 1 at the preset; resets when disabled."],
-      ["Stage bit","Internal Boolean memory naming the active process step."],
-      ["Busy status","A recalculated Boolean summary of currently active operations; it should normally follow its source conditions every scan."],
-      ["Waiting bit","One Boolean storage place that remembers one pending part. More capacity requires a counter, FIFO or part-tracking structure."],
-      ["Auxiliary state","A parallel activity such as CNC bypass that may coexist with one main sequence stage when resources and interlocks allow it."]
-    ];
-    $("referenceGrid").innerHTML=items.map(([title,text])=>`<div class="reference-item"><b>${esc(title)}</b>${esc(text)}</div>`).join("");
+    $("conceptGrid").innerHTML=GLOSSARY.filter(entry=>entry.core).map(entry=>`<div class="concept-card"><b>${esc(entry.term)}</b>${esc(entry.def)}</div>`).join("");
+    $("referenceGrid").innerHTML=[...GLOSSARY].sort((a,b)=>a.term.localeCompare(b.term)).map(entry=>`<div><dt>${esc(entry.term)}</dt><dd>${esc(entry.def)}</dd></div>`).join("");
+  }
+
+  const PAGE_STEPS=[
+    "Read the lesson question and its sub-questions (1 min).",
+    "Answer the coach questions — predict before you test (3–5 min).",
+    "Change the inputs or advance time; after every change read “What just happened?” (5–8 min).",
+    "Check the evidence: truth table, timing diagram or step map (2–3 min).",
+    "Click a rung and work through the seven-question rung reader (3 min).",
+    "If the lesson has a Guided build, fill every amber gap yourself (3–5 min).",
+    "Run the reference tests, then read the lesson summary that unlocks (3 min)."
+  ];
+  const SECTION_NAMES={secConnection:"Machine ↔ PLC",secControls:"Set the conditions",secLadder:"Ladder program",secNarrative:"What just happened?",secResults:"Data & tests"};
+  function lessonMissing(index){
+    const lesson=lessons[index],out=[];
+    const open=lesson.questions.map((_,qi)=>qi).filter(qi=>courseCorrect[lesson.id]?.[qi]!==true);
+    if(open.length)out.push(`coach ${open.map(qi=>`Q${qi+1}`).join(", ")} answered correctly`);
+    if(passedTests[lesson.id]!==true)out.push(`all ${lesson.tests.length} reference tests passed${lesson.puzzle?" on your Guided build":""} (${passedTests[lesson.id]===false?"the last run failed":"not run yet"})`);
+    return out;
+  }
+  function renderPageQuestion(){
+    $("courseSequence").innerHTML=COURSE_ALLOWED.map((index,pos)=>{
+      const lesson=lessons[index],done=lessonComplete(index),unlocked=lessonUnlocked(index),here=index===lessonIndex;
+      const question=here?`<a href="#secQuestion">${esc(lesson.question)}</a>`
+        :unlocked?`<a href="#secQuestion" data-lesson="${index}">${esc(lesson.question)}</a>`
+        :`${esc(lesson.question)} <span class="summary-q">(complete lesson ${pos} first)</span>`;
+      return `<li class="${done?"done":""} ${here?"here":""}"><span class="pq-status">${done?"✓ answered":here?"current lesson":unlocked?"open":"locked"}</span><b>${pos+1} · ${esc(lesson.short)}:</b> ${question}${done?`<span class="pq-answer"><b>Short answer:</b> ${esc(lesson.refresher)}</span>`:""}</li>`;
+    }).join("");
+    $("pageOutcomes").innerHTML=COURSE_ALLOWED.map(index=>`<li>${esc(lessons[index].outcome)}</li>`).join("");
+    const prereqs=[["Bits","a bit is 0 or 1; a tag is its name, for example SENSOR."],["IF–THEN rules","a condition decides an action: IF a box is present THEN run the conveyor."]];
+    if(COURSE_ALLOWED[0]===0)prereqs.push(["Field wiring","a sensor or switch either delivers a signal to a PLC input terminal or it does not."]);
+    lessons.slice(0,COURSE_ALLOWED[0]).forEach(lesson=>prereqs.push([lesson.short,lesson.refresher]));
+    $("pagePrereqs").innerHTML=prereqs.map(([title,text])=>`<li><b>${esc(title)}:</b> ${esc(text)}</li>`).join("");
+    $("pageSteps").innerHTML=PAGE_STEPS.map(step=>`<li>${esc(step)}</li>`).join("");
+    const minutes=COURSE_ALLOWED.reduce((sum,index)=>sum+lessons[index].minutes,0);
+    $("pageTime").textContent=`Time: about ${minutes} minutes for the ${COURSE_ALLOWED.length} lessons of this course (${COURSE_ALLOWED.map(index=>`${lessons[index].short} ≈ ${lessons[index].minutes} min`).join(" · ")}).`;
+  }
+  function subQuestionDone(lesson,track){
+    return track==="tests"?passedTests[lesson.id]===true:courseCorrect[lesson.id]?.[Number(track.slice(1))]===true;
+  }
+  function renderLessonQuestion(){
+    const lesson=current();
+    $("lessonSubQuestions").innerHTML=lesson.subQuestions.map(sub=>{
+      const done=subQuestionDone(lesson,sub.track);
+      const step=sub.track==="tests"?"reference tests":`coach Q${Number(sub.track.slice(1))+1}`;
+      const where=sub.at==="secEvidence"?(lesson.truth?"Truth table":"Timing diagram"):SECTION_NAMES[sub.at];
+      return `<li>${esc(sub.q)} <a href="#${sub.at}">${esc(where)} ↓</a> <span class="lq-mark ${done?"ok":""}">${done?`✓ answered · ${step}`:`open · ${step}`}</span></li>`;
+    }).join("");
+  }
+  function renderSummary(){
+    const lesson=current();
+    if(!lessonComplete(lessonIndex)){
+      $("lessonSummary").innerHTML=`<div class="feedback hint"><b>The model answer appears here when this lesson is complete.</b> Still needed: ${esc(lessonMissing(lessonIndex).join("; "))}.</div>`;
+      return;
+    }
+    $("lessonSummary").innerHTML=`
+      <div class="model-answer"><h4>Model answer — ${esc(lesson.question)}</h4><p>${glossify(lesson.modelAnswer)}</p></div>
+      <div><h4>You have now answered</h4><ol class="answered-list">${lesson.subQuestions.map(sub=>`<li><b>${esc(sub.q)}</b>${esc(sub.a)}</li>`).join("")}</ol></div>
+      <div><h4>Key takeaways</h4><ul class="takeaways">${lesson.takeaways.map(item=>`<li>${esc(item)}</li>`).join("")}</ul></div>
+      <div class="mistake"><b>Common programming mistake to avoid:</b> ${esc(lesson.mistake)}</div>`;
+  }
+
+  // ---- "What just happened?": generated from the scan traces and the state before the last action ----
+  function readTag(state,tag){
+    return Object.prototype.hasOwnProperty.call(state.inputs,tag)?state.inputs[tag]:state.mem[tag];
+  }
+  function sameValue(tag,a,b){
+    return isNumericTag(tag)?Math.abs(Number(a||0)-Number(b||0))<1e-9:!!a===!!b;
+  }
+  function tagText(tag,v){return isNumericTag(tag)?`${formatNumber(v||0)} s`:v?1:0}
+  function explainNode(raw,readMem){
+    const node=resolve(raw);
+    if(!node||node.kind==="slot")return "missing instruction → FALSE";
+    if(node.kind==="contact"){
+      const bit=!!value(node.tag,readMem),result=node.type==="NC"?!bit:bit;
+      return `${node.type==="NC"?"N.C.":"N.O."} ${node.tag}=${bit?1:0} → ${result?"TRUE":"FALSE"}`;
+    }
+    if(node.kind==="group")return `${node.mode==="parallel"?"OR":"AND"}[ ${node.items.map(item=>explainNode(item,readMem)).join(node.mode==="parallel"?" | ":" ; ")} ] → ${testNode(node,readMem,null)?"TRUE":"FALSE"}`;
+    return "";
+  }
+  function conditionName(raw,readMem){
+    const node=resolve(raw);
+    if(!node||node.kind==="slot")return "a missing instruction";
+    if(node.kind==="contact")return `${node.tag} = ${value(node.tag,readMem)?1:0}${node.type==="NC"?" (N.C. test)":""}`;
+    return `${structureSentence([node])} = FALSE`;
+  }
+  function narrativeChanges(){
+    const base=actionStart;
+    if(!base||base.fresh)return [];
+    const now={inputs,mem},steps=scanHistory.filter(sample=>sample.scan>base.scanNo),multi=scanNo-base.scanNo>1;
+    const out=[];
+    [...current().inputs.map(i=>i.tag),...current().data.map(d=>d.tag)].forEach(tag=>{
+      const before=readTag(base,tag),after=readTag(now,tag);
+      let previous=before,first=null,flips=0;
+      steps.forEach(sample=>{const v=readTag(sample,tag);if(!sameValue(tag,v,previous)){flips++;if(!first)first=sample;previous=v}});
+      const at=multi&&first?` (scan ${first.scan}, t = ${formatNumber(first.t)} s)`:"";
+      if(!sameValue(tag,before,after))out.push({tag,text:`${tag} ${tagText(tag,before)} → ${tagText(tag,after)}${isNumericTag(tag)?"":at}`});
+      else if(flips&&!isNumericTag(tag))out.push({tag,text:`${tag} pulsed ${tagText(tag,before)} → ${before?0:1} → ${tagText(tag,after)}${at}`});
+      else if(flips){
+        const peak=Math.max(...steps.map(sample=>Number(readTag(sample,tag)||0)));
+        out.push({tag,text:`${tag} rose to ${formatNumber(peak)} s and was reset to ${tagText(tag,after)}`});
+      }
+    });
+    return out;
+  }
+  function renderNarrative(){
+    const lesson=current(),base=actionStart,fresh=!base||base.fresh;
+    const changes=narrativeChanges(),changed=new Set(changes.map(change=>change.tag));
+    const ran=fresh?"":scanNo-base.scanNo;
+    const s={i:inputs,m:mem,t:time},p=fresh?null:{i:base.inputs,m:base.mem,t:base.time};
+    const insights=(lesson.insights||[]).map(fn=>fn(s,p)).filter(Boolean);
+    const changeList=fresh
+      ?'<li class="chg none">Starting point: memory was cleared, so there is no earlier scan to compare with. Change an input or advance time to see cause and effect.</li>'
+      :changes.length?changes.map(change=>`<li class="chg">${esc(change.text)}</li>`).join("")
+      :'<li class="chg none">Nothing changed: the same inputs and memory give the same results on every scan.</li>';
+    $("narrativeLive").innerHTML=`<p class="nar-head">${esc(base?.label||"Initial scan")}</p>
+      <p class="nar-sub">Now: scan ${scanNo} · t = ${formatNumber(time)} s${fresh?"":` · this step ran ${ran} scan${ran===1?"":"s"}${time>base.time?` (${formatNumber(time-base.time)} s)`:" (0 s)"}`}</p>
+      <p class="nar-sub">${fresh?"Changes":"Changed since the previous step"}:</p>
+      <ul class="nar-changes">${changeList}</ul>
+      ${insights.length?`<ul class="nar-insights">${insights.map(text=>`<li><b>Why:</b> ${esc(text)}</li>`).join("")}</ul>`:""}`;
+    const program=executionProgram();
+    const rungLine=trace=>{
+      const rung=program.find(r=>r._index===trace.index);
+      if(!rung)return "";
+      const blocked=rung.conditions.filter(node=>!testNode(node,trace.before,null)).map(node=>conditionName(node,trace.before));
+      const write=[...trace.events].reverse().find(event=>event.type==="write")?.detail||"";
+      return `<li><b>Rung ${trace.index+1} · ${esc(trace.name)}:</b> <span class="mono">${esc(rung.conditions.map(node=>explainNode(node,trace.before)).join(" ; "))}</span> ⇒ rung <b>${trace.result?"TRUE":"FALSE"}</b>${!trace.result&&blocked.length?` because ${esc(blocked.join(", "))}`:""} ⇒ ${esc(write)}.</li>`;
+    };
+    const writesChange=trace=>{const action=resolve(program.find(r=>r._index===trace.index)?.action);return !!action&&(changed.has(action.tag)||changed.has(`${action.tag}.ET`)||changed.has(`${action.tag}.Q`)||(action.tags||[]).some(tag=>changed.has(tag)))};
+    const key=lastRungTraces.length<=6?lastRungTraces:lastRungTraces.filter(trace=>trace.result||writesChange(trace)||trace.index===selectedRung);
+    const rest=lastRungTraces.filter(trace=>!key.includes(trace));
+    const outputs=lesson.data.filter(d=>d.type==="output");
+    const changedOutputs=outputs.filter(d=>changed.has(d.tag));
+    $("narrativeChain").innerHTML=`
+      <li><b>READ — input image.</b> ${lesson.inputs.map(i=>`<span class="mono${changed.has(i.tag)?" is-new":""}">${esc(i.tag)} = ${inputs[i.tag]?1:0}</span> (${esc(inputStateText(i))})`).join("; ")}.</li>
+      <li><b>SOLVE — rungs from top to bottom${ran>1?` (the last of the ${ran} scans)`:""}.</b> Each rung reads the values written above it in the same scan.
+        <ul class="nar-rungs">${key.map(rungLine).join("")}</ul>
+        ${rest.length?`<details class="nar-more"><summary>Show the other ${rest.length} rungs (FALSE, and their writes changed nothing)</summary><ul class="nar-rungs">${rest.map(rungLine).join("")}</ul></details>`:""}</li>
+      <li><b>UPDATE — output image → output module.</b> ${changedOutputs.length
+        ?`${changedOutputs.map(d=>`<span class="mono is-new">${esc(d.tag)} = ${mem[d.tag]?1:0}</span> → ${esc(d.address)} switched ${mem[d.tag]?"ON":"OFF"} (${esc(d.label)}${mem[d.tag]?": a command, not proof of motion":""})`).join("; ")}.`
+        :`No output command changed (${outputs.map(d=>`${d.tag} = ${mem[d.tag]?1:0}`).join(", ")}).`} Every value and its meaning: “PLC data after the scan”.</li>`;
+  }
+
+  // ---- Evidence: truth table (combinational lessons) and timing diagram (everything with memory or time) ----
+  function truthRows(reference=false){
+    const lesson=current(),tags=lesson.inputs.map(i=>i.tag),outTags=lesson.data.filter(d=>d.type==="output").map(d=>d.tag);
+    const keep={inputs,mem,buildMode};
+    if(reference)buildMode=false;
+    const rows=[];
+    for(let n=0;n<(1<<tags.length);n++){
+      inputs={};tags.forEach((tag,i)=>inputs[tag]=!!((n>>(tags.length-1-i))&1));
+      mem=blankMemory(lesson);
+      const scan=executeScan(0,false),rung=executionProgram()[0],before=scan.traces[0]?.before||mem;
+      rows.push({values:{...inputs},outputs:outTags.map(tag=>!!scan.mem[tag]),blocked:rung?rung.conditions.filter(node=>!testNode(node,before,null)).map(node=>conditionName(node,before)):[]});
+    }
+    inputs=keep.inputs;mem=keep.mem;buildMode=keep.buildMode;
+    return {tags,outTags,rows};
+  }
+  function renderTruthTable(){
+    const lesson=current(),table=truthRows(),ref=buildMode&&lesson.puzzle?truthRows(true):null;
+    const nowRow=table.rows.findIndex(row=>table.tags.every(tag=>row.values[tag]===!!inputs[tag]));
+    const out=table.outTags[0],ones=table.rows.filter(row=>row.outputs[0]).length;
+    const mismatches=ref?table.rows.filter((row,i)=>row.outputs[0]!==ref.rows[i].outputs[0]).length:0;
+    $("truthTable").innerHTML=`<div class="truth-wrap"><table class="truth">
+      <caption class="ev-note">Inputs are read from the input image; ${esc(out)} is what the coil writes${ref?". “Required” is the reference behaviour":""}.</caption>
+      <thead><tr><th scope="col">Now</th>${table.tags.map(tag=>`<th scope="col">${esc(tag)}</th>`).join("")}${table.outTags.map(tag=>`<th scope="col">${esc(tag)}${ref?" (yours)":""}</th>`).join("")}${ref?'<th scope="col">Required</th>':""}<th scope="col">Why</th></tr></thead>
+      <tbody>${table.rows.map((row,i)=>{
+        const bad=ref&&row.outputs[0]!==ref.rows[i].outputs[0];
+        return `<tr class="${i===nowRow?"now":""} ${bad?"mismatch":""}"${i===nowRow?' aria-current="true"':""}><td class="now-cell">${i===nowRow?"◀ now":""}</td>${table.tags.map(tag=>`<td>${row.values[tag]?1:0}</td>`).join("")}${row.outputs.map(v=>`<td class="${v?"out1":""}">${v?1:0}</td>`).join("")}${ref?`<td>${ref.rows[i].outputs[0]?1:0} ${bad?"✕ differs":"✓"}</td>`:""}<td class="why">${row.outputs[0]?"complete TRUE path":`blocked by ${esc(row.blocked.join(", ")||"the program structure")}`}</td></tr>`;
+      }).join("")}</tbody></table></div>
+      <p class="ev-note"><b>Reading it:</b> ${ones} of ${table.rows.length} input combinations give ${esc(out)} = 1. The “◀ now” row is the combination you have set: ${esc(out)} = ${mem[out]?1:0}. Toggle an input to move it.${ref?` ${mismatches?`${mismatches} row(s) of your Guided build differ from the required behaviour (✕).`:"Your Guided build matches the required behaviour in every row."}`:""}</p>`;
+  }
+  function renderTiming(){
+    const lesson=current(),samples=scanHistory,n=samples.length;
+    if(!n||!lesson.trace){$("timingDiagram").innerHTML='<p class="ev-note">No scans recorded yet.</p>';return}
+    const marks=[];
+    samples.forEach((sample,i)=>{if(i&&lesson.inputs.some(input=>sample.inputs[input.tag]!==samples[i-1].inputs[input.tag]))marks.push(i)});
+    const rows=lesson.trace.map(tag=>{
+      const numeric=isNumericTag(tag),max=numeric?presetOf(tag.replace(/\.ET$/,"")):1;
+      const ys=samples.map(sample=>{const v=readTag(sample,tag);return numeric?19-16*Math.min(1,Number(v||0)/max):(v?4:19)});
+      let line=`M0 ${ys[0]}`;
+      ys.forEach((y,i)=>{if(i&&y!==ys[i-1])line+=` L${i} ${ys[i-1]} L${i} ${y}`});
+      line+=` L${n} ${ys[n-1]}`;
+      const now=readTag(samples[n-1],tag);
+      return `<div class="trace-row"><span class="trace-tag">${esc(tag)}</span><svg class="trace-svg" viewBox="0 0 ${n} 20" preserveAspectRatio="none" aria-hidden="true">${marks.map(i=>`<line class="mark" x1="${i}" x2="${i}" y1="0" y2="20" vector-effect="non-scaling-stroke"/>`).join("")}<rect class="nowcol" x="${n-1}" y="0" width="1" height="20"/><path class="${numeric?"num":"hi"}" d="${line} L${n} 20 L0 20 Z"/><path class="${numeric?"num-ln":"ln"}" d="${line}" vector-effect="non-scaling-stroke"/></svg><span class="trace-val">${numeric?`${formatNumber(now||0)} / ${formatNumber(max)} s`:now?"1":"0"}</span></div>`;
+    }).join("");
+    const events=[];
+    for(let i=n-1;i>0&&events.length<8;i--){
+      const diffs=lesson.trace.filter(tag=>!isNumericTag(tag)&&!sameValue(tag,readTag(samples[i],tag),readTag(samples[i-1],tag)));
+      if(diffs.length)events.unshift(`Scan ${samples[i].scan} (t = ${formatNumber(samples[i].t)} s): ${diffs.map(tag=>`${tag} ${readTag(samples[i-1],tag)?1:0} → ${readTag(samples[i],tag)?1:0}`).join(", ")}`);
+    }
+    $("timingDiagram").innerHTML=`<div class="timing">${rows}
+      <div class="trace-axis"><span>scan →</span><span><span>scan ${samples[0].scan} · t = ${formatNumber(samples[0].t)} s</span><span>scan ${samples[n-1].scan} · t = ${formatNumber(samples[n-1].t)} s · now</span></span><span></span></div></div>
+      <p class="ev-note"><b>Reading it:</b> each column is one PLC scan, oldest on the left; the shaded column on the right is the current scan and the right-hand numbers are its values. Bit rows are high for 1 and low for 0; ET rows rise from 0 to the preset PT. Dashed lines mark scans in which an input changed. An input change runs one 0 s scan; each time step runs one scan per 0.1 s. The last ${TRACE_CAP} scans are kept.</p>
+      <details class="nar-more"><summary>Bit changes in the most recent scans (${events.length})</summary><ol class="trace-events">${events.map(text=>`<li>${esc(text)}</li>`).join("")||"<li>No bit has changed yet.</li>"}</ol></details>`;
+  }
+  function renderEvidence(){
+    if(current().truth)renderTruthTable();else renderTiming();
+  }
+
+  // ---- Step map: active step, each transition condition and what blocks the next transition ----
+  function blockingText(map,active){
+    const lesson=current();
+    if(active.length>1)return `${active.map(step=>step.tag).join(" and ")} are 1 at the same time: two main stages are active. Each transition must SET the next stage and RESET the current one.`;
+    if(!inputs.ST)return "ST = 0. The master-reset rung (N.C. ST) clears the stage bits on every scan, so nothing can start. Turn the process enable ON first.";
+    const step=active[0];
+    if(step){
+      const et=Number(mem[`${step.timer}.ET`]||0),pt=presetOf(step.timer);
+      let text=`${step.name} is active (${step.tag} = 1). The transition to ${step.next} waits for ${step.timer}.Q = 1: ET = ${formatNumber(et)} s of PT = ${formatNumber(pt)} s → ${formatNumber(Math.max(0,pt-et))} s remaining. Use Advance or Run to next event.`;
+      if(lesson.busyExtension&&mem.PART_WAITING)text+=" A part is waiting; it is released on the first scan in which every STEP bit and BYPASS_ACTIVE are 0.";
+      if(lesson.busyExtension&&mem.BYPASS_ACTIVE)text+=` A bypass transfer runs in parallel: TBYPASS.ET = ${formatNumber(mem["TBYPASS.ET"]||0)} s of ${formatNumber(presetOf("TBYPASS"))} s.`;
+      return text;
+    }
+    if(lesson.busyExtension&&mem.BYPASS_ACTIVE)return `The main cell is idle, but BYPASS_ACTIVE = 1 blocks a new start until TBYPASS.Q = 1 (ET = ${formatNumber(mem["TBYPASS.ET"]||0)} s of ${formatNumber(presetOf("TBYPASS"))} s).`;
+    if(inputs.SN)return "IDLE: SN is already 1, but a new part needs a new 0 → 1 edge of ST AND SN. Set SN to 0, then back to 1.";
+    return "IDLE: waiting for a part. SN must change 0 → 1 (with ST = 1) to create the one-scan NEW_PART pulse that SETs STEP_POS.";
+  }
+  function renderStateMap(){
+    const map=current().stateMap;
+    if(!map)return;
+    const active=map.steps.filter(step=>step.tag&&mem[step.tag]);
+    const card=(step,on,body)=>`<li class="sm-step ${on?"active":""}"><div class="sm-name"><span>${esc(step.name)}</span><span class="sm-badge">${on?"ACTIVE":"inactive"}</span></div>${body}</li>`;
+    const timerNow=step=>step.timer?`<br><span class="mono">now: ${step.timer}.ET = ${formatNumber(mem[`${step.timer}.ET`]||0)} of ${formatNumber(presetOf(step.timer))} s, Q = ${mem[`${step.timer}.Q`]?1:0}</span>`:"";
+    const main=map.steps.map(step=>{
+      const on=step.tag?!!mem[step.tag]:active.length===0;
+      return card(step,on,`<div class="sm-does">${step.tag?`<b>${esc(step.tag)} = ${on?1:0}.</b> `:""}${esc(step.does)}</div><div class="sm-next"><b>→ ${esc(step.next)} when</b> ${esc(step.when)}${on?timerNow(step):""}</div>`);
+    }).join("");
+    const aux=(map.aux||[]).map(step=>{
+      const on=!!mem[step.tag];
+      return card(step,on,`<div class="sm-does"><b>${esc(step.tag)} = ${on?1:0}.</b> ${esc(step.does)}</div><div class="sm-next"><b>Starts when</b> ${esc(step.enter)}<br><b>Ends when</b> ${esc(step.leave)}${on?timerNow(step):""}</div>`);
+    }).join("");
+    $("stateMap").innerHTML=`<p class="ev-title">Step map — which step is active, and what moves it on?</p>
+      <ol class="sm-flow" aria-label="Main sequence">${main}</ol>
+      ${aux?`<p class="ev-title">Auxiliary states (may be active together with one main step)</p><ul class="sm-flow">${aux}</ul>`:""}
+      <div class="sm-block"><b>What is blocking the next transition?</b> ${esc(blockingText(map,active))}</div>
+      <p class="ev-note">${esc(map.reset)}</p>`;
   }
 
   function runtimeSnapshot(){
     return {
       inputs:{...inputs},mem:{...mem},time,scanNo,selectedRung,selectedInstruction,traceEvents:[...traceEvents],
       traceIndex,readerIndex,readerRevealed,activeGroup,lastRungResults:clone(lastRungResults),
-      lastRungTraces:clone(lastRungTraces),prevEdge:{...prevEdge},programVariant,buildMode
+      lastRungTraces:clone(lastRungTraces),prevEdge:{...prevEdge},programVariant,buildMode,scanHistory
     };
   }
   function restoreRuntime(s){
     inputs=s.inputs;mem=s.mem;time=s.time;scanNo=s.scanNo;selectedRung=s.selectedRung;selectedInstruction=s.selectedInstruction;
     traceEvents=s.traceEvents;traceIndex=s.traceIndex;readerIndex=s.readerIndex;readerRevealed=s.readerRevealed;activeGroup=s.activeGroup;
     lastRungResults=s.lastRungResults;lastRungTraces=s.lastRungTraces;prevEdge=s.prevEdge;programVariant=s.programVariant;buildMode=s.buildMode;
+    scanHistory=s.scanHistory;
   }
   function isolatedReset(){
     inputs={};current().inputs.forEach(input=>inputs[input.tag]=input.value);
-    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};lastRungResults=[];lastRungTraces=[];
+    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};lastRungResults=[];lastRungTraces=[];scanHistory=[];
   }
   function isolatedStep(step){
     Object.assign(inputs,step.inputs||{});
@@ -1778,9 +2636,20 @@
       const got=mem[tag];return typeof want==="number"?Math.abs(Number(got)-want)>=.001:!!got!==!!want;
     }).map(([tag,want])=>`${tag}: expected ${typeof want==="number"?want:want?1:0}, got ${typeof mem[tag]==="number"?formatNumber(mem[tag]):mem[tag]?1:0}`).join("; ");
   }
+  // Expected-vs-actual rows for one checkpoint, using the same comparison as matchesExpected.
+  function expectRows(expect){
+    return Object.entries(expect).map(([tag,want])=>{
+      const got=mem[tag],numeric=typeof want==="number";
+      return {tag,want,got,numeric,ok:numeric?Math.abs(Number(got)-want)<.001:!!got===!!want};
+    });
+  }
 
   function runSpecialTest(kind){
     isolatedReset();programVariant="repaired";buildMode=false;
+    const checkpoints=[];
+    const check=(label,expect)=>{const rows=expectRows(expect);checkpoints.push({label,rows});return rows.every(row=>row.ok)};
+    const allOff=tags=>Object.fromEntries(tags.map(tag=>[tag,false]));
+    const report=(pass,good,bad)=>({pass,detail:pass?good:bad,checkpoints});
 
     function startBaseCycleTo(stage){
       isolatedStep({inputs:{ST:true,SN:false}});
@@ -1793,53 +2662,53 @@
 
     if(kind==="busy_load"){
       startBaseCycleTo("load");
-      const atLoad=!!mem.STEP_LOAD;
+      const atLoad=check("1 · ST = 1, one part edge (SN 0 → 1 → 0), then 2.1 s: the main cell is in LOAD",{STEP_LOAD:true});
       isolatedStep({inputs:{ST:true,SN:true}});
-      const captured=!!mem.PART_WAITING&&!!mem.INFEED_HOLD&&!mem.M1&&!mem.BYPASS_ACTIVE;
+      const captured=check("2 · A new SN edge during LOAD (one scan)",{PART_WAITING:true,INFEED_HOLD:true,M1:false,BYPASS_ACTIVE:false});
       isolatedStep({inputs:{ST:true,SN:false}});
       isolatedStep({inputs:{ST:true,SN:false},dt:18.5});
-      const released=!!mem.STEP_POS&&!mem.PART_WAITING;
-      return {pass:atLoad&&captured&&released,detail:atLoad&&captured&&released?"Arrival stored, M1 stopped, and waiting part began a later normal cycle":"Loading-arrival capture, hold or release behavior was missing"};
+      const released=check("3 · SN = 0, then 18.5 s: the first part has finished and the waiting part was released",{STEP_POS:true,PART_WAITING:false});
+      return report(atLoad&&captured&&released,"Arrival stored, M1 stopped, and waiting part began a later normal cycle","Loading-arrival capture, hold or release behavior was missing");
     }
     if(kind==="busy_cnc"){
       startBaseCycleTo("cnc");
-      const atCnc=!!mem.STEP_CNC&&!!mem.CNS;
+      const atCnc=check("1 · One part run into CNC (edge, then 7.2 s)",{STEP_CNC:true,CNS:true});
       isolatedStep({inputs:{ST:true,SN:true}});
-      const bypassStarted=!!mem.BYPASS_ACTIVE&&!!mem.INFEED_HOLD&&!mem.M1&&!!mem.RU&&!!mem.M2&&!mem.PART_WAITING;
+      const bypassStarted=check("2 · A new SN edge during CNC (one scan)",{BYPASS_ACTIVE:true,INFEED_HOLD:true,M1:false,RU:true,M2:true,PART_WAITING:false});
       isolatedStep({inputs:{ST:true,SN:false},dt:3.1});
-      const bypassFinished=!mem.BYPASS_ACTIVE&&!!mem.STEP_CNC&&!mem.RU&&!mem.M2;
-      return {pass:atCnc&&bypassStarted&&bypassFinished,detail:atCnc&&bypassStarted&&bypassFinished?"New part bypassed to Conveyor 2 while the original CNC stage continued":"CNC-arrival bypass did not start, finish or preserve the main CNC stage"};
+      const bypassFinished=check("3 · SN = 0, then 3.1 s: the 3 s bypass transfer has finished",{BYPASS_ACTIVE:false,STEP_CNC:true,RU:false,M2:false});
+      return report(atCnc&&bypassStarted&&bypassFinished,"New part bypassed to Conveyor 2 while the original CNC stage continued","CNC-arrival bypass did not start, finish or preserve the main CNC stage");
     }
     if(kind==="busy_unload"){
       startBaseCycleTo("unload");
-      const atUnload=!!mem.STEP_UNLOAD&&!!mem.RU;
+      const atUnload=check("1 · One part run into UNLOAD (edge, then 17.3 s)",{STEP_UNLOAD:true,RU:true});
       isolatedStep({inputs:{ST:true,SN:true}});
-      const captured=!!mem.PART_WAITING&&!!mem.INFEED_HOLD&&!mem.M1&&!mem.BYPASS_ACTIVE;
+      const captured=check("2 · A new SN edge during UNLOAD (one scan)",{PART_WAITING:true,INFEED_HOLD:true,M1:false,BYPASS_ACTIVE:false});
       isolatedStep({inputs:{ST:true,SN:false},dt:3.4});
-      const released=!!mem.STEP_POS&&!mem.PART_WAITING;
-      return {pass:atUnload&&captured&&released,detail:atUnload&&captured&&released?"Arrival waited through unload and then entered positioning":"Unload-arrival capture or later release was missing"};
+      const released=check("3 · SN = 0, then 3.4 s: the unload has finished and the waiting part was released",{STEP_POS:true,PART_WAITING:false});
+      return report(atUnload&&captured&&released,"Arrival waited through unload and then entered positioning","Unload-arrival capture or later release was missing");
     }
     if(kind==="busy_stop"){
       startBaseCycleTo("cnc");
       isolatedStep({inputs:{ST:true,SN:true}});
       isolatedStep({inputs:{ST:false,SN:true}});
       const tags=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","PART_WAITING","BYPASS_ACTIVE","GT","RL","CNS","RU","M1","M2"];
-      const pass=tags.every(tag=>!mem[tag]);
-      return {pass,detail:pass?"Stop cleared main stages, waiting/bypass memory and every output command":"Still active: "+tags.filter(tag=>mem[tag]).join(", ")};
+      const pass=check("After: one part run into CNC, a new SN edge (bypass starts), then ST = 0",allOff(tags));
+      return report(pass,"Stop cleared main stages, waiting/bypass memory and every output command","Still active: "+tags.filter(tag=>mem[tag]).join(", "));
     }
 
     if(kind==="normal"){
       isolatedStep({inputs:{ST:true,SN:false}});
       isolatedStep({inputs:{ST:true,SN:true}});
       isolatedStep({inputs:{ST:true,SN:true},dt:2.1});
-      const load=!!mem.STEP_LOAD&&!!mem.RL;
+      const load=check("1 · ST = 1, SN 0 → 1 (part edge), then 2.1 s: LOAD with the robot loading",{STEP_LOAD:true,RL:true});
       isolatedStep({inputs:{ST:true,SN:true},dt:5.1});
-      const cnc=!!mem.STEP_CNC&&!!mem.CNS;
+      const cnc=check("2 · 5.1 s later: CNC with the CNC command ON",{STEP_CNC:true,CNS:true});
       isolatedStep({inputs:{ST:true,SN:true},dt:10.1});
-      const unload=!!mem.STEP_UNLOAD&&!!mem.RU&&!!mem.M2;
+      const unload=check("3 · 10.1 s later: UNLOAD with robot unload and Conveyor 2 ON",{STEP_UNLOAD:true,RU:true,M2:true});
       isolatedStep({inputs:{ST:true,SN:true},dt:3.1});
-      const idle=!mem.STEP_POS&&!mem.STEP_LOAD&&!mem.STEP_CNC&&!mem.STEP_UNLOAD&&!mem.GT&&!mem.RL&&!mem.CNS&&!mem.RU&&!mem.M2;
-      return {pass:load&&cnc&&unload&&idle,detail:load&&cnc&&unload&&idle?"Position → Load → CNC → Unload → Idle observed":"One or more stage actions or transitions were missing"};
+      const idle=check("4 · 3.1 s later: back to IDLE, every stage action OFF",allOff(["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","GT","RL","CNS","RU","M2"]));
+      return report(load&&cnc&&unload&&idle,"Position → Load → CNC → Unload → Idle observed","One or more stage actions or transitions were missing");
     }
     if(kind==="stop"){
       isolatedStep({inputs:{ST:true,SN:false}});
@@ -1847,22 +2716,45 @@
       isolatedStep({inputs:{ST:true,SN:true},dt:3});
       isolatedStep({inputs:{ST:false,SN:true}});
       const tags=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","GT","RL","CNS","RU","M1","M2"];
-      const pass=tags.every(tag=>!mem[tag]);
-      return {pass,detail:pass?"All stage bits and output commands cleared":"Still active: "+tags.filter(tag=>mem[tag]).join(", ")};
+      const pass=check("After: ST = 1, part edge, 3 s (now in LOAD), then ST = 0",allOff(tags));
+      return report(pass,"All stage bits and output commands cleared","Still active: "+tags.filter(tag=>mem[tag]).join(", "));
     }
     isolatedStep({inputs:{ST:true,SN:false}});
     isolatedStep({inputs:{ST:true,SN:true}});
     isolatedStep({inputs:{ST:true,SN:true},dt:20.5});
     for(let i=0;i<10;i++)isolatedStep({inputs:{ST:true,SN:true},dt:.2});
-    const stages=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"];
-    const pass=stages.every(tag=>!mem[tag])&&!mem.NEW_PART;
-    return {pass,detail:pass?"Cell remained idle while the same SN signal stayed at 1":"Persistent sensor retriggered a cycle"};
+    const pass=check("After: one part edge, then SN kept at 1 for 20.5 s plus 2 s more",allOff(["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","NEW_PART"]));
+    return report(pass,"Cell remained idle while the same SN signal stayed at 1","Persistent sensor retriggered a cycle");
+  }
+
+  function stepText(step){
+    const set=Object.entries(step.inputs||{}).map(([tag,val])=>`${tag} = ${showValue(val)}`).join(", ");
+    const dt=Number(step.dt||0),slices=Math.max(1,Math.round(dt/.1));
+    return `${set?`Set ${set}`:"Keep the inputs"}, then ${dt>0?`run ${formatNumber(dt)} s (${slices} scans of ${formatNumber(dt/slices)} s)`:"run one scan (0 s)"}.`;
+  }
+  function testCard(report){
+    const test=report.test;
+    const show=(row,v)=>row.numeric?`${formatNumber(Number(v||0))} s`:v?"1":"0";
+    const tables=report.checkpoints.map(point=>`<p class="tc-cp">${esc(point.label)}</p><div class="tc-table-wrap"><table class="tc-table"><thead><tr><th scope="col">Tag</th><th scope="col">Expected</th><th scope="col">Actual</th><th scope="col">Match</th></tr></thead><tbody>${point.rows.map(row=>`<tr class="${row.ok?"":"bad"}"><td class="mono">${esc(row.tag)}</td><td>${show(row,row.want)}</td><td>${show(row,row.got)}</td><td>${row.ok?"✓ yes":"✕ no"}</td></tr>`).join("")}</tbody></table></div>`).join("");
+    const steps=test.steps?`<p class="tc-cp">Steps applied, starting from cleared memory</p><ol class="tc-steps">${test.steps.map(step=>`<li>${esc(stepText(step))}</li>`).join("")}</ol>`:"";
+    const verdict=report.pass
+      ?`<p class="tc-proves"><b>What this proves:</b> ${esc(test.proves||report.detail)}</p>`
+      :`<p class="tc-check"><b>What went wrong:</b> ${esc(report.detail)}. <b>What to check:</b> ${esc(test.check||"Find the rung that writes the first wrong value.")}</p>`;
+    return `<article class="test-card ${report.pass?"pass":"fail"}"><div class="tc-head"><span class="tc-badge">${report.pass?"PASS ✓":"FAIL ✕"}</span><b>${esc(report.name)}</b></div>
+      <p class="tc-ask"><b>Question:</b> ${esc(test.ask||report.name)}</p>${verdict}
+      <details class="nar-more"${report.pass?"":" open"}><summary>Steps and expected vs actual values</summary><div class="tc-detail">${steps}${tables}</div></details></article>`;
   }
 
   function runReferenceTests(){
+    const lesson=current();
+    if(lesson.puzzle&&!buildMode){
+      $("testResult").innerHTML=`<div class="feedback hint"><b>The reference tests check your own program.</b> Switch to Guided build, fill every amber gap in the ladder, then run the tests again. The worked program is only an example, so it does not count.<div class="coach-actions"><button class="btn" type="button" data-go-build>Switch to Guided build</button></div></div>`;
+      postHeight();
+      return;
+    }
     const snapshot=runtimeSnapshot();
     const reports=[];
-    for(const test of current().tests){
+    for(const test of lesson.tests){
       let report;
       if(test.special){
         report=runSpecialTest(test.special);
@@ -1871,15 +2763,18 @@
         if(test.variant)programVariant=test.variant;
         for(const step of test.steps)isolatedStep(step);
         const pass=matchesExpected(test.expect);
-        report={pass,detail:pass?"Expected PLC data observed":mismatchText(test.expect)};
+        report={pass,detail:pass?"Expected PLC data observed":mismatchText(test.expect),checkpoints:[{label:"Expected vs actual after the last step",rows:expectRows(test.expect)}]};
       }
-      reports.push({name:test.name,...report});
+      reports.push({test,name:test.name,...report});
     }
     restoreRuntime(snapshot);
-    const allPass=reports.every(r=>r.pass);
-    passedTests[current().id]=allPass;
-    $("testResult").innerHTML=`<div class="feedback ${allPass?"good":"bad"}"><b>${allPass?"All tests passed.":`${reports.filter(r=>!r.pass).length} test(s) failed.`}</b> ${allPass?"The current program matches every checked behavior.":"Use the first failing case to identify which rung writes the wrong value."}</div>
-      <div class="test-cases">${reports.map(r=>`<div class="test-case ${r.pass?"pass":"fail"}"><span><b>${esc(r.name)}:</b> ${esc(r.detail)}</span></div>`).join("")}</div>`;
+    const allPass=reports.every(r=>r.pass),failed=reports.filter(r=>!r.pass).length;
+    passedTests[lesson.id]=allPass;
+    const tested=lesson.puzzle?"your Guided build":"the lesson program";
+    $("testResult").innerHTML=`<div class="feedback ${allPass?"good":"bad"}"><b>${allPass?`All ${reports.length} tests passed.`:`${failed} of ${reports.length} test(s) failed.`}</b> ${allPass
+      ?`${esc(lesson.testsMeaning)} (Tested: ${tested}.) The reference-test requirement for this lesson is complete.`
+      :`Tested: ${tested}. The program does not yet meet every requirement. Start with the first failing test: compare its expected and actual values, then follow “What to check”.`}</div>
+      <div class="test-cards">${reports.map(testCard).join("")}</div>`;
     renderProgress();buildLessonSelect();saveProgress();postHeight();
   }
 
@@ -1908,8 +2803,8 @@
     if(current().id==="cascade"&&buildMode){
       activeGroup="State-based repair";programVariant="repaired";
     }
-    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};
-    executeScan(0,true);
+    restartModel(buildMode?"Guided build on: memory cleared, one scan run with your instructions":"Worked program restored: memory cleared, one scan run");
+    $("testResult").innerHTML="";
     selectedRung=displayedProgram()[0]?._index||0;
     selectedInstruction=null;renderStatic();renderAll();
     $("scanStatus").textContent=buildMode?"Guided build active · fill the amber gaps":"Worked program restored";
@@ -1932,7 +2827,7 @@
     selections[current().id][activeSlot]=choice;
     const correct=same(choice,slot.correct);
     $("choiceFeedback").innerHTML=`<div class="feedback ${correct?"good":"bad"}"><b>${correct?"Correct connection.":"Re-read the requirement."}</b> ${esc(correct?choiceMeaning(choice):slot.prompt)}</div>`;
-    mem=blankMemory(current());time=0;scanNo=0;prevEdge={};executeScan(0,true);renderAll();saveProgress();
+    restartModel(`Instruction placed in gap ${activeSlot}: memory cleared, one scan run`);renderAll();saveProgress();
     if(correct)setTimeout(closeChoice,500);
   }
   function describe(node){
@@ -1955,12 +2850,12 @@
   }
 
   function saveProgress(){
-    try{localStorage.setItem("ladderTeachingStudioProgress",JSON.stringify({completedQuestions,passedTests,selections}))}catch(_){}
+    try{localStorage.setItem("ladderTeachingStudioProgress",JSON.stringify({passedTests,selections}))}catch(_){}
   }
   function loadProgress(){
     try{
       const saved=JSON.parse(localStorage.getItem("ladderTeachingStudioProgress")||"{}");
-      completedQuestions=saved.completedQuestions||{};passedTests=saved.passedTests||{};selections=saved.selections||{};
+      passedTests=saved.passedTests||{};selections=saved.selections||{};
     }catch(_){}
   }
   function postHeight(){
@@ -1970,6 +2865,14 @@
   document.addEventListener("click",event=>{
     const lesson=event.target.closest("[data-lesson]");
     if(lesson){const idx=Number(lesson.dataset.lesson);if(lessonUnlocked(idx))initializeLesson(idx);return}
+    const term=event.target.closest("[data-term]");
+    if(term){showDefinition(term);return}
+    const jump=event.target.closest("[data-question-jump]");
+    if(jump){openQuestion(Number(jump.dataset.questionJump));renderQuestions();postHeight();return}
+    const readerStep=event.target.closest("[data-reader-step]");
+    if(readerStep){readerIndex=Number(readerStep.dataset.readerStep);readerRevealed=false;renderReader();postHeight();return}
+    const goBuild=event.target.closest("[data-go-build]");
+    if(goBuild){if(!buildMode)toggleBuild();$("secLadder").scrollIntoView({behavior:"smooth",block:"start"});return}
     const choice=event.target.closest("[data-question-choice]");
     if(choice&&!questionChecked){questionChoice=Number(choice.dataset.questionChoice);renderQuestions();return}
     const preset=event.target.closest("[data-preset]");
@@ -1981,7 +2884,7 @@
       activeGroup=group.dataset.group;
       if(current().id==="cascade")programVariant=activeGroup==="Flawed cascade"?"flawed":"repaired";
       const first=displayedProgram()[0];if(first)selectedRung=first._index;
-      mem=blankMemory(current());time=0;scanNo=0;prevEdge={};executeScan(0,true);
+      restartModel(`Rung group “${activeGroup}” selected: memory cleared, one scan run`);
       selectedInstruction=null;traceIndex=-1;renderGroups();renderAll();return;
     }
     const rung=event.target.closest("[data-select-rung]");
@@ -2016,7 +2919,7 @@
   $("advanceHalf").addEventListener("click",()=>advanceTime(.5));
   $("advanceOne").addEventListener("click",()=>advanceTime(1));
   $("runToEvent").addEventListener("click",runToNextEvent);
-  $("fullScan").addEventListener("click",()=>{executeScan(0,true);setScanPhase("write");renderAll();$("scanStatus").textContent=`Scan ${scanNo} complete · output image ready for update`});
+  $("fullScan").addEventListener("click",()=>{noteAction("Full scan with unchanged inputs");executeScan(0,true);setScanPhase("write");renderAll();$("scanStatus").textContent=`Scan ${scanNo} complete · output image ready for update`});
   $("stepInstruction").addEventListener("click",stepInstruction);
   $("restartScan").addEventListener("click",()=>{traceIndex=-1;setScanPhase("read");renderLadder();$("scanStatus").textContent="Trace restarted at input read"});
   $("toggleBuild").addEventListener("click",toggleBuild);
@@ -2024,6 +2927,8 @@
   $("prevReader").addEventListener("click",()=>{readerIndex=Math.max(0,readerIndex-1);readerRevealed=false;renderReader();postHeight()});
   $("nextReader").addEventListener("click",()=>{readerIndex=Math.min(readerPrompts.length-1,readerIndex+1);readerRevealed=false;renderReader();postHeight()});
   $("runTests").addEventListener("click",runReferenceTests);
+  $("clearTrace").addEventListener("click",()=>{scanHistory=scanHistory.slice(-1);renderEvidence();postHeight()});
+  $("pageQuestion").addEventListener("toggle",()=>{try{localStorage.setItem("ladderTeachingStudioPanel",$("pageQuestion").open?"open":"closed")}catch(_){}});
   $("closeChoice").addEventListener("click",closeChoice);
   $("choiceLayer").addEventListener("click",event=>{if(event.target===$("choiceLayer"))closeChoice()});
   window.addEventListener("resize",postHeight);
@@ -2035,6 +2940,8 @@
   }
   loadProgress();
   loadCourseProgress();
+  try{if(localStorage.getItem("ladderTeachingStudioPanel")==="closed")$("pageQuestion").open=false}catch(_){}
+  $("pageMore").open=!Object.keys(courseCorrect).length;
   buildLessonSelect();
   initializeLesson(COURSE_ALLOWED[0]);
 </script>

@@ -151,7 +151,6 @@
   .narr h3 { font-size: 14px; margin: 0; }
   .narr ol { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; }
   .narr li { margin-bottom: 6px; }
-  .evlog { font-size: 12.5px; margin: 8px 0 0; padding-left: 20px; color: #3e4c59; }
 
   /* Sequence map */
   .stepmap { display: flex; align-items: stretch; gap: 4px; }
@@ -169,6 +168,9 @@
   .loopnote { font-size: 12.5px; color: #3e4c59; margin: 6px 0 0; }
 
   /* Rule cards: question and model answer */
+  .rulecard.watched { border-left-color: #f59f00; }
+  .rulecard.fired { border-left-color: #2f9e44; background: #ebfbee; }
+  .rulescan { font-size: 12.5px; color: #3e4c59; background: #fff; border: 1px solid #e4e7eb; border-radius: 6px; padding: 5px 8px; margin: 8px 0 0; }
   .rulestep { margin-left: auto; font-size: 11px; color: #52606d; }
   .ruleq { font-size: 13px; margin: 8px 0 0; }
   .ruleq .look { display: block; font-size: 12px; color: #52606d; }
@@ -178,14 +180,7 @@
   .answer p { margin: 6px 0; }
   .mistake { background: #fff5f5; border-left: 3px solid #c92a2a; padding: 4px 8px; border-radius: 4px; }
 
-  /* Rule check table */
-  .evaltbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  .evaltbl th, .evaltbl td { border: 1px solid #d9e0e6; padding: 6px 8px; text-align: left; vertical-align: top; }
-  .evaltbl th { background: #f4f6f8; font-size: 11.5px; color: #3e4c59; }
-  .evaltbl tr.fired td { background: #ebfbee; }
-  .evaltbl tr.force td { background: #eff5ff; }
-  .evaltbl tr.wait td { background: #fff9db; }
-  .evaltbl tr.ended td, .evaltbl tr.ignored td { background: #fff5f5; }
+  /* Status labels used on the rule cards */
   .stb { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 10px; background: #e4e7eb; color: #3e4c59; margin-right: 4px; }
   .stb.fired { background: #2f9e44; color: #fff; }
   .stb.force { background: #d0ebff; color: #1864ab; }
@@ -206,7 +201,7 @@
   .chain li { flex: 1 1 150px; border: 1px solid #d9e0e6; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; background: #fbfcfd; position: relative; }
   .chain li b { display: block; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: #52606d; }
   .chain li b::before { counter-increment: link; content: counter(link) " · "; }
-  .chain li.hot { background: #fff9db; border-color: #f59f00; }
+  .bridge-more { margin-top: 8px; }
   .bridge { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
   .bridge th, .bridge td { border: 1px solid #d9e0e6; padding: 6px 8px; text-align: left; vertical-align: top; }
   .bridge th { background: #f4f6f8; font-size: 11.5px; color: #3e4c59; }
@@ -226,12 +221,11 @@
     .arrow { transform: rotate(90deg); }
   }
   @media (max-width: 640px) {
-    .evaltbl thead, .sumtbl thead { display: none; }
-    .evaltbl, .evaltbl tbody, .evaltbl tr, .evaltbl td,
+    .sumtbl thead { display: none; }
     .sumtbl, .sumtbl tbody, .sumtbl tr, .sumtbl td { display: block; width: 100%; }
-    .evaltbl tr, .sumtbl tr { border: 1px solid #d9e0e6; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
-    .evaltbl td, .sumtbl td { border: none; border-top: 1px solid #eef1f4; }
-    .evaltbl td::before, .sumtbl td::before { content: attr(data-label); display: block; font-size: 10.5px; font-weight: 700;
+    .sumtbl tr { border: 1px solid #d9e0e6; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+    .sumtbl td { border: none; border-top: 1px solid #eef1f4; }
+    .sumtbl td::before { content: attr(data-label); display: block; font-size: 10.5px; font-weight: 700;
       color: #52606d; text-transform: uppercase; letter-spacing: .04em; }
   }
   @media (max-width: 520px) {
@@ -268,8 +262,8 @@
         <h3 class="qh">How to use this page (about 15–20 min)</h3>
         <ol class="howto">
           <li>Press <b>▶ Start</b> at 2× and watch one full cycle (about 20 s). Follow <a href="#narrativeSec">What just happened?</a></li>
-          <li>Tick <b>Pause &amp; predict</b>, press Start again and answer before each step change.</li>
-          <li>Use <b>⏸ Pause</b> and <b>Step one scan</b> to read the <a href="#ruleTableSec">rule check</a> scan by scan.</li>
+          <li>Tick <b>Pause &amp; predict</b> and press Start again: answer before each step change, then the page stops on the change so you can check your prediction.</li>
+          <li>Use <b>⏸ Pause</b> and <b>Step one scan</b> to read each rule’s “This scan” line in <a href="#rulesSec">Control rules</a>, scan by scan.</li>
           <li>Press <b>Reset</b> in the middle of a cycle and read what it did.</li>
           <li>Read the <a href="#timingSec">timing diagram</a> and the <a href="#summarySec">cycle summary</a>, then do the <a href="#quizSec">self-check</a>.</li>
         </ol>
@@ -302,7 +296,7 @@
   <div class="controls controls2">
     <button class="btn-reset" id="pauseBtn" aria-pressed="false">⏸ Pause</button>
     <button class="btn-reset" id="stepBtn" disabled>Step one scan</button>
-    <label class="chk"><input type="checkbox" id="predictMode"> Pause &amp; predict before each step change</label>
+    <label class="chk"><input type="checkbox" id="predictMode"> Pause &amp; predict at each step change</label>
     <span class="scanchip" id="scanChip">Scan #0</span>
   </div>
 
@@ -398,21 +392,13 @@
     <p class="section-q">What did the PLC read, decide and write on the latest scan — and what changed since the scan before?</p>
     <p class="live" id="liveMsg" aria-live="polite">Press ▶ Start to begin a cycle. The PLC is already scanning: it checks all four rules every 50 ms, even in IDLE.</p>
     <div class="narr" id="narrative"></div>
-    <ol class="evlog" id="eventLog"></ol>
   </section>
 
-  <h2 class="section-title" style="margin-top:28px;">Control rules (checked every scan)</h2>
-  <p class="section-q">Which rule is in force now, and which question does each rule answer?</p>
-  <div id="rules"></div>
-
-  <section class="block" id="ruleTableSec" aria-labelledby="tableTitle">
-    <h2 class="section-title" id="tableTitle">Rule check on the latest scan</h2>
-    <p class="section-q">What does every rule see on this scan, is its IF TRUE or FALSE, and what does the PLC do with it?</p>
-    <table class="evaltbl">
-      <thead><tr><th>Rule</th><th>IF part — values read this scan</th><th>IF</th><th>Step check</th><th>Result this scan</th></tr></thead>
-      <tbody id="ruleTable"></tbody>
-    </table>
-    <p class="note">FIRED = the IF became TRUE and the step changed on this scan · IN FORCE = this rule’s THEN is what the outputs are doing · WATCHED = the condition the current step is waiting for · ENDED = the PLC just left this rule’s step · not its step = nothing to do now.</p>
+  <section class="block" id="rulesSec" aria-labelledby="rulesTitle">
+    <h2 class="section-title" id="rulesTitle">Control rules (checked every scan)</h2>
+    <p class="section-q">On this scan, what does each rule read, is its IF TRUE or FALSE, and what does the PLC do with it?</p>
+    <p class="note" style="margin:-4px 0 10px;">Each card shows the rule (the program, never changes) and its <b>This scan</b> line (live values). ACTIVE = this rule’s THEN is what the outputs are doing now (the other cards say “not active”) · WATCHED = the condition the current step is waiting for · FIRED = the IF became TRUE and the step changed on this scan · ENDED = the PLC just left this rule’s step · not its step = nothing to do now. Pause to read a single scan.</p>
+    <div id="rules"></div>
   </section>
 
   <div class="scan" id="scanLine"><span class="dot"></span> <span id="scanLineTxt">PLC scanning continuously — reads inputs/sensors, evaluates each rule, drives the outputs</span></div>
@@ -451,22 +437,24 @@
   <section class="block" id="bridgeSec" aria-labelledby="bridgeTitle">
     <h2 class="section-title" id="bridgeTitle">Next: the same rules as ladder rungs</h2>
     <p class="section-q">How will these IF–THEN rules look in a ladder diagram?</p>
-    <p style="font-size:13.5px;margin:0;">Next you will write these same four rules as <a class="term" href="#g-rung">ladder rungs</a> (in the Tank Ladder &amp; Scan-Cycle Studio). Nothing about the scan changes: the PLC still reads, solves and writes on every scan. Only the notation changes:</p>
-    <table class="bridge">
-      <thead><tr><th>On this page (IF–THEN)</th><th>In ladder (next)</th></tr></thead>
-      <tbody>
-        <tr><td>IF … AND …</td><td>contacts in series</td></tr>
-        <tr><td>… OR …</td><td>contacts in parallel (a branch)</td></tr>
-        <tr><td>level switch detects full</td><td>normally open (N.O.) contact on <code class="tag">LEVEL_HIGH</code> — TRUE while the bit is 1</td></tr>
-        <tr><td>tank <b>not</b> full</td><td>normally closed (N.C.) contact on <code class="tag">LEVEL_HIGH</code> — TRUE while the bit is 0</td></tr>
-        <tr><td>THEN open valve A</td><td>output coil <code class="tag">PA_CMD</code></td></tr>
-        <tr><td>“Start activated” (remembered)</td><td>a holding (seal-in) contact, or SET/RESET of a step bit</td></tr>
-        <tr><td>which step am I in?</td><td>step bits <code class="tag">STEP_FILL</code>, <code class="tag">STEP_MIX</code>, <code class="tag">STEP_DRAIN</code></td></tr>
-        <tr><td>motor mixed for 30 s</td><td>an on-delay timer TON: IN = <code class="tag">STEP_MIX</code>, PT = 30 s; its Q is Rule 3’s IF</td></tr>
-      </tbody>
-    </table>
-    <p style="font-size:13px;margin:8px 0 0;">Preview — Rule 1 written as two rungs (read each rung left to right: contacts are the IF, the coil is the THEN):</p>
-<pre class="rung" aria-label="Ladder preview of Rule 1">     START_PB      LEVEL_HIGH              STEP_FILL
+    <p style="font-size:13.5px;margin:0;">Next you will write these same four rules as <a class="term" href="#g-rung">ladder rungs</a> (in the Tank Ladder &amp; Scan-Cycle Studio). Nothing about the scan changes: the PLC still reads, solves and writes on every scan. Only the notation changes.</p>
+    <details class="bridge-more">
+      <summary>Show how each part of a rule becomes a ladder symbol, with Rule 1 as a preview</summary>
+      <table class="bridge">
+        <thead><tr><th>On this page (IF–THEN)</th><th>In ladder (next)</th></tr></thead>
+        <tbody>
+          <tr><td>IF … AND …</td><td>contacts in series</td></tr>
+          <tr><td>… OR …</td><td>contacts in parallel (a branch)</td></tr>
+          <tr><td>level switch detects full</td><td>normally open (N.O.) contact on <code class="tag">LEVEL_HIGH</code> — TRUE while the bit is 1</td></tr>
+          <tr><td>tank <b>not</b> full</td><td>normally closed (N.C.) contact on <code class="tag">LEVEL_HIGH</code> — TRUE while the bit is 0</td></tr>
+          <tr><td>THEN open valve A</td><td>output coil <code class="tag">PA_CMD</code></td></tr>
+          <tr><td>“Start activated” (remembered)</td><td>a holding (seal-in) contact, or SET/RESET of a step bit</td></tr>
+          <tr><td>which step am I in?</td><td>step bits <code class="tag">STEP_FILL</code>, <code class="tag">STEP_MIX</code>, <code class="tag">STEP_DRAIN</code></td></tr>
+          <tr><td>motor mixed for 30 s</td><td>an on-delay timer TON: IN = <code class="tag">STEP_MIX</code>, PT = 30 s; its Q is Rule 3’s IF</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13px;margin:8px 0 0;">Preview — Rule 1 written as two rungs (read each rung left to right: contacts are the IF, the coil is the THEN):</p>
+  <pre class="rung" aria-label="Ladder preview of Rule 1">     START_PB      LEVEL_HIGH              STEP_FILL
  |------| |-----+------|/|-------------------( )------|
  |              |
  |    STEP_FILL |
@@ -474,7 +462,8 @@
 
      STEP_FILL                               PA_CMD
  |------| |----------------------------------( )------|</pre>
-    <p class="note">Rung 1: STEP_FILL is ON while (Start is pressed OR STEP_FILL was already ON) AND the level switch does NOT read full. The parallel STEP_FILL contact is how the PLC remembers the short Start press. Rung 2: valve A is commanded open while STEP_FILL is ON (PB_CMD gets the same rung). In the full program you will also add a condition so that Start only works from IDLE.</p>
+      <p class="note">Rung 1: STEP_FILL is ON while (Start is pressed OR STEP_FILL was already ON) AND the level switch does NOT read full. The parallel STEP_FILL contact is how the PLC remembers the short Start press. Rung 2: valve A is commanded open while STEP_FILL is ON (PB_CMD gets the same rung). In the full program you will also add a condition so that Start only works from IDLE.</p>
+    </details>
   </section>
 
   <details class="block gloss" id="glossarySec">
@@ -551,22 +540,22 @@
   const STEPS = {
     idle:  { no: 0, name: "IDLE",  cls: "",      phys: "everything closed and stopped",
              does: "All outputs OFF. Nothing moves; the PLC waits.",
-             q: "What is the PLC waiting for?", ends: "▶ Start is pressed (tank not full)" },
+             q: "What does the PLC do while it waits?", ends: "▶ Start is pressed (tank not full)" },
     fill:  { no: 1, name: "FILL",  cls: "fill",  phys: "A and B open — liquid flows in",
              does: "Valves A and B open: liquid flows in, the level rises.",
-             q: "What is the PLC doing while it fills, and what stops it?", ends: "the level switch reads FULL" },
+             q: "Which outputs are ON while the tank fills?", ends: "the level switch reads FULL" },
     mix:   { no: 2, name: "MIX",   cls: "mix",   phys: "the motor stirs; all valves closed",
              does: "Motor ON, A and B closed. The 30 s mix timer runs.",
-             q: "How long does the motor run, and who counts the time?", ends: "the mix timer is done (ET reaches 30 s)" },
+             q: "Which outputs are ON while mixing, and what is counting?", ends: "the mix timer is done (ET reaches 30 s)" },
     drain: { no: 3, name: "DRAIN", cls: "drain", phys: "C open — liquid flows out",
              does: "Motor OFF, valve C open: the level falls.",
-             q: "When is the batch finished?", ends: "the tank is empty (level 0 %)" }
+             q: "Which outputs are ON while the tank drains?", ends: "the tank is empty (level 0 %)" }
   };
 
   // One entry per rule card. cond/then/hold/why/did are used to build the live explanations.
   const RULE_INFO = [
     { q: "When do valves A and B open, and what keeps them open?",
-      look: "Rule 1’s row in the rule-check table, and the Outputs panel.",
+      look: "this card’s “This scan” line and the Outputs panel.",
       cond: "Start activated AND tank not full", then: "open valves A and B", hold: "keep valves A and B open",
       why: "Start pressed with the tank not full", did: "valves A and B open",
       answer: "A and B open on the scan that reads the Start press while the PLC is IDLE and the tank is not full. On every later scan Rule 1 is checked again: the PLC remembers the press as the FILL step and the tank is still not full, so the IF stays TRUE and A = B = 1 is written again — until the level switch reads FULL.",
@@ -574,7 +563,7 @@
              "An output stays ON because its rule writes 1 again on every scan, not because it was switched on once."],
       mistake: "Thinking the valves close when you let go of Start. The press is remembered in the step memory." },
     { q: "When does filling stop and mixing start?",
-      look: "Rule 2’s row in the rule-check table, the level-switch input and the FILL card of the sequence map.",
+      look: "this card’s “This scan” line and the level-switch input.",
       cond: "level switch detects full", then: "close A and B, start the motor and the 30 s timer", hold: "keep the motor ON and A, B closed",
       why: "level switch reads FULL", did: "A and B closed, motor ON, 30 s timer started",
       answer: "On the first scan on which the level switch reads FULL. In that single scan Rule 2’s IF becomes TRUE, the step changes FILL → MIX, A and B are written 0, the motor is written 1 and the 30 s timer starts.",
@@ -582,7 +571,7 @@
              "All of the THEN actions (close A and B, start the motor) are written in that same scan."],
       mistake: "Expecting the valves to close a little before or after the motor starts. Both are written in the same UPDATE." },
     { q: "When does mixing stop and draining start?",
-      look: "The mix-timer panel and Rule 3’s row in the rule-check table.",
+      look: "this card’s “This scan” line and the Mix timer panel.",
       cond: "motor mixed for 30 s (timer done)", then: "stop the motor, open valve C", hold: "keep the motor OFF and valve C open",
       why: "mix timer done (30 s)", did: "motor OFF, valve C open",
       answer: "When the mix timer is done: ET reaches PT = 30 s, so Q = 1. On that scan Rule 3 stops the motor and opens C. The level switch still reads FULL on that scan, but the PLC is now in DRAIN, so Rule 2 cannot restart the motor.",
@@ -590,7 +579,7 @@
              "Nothing physical changes during MIX, so only the timer can end this step."],
       mistake: "Thinking the level switch ends mixing. During MIX the level does not change; the timer ends the step." },
     { q: "When does draining stop, and when is the PLC ready again?",
-      look: "The Tank-empty input and Rule 4’s row in the rule-check table.",
+      look: "this card’s “This scan” line and the Tank-empty input.",
       cond: "tank is empty", then: "close valve C — ready for the next cycle", hold: "keep valve C closed (ready)",
       why: "tank empty", did: "valve C closed, PLC ready",
       answer: "On the first scan on which the tank reads empty (level 0 %). Rule 4 closes C and the step returns to IDLE. The PLC then waits: Rule 1 needs a new Start press, so the next batch does not start by itself.",
@@ -612,7 +601,7 @@
     { id: "scan", q: "What is a scan, and what happens in one?", href: "#narrativeSec",
       todo: "watch about 40 scans of a running cycle, or use “Step one scan”.",
       a: "One pass of READ inputs → SOLVE every rule → UPDATE outputs. This page does one every 50 ms; a real PLC repeats it every few milliseconds for as long as it is in RUN." },
-    { id: "always", q: "Why is every rule checked on every scan, even when nothing happens?", href: "#ruleTableSec",
+    { id: "always", q: "Why is every rule checked on every scan, even when nothing happens?", href: "#rulesSec",
       todo: "run one full cycle and read the cycle summary.",
       a: "The PLC cannot know in advance on which scan a condition will become TRUE, so it re-checks all rules every scan. In a full cycle only 4 of the hundreds of rule checks change the step; the rest find nothing new. That is what lets the PLC react within one scan of a change." },
     { id: "step", q: "How does the PLC know which step it is in?", href: "#stepMapSec",
@@ -682,10 +671,10 @@
     { id: "q-scan",
       q: "The PLC is in the FILL step, the level is 60 % and nothing changes on this scan. Is Rule 4 (“IF tank is empty THEN close valve C”) checked on this scan?",
       given: "Step = FILL · level = 60 % · LEVEL_HIGH = 0 · TANK_EMPTY = 0",
-      look: "The rule-check table: watch which rows update while the PLC is filling.",
+      look: "Control rules: watch which “This scan” lines update while the PLC is filling.",
       options: [
         { t: "No — only the active rule (Rule 1) is checked during FILL.",
-          why: "“Active” only marks the rule whose THEN is in force. The PLC still evaluates every rule; all four rows of the rule-check table update on every scan." },
+          why: "“Active” only marks the rule whose THEN is in force. The PLC still evaluates every rule; all four “This scan” lines in Control rules update on every scan." },
         { t: "Yes — every rule is checked on every scan. Rule 4’s IF is FALSE (60 % is not empty), so it does nothing.", ok: true,
           why: "The PLC solves all of its rules on every scan, whether or not anything is about to happen. A FALSE IF simply means “no action on this scan”." },
         { t: "No — Rule 4 is only checked once the tank is empty.",
@@ -712,14 +701,14 @@
     { id: "q-stepmem",
       q: "On the scan where mixing ends, the tank is still full, so the level switch still reads 1. Rule 2 says “IF level switch detects full THEN close A and B, start motor”. Why does the motor not start again?",
       given: "LEVEL_HIGH = 1 · timer Q = 1 · the step changes MIX → DRAIN on this scan",
-      look: "The rule-check table on that scan (use Pause & predict, then Pause) — Rule 2’s row.",
+      look: "Rule 2’s “This scan” line on that scan (tick Pause & predict, answer, then press Pause right after the change).",
       options: [
         { t: "Because the level switch is not read during DRAIN.",
           why: "Inputs are read on every scan, in every step. On that scan LEVEL_HIGH is read as 1." },
         { t: "Because the motor needs a new Start press.",
           why: "Start belongs to Rule 1 (IDLE → FILL). The motor follows the step: ON in MIX, OFF in every other step." },
         { t: "Because the step memory now says DRAIN. Rule 2 only acts while the PLC is filling or mixing, so its TRUE IF is ignored.", ok: true,
-          why: "The step memory decides which rule may act. The rule-check table marks Rule 2 as ENDED, with its IF still TRUE, on that scan." },
+          why: "The step memory decides which rule may act. On that scan Rule 2’s card is marked ENDED, with its IF still TRUE." },
         { t: "Because Rule 3 is checked after Rule 2 and simply overwrites it.",
           why: "Here the PLC does not rely on rule order: it knows it is in DRAIN. (In ladder, rung order does matter if two rungs write the same coil — a habit to avoid.)" }
       ],
@@ -845,7 +834,7 @@
   let rec = null;                      // the latest scan; every explanation panel is built from it
   let cycle = null;                    // bookkeeping for the current / last cycle
   let trace = [], traceT = 0, recording = false, tailLeft = 0, traceDirty = true;
-  let predicting = null, predictChoice = null, predictAsked = {};
+  let predicting = null, predictChoice = null, predictAsked = {}, holdAfterChange = false;
   let runScans = 0;
   const progress = loadProgress();
 
@@ -909,6 +898,10 @@
     r.rules = ruleIfs(cur).map((ifv, k) => ({ ifv, status: ruleStatus(k, lastSnap, cur, ev, ifv) }));
     rec = r; lastSnap = cur;
     bookkeeping(r);
+    if (holdAfterChange && cur.phase !== r.prev.phase) {      // Pause & predict: stop on the scan that made the change so it can be read
+      holdAfterChange = false; paused = true;
+      announce(eventText(cycle.events[cycle.events.length - 1]) + " Paused on this scan so you can compare it with your prediction — press ▶ Resume to go on.");
+    }
   }
 
   function bookkeeping(r) {
@@ -995,12 +988,12 @@
   function untilHTML(c) {
     const per = SCAN_S * speed, scans = s => Math.max(1, Math.ceil(s / per - 1e-9));
     switch (c.phase) {
-      case "idle":  return `IDLE does not end by itself: Rule 1 waits for you to press <b>▶ Start</b>.`;
+      case "idle":  return `Start not pressed → still waiting for you.`;
       case "fill":  { const s = (100 - c.level) / FILL_RATE;
-                      return `Rule 2 — the level switch must read FULL. Now ${tag("LEVEL_HIGH")} = 0 at ${fmt1(c.level)} %: about ${fmt1(s)} s of process time to go (≈ ${scans(s)} scans at ${speed}×).`; }
-      case "mix":   return `Rule 3 — the mix timer must be done. Now ET = ${fmt1(c.et)} s, Q = 0: ${fmt1(c.timer)} s to go (≈ ${scans(c.timer)} scans at ${speed}×).`;
+                      return `${tag("LEVEL_HIGH")} = 0 at ${fmt1(c.level)} % → FALSE. About ${fmt1(s)} s of process time to go (≈ ${scans(s)} scans at ${speed}×).`; }
+      case "mix":   return `ET ${fmt1(c.et)} of 30 s, Q = 0 → FALSE. ${fmt1(c.timer)} s to go (≈ ${scans(c.timer)} scans at ${speed}×).`;
       case "drain": { const s = c.level / DRAIN_RATE;
-                      return `Rule 4 — the tank must be empty. Now ${tag("TANK_EMPTY")} = 0 at ${fmt1(c.level)} %: about ${fmt1(s)} s to go (≈ ${scans(s)} scans at ${speed}×).`; }
+                      return `${tag("TANK_EMPTY")} = 0 at ${fmt1(c.level)} % → FALSE. About ${fmt1(s)} s to go (≈ ${scans(s)} scans at ${speed}×).`; }
     }
   }
 
@@ -1008,18 +1001,14 @@
     if (!r) return `<p class="muted">Waiting for the first scan…</p>`;
     const { prev: p, cur: c, ev } = r;
     const outKeys = [["A", "PA_CMD"], ["B", "PB_CMD"], ["M", "MOTOR_CMD"], ["C", "PC_CMD"]];
-    // 2. SOLVE: the fired / watched / in-force / ended rules first, the rest summed up
-    const solve = [], rest = [];
+    // 2. SOLVE: only the decisive rule here; every rule's own result is on its card
+    const solve = [];
     if (ev.reset) solve.push(`<mark class="chg">Reset</mark> was pressed. Reset is not one of the four rules — it overrides them: step memory forced to IDLE, every output to 0, timer reloaded to 30 s (the simulation also empties the tank).`);
-    r.rules.forEach((x, k) => {
-      const info = RULE_INFO[k];
-      if (x.status === "fired") solve.push(`<b>Rule ${k + 1}</b>: IF ${info.cond} → <b>TRUE</b> → <mark class="chg">step ${STEPS[p.phase].name} → ${STEPS[c.phase].name}</mark>; THEN ${info.then}.`);
-      else if (x.status === "wait") solve.push(`<b>Rule ${k + 1}</b> (what ${STEPS[c.phase].name} waits for): IF ${info.cond} → <b>FALSE</b> → no step change.`);
-      else if (x.status === "force") solve.push(`<b>Rule ${k + 1}</b> is in force: IF ${info.cond} → TRUE → THEN ${info.hold}.`);
-      else if (x.status === "ended") solve.push(`<b>Rule ${k + 1}</b>: ${resultText(k, x, r)}`);
-      else rest.push(`${k + 1} (${x.ifv ? "TRUE" : "FALSE"}${x.status === "ignored" ? ", ignored" : ""})`);
-    });
-    if (rest.length) solve.push(`Rule${rest.length > 1 ? "s" : ""} ${rest.join(", ")}: not ${rest.length > 1 ? "their" : "its"} step → nothing to do.`);
+    const fk = r.rules.findIndex(x => x.status === "fired"), wk = STEP_ORDER.indexOf(c.phase);
+    if (fk >= 0) solve.push(`<b>Rule ${fk + 1}</b>: IF ${RULE_INFO[fk].cond} → <b>TRUE</b> → <mark class="chg">step ${STEPS[p.phase].name} → ${STEPS[c.phase].name}</mark>; THEN ${RULE_INFO[fk].then}.`);
+    else if (!ev.reset) solve.push(`<b>Rule ${wk + 1}</b> (what ${STEPS[c.phase].name} waits for): IF ${RULE_INFO[wk].cond} → <b>FALSE</b> → no step change.`);
+    r.rules.forEach((x, k) => { if (x.status === "ended" && x.ifv && !ev.reset) solve.push(`Rule ${k + 1}’s IF is still TRUE, but the step memory now says ${STEPS[c.phase].name}, so it is ignored.`); });
+    solve.push(`The other rules were checked too — <a href="#rulesSec">each rule card’s “This scan” line</a> shows its result.`);
     // 4. CHANGED since the previous scan
     const bits = [], nums = [];
     if (ev.start) bits.push(`${tag("START_PB")} read as 1`);
@@ -1036,7 +1025,7 @@
                    mix:  "The motor stays 1 because Rule 2’s IF is still TRUE (full) and the step is still MIX.",
                    drain: "C stays 1 because Rule 3 is still in force (step DRAIN)." }[c.phase];
     const changed = bits.length
-      ? `${bits.map(b => `<mark class="chg">${b}</mark>`).join(" ")}${nums.length ? " · " + nums.join(" · ") : ""}`
+      ? `${bits.map(b => `<mark class="chg">${b}</mark>`).join(", ")}${nums.length ? " · " + nums.join(" · ") : ""}`
       : `${nums.length ? nums.join(" · ") : "nothing"}. No bit changed. ${keep}`;
     const since = cycle && !cycle.end ? ` · ${fmt1(cycle.t)} s since Start` : "";
     return `<h3>Scan #${r.n} · step ${STEPS[c.phase].name}${since}</h3>
@@ -1046,34 +1035,19 @@
         <li><b>SOLVE every rule</b> — ${solve.join(" ")}</li>
         <li><b>UPDATE outputs</b> — ${outKeys.map(([k, t]) => `${tag(t)} = ${bit(c[k])}`).join(", ")} → ${STEPS[c.phase].phys}.</li>
         <li><b>Changed since the previous scan</b> — ${changed}</li>
-        <li><b>What ends this step</b> — ${untilHTML(c)}</li>
+        <li><b>What ends this step</b> — Rule ${wk + 1}: ${STEPS[c.phase].ends}. The live countdown is on the ACTIVE card of the <a href="#stepMapSec">sequence map</a>.</li>
       </ol>`;
   }
 
-  function ruleTableHTML(r) {
-    const c = r.cur;
-    return r.rules.map((x, k) => {
-      const S = STATUS[x.status], watch = STEP_ORDER[k], hold = STEP_ORDER[(k + 1) % 4];
-      const rel = c.phase === hold ? "this rule’s THEN step" : c.phase === watch ? "the step this rule ends" : "not this rule’s step";
-      return `<tr class="${S.cls}">
-        <td data-label="Rule"><b>Rule ${k + 1}</b><span class="mini">${STEPS[watch].name} → ${STEPS[hold].name}</span></td>
-        <td data-label="IF part — values read this scan">${condValues(k, r)}</td>
-        <td data-label="IF">${pill(x.ifv, x.ifv ? "TRUE" : "FALSE")}</td>
-        <td data-label="Step check">PLC in <b>${STEPS[c.phase].name}</b>: ${rel}</td>
-        <td data-label="Result this scan"><span class="stb ${S.cls}">${S.txt}</span> ${resultText(k, x, r)}</td>
-      </tr>`;
-    }).join("");
+  function ruleScanHTML(k, r) {
+    const x = r.rules[k], S = STATUS[x.status];
+    const label = x.status === "force" ? "" : `<span class="stb ${S.cls}">${S.txt}</span> `;
+    return `<p class="rulescan"><b>This scan:</b> ${condValues(k, r)} → IF ${pill(x.ifv, x.ifv ? "TRUE" : "FALSE")} → ${label}${resultText(k, x, r)}</p>`;
   }
 
   function stepMapHTML(c) {
     const passed = cycle && !cycle.end ? cycle.events.map(e => e.from) : [];
     const nextStep = STEP_ORDER[(STEP_ORDER.indexOf(c.phase) + 1) % 4];
-    const blocking = {
-      idle:  `Start not pressed → still waiting`,
-      fill:  `${tag("LEVEL_HIGH")} = 0 at ${fmt1(c.level)} % → FALSE, keeps filling`,
-      mix:   `ET ${fmt1(c.et)} of 30 s, Q = 0 → FALSE, ${fmt1(c.timer)} s to go`,
-      drain: `${tag("TANK_EMPTY")} = 0 at ${fmt1(c.level)} % → FALSE, keeps draining`
-    }[c.phase];
     return STEP_ORDER.map((s, i) => {
       const S = STEPS[s], active = c.phase === s;
       const badge = active ? `<span class="badge on">ACTIVE</span>` : passed.includes(s) ? `<span class="badge">passed ✓</span>` :
@@ -1082,7 +1056,7 @@
         <div class="stephead"><span class="stepno">Step ${S.no}</span><b>${S.name}</b>${badge}</div>
         <p><b class="ql">Question:</b> ${S.q}</p>
         <p>${S.does}</p>
-        <p><b>Ends when</b> (Rule ${i + 1}): ${S.ends} → ${STEPS[STEP_ORDER[(i + 1) % 4]].name}.${active ? `<span class="now">Now: ${blocking}</span>` : ""}</p>
+        <p><b>Ends when</b> (Rule ${i + 1}): ${S.ends} → ${STEPS[STEP_ORDER[(i + 1) % 4]].name}.${active ? `<span class="now">Now: ${untilHTML(c)}</span>` : ""}</p>
       </div>`;
     }).join(`<div class="arrow" aria-hidden="true">→</div>`);
   }
@@ -1094,7 +1068,7 @@
       idle:  leftover ? "Not in use in IDLE. The yellow readout still shows 00:00:00 from the last batch; ▶ Start (or Reset) reloads the 30 s preset."
                       : "Not timing. It starts on the scan on which the level switch reads FULL (Rule 2).",
       fill:  "Not timing yet. It starts on the scan on which the level switch reads FULL (Rule 2).",
-      mix:   `Timing: ET ${fmt1(c.et)} s of PT 30 s → ${fmt1(MIX_TIME - c.et)} s remaining. Q = 0 until ET reaches PT; then Rule 3 ends mixing. The yellow readout shows the remaining time, rounded up to whole seconds.`,
+      mix:   "Timing. Q stays 0 until ET reaches PT; on that scan Q = 1 and Rule 3 ends mixing. The yellow readout above shows Remaining, rounded up to whole seconds.",
       drain: "Done: ET reached PT (30 s), so Q = 1. Rule 3 used Q to stop the motor and open C. The readout holds 00:00:00."
     }[c.phase];
     const pct = leftover ? 0 : c.et / MIX_TIME * 100;
@@ -1110,24 +1084,20 @@
 
   function chainHTML(c) {
     const ch = CHAIN[c.phase], k = STEP_ORDER.indexOf(c.phase);
-    const val = { idle: rec && rec.ev.start, fill: c.full, mix: c.q, drain: c.empty }[c.phase];
-    const ifv = rec ? rec.rules[k].ifv : false;
-    const outs = `now ${tag("PA_CMD")} = ${bit(c.A)}, ${tag("PB_CMD")} = ${bit(c.B)}, ${tag("MOTOR_CMD")} = ${bit(c.M)}, ${tag("PC_CMD")} = ${bit(c.C)}`;
     return [
       ["Physical device", ch.dev],
       ["Input module", ch.inmod],
-      ["Input bit", `${tag(ch.bit)} = ${bit(val)} on this scan`],
-      ["Rule (instruction)", `Rule ${k + 1}: IF ${RULE_INFO[k].cond} → ${pill(ifv, ifv ? "TRUE" : "FALSE")}`],
-      ["Step memory", ifv ? `changes to ${STEPS[STEP_ORDER[(k + 1) % 4]].name}` : `stays ${STEPS[c.phase].name} until the IF is TRUE`],
-      ["Output bits", `${outs}; after the change: ${ch.next}`],
+      ["Input bit", `${tag(ch.bit)} in the PLC’s memory (0 or 1)`],
+      ["Rule (instruction)", `Rule ${k + 1} tests it on every scan: IF ${RULE_INFO[k].cond}`],
+      ["Step memory", `when the IF is TRUE: ${STEPS[c.phase].name} → ${STEPS[STEP_ORDER[(k + 1) % 4]].name}`],
+      ["Output bits", ch.next],
       ["Output module", ch.outmod],
       ["Actuator", ch.act]
-    ].map(([h, t], i) => `<li class="${i === 2 || i === 3 ? "hot" : ""}"><b>${h}</b>${t}</li>`).join("");
+    ].map(([h, t]) => `<li><b>${h}</b>${t}</li>`).join("");
   }
 
   function summaryHTML() {
     if (!cycle) return `<p class="muted" style="font-size:13px;">No cycle yet. Press <b>▶ Start</b>. When the tank is empty again, this panel explains the whole run.</p>`;
-    if (!cycle.end) return `<p style="font-size:13px;"><b>Cycle in progress</b> — step ${STEPS[lastSnap.phase].name}, ${fmt1(cycle.t)} s of process time, ${cycle.scans} scans so far. The full summary appears when the tank is empty again (or when you press Reset).</p>`;
     const ev = cycle.events, rows = [];
     ev.forEach((e, i) => {
       if (e.to === "idle") return;
@@ -1136,10 +1106,12 @@
         <td data-label="Step"><b>${STEPS[e.to].name}</b></td>
         <td data-label="Began">scan #${e.n} at ${fmt1(e.t)} s — Rule ${e.rule + 1}: ${RULE_INFO[e.rule].why}</td>
         <td data-label="What the PLC did">${STEPS[e.to].does}</td>
-        <td data-label="Ended">${nx ? `scan #${nx.n} at ${fmt1(nx.t)} s — ${nx.rule >= 0 ? `Rule ${nx.rule + 1}: ${RULE_INFO[nx.rule].why}` : "Reset pressed"}` : "—"}</td>
+        <td data-label="Ended">${!nx ? "still active" : `scan #${nx.n} at ${fmt1(nx.t)} s — ${nx.rule >= 0 ? `Rule ${nx.rule + 1}: ${RULE_INFO[nx.rule].why}` : "Reset pressed"}`}</td>
         <td data-label="Lasted">${nx ? `${fmt1(nx.t - e.t)} s (${nx.n - e.n} scans)` : "—"}</td>
       </tr>`);
     });
+    const table = `<table class="sumtbl"><thead><tr><th>Step</th><th>Began</th><th>What the PLC did</th><th>Ended</th><th>Lasted</th></tr></thead><tbody>${rows.join("")}</tbody></table>`;
+    if (!cycle.end) return `<p style="font-size:13px;"><b>Cycle in progress</b> — step ${STEPS[lastSnap.phase].name}, ${fmt1(cycle.t)} s of process time, ${cycle.scans} scans so far. Each step is added below as it starts; the verdict appears when the tank is empty again (or when you press Reset).</p>${table}`;
     const fired = ev.filter(e => e.rule >= 0).length, checks = cycle.scans * 4;
     const head = cycle.end.reset
       ? `<p class="verdict">Cycle stopped by Reset during ${STEPS[cycle.end.step].name}, after ${fmt1(cycle.end.t)} s of process time (${cycle.scans} scans).</p>`
@@ -1148,7 +1120,7 @@
       ? `<p style="font-size:13px;"><b>What this shows:</b> Reset is an override outside the four rules. It forced IDLE at once, switched every output OFF and reloaded the timer, without waiting for any step to finish. Press ▶ Start to run a complete batch.</p>`
       : `<p style="font-size:13px;"><b>What this proves:</b> the whole batch came from the same four rules, checked again on every one of the ${cycle.scans} scans (${checks} rule checks). Only ${fired} of those checks changed the step; all the others found nothing new and simply wrote the same outputs again. The step memory decided which rule could act (so “level switch FULL” could not restart the motor while draining), and the timer turned “mix for 30 s” into a TRUE/FALSE condition for Rule 3.</p>
          <p class="note">Ideal durations: FILL 100 % ÷ 22 %/s ≈ 4.5 s, MIX 30 s, DRAIN 100 % ÷ 26 %/s ≈ 3.8 s. Measured values can be a little longer, because a step can only end on a scan: at 10× each scan covers 0.5 s.</p>`;
-    return `${head}<table class="sumtbl"><thead><tr><th>Step</th><th>Began</th><th>What the PLC did</th><th>Ended</th><th>Lasted</th></tr></thead><tbody>${rows.join("")}</tbody></table>${proves}`;
+    return `${head}${table}${proves}`;
   }
 
   function traceSVG() {
@@ -1271,6 +1243,7 @@
   rulesEl.innerHTML = RULE_INFO.map((r, i) => `
       <div class="rulecard" id="ruleCard${i}">
         <div id="ruleDyn${i}"></div>
+        <div id="ruleScan${i}"></div>
         <p class="ruleq"><b class="ql">Question:</b> ${r.q}<span class="look"><b>Where to look for the answer:</b> ${r.look}</span></p>
         <p class="locked" id="ruleLock${i}">The model answer unlocks after you have seen Rule ${i + 1} fire (watch its step change).</p>
         <details class="answer" id="ruleAns${i}" hidden>
@@ -1362,11 +1335,15 @@
                <span class="kw">THEN</span> close valve C — ready for next cycle` }
     ];
     rules.forEach((r, i) => {
+      const st = rec ? rec.rules[i].status : "";
       $("ruleCard" + i).classList.toggle("active", r.active);
+      $("ruleCard" + i).classList.toggle("fired", st === "fired");
+      $("ruleCard" + i).classList.toggle("watched", st === "wait");
+      if (rec) setHTML($("ruleScan" + i), ruleScanHTML(i, rec));
       setHTML($("ruleDyn" + i), `
         <div class="rulehead">
           <span class="rulenum">Rule ${i + 1}</span>
-          <span class="badge ${r.active ? "on" : ""}">${r.active ? "ACTIVE" : "waiting"}</span>
+          <span class="badge ${r.active ? "on" : ""}">${r.active ? "ACTIVE" : "not active"}</span>
           <span class="rulestep">${STEPS[STEP_ORDER[i]].name} → ${STEPS[STEP_ORDER[(i + 1) % 4]].name}</span>
         </div>
         <div class="ruletext">${r.text}</div>`);
@@ -1390,13 +1367,11 @@
       ? "Simulation paused — a real PLC in RUN mode never stops scanning. “Step one scan” runs one READ → SOLVE → UPDATE pass."
       : "PLC scanning continuously — reads inputs/sensors, evaluates each rule, drives the outputs (READ → SOLVE → UPDATE, every 50 ms here)");
     setHTML($("narrative"), narrativeHTML(rec));
-    if (rec) setHTML($("ruleTable"), ruleTableHTML(rec));
-    setHTML($("eventLog"), cycle ? cycle.events.map(e => `<li>${eventText(e)}</li>`).join("") : "");
     setHTML($("stepMap"), stepMapHTML(c));
-    setText($("chainIntro"), `The chain the PLC is watching now (step ${STEPS[c.phase].name}, Rule ${STEP_ORDER.indexOf(c.phase) + 1}). It follows the step: run a cycle to see all four.`);
+    setText($("chainIntro"), `Shown for the step that is active now (${STEPS[c.phase].name}): the path from the signal that ends this step to the devices that react. It changes with the step.`);
     setHTML($("chain"), chainHTML(c));
     setHTML($("cycleSummary"), summaryHTML());
-    if (traceDirty && (paused || !recording || scanNo % 4 === 0)) { setHTML($("timing"), traceSVG()); traceDirty = false; }
+    if (traceDirty && (paused || !recording || scanNo % 4 === 0 || (rec && rec.prev.phase !== rec.cur.phase))) { setHTML($("timing"), traceSVG()); traceDirty = false; }
   }
 
   // --- Loop (the scan) ---
@@ -1417,8 +1392,8 @@
   document.getElementById("speed").addEventListener("change", e => speed = parseFloat(e.target.value));
 
   // Teaching-layer controls (the three handlers above are unchanged)
-  startBtn.addEventListener("click", () => { startPulse = true; paused = false; closePredict(); });
-  $("resetBtn").addEventListener("click", () => { resetPulse = true; paused = false; closePredict(); });
+  startBtn.addEventListener("click", () => { startPulse = true; paused = false; holdAfterChange = false; closePredict(); });
+  $("resetBtn").addEventListener("click", () => { resetPulse = true; paused = false; holdAfterChange = false; closePredict(); });
   $("pauseBtn").addEventListener("click", () => {
     if (predicting) return;
     paused = !paused;
@@ -1432,7 +1407,7 @@
     traceDirty = true;
     render();
   });
-  $("predictGo").addEventListener("click", () => { closePredict(); paused = false; render(); });
+  $("predictGo").addEventListener("click", () => { closePredict(); paused = false; holdAfterChange = true; render(); });
   $("predictBody").addEventListener("click", e => {
     const b = e.target.closest("button[data-pred]");
     if (!b || predictChoice !== null) return;

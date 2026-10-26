@@ -90,7 +90,7 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
 .rule .rmap{color:#53667a;font-size:.68rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .rule .rule-live{font-weight:800;color:#647589}.rule.now{border-color:var(--blue);background:var(--blue-soft)}.rule.now .rule-live{color:#0d5d94}
 .plain-now{margin:9px 0 0;border:1px solid #d6dfe8;border-radius:9px;background:#fbfcfd;padding:7px 9px;font-size:.72rem;color:#3d5167}
-.bp-chain{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;counter-reset:bp}
+.bp-chain{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;counter-reset:bp}
 .bp-chain li{position:relative;border:1px solid #d5dfe8;border-radius:10px;padding:8px 9px 8px 34px;background:#fbfcfd;font-size:.7rem;color:#53667a;min-width:0}
 .bp-chain li::before{counter-increment:bp;content:counter(bp);position:absolute;left:8px;top:8px;width:19px;height:19px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:#fff;font-size:.62rem;font-weight:900}
 .bp-chain li.k-read{border-left:4px solid var(--blue)}.bp-chain li.k-logic{border-left:4px solid var(--green)}.bp-chain li.k-write{border-left:4px solid var(--purple)}
@@ -151,8 +151,9 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
 .glossary{margin-top:12px}.glossary .card-body{padding-top:4px}.glossary dl{display:grid;grid-template-columns:minmax(150px,max-content) minmax(0,1fr);gap:5px 12px;margin:8px 0 0;font-size:.73rem}
 .glossary dt{font-weight:850;color:#2c4259}.glossary dd{margin:0;color:#4a5e72}
 .summary-list{margin:0;padding-left:20px;display:grid;gap:7px;font-size:.75rem;color:#33485e}.summary-list .pending{color:var(--muted)}
-@media(max-width:900px){.qpanel-grid,.explain-grid{grid-template-columns:1fr}.bp-chain{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.qpanel-grid,.explain-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.bp-chain{grid-template-columns:1fr}.glossary dl{grid-template-columns:1fr}.glossary dd{margin-bottom:5px}.ton-grid div{font-size:.56rem}.subq{grid-template-columns:22px minmax(0,1fr)}.subq .badge{grid-column:2;justify-self:start}}
+@media(max-width:620px){.progress button span{display:inline}.progress button{font-size:.56rem;padding:8px 1px;overflow-wrap:anywhere}}
 @media print{.qpanel .prereq,.td-tools,.uq-status .btn{display:none}}
 </style>
 </head>
@@ -183,16 +184,16 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
         <ol class="subq-list" id="subqList"></ol>
       </div>
       <div class="qpanel-side">
-        <h3>By the end you can…</h3>
-        <ul class="list-tight">
+        <details class="prereq" style="margin-top:0" open><summary>By the end you can…</summary>
+        <ul class="list-tight" style="margin-top:6px">
           <li>name the stages IDLE, FILL, MIX and DRAIN, and the sensor, button or timer condition that ends each one;</li>
           <li>say what READ, SOLVE and UPDATE each do, and why an input that changes after READ is not seen until the next READ;</li>
           <li>point to the rung that writes <code>PA_CMD</code>, <code>PB_CMD</code>, <code>MOTOR_CMD</code> and <code>PC_CMD</code>, and say why it is TRUE or FALSE on a given scan;</li>
           <li>read an on-delay timer (<abbr title="On-delay timer (IEC 61131-3): Q becomes 1 after IN has been 1 for the preset time PT">TON</abbr>): IN, PT, ET, remaining time and Q;</li>
           <li>translate an English rule into If–Then, Boolean and ladder form;</li>
           <li>predict the outputs of the next scan from given input and memory values.</li>
-        </ul>
-        <h3>How to use this page (about 35 min)</h3>
+        </ul></details>
+        <h3 style="margin-top:12px">How to use this page (about 35 min)</h3>
         <ol class="list-tight">
           <li>Read the four process rules in <a href="#process">1 · Process</a> (3 min).</li>
           <li>In <a href="#scan">2 · Scan</a>, press <i>Step one phase</i> three times (READ, SOLVE, UPDATE). After each press, read <a href="#narrativeCard">What just happened?</a> (5 min).</li>
@@ -219,7 +220,6 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
     <h2>Required sequence</h2>
     <p><b>Basic mode:</b> complete one manual READ–SOLVE–UPDATE scan and answer the four base predictions. Button 2, Button 3 and automatic run remain locked.</p>
     <div class="mode-row"><span class="badge" id="modeBadge">BASIC MODE</span><span class="mode-status" id="modeStatus"></span><button class="btn" id="unlockChallenge" disabled>Unlock extension controls</button></div>
-    <div class="unlock-note">Extension controls unlock only after the manual scan and the base prediction set are complete.</div>
     <div id="unlockDetail"></div>
   </section>
   <div class="note">
@@ -230,7 +230,7 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   <section id="process" class="grid2">
     <div class="unit-q" data-unit="process"></div>
     <article class="card">
-      <div class="card-head"><div><h2>Known process rules</h2><p class="q-sub">Question: what must the tank do, and in which order?</p><p>These are recalled from Session 6; the new work is translating them into ladder logic. Each rule names the rungs that carry it out.</p></div><span class="badge">Rule recall</span></div>
+      <div class="card-head"><div><h2>Known process rules</h2><p>These are recalled from Session 6; the new work is translating them into ladder logic. Each rule names the rungs that carry it out.</p></div><span class="badge">Rule recall</span></div>
       <div class="card-body rules">
         <div class="rule" data-rule="fill"><b>1 · Fill</b><i class="rq">Question: when may solenoids A and B open, and what keeps them open?</i><span>When the Start switch is active and the tank is ready, activate solenoids A and B.</span><span class="rmap">Ladder: R1 + R2 start FILL · R7, R8 write PA_CMD, PB_CMD</span><span class="rule-live"></span></div>
         <div class="rule" data-rule="mix"><b>2 · Mix</b><i class="rq">Question: what ends filling, and what must happen at that moment?</i><span>When the desired level is reached, deactivate A and B, run the motor, and start a 30-second timer.</span><span class="rmap">Ladder: R3 FILL → MIX · R4 timer · R9 MOTOR_CMD</span><span class="rule-live"></span></div>
@@ -250,15 +250,6 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
         </div>
       </div>
     </article>
-  </section>
-
-  <section class="card" id="bigPicture" style="margin-top:12px">
-    <div class="card-head"><div><h2>Big picture: from tank to PLC and back</h2><p class="q-sub">Question: how does one signal travel from a sensor, through PLC memory and a rung, to a valve or the motor?</p><p>Pick an example. Every box shows the live value from the most recent scan.</p></div><span class="badge">Signal path</span></div>
-    <div class="card-body">
-      <div class="scenario-tabs" id="chainTabs"></div>
-      <ol class="bp-chain" id="chainView"></ol>
-      <p class="bp-note" id="chainNote"></p>
-    </div>
   </section>
 
   <section class="card" style="margin-top:12px">
@@ -301,6 +292,12 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
         <div class="status-strip" id="stageStrip"></div>
         <div class="status-strip" id="outputStrip"></div>
         <p class="plain-now" id="plainNow"></p>
+        <details class="prereq" id="bigPicture"><summary>Follow one signal from the tank to the PLC and back</summary>
+          <p class="bp-note">Question: how does one signal travel from a sensor, through the input image and a rung, to a valve or the motor? Pick an example; every box shows the value from the latest scan.</p>
+          <div class="scenario-tabs" id="chainTabs" style="margin-top:8px"></div>
+          <ol class="bp-chain" id="chainView"></ol>
+          <p class="bp-note" id="chainNote"></p>
+        </details>
       </div>
     </div>
   </section>
@@ -326,10 +323,10 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
 
   <div class="explain-grid">
     <section class="card" id="narrativeCard">
-      <div class="card-head"><div><h2>What just happened?</h2><p class="q-sub">Question: what did the last action or scan do, step by step, and why?</p><p>Built from the simulator's real values after every scan, phase or input change. Purple marks a value that changed.</p></div><span class="badge" id="narrBadge">Reset</span></div>
+      <div class="card-head"><div><h2>What just happened?</h2><p class="q-sub">Question: what did the last action or scan do, step by step, and why?</p><p>Built from the simulator's real values after every scan, phase or input change. The chips list the values that changed; open the rung list for every test.</p></div><span class="badge" id="narrBadge">Reset</span></div>
       <div class="card-body narr">
         <div id="narrLive" aria-live="polite"></div>
-        <details class="narr-rungs" id="narrRungs" open><summary id="narrRungsTitle">SOLVE rung by rung (R0 → R10)</summary><ol class="rung-lines" id="narrRungList"></ol></details>
+        <details class="narr-rungs" id="narrRungs"><summary id="narrRungsTitle">SOLVE rung by rung (R0 → R10)</summary><ol class="rung-lines" id="narrRungList"></ol></details>
       </div>
     </section>
     <section class="card" id="seqCard">
@@ -345,7 +342,7 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   </div>
 
   <section id="scan" class="card" style="margin-top:12px">
-    <div class="card-head"><div><h2>Scan-cycle microscope</h2><p class="q-sub">Question: what does the PLC do in each phase of one scan?</p><p>Pause between reading inputs, solving the program, and updating physical outputs.</p></div><span class="badge amber" id="phaseBadge">Ready for READ</span></div>
+    <div class="card-head"><div><h2>Scan-cycle microscope</h2><p>Pause between reading inputs, solving the program, and updating physical outputs.</p></div><span class="badge amber" id="phaseBadge">Ready for READ</span></div>
     <div class="card-body">
       <div class="unit-q" data-unit="scan"></div>
       <div class="phase-grid">
@@ -362,10 +359,6 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
       <div class="tables" style="margin-top:10px">
         <div class="table-wrap"><table class="data-table"><thead><tr><th>Input tag</th><th>Physical</th><th>Input image</th></tr></thead><tbody id="inputTable"></tbody></table></div>
         <div class="table-wrap"><table class="data-table"><thead><tr><th>Output tag</th><th>Output image</th><th>Physical output</th></tr></thead><tbody id="outputTable"></tbody></table></div>
-      </div>
-      <div class="note" style="margin:10px 0 0">
-        <b>Try the late-input demonstration</b>
-        Step through READ, then pulse Button 2. The physical button changes after the snapshot, but the input image remains unchanged until the next READ phase.
       </div>
       <div class="late-box" id="lateBox"></div>
     </div>
@@ -386,11 +379,11 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   </section>
 
   <section id="ladder" class="card ladder-card">
-    <div class="card-head"><div><h2>Ladder program</h2><p class="q-sub">Question: which rung creates each output, and which instructions are TRUE on this scan?</p><p>Click any instruction. Green means that instruction or path is true during the most recent solve. Every rung says what it asks and why it is TRUE or FALSE.</p></div><span class="badge">Top-to-bottom order</span></div>
+    <div class="card-head"><div><h2>Ladder program</h2><p>Click any instruction. Green means that instruction or path is true during the most recent solve. Every rung says what it asks and why it is TRUE or FALSE.</p></div><span class="badge">Top-to-bottom order</span></div>
     <div class="card-body">
       <div class="unit-q" data-unit="ladder"></div>
       <div class="table-wrap out-map"><table class="data-table"><thead><tr><th>Output bit</th><th>Written by</th><th>Logic (Boolean)</th><th>On the latest scan</th><th>Find it</th></tr></thead><tbody id="outMap"></tbody></table></div>
-      <p class="mem-map" id="memMap"></p>
+      <p class="mem-map" id="memMap"><b>Memory bits, for comparison:</b> CYCLE_ACTIVE is SET by R1 and cleared by R0 · STEP_FILL is set by R2 or R6 and cleared by R3 or R0 · STEP_MIX is set by R3 and cleared by R5 or R0 · STEP_DRAIN is set by R5 and cleared by R6 or R0 · MIX_TIMER is the TON in R4 (IN = STEP_MIX, PT = 30 s).</p>
     </div>
     <div class="ladder-toolbar">
       <button class="btn primary" id="solveAgain">Read, solve, update</button>
@@ -403,7 +396,7 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   </section>
 
   <section id="bridge" class="card bridge">
-    <div class="card-head"><div><h2>Four-way translation</h2><p class="q-sub">Question: how does one English requirement become a rung?</p><p>One engineering requirement expressed in four connected forms, plus a live check of the matching rung.</p></div><span class="badge green">Session 6 → Session 7</span></div>
+    <div class="card-head"><div><h2>Four-way translation</h2><p>One engineering requirement expressed in four connected forms, plus a live check of the matching rung.</p></div><span class="badge green">Session 6 → Session 7</span></div>
     <div class="card-body">
       <div class="unit-q" data-unit="bridge"></div>
       <div class="scenario-tabs" id="bridgeTabs"></div>
@@ -413,7 +406,7 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   </section>
 
   <section id="challenge" class="card challenge">
-    <div class="card-head"><div><h2>Prediction challenge</h2><p class="q-sub">Question: can you predict what the next scan will do before you run it?</p><p>Predict first, then load the scenario and check the real scan behavior.</p></div><span class="badge" id="scoreBadge">Score 0/5</span></div>
+    <div class="card-head"><div><h2>Prediction challenge</h2><p>Predict first, then load the scenario and check the real scan behavior.</p></div><span class="badge" id="scoreBadge">Score 0/5</span></div>
     <div class="card-body">
       <div class="unit-q" data-unit="challenge"></div>
       <div class="scenario-tabs" id="challengeTabs"></div>
@@ -501,12 +494,13 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   function canUnlockExtension(){return manualPhaseSteps>=3&&basePredictionsComplete()}
   function applyModeConstraints(){
     const locked=!extensionMode;
-    ["levelPulse","mixDrainToggle","autoBtn"].forEach(id=>$(id).disabled=locked);
+    ["levelPulse","mixDrainToggle","autoBtn"].forEach(id=>{$(id).disabled=locked;$(id).title=locked?"Locked in basic mode: see Required sequence at the top":""});
     $("modeBadge").textContent=extensionMode?"EXTENSION MODE":"BASIC MODE";
     $("modeBadge").className="badge "+(extensionMode?"green":"");
     $("modeStatus").textContent=`Manual phases ${Math.min(manualPhaseSteps,3)}/3 · base predictions ${BASE_CHALLENGES.filter(i=>answered.has(i)).length}/4`;
     $("unlockChallenge").disabled=extensionMode||!canUnlockExtension();
     document.querySelectorAll('[data-challenge="2"]').forEach(b=>{b.disabled=locked;b.title=locked?"Complete the basic mode first":""});
+    renderUnlock();
   }
 
   function fresh(){
@@ -707,7 +701,7 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
     $("bridgeTabs").innerHTML=bridges.map((b,i)=>`<button class="${i===bridgeIndex?'active':''}" data-bridge="${i}">${b.name}</button>`).join("");
     const b=bridges[bridgeIndex];
     $("bridgeGrid").innerHTML=`<div class="bridge-box"><b>1 · Process requirement</b><p>${esc(b.req)}</p></div><div class="bridge-box"><b>2 · If–Then statement</b><p>${esc(b.ifthen)}</p></div><div class="bridge-box"><b>3 · Boolean form</b><p><code>${esc(b.bool)}</code></p></div><div class="bridge-box"><b>4 · Ladder interpretation</b><p>${esc(b.ladder)}</p></div>`;
-    $("bridgeLive").innerHTML=`<p class="uq-q"><span class="uq-k">Question</span>${esc(b.q)}</p>`+b.rungs.map(id=>{const r=lastTrace.find(x=>x.id===id);if(!r)return "";const a=rungAction(r);return `<p><b>Live check · ${id} on the latest scan: ${r.result?"TRUE":"FALSE"}.</b> ${rungTests(r)} → ${a.act}.<button class="btn" data-show-rung="${id}">Show ${id} in the ladder</button></p>`}).join("");
+    $("bridgeLive").innerHTML=`<p class="uq-q"><span class="uq-k">This tab asks</span>${esc(b.q)}</p>`+b.rungs.map(id=>{const r=lastTrace.find(x=>x.id===id);if(!r)return "";const a=rungAction(r);return `<p><b>Live check · ${id} on the latest scan: ${r.result?"TRUE":"FALSE"}.</b> ${rungTests(r)} → ${a.act}.<button class="btn" data-show-rung="${id}">Show ${id} in the ladder</button></p>`}).join("");
     document.querySelectorAll('[data-bridge]').forEach(x=>x.addEventListener('click',()=>{bridgeIndex=Number(x.dataset.bridge);prog.bridges.add(bridgeIndex);renderBridge();renderExplain()}));
   }
 
@@ -742,55 +736,476 @@ abbr[title]{text-decoration:underline dotted;cursor:help}
   const chosen={};
   function renderChallenge(){
     $("scoreBadge").textContent=`Score ${score}/5`;
-    $("challengeTabs").innerHTML=challenges.map((c,i)=>`<button class="${i===challengeIndex?'active':''}" data-challenge="${i}">${i+1} · ${c.name}</button>`).join("");
+    $("challengeTabs").innerHTML=challenges.map((c,i)=>`<button class="${i===challengeIndex?'active':''}" data-challenge="${i}">${i+1} · ${c.name}${answered.has(i)?' ✓':''}${i===2&&!extensionMode?' (locked)':''}</button>`).join("");
     const c=challenges[challengeIndex];$("questionText").textContent=c.q;
+    $("givenList").innerHTML=c.given.map(g=>`<li>${esc(g)}</li>`).join("");
     $("answers").innerHTML=c.a.map((x,i)=>`<button class="answer" data-answer="${i}">${esc(x)}</button>`).join("");$("feedback").innerHTML="";
     document.querySelectorAll('[data-challenge]').forEach(x=>x.addEventListener('click',()=>{const idx=Number(x.dataset.challenge);if(idx===2&&!extensionMode)return;challengeIndex=idx;renderChallenge()}));
     document.querySelectorAll('[data-answer]').forEach(x=>x.addEventListener('click',()=>answerChallenge(Number(x.dataset.answer))));
+    if(answered.has(challengeIndex))showCommitted(challengeIndex);
     applyModeConstraints();
   }
   function answerChallenge(choice){
-    const c=challenges[challengeIndex];document.querySelectorAll('[data-answer]').forEach((x,i)=>{x.disabled=true;if(i===c.correct)x.classList.add('correct');else if(i===choice)x.classList.add('wrong')});
-    if(choice===c.correct&&!answered.has(challengeIndex)){score++;}
-    answered.add(challengeIndex);
-    $("scoreBadge").textContent=`Score ${score}/5`;$("feedback").innerHTML=`<div class="feedback"><b>${choice===c.correct?'Correct.':'Not yet.'}</b> ${esc(c.why)}</div>`;
-    applyModeConstraints();
+    const c=challenges[challengeIndex];
+    if(answered.has(challengeIndex))return; // a prediction is committed once; the score only ever counted the first answer
+    if(choice===c.correct){score++;}
+    answered.add(challengeIndex);chosen[challengeIndex]=choice;
+    if(scenarioHold===challengeIndex)scenarioHold=null;
+    $("scoreBadge").textContent=`Score ${score}/5`;
+    renderChallenge();renderExplain();
+  }
+  // The committed answer, its explanation and the model answer stay visible on every later render.
+  function showCommitted(idx){
+    const c=challenges[idx],choice=chosen[idx],ok=choice===c.correct;
+    document.querySelectorAll('[data-answer]').forEach((x,i)=>{x.disabled=true;if(i===c.correct)x.classList.add('correct');else if(i===choice)x.classList.add('wrong')});
+    $("feedback").innerHTML=`<div class="feedback ${ok?'ok':'bad'}"><b>${ok?'Correct.':'Not yet.'}</b> ${esc(c.why)}
+      <p><b>Values after the scan (model answer):</b> ${esc(c.model)}</p>
+      <p><b>Why each option is right or wrong</b></p><ul>${c.a.map((a,i)=>`<li>${i===choice?'<b>Your choice:</b> ':''}“${esc(a)}”: ${esc(c.opt[i])}</li>`).join("")}</ul>
+      <div class="mistake"><b>Common mistake:</b> ${esc(c.mistake)}</div>
+      <p><b>Check it yourself:</b> press <i>Load and run one scan</i>, then read <a href="#narrativeCard">What just happened?</a></p></div>`;
   }
   function loadState(type){
-    state=fresh();state.physicalInputs.START_SW=true;
+    state=fresh();phaseCursor=0;state.physicalInputs.START_SW=true; // a stale manual-phase cursor made “Load and run one scan” skip READ
     if(type==="fillHigh"){state.tankLevel=79;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_FILL:true};state.physicalOutputs.PA_CMD=true;state.physicalOutputs.PB_CMD=true;state.outputImage=clone(state.physicalOutputs);updateSensors();readInputs();solveLogic(0);state.tankLevel=82;updateSensors();}
     else if(type==="mixDone"){state.tankLevel=82;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_MIX:true,MIX_TIMER_ET:29,MIX_TIMER_Q:false};state.physicalOutputs.MOTOR_CMD=true;state.outputImage=clone(state.physicalOutputs);updateSensors();readInputs();solveLogic(0);state.internal.MIX_TIMER_ET=30;state.internal.MIX_TIMER_Q=true;}
     else if(type==="drainMix"){state.tankLevel=55;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_DRAIN:true};state.physicalInputs.SB3_MIX_DRAIN=false;updateSensors();readInputs();solveLogic(0);state.physicalInputs.SB3_MIX_DRAIN=true;updateSensors();}
     else if(type==="stop"){state.tankLevel=60;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_MIX:true,MIX_TIMER_ET:12};state.physicalOutputs.MOTOR_CMD=true;state.outputImage=clone(state.physicalOutputs);state.physicalInputs.STOP_PB=false;updateSensors();readInputs();solveLogic(0);state.physicalInputs.STOP_PB=true;updateSensors();}
     else if(type==="late"){state.tankLevel=40;state.internal={...state.internal,CYCLE_ACTIVE:true,STEP_FILL:true};updateSensors();readInputs();solveLogic(0);state.physicalInputs.SB2_LEVEL=true;phaseCursor=1;}
     else { solveLogic(0); }
+    noteScenario();
     render();
   }
 
-  function reset(){if(autoTimer){clearInterval(autoTimer);autoTimer=null}state=fresh();phaseCursor=0;lastTrace=[];readInputs();solveLogic(0);render();$("autoBtn").textContent="Start automatic run";$("scanMessage").textContent="Simulator reset.";}
-  function pulse(tag,after){if (phaseCursor !== 0) { $("scanMessage").textContent = "Cannot press momentary buttons during a manual scan."; return; } state.physicalInputs[tag]=true;if(tag==="STOP_PB")state.physicalInputs.START_SW=false;fullScan(0);setTimeout(()=>{state.physicalInputs[tag]=false;render()},after||350)}
-  function runToNextEvent(){const startStage=stageName();let guard=0;while(stageName()===startStage&&guard<80){advance(1);guard++}render();}
+  function reset(){if(autoTimer){clearInterval(autoTimer);autoTimer=null}state=fresh();phaseCursor=0;lastTrace=[];readInputs();solveLogic(0);clearEvidence();lastRun={kind:"reset",after:snap()};render();$("autoBtn").textContent="Start automatic run";$("scanMessage").textContent="Simulator reset.";}
+  function pulse(tag,after){if (phaseCursor !== 0) { $("scanMessage").textContent = "Cannot press momentary buttons during a manual scan."; return; } cause(tag==="STOP_PB"?"stop":"sb2");state.physicalInputs[tag]=true;if(tag==="STOP_PB")state.physicalInputs.START_SW=false;fullScan(0);setTimeout(()=>{state.physicalInputs[tag]=false;render()},after||350)}
+  function runToNextEvent(){const startStage=stageName(),start=snap();let guard=0;quiet=true;try{while(stageName()===startStage&&guard<80){advance(1);guard++}}finally{quiet=false}if(guard)lastRun={kind:"multi",count:guard,startStage,endStage:stageName(),start,inner:lastRun};render();}
   function stepPhase(){
+    const ph=phaseCursor,before=snap();
     let msg="";
     if(phaseCursor===0){msg=readInputs();phaseCursor=1;}
     else if(phaseCursor===1){msg=solveLogic(0);phaseCursor=2;}
     else{msg=updateOutputs();phaseCursor=0;manualPhaseSteps=Math.min(3,manualPhaseSteps+1);}
     if(phaseCursor===1&&manualPhaseSteps<1)manualPhaseSteps=1;
     if(phaseCursor===2&&manualPhaseSteps<2)manualPhaseSteps=2;
+    notePhase(ph,before);
     $("scanMessage").textContent=msg;render();
   }
 
+  // ---------- Explanation layer: narrative, sequence map, signal history, questions ----------
+  // It only reads engine state (state, lastTrace and snapshots); it never changes ladder results.
+  const PT=30,HIST_CAP=240,TD_WIN=80;
+  const memTags=["CYCLE_ACTIVE","STEP_FILL","STEP_MIX","STEP_DRAIN","MIX_TIMER_ET","MIX_TIMER_Q"];
+  const DEV_ON={PA_CMD:"solenoid A opens",PB_CMD:"solenoid B opens",MOTOR_CMD:"the mixer motor is commanded ON",PC_CMD:"drain valve C opens"};
+  const DEV_OFF={PA_CMD:"solenoid A closes",PB_CMD:"solenoid B closes",MOTOR_CMD:"the motor command goes OFF",PC_CMD:"drain valve C closes"};
+  const MEANING={
+    START_SW:["Start switch OFF","Start switch ON (maintained: it stays ON until turned OFF)"],
+    STOP_PB:["Stop Button 1 not pressed","Stop Button 1 pressed"],
+    SB2_LEVEL:["Button 2 not pressed","Button 2 pressed: “desired level reached”"],
+    SB3_MIX_DRAIN:["Button 3 OFF: motor stops while draining","Button 3 ON: motor keeps running while draining"],
+    LEVEL_HIGH:["liquid below the 80 % high-level mark","liquid at or above the 80 % high-level mark"],
+    TANK_EMPTY:["liquid above the 2 % empty mark (not empty)","tank empty (2 % or less)"],
+    CYCLE_ACTIVE:["no cycle is running","the PLC remembers that the cycle may run"],
+    STEP_FILL:["not in FILL","FILL stage active"],STEP_MIX:["not in MIX","MIX stage active"],STEP_DRAIN:["not in DRAIN","DRAIN stage active"],
+    "MIX_TIMER.Q":["the 30 s mix time has not elapsed","ET has reached PT = 30 s"],
+    PA_CMD:["solenoid A not commanded (closed)","the PLC commands solenoid A open"],PB_CMD:["solenoid B not commanded (closed)","the PLC commands solenoid B open"],
+    MOTOR_CMD:["no motor command","the PLC commands the mixer motor ON"],PC_CMD:["drain valve C not commanded (closed)","the PLC commands drain valve C open"]
+  };
+  function meanOf(tag,v){const m=MEANING[tag];return m?m[v?1:0]:""}
+  const tagName=k=>k==="MIX_TIMER_ET"?"MIX_TIMER.ET":k==="MIX_TIMER_Q"?"MIX_TIMER.Q":k;
+  const fmt=(k,v)=>k==="MIX_TIMER_ET"?`${(+v).toFixed(1)} s`:String(bool(v));
+  function diffList(a,b,keys){return keys.filter(k=>fmt(k,a[k])!==fmt(k,b[k])).map(k=>({k,a:a[k],b:b[k]}))}
+  const chg=d=>`<code>${tagName(d.k)}</code> ${fmt(d.k,d.a)} → ${fmt(d.k,d.b)}`;
+  const chip=d=>`<span class="chip ${d.k==="MIX_TIMER_ET"?"":d.b?"on":"off"}">${tagName(d.k)} ${fmt(d.k,d.a)} → ${fmt(d.k,d.b)}</span>`;
+  const vals=(o,keys)=>keys.map(k=>`${tagName(k)}=${fmt(k,o[k])}`).join(" · ");
+  const pct=v=>`${v.toFixed(1)} %`;
+  const onList=o=>{const on=outputTags.filter(k=>o[k]).map(k=>({PA_CMD:"A",PB_CMD:"B",MOTOR_CMD:"motor",PC_CMD:"C"})[k]);return on.length?on.join(", "):"nothing"};
+
+  let sigHistory=[],selectedScan=null,historyDirty=true,cycleRec=null,lastCycle=null,cycleCount=0;
+  let lastRun={kind:"reset"},pending=null,quiet=false,scenarioHold=null,lateDemo=null,lastMem=null,lastSolveSnap=null,chainIndex=0;
+  const prog={cycle:false,timerQ:false,late:false,coils:new Set(),bridges:new Set([0]),revealed:new Set()};
+
+  function snap(){return{tankLevel:state.tankLevel,time:state.time,scan:state.scan,stage:stageName(),pi:{...state.physicalInputs},ii:{...state.inputImage},m:{...state.internal},oi:{...state.outputImage},po:{...state.physicalOutputs}}}
+  function memSnap(){return{...state.internal,...state.outputImage}}
+  // A control calls cause() before it changes anything, so the next scan can be explained against the state before the action.
+  function cause(reason){if(!pending)pending={before:snap(),reason};}
+  function takeCause(){const c=pending||{before:snap(),reason:"scan"};pending=null;return c}
+  function clearEvidence(){sigHistory=[];selectedScan=null;historyDirty=true;cycleRec=null;lateDemo=null;scenarioHold=null;pending=null;}
+  function noteScan(ctx,dt){scenarioHold=null;afterSolve(state.scan);afterUpdate();lastRun={kind:"scan",reason:ctx.reason,dt,skipRead:!!ctx.skipRead,challenge:challengeIndex,before:ctx.before,after:snap(),trace:lastTrace};trackLate(true,!ctx.skipRead);}
+  function notePhase(ph,before){scenarioHold=null;if(ph===1)afterSolve(state.scan+1);if(ph===2)afterUpdate();lastRun={kind:"phase",phase:ph,before,after:snap(),trace:lastTrace};if(ph<2)trackLate(ph===1,ph===0);}
+  function noteScenario(){clearEvidence();scenarioHold=answered.has(challengeIndex)?null:challengeIndex;lastRun={kind:"scenario",idx:challengeIndex,base:lastSolveSnap,after:snap()};}
+  function holdActive(){return scenarioHold!==null&&!answered.has(scenarioHold)}
+
+  // Stage log for the cycle report: transitions are read from the rungs that fired in this SOLVE.
+  function afterSolve(scanNo){
+    const R=id=>lastTrace.find(r=>r.id===id)||{result:false,before:{}};
+    const ii=state.inputImage,r0=R("R0"),b=r0.before,ev=[];
+    if(r0.result&&(b.CYCLE_ACTIVE||b.STEP_FILL||b.STEP_MIX||b.STEP_DRAIN))ev.push({to:"IDLE"});
+    if(R("R2").result)ev.push({to:"FILLING",why:"cycle started (START_SW=1, STOP_PB=0)"});
+    if(R("R3").result)ev.push({to:"MIXING",why:ii.LEVEL_HIGH?"LEVEL_HIGH=1 (high-level sensor)":"SB2_LEVEL=1 (Button 2)"});
+    if(R("R5").result){ev.push({to:"DRAINING",why:"MIX_TIMER.Q=1 (ET reached PT = 30 s)"});prog.timerQ=true;}
+    if(R("R6").result)ev.push({to:"FILLING",why:"TANK_EMPTY=1 (empty sensor)",refill:true});
+    const at={scan:scanNo,t:state.time,lvl:state.tankLevel};
+    ev.forEach(e=>{
+      const ph={stage:e.to,why:e.why,...at};
+      if(e.to==="IDLE"){cycleRec=null;return}
+      if(e.refill&&cycleRec){cycleRec.phases.push({...ph,stage:"END"});if(cycleRec.phases.length===4){lastCycle=cycleRec;lastCycle.n=++cycleCount;prog.cycle=true;}}
+      if(e.to==="FILLING"){cycleRec={phases:[ph],drainMotor:false};return}
+      if(cycleRec)cycleRec.phases.push(ph);
+    });
+    if(cycleRec&&state.internal.STEP_DRAIN&&state.outputImage.MOTOR_CMD)cycleRec.drainMotor=true;
+  }
+  function afterUpdate(){
+    const i=state.inputImage,o=state.physicalOutputs,m=state.internal;
+    sigHistory.push({scan:state.scan,t:state.time,START_SW:i.START_SW,STOP_PB:i.STOP_PB,SB2_LEVEL:i.SB2_LEVEL,SB3_MIX_DRAIN:i.SB3_MIX_DRAIN,LEVEL_HIGH:i.LEVEL_HIGH,TANK_EMPTY:i.TANK_EMPTY,PA_CMD:o.PA_CMD,PB_CMD:o.PB_CMD,MOTOR_CMD:o.MOTOR_CMD,PC_CMD:o.PC_CMD,ET:m.MIX_TIMER_ET,Q:m.MIX_TIMER_Q,stage:stageName(),lvl:state.tankLevel});
+    if(sigHistory.length>HIST_CAP)sigHistory.shift();
+    historyDirty=true;
+  }
+  // Late-input demonstration: was the press used by the same SOLVE, the next READ, or never?
+  function trackLate(didSolve,didRead){
+    const d=lateDemo;if(!d||d.outcome)return;
+    if(didRead){if(!d.solved)d.skipped=true;if(state.inputImage.SB2_LEVEL)d.outcome="caught";else if(d.released)d.outcome="missed";}
+    else if(didSolve&&!d.solved){d.solved=true;const r3=lastTrace.find(r=>r.id==="R3");d.r3=!!(r3&&r3.result);d.stageAfter=stageName();}
+    if(d.solved||d.outcome)prog.late=true;
+  }
+
+  // ----- rung explanations shared by the ladder, the narrative, the inspector and the translation -----
+  const bitOf=node=>node.mode==="nc"?!node.result:node.result;
+  const kindOf=node=>node.mode==="nc"?"N.C.":"N.O.";
+  function testText(node){
+    if(node.kind==="parallel")return `[${node.items.map(testText).join(" OR ")}]`;
+    if(node.kind==="series")return `(${node.items.map(testText).join(" AND ")})`;
+    return `${kindOf(node)} ${node.tag}=${bool(bitOf(node))} ${node.result?"TRUE":"FALSE"}`;
+  }
+  const rungTests=r=>r.nodes.slice(0,-1).map(testText).join(" AND ");
+  function passText(node){
+    if(node.kind==="parallel")return `branch ${node.items.filter(x=>x.result).map(passText).join(" or ")}`;
+    if(node.kind==="series")return `(${node.items.map(passText).join(", ")})`;
+    return `${node.tag}=${bool(bitOf(node))} (${kindOf(node)})`;
+  }
+  function failText(node){
+    if(node.kind==="parallel")return `no branch passes (${node.items.map(failText).join("; ")})`;
+    if(node.kind==="series")return node.items.filter(x=>!x.result).map(failText).join(" and ");
+    return `${node.tag}=${bool(bitOf(node))}, but ${kindOf(node)} needs ${node.mode==="nc"?0:1}`;
+  }
+  function rungWhy(r){const t=r.nodes.slice(0,-1);return r.result?"every test passes: "+t.map(passText).join(", "):t.filter(x=>!x.result).map(failText).join(" and ")}
+  function rungAction(r){
+    const out=r.nodes[r.nodes.length-1],d=diffList(r.before,r.after,Object.keys(r.after));let act;
+    if(out.kind==="coil")act=`coil writes ${out.tag}=${bool(r.result)}`;
+    else if(out.kind==="set")act=r.result?`SET ${out.tag}=1`:`SET idle, ${out.tag} keeps ${bool(r.after[out.tag])}`;
+    else if(out.kind==="reset")act=r.result?"RESET holds CYCLE_ACTIVE, every STEP bit and MIX_TIMER at 0":"RESET idle, memory kept";
+    else if(out.kind==="timer")act=r.result?`TON timing: ET ${fmt("MIX_TIMER_ET",r.before.MIX_TIMER_ET)} → ${fmt("MIX_TIMER_ET",r.after.MIX_TIMER_ET)} of PT 30.0 s, Q=${bool(r.after.MIX_TIMER_Q)}`:"TON IN=0, so ET=0.0 s and Q=0 (held reset)";
+    else act=r.result?"MOVE STAGE":"no stage change";
+    return {act,changed:d.map(chg).join(", ")};
+  }
+  const RUNG_Q={R0:"must the whole sequence be cleared?",R1:"may the cycle run?",R2:"is the cycle active with no stage chosen yet?",R3:"has filling finished (level reached or Button 2)?",R4:"how long has mixing lasted?",R5:"have 30 s of mixing elapsed?",R6:"is the tank empty after draining?",R7:"should solenoid A be open?",R8:"should solenoid B be open?",R9:"should the mixer motor run?",R10:"should drain valve C be open?"};
+  function tonMeaning(m,hold){
+    if(!m.STEP_MIX)return "IN = STEP_MIX = 0, so the timer is held reset: ET = 0.0 s and Q = 0. It starts timing from 0 on the scan in which MIX begins.";
+    if(m.MIX_TIMER_Q)return hold?"ET has reached PT, so Q = 1.":"ET has reached PT, so Q = 1. R5 uses Q to end mixing.";
+    return `The timer has run for ${m.MIX_TIMER_ET.toFixed(1)} s of process time; ${(PT-m.MIX_TIMER_ET).toFixed(1)} s remain. Q stays 0 until ET reaches PT.`;
+  }
+
+  // ----- What just happened? -----
+  function triggerText(S){
+    const b=S.before,a=S.after,r=S.reason;
+    if(r==="advance"||r==="auto"){
+      const sens=diffList(b.pi,a.pi,["LEVEL_HIGH","TANK_EMPTY"]);
+      return `<b>Process time</b> ${r==="auto"?"(automatic run) ":""}${S.dt} s passed with the outputs of the previous scan (energized: ${onList(b.po)}). Tank ${pct(b.tankLevel)} → ${pct(a.tankLevel)}. ${sens.length?"Sensor change at the terminals: "+sens.map(chg).join(", ")+".":"No sensor changed."}`;
+    }
+    if(r==="start")return `<b>Input change</b> You turned the Start switch ${a.pi.START_SW?"ON":"OFF"} (physical START_SW ${bool(b.pi.START_SW)} → ${bool(a.pi.START_SW)}). The simulator ran one scan at once; process time did not advance.`;
+    if(r==="sb3")return `<b>Input change</b> You turned Button 3 ${a.pi.SB3_MIX_DRAIN?"ON":"OFF"} (physical SB3_MIX_DRAIN ${bool(b.pi.SB3_MIX_DRAIN)} → ${bool(a.pi.SB3_MIX_DRAIN)}). One scan ran at once.`;
+    if(r==="stop")return `<b>Input change</b> You pressed Stop Button 1 (physical STOP_PB=1). In this simulator Stop also returns the Start switch to OFF (START_SW ${bool(b.pi.START_SW)} → 0), so the cycle cannot restart when Stop is released. One scan ran at once.`;
+    if(r==="sb2")return "<b>Input change</b> You pressed Button 2 (physical SB2_LEVEL=1, held for 0.45 s). One scan ran at once.";
+    if(r==="scenario")return `<b>Prediction check</b> You ran one scan of prediction ${S.challenge+1} (${esc(challenges[S.challenge].name)}).`;
+    return "<b>Manual scan</b> You ran one complete READ → SOLVE → UPDATE scan. It takes 0 s of process time, so the level and MIX_TIMER.ET cannot change because of time.";
+  }
+  function holdNotes(S){
+    const b=S.before,a=S.after,m=a.m,n=[];
+    if(m.CYCLE_ACTIVE&&b.m.CYCLE_ACTIVE)n.push("<code>CYCLE_ACTIVE</code> stays 1: R1 sets it again on every scan while START_SW=1 and STOP_PB=0, and only R0 can clear it.");
+    if(!m.CYCLE_ACTIVE)n.push("All outputs stay 0: every output rung starts with N.O. <code>CYCLE_ACTIVE</code>, which is 0.");
+    if(a.stage===b.stage&&m.CYCLE_ACTIVE)n.push(`The stage stays ${a.stage} because its exit condition is still FALSE. The <a href="#seqCard">sequence map</a> shows what is blocking it.`);
+    if(m.STEP_MIX&&!S.dt)n.push("<code>MIX_TIMER.ET</code> did not grow: this scan took 0 s of process time. Use Advance or Run to next stage.");
+    if(m.STEP_DRAIN&&!a.oi.MOTOR_CMD)n.push("<code>MOTOR_CMD</code> stays 0 in DRAIN because SB3_MIX_DRAIN=0, so neither branch of R9 passes.");
+    return n;
+  }
+  function scanStory(S){
+    const b=S.before,a=S.after;
+    const dii=S.skipRead?[]:diffList(b.ii,a.ii,inputTags),dm=diffList(b.m,a.m,memTags),doi=diffList(b.oi,a.oi,outputTags),dpo=diffList(b.po,a.po,outputTags);
+    const chips=[...dii,...dm,...doi].map(chip);
+    if(Math.abs(a.tankLevel-b.tankLevel)>.05)chips.push(`<span class="chip">Tank ${pct(b.tankLevel)} → ${pct(a.tankLevel)}</span>`);
+    const tr=S.trace.filter(r=>r.result).map(r=>r.id);
+    return {head:`Scan #${a.scan} · t = ${a.time.toFixed(0)} s · ${b.stage===a.stage?`stage stays ${a.stage}`:`stage ${b.stage} → ${a.stage}`}`,chips,notes:holdNotes(S),steps:[
+      triggerText(S),
+      S.skipRead?`<b>READ</b> was not repeated: this scenario starts after READ, so SOLVE used the snapshot already in the input image (${vals(a.ii,inputTags)}).`
+        :`<b>READ</b> copied the six physical inputs into the input image: ${vals(a.ii,inputTags)}. ${dii.length?"Changed since the previous READ: "+dii.map(chg).join(", ")+".":"No input changed since the previous READ."}`,
+      `<b>SOLVE</b> evaluated R0 → R10 from top to bottom. TRUE rungs: ${tr.join(", ")||"none"}. Memory: ${dm.length?dm.map(chg).join(", "):"no change"}. Output image: ${doi.length?doi.map(chg).join(", "):"no change"}.`,
+      `<b>UPDATE</b> sent the output image to the output module. ${dpo.length?dpo.map(d=>`${chg(d)}: ${d.b?DEV_ON[d.k]:DEV_OFF[d.k]}`).join("; ")+".":"No physical output changed."} Energized now: ${onList(a.po)}.`]};
+  }
+  function phaseStory(L){
+    const b=L.before,a=L.after;
+    if(L.phase===0){const d=diffList(b.ii,a.ii,inputTags);return {head:`Phase 1 of 3 · READ (scan #${a.scan+1} begins)`,chips:d.map(chip),notes:[],steps:[
+      `READ copied the physical inputs into the input image: ${vals(a.ii,inputTags)}.`,
+      d.length?`Changed since the previous READ: ${d.map(chg).join(", ")}.`:"No input changed since the previous READ.",
+      `Nothing has been solved yet. The output image and the physical outputs still hold the previous scan's values (${vals(a.oi,outputTags)}).`,
+      "Until the next READ, changes at the physical inputs do not reach the input image. Next: <i>Step one phase</i> runs SOLVE."]};}
+    if(L.phase===1){const dm=diffList(b.m,a.m,memTags),doi=diffList(b.oi,a.oi,outputTags),mis=diffList(a.ii,a.pi,inputTags),tr=L.trace.filter(r=>r.result).map(r=>r.id);
+      const steps=[`SOLVE evaluated R0 → R10 from top to bottom using the input image (${vals(a.ii,inputTags)}). TRUE rungs: ${tr.join(", ")||"none"}.`,
+        `Memory: ${dm.length?dm.map(chg).join(", "):"no change"}. Output image: ${doi.length?doi.map(chg).join(", "):"no change"}.`,
+        `The physical outputs have <b>not</b> changed yet (${vals(a.po,outputTags)}). UPDATE sends the new output image. Next: <i>Step one phase</i> runs UPDATE.`];
+      if(mis.length)steps.push(`Physical ${mis.map(d=>`${d.k}=${bool(d.b)}`).join(", ")} differs from the input image (${mis.map(d=>`${d.k}=${bool(d.a)}`).join(", ")}). SOLVE used the input-image value because the change came after READ.`);
+      return {head:`Phase 2 of 3 · SOLVE (scan #${a.scan+1})`,chips:[...dm,...doi].map(chip),notes:[],steps};}
+    const dpo=diffList(b.po,a.po,outputTags);
+    return {head:`Phase 3 of 3 · UPDATE (scan #${a.scan} complete)`,chips:dpo.map(chip),notes:[],steps:[
+      dpo.length?`UPDATE copied the output image to the outputs: ${dpo.map(d=>`${chg(d)}: ${d.b?DEV_ON[d.k]:DEV_OFF[d.k]}`).join("; ")}.`:"UPDATE copied the output image to the outputs. No physical output changed.",
+      `Energized now: ${onList(a.po)}. One full scan is complete; the next <i>Step one phase</i> starts a new READ.`]};
+  }
+  function scenarioStory(L){
+    const c=challenges[L.idx],base=L.base,a=L.after,d=[];
+    if(base){diffList(base.pi,a.pi,inputTags).forEach(x=>d.push(`physical ${chg(x)}`));diffList(base.m,a.m,memTags).forEach(x=>d.push(chg(x)));if(Math.abs(base.tankLevel-a.tankLevel)>.05)d.push(`tank ${pct(base.tankLevel)} → ${pct(a.tankLevel)}`);}
+    return {head:`Prediction ${L.idx+1} loaded: ${esc(c.name)}`,chips:null,notes:[],steps:[
+      "The page built this situation and solved one scan with the earlier values. The ladder shows that scan.",
+      `Then, ${phaseCursor===1?"after this scan's READ":"before the next READ"}: ${d.join(", ")||"nothing else changed"}.`,
+      "The exact given values are listed under the question. Commit your answer first: <i>Load and run one scan</i> runs the scan, and this panel then explains the result."]};
+  }
+  function renderNarrative(){
+    const L=lastRun;let st,badge;
+    if(L.kind==="reset"){badge="Reset";st={head:"Simulator reset: an empty tank and a cleared program.",chips:null,notes:[],steps:["Tank 0 %, so TANK_EMPTY=1. All switches are OFF and every memory bit is 0.","One scan was solved: R0 is TRUE because START_SW=0 (its N.C. START_SW test passes), so the sequence stays cleared and every output rung writes 0.","Next: turn the Start switch ON, or press <i>Step one phase</i> in the Scan-cycle microscope to watch one scan by hand."]};}
+    else if(L.kind==="scenario"){badge="Prediction";st=scenarioStory(L);}
+    else if(L.kind==="late"){badge="Late input";st={head:"Button 2 pressed after READ (late input)",chips:['<span class="chip on">physical SB2_LEVEL 0 → 1</span>','<span class="chip">input image SB2_LEVEL stays 0</span>'],notes:[],steps:[
+      "This scan's READ has already copied SB2_LEVEL=0 into the input image.","You pressed Button 2 now. The physical input is 1, but the input image keeps the READ snapshot (0).",
+      "Next: <i>Step one phase</i> runs SOLVE. R3 tests the stored 0, not the button.",`The simulated press lasts 1.2 s. The <a href="#lateBox">late-input demonstration</a> panel shows the outcome.${lateDemo&&lateDemo.stage!=="FILLING"?` Note: the stage is ${lateDemo.stage}, and R3 only uses Button 2 while STEP_FILL=1.`:""}`]};}
+    else if(L.kind==="phase"){badge=["READ","SOLVE","UPDATE"][L.phase];st=phaseStory(L);}
+    else if(L.kind==="multi"){badge="Run to stage";st=scanStory(L.inner);st.steps.unshift(L.startStage===L.endStage?`<b>Run to next stage</b> ran ${L.count} scans (${L.count} s of process time) without a stage change. The <a href="#seqCard">sequence map</a> shows what is blocking ${L.startStage}.`:`<b>Run to next stage</b> ran ${L.count} scans (${L.count} s of process time). The stage changed ${L.startStage} → ${L.endStage} on the last one, explained below.`);}
+    else {badge=L.reason==="advance"||L.reason==="auto"?"Time step":"Scan";st=scanStory(L);}
+    let since="";
+    if(L.after){const d=diffList(L.after.pi,state.physicalInputs,inputTags);if(d.length)since=`<p class="narr-since"><b>Since then:</b> ${d.map(x=>"physical "+chg(x)).join(", ")}. The PLC has not read this yet; the input image keeps ${d.map(x=>`${x.k}=${bool(state.inputImage[x.k])}`).join(", ")} until the next READ.</p>`;}
+    const html=`<p class="narr-head">${st.head}</p>${!st.chips?"":st.chips.length?`<div class="chips" aria-label="Values that changed">${st.chips.join("")}</div>`:`<p class="narr-quiet">No PLC value changed.</p>`}<ol class="steps">${st.steps.map(x=>`<li>${x}</li>`).join("")}</ol>${st.notes.length?`<div class="narr-notes"><b>What did not change, and why</b><ul>${st.notes.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}${since}`;
+    if($("narrLive").dataset.html!==html){$("narrLive").innerHTML=html;$("narrLive").dataset.html=html;}
+    $("narrBadge").textContent=badge;
+    const rl=lastTrace.map(r=>{const a=rungAction(r);return `<li class="${r.result?"hot":""} ${a.changed?"chg":""}"><span class="rl-t">${r.id} · ${esc(r.title)}: ${r.result?"TRUE":"FALSE"}.</span> ${rungTests(r)} → ${a.act}.${a.changed?`<span class="rl-chg">Changed: ${a.changed}</span>`:""}</li>`}).join("");
+    if($("narrRungList").dataset.html!==rl){$("narrRungList").innerHTML=rl;$("narrRungList").dataset.html=rl;}
+    $("narrRungsTitle").textContent=`Every rung of the latest SOLVE, top to bottom (${lastTrace.filter(r=>r.result).length} of ${lastTrace.length} TRUE)`;
+  }
+
+  // ----- Sequence map, blocking condition, TON panel, cycle report -----
+  function blocking(){
+    const i=state.inputImage,m=state.internal,pi=state.physicalInputs,lvl=state.tankLevel,po=state.physicalOutputs;
+    if(!m.CYCLE_ACTIVE)return {rung:"R1 + R2",cond:"START_SW=1 AND STOP_PB=0",ok:i.START_SW&&!i.STOP_PB,why:`START_SW=${bool(i.START_SW)}, STOP_PB=${bool(i.STOP_PB)}`,hint:pi.START_SW&&!i.START_SW?"The physical Start switch is already ON; the next READ copies it.":"Turn the Start switch ON."};
+    if(m.STEP_FILL){const rate=(po.PA_CMD?2.2:0)+(po.PB_CMD?2.2:0);return {rung:"R3",cond:"LEVEL_HIGH=1 OR SB2_LEVEL=1",ok:i.LEVEL_HIGH||i.SB2_LEVEL,why:`LEVEL_HIGH=${bool(i.LEVEL_HIGH)} and SB2_LEVEL=${bool(i.SB2_LEVEL)} (tank ${pct(lvl)}; the high-level switch closes at 80 %)`,hint:pi.LEVEL_HIGH&&!i.LEVEL_HIGH?"The physical sensor already reads 1; the next READ copies it.":rate&&lvl<80?`With A and B open the level rises ${rate.toFixed(1)} % per second, so about ${Math.ceil((80-lvl)/rate)} s of process time remain. Press Advance or Run to next stage.`:"Let process time pass, or press Button 2 (extension mode)."};}
+    if(m.STEP_MIX)return {rung:"R5",cond:"MIX_TIMER.Q=1",ok:m.MIX_TIMER_Q,why:`MIX_TIMER.Q=${bool(m.MIX_TIMER_Q)} (ET ${m.MIX_TIMER_ET.toFixed(1)} s of PT 30.0 s, ${Math.max(0,PT-m.MIX_TIMER_ET).toFixed(1)} s remaining)`,hint:"ET grows only while process time advances (Advance, Run to next stage or automatic run). Manual scans take 0 s."};
+    if(m.STEP_DRAIN)return {rung:"R6",cond:"TANK_EMPTY=1",ok:i.TANK_EMPTY,why:`TANK_EMPTY=${bool(i.TANK_EMPTY)} (tank ${pct(lvl)}; empty means 2 % or less)`,hint:pi.TANK_EMPTY&&!i.TANK_EMPTY?"The physical empty sensor already reads 1; the next READ copies it.":po.PC_CMD?`Valve C drains 6 % per second, so about ${Math.ceil(Math.max(0,lvl-2)/6)} s of process time remain.`:""};
+    return {rung:"R2",cond:"no stage selected",ok:true,why:"CYCLE_ACTIVE=1 with no stage bit",hint:""};
+  }
+  const SEQ=[{k:"IDLE",bit:"CYCLE_ACTIVE=0",does:"all outputs 0; waiting for Start"},{k:"FILLING",bit:"STEP_FILL=1",does:"A and B open (R7, R8)"},{k:"MIXING",bit:"STEP_MIX=1",does:"A and B closed, motor ON (R9), MIX_TIMER timing (R4)"},{k:"DRAINING",bit:"STEP_DRAIN=1",does:"C open (R10); motor only if Button 3 is ON (R9)"}];
+  const ARROWS=[{rung:"R1 + R2",cond:"START_SW=1 AND STOP_PB=0",fired:"R2",now:(i,m)=>`START_SW=${bool(i.START_SW)}, STOP_PB=${bool(i.STOP_PB)}`},{rung:"R3",cond:"LEVEL_HIGH=1 OR SB2_LEVEL=1",fired:"R3",now:(i,m)=>`LEVEL_HIGH=${bool(i.LEVEL_HIGH)}, SB2_LEVEL=${bool(i.SB2_LEVEL)}`},{rung:"R5",cond:"MIX_TIMER.Q=1 (ET reaches 30 s)",fired:"R5",now:(i,m)=>`Q=${bool(m.MIX_TIMER_Q)}, ET=${m.MIX_TIMER_ET.toFixed(1)} s`},{rung:"R6",cond:"TANK_EMPTY=1, back to FILLING",fired:"R6",now:(i,m)=>`TANK_EMPTY=${bool(i.TANK_EMPTY)}`}];
+  function renderSeq(){
+    const i=state.inputImage,m=state.internal,name=stageName(),active=name==="READY"?"IDLE":name,hold=holdActive(),fired=id=>{const r=lastTrace.find(x=>x.id===id);return r&&r.result};
+    const html=SEQ.map((s,idx)=>{const a=ARROWS[idx],isNext=s.k===active,f=fired(a.fired);
+      const status=f?"Fired on the latest SOLVE.":isNext?(hold?`Now: ${a.now(i,m)}. Prediction pending.`:"Next transition: see the box below the map."):`Tested only in ${s.k}. Now: ${a.now(i,m)}.`;
+      return `<li class="seq-node ${isNext?"active":""}"><b>${s.k}</b>${isNext?'<span class="badge green">ACTIVE</span> ':""}<span>${s.bit} · ${s.does}</span></li><li class="seq-arrow ${f?"fired":isNext?"next":""}"><span class="seq-rung">${a.rung}</span>${a.cond}<span class="seq-state">${status}</span></li>`}).join("");
+    if($("seqMap").dataset.html!==html){$("seqMap").innerHTML=html;$("seqMap").dataset.html=html;}
+    const r0=lastTrace.find(x=>x.id==="R0");
+    $("seqR0").innerHTML=`<b>R0 · from any stage to IDLE</b> when START_SW=0 OR STOP_PB=1. ${r0&&r0.result?`<b>Active on the latest SOLVE</b> (START_SW=${bool(i.START_SW)}, STOP_PB=${bool(i.STOP_PB)}): every stage bit is held at 0.`:`Not active (START_SW=1, STOP_PB=0).`}`;
+    $("seqBadge").textContent=active;
+    const b=blocking();
+    $("seqBlock").innerHTML=hold?`<b>Prediction ${scenarioHold+1} pending.</b> The map shows only the given values. Commit your answer, then run the scan to see which transition fires.`
+      :b.ok?`<b>${active}: the exit condition is TRUE in the input image.</b> ${b.rung} needs ${b.cond}, and the PLC now has ${b.why}, so the transition fires at the next SOLVE.`
+      :`<b>What is blocking ${active}:</b> ${b.rung} needs ${b.cond}. The latest SOLVE saw ${b.why}, so the stage stays. ${b.hint}`;
+    const q=m.MIX_TIMER_Q,et=m.MIX_TIMER_ET;
+    $("tonPanel").innerHTML=`<h3>MIX_TIMER · <abbr title="On-delay timer: Q becomes 1 after IN has been 1 for PT">TON</abbr> in rung R4</h3><div class="ton-grid"><div class="${m.STEP_MIX?"on":""}">IN (STEP_MIX)<b>${bool(m.STEP_MIX)}</b></div><div>PT<b>30.0 s</b></div><div>ET<b>${et.toFixed(1)} s</b></div><div>Remaining<b>${Math.max(0,PT-et).toFixed(1)} s</b></div><div class="${q?"on":""}">Q<b>${bool(q)}</b></div></div><div class="ton-bar" role="progressbar" aria-label="MIX_TIMER elapsed time in seconds" aria-valuemin="0" aria-valuemax="30" aria-valuenow="${et.toFixed(1)}"><i style="width:${(et/PT*100).toFixed(1)}%"></i></div><p>${tonMeaning(m,hold)}</p>`;
+  }
+  function renderCycle(){
+    let html;
+    if(!lastCycle){html=`<h3>Cycle report</h3><p>No complete cycle yet. ${cycleRec?`The current cycle has reached ${cycleRec.phases[cycleRec.phases.length-1].stage} (from scan #${cycleRec.phases[0].scan}).`:"Turn Start ON and press Run to next stage until the tank refills."} The report appears after FILLING → MIXING → DRAINING → FILLING.</p>`;}
+    else{const p=lastCycle.phases,row=(k,s,e,extra)=>`<tr><td>${k}</td><td>#${s.scan} · ${s.t.toFixed(0)} s</td><td>${(e.t-s.t).toFixed(0)} s</td><td>${s.lvl.toFixed(1)} → ${e.lvl.toFixed(1)} %</td><td>${e.why}${extra||""}</td></tr>`;
+      const fillEnd=p[1].lvl,over=fillEnd-80,mix=p[2].t-p[1].t;
+      html=`<h3>Cycle report · cycle ${lastCycle.n} (the latest complete cycle)</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>Stage</th><th>Entered</th><th>Lasted</th><th>Level</th><th>Ended by</th></tr></thead><tbody>${row("FILLING",p[0],p[1])}${row("MIXING",p[1],p[2])}${row("DRAINING",p[2],p[3],lastCycle.drainMotor?"; motor ON (Button 3)":"; motor OFF")}</tbody></table></div>
+      <p>The cycle took ${(p[3].t-p[0].t).toFixed(0)} s. ${/LEVEL_HIGH/.test(p[1].why)&&over>0.05?`Filling stopped at ${fillEnd.toFixed(1)} %, ${over.toFixed(1)} % above the 80 % mark, because the PLC only sees the sensor at each READ (one READ per process step here). `:""}Mixing lasted ${mix.toFixed(0)} s${mix>PT?", longer than PT because Q can only act at a scan and the time steps were large":" = PT"}. The tank then refilled from scan #${p[3].scan}.</p>`;}
+    if($("cycleReport").dataset.html!==html){$("cycleReport").innerHTML=html;$("cycleReport").dataset.html=html;}
+  }
+
+  // ----- In plain words, rules, big-picture chain, output map, late-input panel -----
+  function renderPlainNow(){
+    const po=state.physicalOutputs,pi=state.physicalInputs,on=outputTags.filter(k=>po[k]);
+    $("plainNow").innerHTML=`<b>In plain words:</b> stage ${stageName()}. ${on.length?on.map(k=>`${k}=1: ${meanOf(k,1)}`).join("; ")+". A command says what the PLC asks for, not proof that the device moved":"All four command bits are 0, so no valve or motor is commanded"}. Sensors: ${meanOf("LEVEL_HIGH",pi.LEVEL_HIGH)}; ${meanOf("TANK_EMPTY",pi.TANK_EMPTY)}.`;
+  }
+  function renderRulesLive(){
+    const m=state.internal,o=state.outputImage,i=state.inputImage,r6=lastTrace.find(r=>r.id==="R6");
+    const ext=[["STOP_PB",i.STOP_PB],["SB2_LEVEL",i.SB2_LEVEL],["SB3_MIX_DRAIN",i.SB3_MIX_DRAIN]].filter(x=>x[1]).map(x=>x[0]+"=1");
+    const live={fill:m.STEP_FILL&&`Active now: STEP_FILL=1, PA_CMD=${bool(o.PA_CMD)}, PB_CMD=${bool(o.PB_CMD)}`,mix:m.STEP_MIX&&`Active now: MIX_TIMER.ET ${m.MIX_TIMER_ET.toFixed(1)} s of 30 s`,drain:m.STEP_DRAIN&&`Active now: PC_CMD=${bool(o.PC_CMD)}, MOTOR_CMD=${bool(o.MOTOR_CMD)} (Button 3 ${i.SB3_MIX_DRAIN?"ON":"OFF"})`,repeat:r6&&r6.result&&"Just happened: TANK_EMPTY=1 moved DRAIN → FILL",ext:ext.length&&`Active now: ${ext.join(", ")}`};
+    document.querySelectorAll("[data-rule]").forEach(el=>{const t=live[el.dataset.rule];el.classList.toggle("now",!!t);el.querySelector(".rule-live").textContent=t||"";});
+  }
+  const CHAINS=[
+    {name:"High-level sensor → valve A",in:"LEVEL_HIGH",dev:"High-level switch at the 80 % mark",rung:"R7",out:"PA_CMD",act:"Solenoid valve A"},
+    {name:"Button 3 → mixer motor",in:"SB3_MIX_DRAIN",dev:"Button 3 selector switch",rung:"R9",out:"MOTOR_CMD",act:"Mixer motor"},
+    {name:"Empty sensor → valve C",in:"TANK_EMPTY",dev:"Empty-level switch at the 2 % mark",rung:"R10",out:"PC_CMD",act:"Drain valve C"}];
+  function findNode(nodes,tag){for(const x of nodes){if(x.items){const f=findNode(x.items,tag);if(f)return f}else if(x.kind==="contact"&&x.tag===tag)return x}return null}
+  function renderChain(){
+    $("chainTabs").innerHTML=CHAINS.map((c,i)=>`<button class="${i===chainIndex?"active":""}" data-chain="${i}">${c.name}</button>`).join("");
+    const c=CHAINS[chainIndex],pi=state.physicalInputs[c.in],ii=state.inputImage[c.in],r=lastTrace.find(x=>x.id===c.rung),node=r&&findNode(r.nodes,c.in),oi=state.outputImage[c.out],po=state.physicalOutputs[c.out];
+    const box=(cls,t,v,s)=>`<li class="${cls}"><b>${t}</b><span class="bp-v">${v}</span>${s}</li>`;
+    $("chainView").innerHTML=[
+      box("","Physical device",`${c.in} = ${bool(pi)}`,`${c.dev}: ${meanOf(c.in,pi)}.`),
+      box("k-read","Input module","copied at READ","Turns the switch voltage into a bit."),
+      box("k-read","Input-image bit",`${c.in} = ${bool(ii)}`,bool(pi)!==bool(ii)?"The snapshot from the last READ. The physical value has changed since then.":"The snapshot from the last READ."),
+      box("k-logic",`Instruction in ${c.rung}`,node?`${kindOf(node)} ${c.in}: ${node.result?"TRUE":"FALSE"}`:"–",node?`Asks: is ${c.in} = ${node.mode==="nc"?0:1}?`:""),
+      box("k-logic",`Rung ${c.rung} result`,r?(r.result?"TRUE":"FALSE"):"–",r?`Because ${esc(rungWhy(r))}.`:""),
+      box("k-write","Output-image bit",`${c.out} = ${bool(oi)}`,"Written by the coil during SOLVE."),
+      box("k-write","Output module",`${c.out} = ${bool(po)}`,"Copied from the output image at UPDATE."),
+      box("",c.act,po?"ENERGIZED":"OFF",`${meanOf(c.out,po)}.`)].join("");
+    $("chainNote").textContent=`The other tests in ${c.rung} matter too: a rung is TRUE only when every test in series passes.`;
+  }
+  const OUT_MAP=[{tag:"PA_CMD",rung:"R7",logic:"CYCLE_ACTIVE AND STEP_FILL AND NOT LEVEL_HIGH"},{tag:"PB_CMD",rung:"R8",logic:"CYCLE_ACTIVE AND STEP_FILL AND NOT LEVEL_HIGH"},{tag:"MOTOR_CMD",rung:"R9",logic:"CYCLE_ACTIVE AND (STEP_MIX OR (STEP_DRAIN AND SB3_MIX_DRAIN))"},{tag:"PC_CMD",rung:"R10",logic:"CYCLE_ACTIVE AND STEP_DRAIN AND NOT TANK_EMPTY"}];
+  function renderOutMap(){
+    const html=OUT_MAP.map(o=>{const r=lastTrace.find(x=>x.id===o.rung);return `<tr><td><code>${o.tag}</code><span class="tbl-mean">${labels[o.tag]}</span></td><td>${o.rung} · ordinary coil</td><td><code>${o.logic}</code></td><td><b>${r&&r.result?"TRUE":"FALSE"} → ${o.tag}=${bool(r&&r.result)}</b><span class="tbl-mean">${r?esc(rungWhy(r)):""}</span></td><td><button class="btn" data-show-rung="${o.rung}">Show ${o.rung}</button></td></tr>`}).join("");
+    if($("outMap").dataset.html!==html){$("outMap").innerHTML=html;$("outMap").dataset.html=html;}
+  }
+  function showRung(id){
+    if(showOutputsOnly&&!/^R(7|8|9|10)$/.test(id)){showOutputsOnly=false;renderLadder();}
+    const el=document.querySelector(`#ladderProgram [data-rung="${id}"]`);if(!el)return;
+    el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600);
+  }
+  function renderLate(){
+    const d=lateDemo;let body;
+    if(!d)body=`<p><b>Question:</b> if Button 2 is pressed after READ, does the PLC see it in that scan? Not run yet.</p><ol class="late-steps"><li>Turn Start ON so the stage is FILLING (Button 2 only matters in FILL).</li><li>Press <i>Step one phase</i> once (READ).</li><li>Press <i>Pulse Button 2 after READ</i>.</li><li>Press <i>Step one phase</i> again (SOLVE), then look at R3 and the input table.</li><li>Keep stepping (UPDATE, then READ) and read the outcome here.</li></ol>`;
+    else{
+      const st=(ok,t)=>`<li><b class="st ${ok?"ok":"wait"}">${ok?"DONE":"WAITING"}</b> ${t}</li>`;
+      const lines=[st(true,`READ took the snapshot: SB2_LEVEL=0 in the input image (stage ${d.stage}).`),st(true,"Button 2 was pressed after READ: physical SB2_LEVEL=1, input image still 0."),
+        d.skipped&&!d.solved?st(true,"That scan's SOLVE never ran with the old snapshot: you ran a full scan, which starts with a new READ."):st(d.solved,d.solved?`The SOLVE of the same scan used the stored SB2_LEVEL=0, so R3 was ${d.r3?"TRUE":"FALSE"} and the stage stayed ${d.stageAfter}.`:"The SOLVE of the same scan: press Step one phase."),
+        st(!!d.outcome,d.outcome==="caught"?"The next READ came while the button was still held, so it copied SB2_LEVEL=1.":d.outcome==="missed"?"The button was released (after 1.2 s) before the next READ.":d.released?"The button has been released; the next READ will copy 0.":"The button is still held (1.2 s press). The next READ copies it only if it is still held.")];
+      const out=d.outcome==="caught"?`<b>Outcome: seen one scan late.</b> The scan in which the press happened did not use it; the next scan did. ${d.stage==="FILLING"?"With STEP_FILL=1, R3 can now move FILL → MIX.":"The stage was not FILLING, so R3 ignores Button 2 anyway."}`
+        :d.outcome==="missed"?"<b>Outcome: missed completely.</b> The press started after one READ and ended before the next, so it never reached the input image. In a real PLC a scan takes a few milliseconds, so a human press lasts many scans and is seen one scan late. Pulses shorter than one scan can still be missed, which is why fast signals need latching, pulse stretching or high-speed inputs.":"";
+      body=`<ol class="late-steps">${lines.join("")}</ol>${out?`<div class="late-out">${out}</div>`:""}${d.stage!=="FILLING"?`<p>Note: the stage was ${d.stage}. R3 only uses Button 2 while STEP_FILL=1, so repeat the demonstration while FILLING to see an effect.</p>`:""}`;
+    }
+    const html=`<h3>Late-input demonstration</h3>${body}`;
+    if($("lateBox").dataset.html!==html){$("lateBox").innerHTML=html;$("lateBox").dataset.html=html;}
+  }
+
+  // ----- Signal history (timing diagram) -----
+  const SIG_ROWS=[["START_SW","in"],["STOP_PB","in"],["SB2_LEVEL","in"],["SB3_MIX_DRAIN","in"],["LEVEL_HIGH","in"],["TANK_EMPTY","in"],["stage","stage"],["PA_CMD","out"],["PB_CMD","out"],["MOTOR_CMD","out"],["PC_CMD","out"],["ET","et"]];
+  function renderTiming(){
+    const len=sigHistory.length,win=sigHistory.slice(-TD_WIN),n=win.length,L=126,W=780,R=14,sw=(W-L-R)/TD_WIN,X=j=>L+j*sw,o=[];
+    let y=22;const rows=SIG_ROWS.map(([k,g],idx)=>{if(idx&&g!==SIG_ROWS[idx-1][1])y+=8;const h=g==="et"?46:18,r={k,g,y,h};y+=h+3;return r});
+    const bottom=y,H=bottom+40;
+    rows.forEach(r=>{
+      o.push(`<text class="td-lbl" x="${L-8}" y="${r.y+r.h/2+4}" text-anchor="end">${r.k==="stage"?"Stage":r.k==="ET"?"MIX_TIMER.ET":r.k}</text><line class="td-grid" x1="${L}" x2="${W-R}" y1="${r.y+r.h}" y2="${r.y+r.h}"/>`);
+      if(!n)return;
+      if(r.g==="stage"){let j=0;while(j<n){let e=j;while(e+1<n&&win[e+1].stage===win[j].stage)e++;const w=(e-j+1)*sw;o.push(`<rect class="td-st-${win[j].stage}" x="${X(j)}" y="${r.y}" width="${w}" height="${r.h}"/>`);if(w>=34)o.push(`<text class="td-stt" x="${X(j)+3}" y="${r.y+12.5}">${win[j].stage}</text>`);j=e+1;}return;}
+      if(r.g==="et"){const ys=v=>r.y+r.h-2-(Math.min(PT,v)/PT)*(r.h-6);let d="";win.forEach((s,j)=>{d+=(j?`V${ys(s.ET).toFixed(1)}`:`M${X(0)} ${ys(s.ET).toFixed(1)}`)+`H${X(j+1).toFixed(1)}`});o.push(`<line class="td-pt" x1="${L}" x2="${W-R}" y1="${ys(PT)}" y2="${ys(PT)}"/><path class="td-et" d="${d}"/>`);return;}
+      const hi=r.y+3,lo=r.y+r.h-2,cls=r.g==="in"?"td-in":"td-out";let d="";
+      win.forEach((s,j)=>{const v=s[r.k]?hi:lo;d+=(j?`V${v}`:`M${X(0)} ${v}`)+`H${X(j+1).toFixed(1)}`;if(s[r.k])o.push(`<rect class="${cls}-f" x="${X(j).toFixed(1)}" y="${hi}" width="${(sw+.4).toFixed(1)}" height="${lo-hi}"/>`)});
+      o.push(`<path class="${cls}" d="${d}"/>`);
+    });
+    if(n){
+      const step=n>40?10:5;
+      win.forEach((s,j)=>{if(s.scan%step===0||j===0){const x=X(j)+sw/2;o.push(`<line class="td-grid" x1="${x}" x2="${x}" y1="${bottom}" y2="${bottom+4}"/><text class="td-tick" x="${x}" y="${bottom+14}" text-anchor="middle">#${s.scan}</text><text class="td-tick" x="${x}" y="${bottom+25}" text-anchor="middle">${s.t.toFixed(0)} s</text>`)}});
+      const xn=X(n-1)+sw/2;o.push(`<line class="td-now" x1="${xn}" x2="${xn}" y1="14" y2="${bottom}"/><text class="td-nowt" x="${xn}" y="11" text-anchor="${n>8?"end":"start"}">latest #${win[n-1].scan}</text>`);
+      const sj=selectedScan===null?-1:win.findIndex(s=>s.scan===selectedScan);
+      if(sj>=0&&sj<n-1){const xs=X(sj)+sw/2;o.push(`<line class="td-sel" x1="${xs}" x2="${xs}" y1="14" y2="${bottom}"/><text class="td-selt" x="${xs+3}" y="11">#${win[sj].scan}</text>`)}
+    }else o.push(`<text class="td-empty" x="${L+12}" y="${H/2}">No scans recorded yet. Run a scan to start the trace.</text>`);
+    o.push(`<text class="td-tick" x="${L}" y="${H-3}">Scan number (#) and process time (s) →</text>`);
+    $("tdSvg").setAttribute("viewBox",`0 0 ${W} ${H}`);$("tdSvg").innerHTML=o.join("");
+    $("tdBadge").textContent=`${len} scan${len===1?"":"s"}`;
+    const cur=$("tdCursor"),lo=Math.max(0,len-TD_WIN);cur.disabled=!len;cur.min=lo;cur.max=Math.max(lo,len-1);
+    let idx=selectedScan===null?len-1:sigHistory.findIndex(s=>s.scan===selectedScan);if(idx<lo){idx=len-1;selectedScan=null;}
+    cur.value=idx;
+    const s=sigHistory[idx],p=sigHistory[idx-1];
+    if(!s){$("tdReadout").textContent="";return}
+    const keys=[...inputTags,...outputTags],dd=p?keys.filter(k=>bool(p[k])!==bool(s[k])).map(k=>`${k} ${bool(p[k])} → ${bool(s[k])}`):[];
+    if(p&&p.stage!==s.stage)dd.unshift(`stage ${p.stage} → ${s.stage}`);
+    $("tdReadout").innerHTML=`<b>${selectedScan===null?"Latest scan":"Inspected scan"} #${s.scan} · t = ${s.t.toFixed(0)} s · stage ${s.stage} · tank ${pct(s.lvl)}.</b> Inputs (image): ${inputTags.map(k=>`${k}=${bool(s[k])}`).join(" · ")}. Outputs: ${outputTags.map(k=>`${k}=${bool(s[k])}`).join(" · ")}. MIX_TIMER.ET=${s.ET.toFixed(1)} s, Q=${bool(s.Q)}. ${p?`Changed since scan #${p.scan}: ${dd.join(", ")||"nothing"}.`:""}`;
+  }
+
+  // ----- Explicit questions: units, page sub-questions, unlock checklist, summary -----
+  const UNITS={
+    process:{q:"What must the tank do, and in which order?",where:"the process rules below, the sequence map next to What just happened?, and the animated tank.",doneWhen:"you have watched one full cycle FILLING → MIXING → DRAINING → FILLING (turn Start ON, then press Run to next stage until the tank refills).",
+      progress:()=>prog.cycle?`${cycleCount} full cycle${cycleCount===1?"":"s"} observed`:cycleRec?`Current cycle has reached ${cycleRec.phases[cycleRec.phases.length-1].stage}`:"No cycle running yet",done:()=>prog.cycle,
+      model:"While START_SW=1 and Stop is not pressed: FILL opens A and B until LEVEL_HIGH=1 (or Button 2). MIX closes A and B, runs the motor and times 30 s with MIX_TIMER. DRAIN opens C (the motor stops unless Button 3 is ON) until TANK_EMPTY=1. Then the cycle returns to FILL. Start OFF or Stop clears everything to IDLE.",
+      take:["Exactly one stage bit (STEP_FILL, STEP_MIX or STEP_DRAIN) is 1 while the cycle runs. It is the PLC's memory of where the cycle is.","Each transition has one condition: a sensor (LEVEL_HIGH, TANK_EMPTY), a button (SB2_LEVEL) or the timer bit (MIX_TIMER.Q).","Outputs are not remembered. They are recalculated from the stage bits on every scan."],
+      mistake:"Reading LEVEL_HIGH=0 as “empty”. LEVEL_HIGH is 0 at every level below 80 %, so draining needs its own TANK_EMPTY feedback."},
+    scan:{q:"What does the PLC do in one scan, and why can a late input be missed until the next READ?",where:"the three phase boxes, the input/output tables, the late-input demonstration below them, and What just happened?",doneWhen:"you have stepped READ → SOLVE → UPDATE by hand and run the late-input demonstration as far as its SOLVE.",
+      progress:()=>`Manual phases ${Math.min(manualPhaseSteps,3)}/3 · late-input demonstration ${prog.late?"done":"not yet"}`,done:()=>manualPhaseSteps>=3&&prog.late,
+      model:"READ copies every physical input into the input image. SOLVE evaluates R0 → R10 top to bottom, using only that image and the bits already written above. UPDATE copies the output image to the output module, and only then do the valves and the motor change. A change after READ is invisible to the current SOLVE. It is used at the next READ, and if the signal has gone by then, the PLC never sees it.",
+      take:["Physical outputs change only at UPDATE. Between SOLVE and UPDATE, the output image and the physical outputs can differ.","Rungs lower in the program see bits written earlier in the same scan.","A momentary signal must last longer than one scan for the PLC to be sure to see it."],
+      mistake:"Believing a contact looks at the field wiring at the moment its rung is solved. It tests the stored input-image bit."},
+    ladder:{q:"Which rung creates each output, and why is it TRUE or FALSE on this scan?",where:"the output → rung table below, the “Asks / because” line under every rung, and the instruction inspector (click any instruction).",doneWhen:"you have clicked the coil of all four output rungs: PA_CMD (R7), PB_CMD (R8), MOTOR_CMD (R9) and PC_CMD (R10).",
+      progress:()=>`${prog.coils.size}/4 output coils inspected${prog.coils.size?": "+[...prog.coils].join(", "):""}`,done:()=>prog.coils.size>=4,
+      model:"PA_CMD comes from R7 and PB_CMD from R8: CYCLE_ACTIVE AND STEP_FILL AND NOT LEVEL_HIGH. MOTOR_CMD comes from R9: CYCLE_ACTIVE AND (STEP_MIX OR (STEP_DRAIN AND SB3_MIX_DRAIN)). PC_CMD comes from R10: CYCLE_ACTIVE AND STEP_DRAIN AND NOT TANK_EMPTY. Each is an ordinary coil, so it writes 1 while its rung is TRUE and 0 as soon as the rung is FALSE. No reset is needed.",
+      take:["R0–R6 manage memory (cycle, stages, timer). R7–R10 only turn that memory into commands.","The stage rungs sit above the output rungs, so an output reacts in the same scan as a stage change.","Each output bit has exactly one coil. Two coils on the same bit would let the lower rung overwrite the upper one."],
+      mistake:"Reading green highlighting as electrical current. It only shows which tests were TRUE in the latest SOLVE."},
+    bridge:{q:"How does each English rule become ladder instructions?",where:"the four translation boxes (requirement → If–Then → Boolean → ladder) and the live check of the matching rung.",doneWhen:"you have opened all four translation tabs (Fill, Start mixing, Drain, Mix during drain).",
+      progress:()=>`${prog.bridges.size}/4 translations opened`,done:()=>prog.bridges.size>=4,
+      model:"Turn every condition into a bit test and every connective into wiring. “X is on” becomes an N.O. contact of X; “X is not on” becomes an N.C. contact; AND becomes contacts in series; OR becomes parallel branches. The action becomes an ordinary coil (an output that follows the condition), SET/RESET (memory that must persist) or a stage move.",
+      take:["The Boolean line and the rung are the same logic in two notations.","NOT in Boolean is an N.C. contact in ladder: it tests for a 0 in memory.","Things that must be remembered (the stage) use SET/RESET or stage bits; outputs that simply follow use ordinary coils."],
+      mistake:"Choosing N.O. or N.C. by the type of the physical switch. The contact symbol describes the bit test you want, not how the field device is wired."},
+    challenge:{q:"Can you predict the result of one scan before you run it, in five tricky situations?",where:"the Given values under each question; after you answer, Load and run one scan and What just happened?",doneWhen:"all five predictions are answered (prediction 3 opens once the extension controls are unlocked).",noSelf:true,
+      progress:()=>`Answered ${answered.size}/5 · score ${score}/5`,done:()=>answered.size>=5,
+      model:"High level: A and B go to 0, the stage becomes MIX and the motor goes to 1, all in the same scan. Timer done: DRAIN, so the motor goes to 0 and C to 1. Button 3 in DRAIN: motor 1 and C 1. Stop: everything is reset to 0. Late input: not seen until the next READ.",
+      take:["Work from top to bottom: rungs below use what the rungs above have just written.","For an input that changed after READ, use the input-image value, not the physical value.","Ordinary coils have no memory; stage bits and SET do."],
+      mistake:"Predicting from the previous outputs (“the motor was on, so it stays on”) instead of solving the rungs again."}
+  };
+  function renderUnits(){
+    Object.entries(UNITS).forEach(([key,u])=>{
+      const el=document.querySelector(`[data-unit="${key}"]`);if(!el)return;
+      const done=u.done(),open=done||prog.revealed.has(key),sig=`${done}|${open}|${u.progress()}`;
+      if(el.dataset.sig===sig)return;el.dataset.sig=sig;
+      el.innerHTML=`<p class="uq-q"><span class="uq-k">Question</span>${u.q}</p><p class="uq-row"><span class="uq-k">Where to look</span>${u.where}</p><p class="uq-row"><span class="uq-k">Done when</span>${u.doneWhen}</p><div class="uq-status"><span class="badge ${done?"green":"amber"}">${done?"ANSWERED":"NOT YET"}</span><span>${esc(u.progress())}</span>${!open&&!u.noSelf?`<button class="btn" data-reveal="${key}">I have my own answer: show the model answer</button>`:""}</div>${open?`<div class="model"><p><b>Model answer.</b> ${u.model}</p><b>Key takeaways</b><ul>${u.take.map(t=>`<li>${t}</li>`).join("")}</ul><div class="mistake"><b>Common mistake:</b> ${u.mistake}</div></div>`:""}`;
+    });
+  }
+  const SUBQS=[
+    {q:"What must the tank do, and in which order?",href:"process",done:()=>prog.cycle,status:()=>UNITS.process.progress(),ans:"FILL (A and B open) until LEVEL_HIGH=1 or Button 2 → MIX (motor ON, 30 s TON) → DRAIN (C open; motor only with Button 3) until TANK_EMPTY=1 → FILL again, while START_SW=1 and Stop is not pressed."},
+    {q:"What does the PLC do in one READ → SOLVE → UPDATE scan?",href:"scan",done:()=>manualPhaseSteps>=3,status:()=>`Manual phases ${Math.min(manualPhaseSteps,3)}/3`,ans:"READ copies all physical inputs into the input image; SOLVE evaluates R0 → R10 top to bottom from that image; UPDATE copies the output image to the physical outputs."},
+    {q:"Why can a late input be missed until the next READ?",href:"lateBox",done:()=>prog.late||answered.has(4),status:()=>prog.late?"Demonstration done":"Run the late-input demonstration",ans:"SOLVE tests the input image, which was frozen at READ. A change after READ waits for the next READ, and a pulse that has ended by then is never seen."},
+    {q:"How does the 30 s timer decide when mixing ends?",href:"seqCard",done:()=>prog.timerQ,status:()=>prog.timerQ?"Seen: Q became 1 and R5 ended mixing":state.internal.STEP_MIX?`Timing now: ET ${state.internal.MIX_TIMER_ET.toFixed(1)} of 30 s`:"Reach MIX and let 30 s of process time pass",ans:"MIX_TIMER (TON) times while IN = STEP_MIX = 1. ET grows with process time, Q becomes 1 when ET reaches PT = 30 s, and R5 then moves MIX → DRAIN. IN = 0 resets ET to 0."},
+    {q:"Which rung creates each output, and why is it TRUE or FALSE now?",href:"ladder",done:()=>prog.coils.size>=4,status:()=>UNITS.ladder.progress(),ans:"R7 → PA_CMD, R8 → PB_CMD, R9 → MOTOR_CMD, R10 → PC_CMD. Each ordinary coil writes its rung result on every scan. A rung is TRUE only when every series test passes (or at least one branch of a parallel pair)."},
+    {q:"How does each English rule become ladder instructions?",href:"bridge",done:()=>prog.bridges.size>=4,status:()=>UNITS.bridge.progress(),ans:"“X is on” → N.O. contact, “X is off” → N.C. contact, AND → series, OR → parallel branch, the action → coil, SET/RESET or stage move."},
+    {q:"Can you predict the next scan in five tricky situations?",href:"challenge",done:()=>answered.size>=5,status:()=>UNITS.challenge.progress(),ans:"Yes, by solving the rungs top to bottom: outputs use the stage written earlier in the same scan, Stop resets everything, Button 3 adds a motor path in DRAIN, and the PLC only sees inputs at READ."}
+  ];
+  function renderSubqs(){
+    const html=SUBQS.map(s=>{const d=s.done();return `<li class="subq ${d?"done":""}"><div><a href="#${s.href}">${s.q}</a><small>${esc(s.status())}</small></div><span class="badge ${d?"green":""}">${d?"ANSWERED":"OPEN"}</span></li>`}).join("");
+    if($("subqList").dataset.html!==html){$("subqList").innerHTML=html;$("subqList").dataset.html=html;}
+    const sum=SUBQS.map(s=>s.done()?`<li><b>${s.q}</b><br>${s.ans}</li>`:`<li class="pending"><b>${s.q}</b><br>Not answered yet: go to <a href="#${s.href}">the section that answers it</a>.</li>`).join("");
+    if($("summaryList").dataset.html!==sum){$("summaryList").innerHTML=sum;$("summaryList").dataset.html=sum;}
+    $("summaryBadge").textContent=`${SUBQS.filter(s=>s.done()).length}/${SUBQS.length} answered`;
+  }
+  function renderUnlock(){
+    const items=[{ok:manualPhaseSteps>=1,t:"Manual scan step 1: READ",how:"Scan-cycle microscope → Step one phase"},{ok:manualPhaseSteps>=2,t:"Manual scan step 2: SOLVE",how:"press Step one phase again"},{ok:manualPhaseSteps>=3,t:"Manual scan step 3: UPDATE",how:"press Step one phase a third time"},
+      ...BASE_CHALLENGES.map(i=>({ok:answered.has(i),t:`Prediction ${i+1}: ${challenges[i].name}`,how:"answer it in the Prediction challenge"}))];
+    const missing=items.filter(x=>!x.ok).length;
+    const html=extensionMode?`<p class="unlock-why"><b>Unlocked:</b> Button 2, Button 3, automatic run and prediction 3 are now available.</p>`
+      :`<ol class="unlock-list">${items.map(x=>`<li class="${x.ok?"ok":""}"><b>${x.ok?"DONE":"TO DO"}</b> ${x.t}${x.ok?"":` (${x.how})`}</li>`).join("")}</ol><p class="unlock-why">${missing?`${missing} of ${items.length} steps still missing.`:"<b>All steps are complete: press Unlock extension controls.</b>"} A prediction counts once it is answered, right or wrong. <b>Why the lock?</b> Button 2 ends filling early, Button 3 adds a second motor path and automatic run hides the individual scans. They only make sense once you can trace one scan by hand.</p>`;
+    if($("unlockDetail").dataset.html!==html){$("unlockDetail").innerHTML=html;$("unlockDetail").dataset.html=html;}
+  }
+  function renderScoreHelp(){
+    $("scoreHelp").textContent=`Score ${score}/5 counts predictions that were correct on the first attempt (each prediction can be answered only once). Answered ${answered.size}/5. Answer before pressing Load and run one scan: that button runs the scan and shows the answer.${extensionMode?"":" Prediction 3 opens in extension mode."}`;
+  }
+  function renderExplain(){
+    if(quiet)return;
+    renderNarrative();renderSeq();renderCycle();renderPlainNow();renderRulesLive();renderChain();renderOutMap();renderLate();
+    if(historyDirty){renderTiming();historyDirty=false;}
+    renderUnits();renderSubqs();renderScoreHelp();
+    $("narrLive").setAttribute("aria-live",autoTimer?"off":"polite");
+  }
+  document.addEventListener("click",e=>{
+    const t=e.target.closest("[data-reveal],[data-show-rung],[data-chain]");if(!t)return;
+    if(t.dataset.reveal){prog.revealed.add(t.dataset.reveal);renderUnits();}
+    else if(t.dataset.showRung)showRung(t.dataset.showRung);
+    else if(t.dataset.chain){chainIndex=Number(t.dataset.chain);renderChain();}
+  });
+  $("tdCursor").addEventListener("input",e=>{const s=sigHistory[Number(e.target.value)];selectedScan=s&&s!==sigHistory[sigHistory.length-1]?s.scan:null;renderTiming();});
+  $("tdLatest").onclick=()=>{selectedScan=null;renderTiming()};
+  $("tdClear").onclick=()=>{sigHistory=[];selectedScan=null;renderTiming()};
+
   $("unlockChallenge").onclick=()=>{if(canUnlockExtension()){extensionMode=true;renderChallenge();render();$("modeStatus").textContent="Extension controls unlocked."}};
-  $("startToggle").onclick=()=>{state.physicalInputs.START_SW=!state.physicalInputs.START_SW;fullScan(0)};
+  $("startToggle").onclick=()=>{cause("start");state.physicalInputs.START_SW=!state.physicalInputs.START_SW;fullScan(0)};
   $("stopPulse").onclick=()=>pulse("STOP_PB",450);
   $("levelPulse").onclick=()=>{if(!extensionMode)return;pulse("SB2_LEVEL",450)};
-  $("mixDrainToggle").onclick=()=>{if(!extensionMode)return;state.physicalInputs.SB3_MIX_DRAIN=!state.physicalInputs.SB3_MIX_DRAIN;fullScan(0)};
+  $("mixDrainToggle").onclick=()=>{if(!extensionMode)return;cause("sb3");state.physicalInputs.SB3_MIX_DRAIN=!state.physicalInputs.SB3_MIX_DRAIN;fullScan(0)};
   $("resetBtn").onclick=reset;$("advance1").onclick=()=>advance(1);$("advance5").onclick=()=>advance(5);$("nextEvent").onclick=runToNextEvent;
-  $("autoBtn").onclick=()=>{if(!extensionMode)return;if(autoTimer){clearInterval(autoTimer);autoTimer=null;$("autoBtn").textContent="Start automatic run"}else{autoTimer=setInterval(()=>advance(1),300);$("autoBtn").textContent="Pause automatic run"}};
-  $("stepPhase").onclick=stepPhase;$("fullScan").onclick=()=>{fullScan(0);$("scanMessage").textContent="A complete read–solve–update scan was executed."};
-  $("lateInput").onclick=()=>{state.physicalInputs.SB2_LEVEL=true;$("scanMessage").textContent="Button 2 changed physically after READ. Input image is unchanged until the next READ.";render();setTimeout(()=>{state.physicalInputs.SB2_LEVEL=false;render()},1200)};
-  $("solveAgain").onclick=()=>fullScan(0);$("showAll").onclick=()=>{showOutputsOnly=false;renderLadder()};$("outputsOnly").onclick=()=>{showOutputsOnly=true;renderLadder()};
-  $("loadScenario").onclick=()=>challenges[challengeIndex].setup();$("runScenario").onclick=()=>{challenges[challengeIndex].setup();if(phaseCursor===1){solveLogic(0);updateOutputs();phaseCursor=0;render()}else{fullScan(0)}};
+  $("autoBtn").onclick=()=>{if(!extensionMode)return;if(autoTimer){clearInterval(autoTimer);autoTimer=null;$("autoBtn").textContent="Start automatic run"}else{autoTimer=setInterval(()=>{cause("auto");advance(1)},300);$("autoBtn").textContent="Pause automatic run"}};
+  $("stepPhase").onclick=stepPhase;$("fullScan").onclick=()=>{cause("fullScan");fullScan(0);$("scanMessage").textContent="A complete read–solve–update scan was executed."};
+  $("lateInput").onclick=()=>{state.physicalInputs.SB2_LEVEL=true;const d=lateDemo={stage:stageName(),solved:false,skipped:false,released:false,outcome:null};lastRun={kind:"late",after:snap()};$("scanMessage").textContent="Button 2 changed physically after READ. Input image is unchanged until the next READ.";render();setTimeout(()=>{state.physicalInputs.SB2_LEVEL=false;d.released=true;if(!d.outcome){d.outcome="missed";prog.late=true;}render()},1200)};
+  $("solveAgain").onclick=()=>{cause("solveAgain");fullScan(0)};$("showAll").onclick=()=>{showOutputsOnly=false;renderLadder()};$("outputsOnly").onclick=()=>{showOutputsOnly=true;renderLadder()};
+  $("loadScenario").onclick=()=>challenges[challengeIndex].setup();$("runScenario").onclick=()=>{challenges[challengeIndex].setup();if(phaseCursor===1){const ctx={before:snap(),reason:"scenario",skipRead:true};solveLogic(0);updateOutputs();phaseCursor=0;noteScan(ctx,0);render()}else{cause("scenario");fullScan(0)}};
   document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.progress button').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.jump).scrollIntoView({behavior:'smooth',block:'start'})}));
   reset();
   renderChallenge();

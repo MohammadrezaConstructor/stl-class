@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>Production Cell Busy-Arrival Exercise</title>
+<title>Production Cell Busy-Arrival Challenge</title>
 <style>
 :root{
   --ink:#142033;--muted:#5c6b7d;--line:#cbd5df;--paper:#fff;--page:#eef2f6;
@@ -26,6 +26,104 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
 @media(max-width:720px){.grid2,.machine-wrap{grid-template-columns:1fr}.machine{border-right:0;border-bottom:1px solid #dce4ec}.progress{grid-template-columns:1fr auto}.progress progress{grid-column:1/-1;grid-row:2}.test-context{grid-template-columns:1fr}}
 @media(max-width:480px){main{padding-inline:8px}.state-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar-spacer{display:none}.statusline{width:100%}}
 @media print{body{background:#fff}.app{width:100%}.controls,.ladder-toolbar,.answers,.actions,.nav-actions{display:none!important}.card{box-shadow:none}}
+/* ---- Explicit questions: page panel, task question box, review ---- */
+.section-label{margin:0 0 4px;text-transform:uppercase;letter-spacing:.08em;font-size:.69rem;font-weight:900;color:var(--navy)}
+.card.qpanel{border-top:5px solid var(--navy);margin-bottom:12px}.qpanel .kicker{color:#0b5b94}
+.card h2.main-q{margin:0 0 10px;font-size:clamp(1.04rem,2.3vw,1.26rem);line-height:1.3}
+.q-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px}
+.mini-h{margin:0 0 6px;font-size:.8rem;color:var(--navy)}
+.subq{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.subq li{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;border:1px solid #dce4ec;border-radius:9px;background:#f8fafc;padding:6px 8px}
+.subq a{color:#24476b;font-size:.76rem;font-weight:750;text-decoration:none}.subq a:hover{text-decoration:underline}
+.subq .st{flex:none;border-radius:999px;padding:2px 7px;background:#edf1f5;color:#4b5d72;font-size:.64rem;font-weight:900;white-space:nowrap}
+.subq li.current{border-color:var(--blue);background:var(--blue-soft)}.subq li.current .st{background:#fff;color:#0b5b94}
+.subq li.done .st{background:var(--green-soft);color:#075b45}.subq li.missed .st{background:var(--red-soft);color:#842018}
+.card .plain-list,.plain-list{margin:0;padding-left:18px;color:#45566c;font-size:.76rem}.plain-list li{margin:3px 0}
+.fold{margin-top:8px;border:1px solid #dce4ec;border-radius:10px;background:#fbfcfd}
+.fold>summary{cursor:pointer;padding:7px 10px;color:#2e4258;font-size:.76rem;font-weight:850}
+.fold-body{padding:0 10px 10px;color:#45566c;font-size:.75rem}.card .fold-body p,.fold-body p{margin:4px 0 0;font-size:.75rem;color:#45566c}
+a:focus-visible,summary:focus-visible,.rung-link:focus-visible{outline:3px solid rgba(20,104,168,.3);outline-offset:2px}
+.gl{color:inherit;text-decoration:underline dotted;text-underline-offset:2px}
+.qbox{margin-top:8px;border:1px solid #b9d3ea;border-left:5px solid var(--blue);border-radius:10px;background:var(--blue-soft);padding:8px 10px;display:grid;gap:5px}
+.card .qbox p{margin:0;font-size:.79rem;color:#24384f}.qbox b{color:#0b4f82}
+.rung-link{min-height:24px;border:1px solid #9fc0dc;border-radius:6px;background:#fff;color:#0b5b94;padding:1px 6px;font-size:.7rem;font-weight:900}
+.rung-link:hover{background:#f5faff;border-color:var(--blue)}
+.card p.attempt-info{margin-top:8px;border-top:1px dashed #cbd5df;padding-top:6px;font-size:.72rem;color:#4c5f74}
+.hintbox{margin-top:8px;border-left:4px solid var(--amber);border-radius:8px;background:var(--amber-soft);padding:7px 9px;color:#704409;font-size:.76rem}
+.review{margin-top:10px;border:1px solid #bfe3d4;border-left:5px solid var(--green);border-radius:10px;background:var(--green-soft);padding:9px 10px}
+.review.missed{border-color:#efc4bf;border-left-color:var(--red);background:#fff7f6}
+.review h3{margin:0 0 4px;font-size:.86rem;color:#075b45}.review.missed h3{color:#842018}
+.review h4{margin:8px 0 3px;font-size:.7rem;color:#2c4a42;text-transform:uppercase;letter-spacing:.05em}
+.card .review p,.review li{font-size:.76rem;color:#24443b}.review ul{margin:0;padding-left:18px}.review li{margin:2px 0}
+.review .fold{background:#fff}.card .review p.mistake{margin-top:6px;color:#6f302a}
+.case-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.card p.case-warn{flex:1 1 220px;border-left:4px solid var(--amber);border-radius:8px;background:var(--amber-soft);padding:6px 8px;color:#704409;font-size:.72rem}
+.ev{margin-top:6px}.ev th,.ev td{font-size:.7rem}
+/* section questions */
+.section-head p.section-q,.card p.section-q{margin:3px 0 2px;color:#24476b;font-size:.78rem;font-weight:700}
+.sim-lock{margin:0 12px 10px;border-radius:8px;background:#f1f4f7;padding:6px 9px;color:#44566c;font-size:.72rem}
+.sim-lock.open{background:var(--green-soft);color:#075b45}
+/* state tiles: plain meaning and change marker */
+.state small{display:block;margin-top:3px;color:#5b6b7e;font-size:.62rem;line-height:1.25}
+.state.changed{box-shadow:inset 0 0 0 2px #d08a1c}.state em{float:right;font-style:normal;font-size:.56rem;font-weight:900;color:#8a5200;letter-spacing:.03em}
+/* narrative */
+.story-h{margin:0;font-size:.86rem;color:var(--navy)}.story-h span{font-weight:600;color:var(--muted);font-size:.72rem}
+.story-pre{margin:0;font-size:.72rem;color:#45566c}
+.chain{margin:4px 0 0;padding-left:17px;display:grid;gap:4px}.chain li{font-size:.7rem;color:#2f4359;line-height:1.4}
+.scan-row .chain li b{display:inline;font-size:inherit;color:#13314d}
+.scan-row .fold{margin-top:6px;background:#fff}.scan-row .fold>summary{font-size:.7rem;padding:5px 8px}
+.chain.quiet li{color:#55667a}
+.story-sub{display:block;margin-top:5px;font-size:.66rem!important;color:#5c6b7d!important}
+.scan-row.diff{border-color:var(--amber);background:var(--amber-soft)}
+.chg{display:inline-block;margin:2px 4px 0 0;border:1px solid #e0bd73;border-radius:6px;background:#fff;padding:0 5px;color:#5d3a00;font:700 .66rem ui-monospace,SFMono-Regular,Menlo,monospace}
+.scan-row .note-line{margin-top:4px;color:#4a3d63}
+/* stage map */
+.subsection{border-top:1px solid #dce4ec;padding:10px 12px 12px}
+.sub-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
+.sub-head h4{margin:0;font-size:.92rem;color:var(--navy)}.sub-head p{margin:2px 0 0;color:#24476b;font-size:.76rem;font-weight:700}
+.flow{display:flex;align-items:stretch;gap:4px}
+.node{flex:1 1 0;min-width:0;border:1px solid #c9d4df;border-radius:10px;background:#f8fafc;padding:6px 6px;text-align:center}
+.node b{display:block;font-size:.74rem;color:#2e4258}.node span{display:block;font:700 .6rem ui-monospace,SFMono-Regular,Menlo,monospace;color:#5b6d82}
+.node i{display:block;font-style:normal;font-size:.58rem;color:#814a00;font-weight:800}
+.node em{display:block;margin-top:2px;font-style:normal;font-size:.6rem;font-weight:900;color:#6b7a8c}
+.node.active{border:2px solid var(--blue);background:var(--blue-soft)}.node.active em{color:#0b5b94}
+.arr{align-self:center;color:#6f8196;font-weight:900;font-size:.9rem}.arr::before{content:"→"}
+.flow-legend{margin:7px 0 0;padding-left:17px;font-size:.7rem;color:#4c5f74}.flow-legend li{margin:2px 0}
+.aux{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.aux-node{border:1px dashed #b3c0cd;border-radius:10px;background:#fff;padding:7px 9px;font-size:.72rem;color:#45566c}
+.aux-node b{display:block;color:#2e4258;font-size:.75rem}.aux-node.on{border-style:solid;border-color:var(--purple);background:var(--purple-soft)}
+.aux-node span{display:block;margin-top:3px}.tbar{height:7px;border-radius:9px;background:#e2e8ee;margin-top:5px;overflow:hidden}.tbar i{display:block;height:100%;background:var(--blue)}
+.blocking{margin-top:8px;border-left:4px solid var(--red);border-radius:8px;background:var(--red-soft);padding:7px 9px}
+.blocking b{display:block;color:#842018;font-size:.75rem}.blocking ul{margin:3px 0 0;padding-left:17px}.blocking li{color:#5f2a25;font-size:.72rem;margin:2px 0}
+/* timing diagram */
+.timing-scroll{overflow-x:auto;border:1px solid #dce4ec;border-radius:10px;background:#fff}.timing-scroll svg{display:block}
+.tl-label{fill:#34485e;font:700 10px ui-monospace,SFMono-Regular,Menlo,monospace;text-anchor:end}
+.tl-head{fill:#2e4258;font-size:10px;font-weight:850;text-anchor:middle}.tl-cause{fill:#5b6b7e;font-size:8.5px;font-weight:700;text-anchor:middle}
+.tl-now{fill:var(--blue-soft);stroke:#9cc4e4}.tl-wave{fill:none;stroke:var(--navy);stroke-width:2}.tl-fill{fill:#d8efe5}
+.tl-bar{fill:#9cc4e4}.tl-num{fill:#13314d;font-size:9px;font-weight:800;text-anchor:middle}
+.tl-sep{stroke:#c3ced8;stroke-dasharray:3 3}.tl-axis-line{stroke:#8292a3}.tl-axis{fill:#5b6b7e;font-size:10px}
+.table-scroll{overflow-x:auto}.trace-table{border-collapse:collapse;margin-top:6px;font-size:.66rem}
+.trace-table th,.trace-table td{border:1px solid #dce4ec;padding:2px 5px;text-align:center;white-space:nowrap}.trace-table th[scope=row]{text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+/* ladder detail */
+.detail .rd-io{display:block;margin-top:3px}
+.label.sm{font-size:12px}.pair{text-anchor:middle}
+/* reference */
+.ref-body{padding:0 12px 12px}.gloss{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}
+.g-item{border:1px solid #dce4ec;border-radius:9px;background:#fff;padding:7px 9px}.g-item b{display:block;color:#2e4258;font-size:.76rem}
+.g-item p{margin:3px 0 0;color:#45566c;font-size:.72rem}.g-item p.locked{color:#66768a;font-style:italic}
+.g-item:target{border-color:var(--blue);box-shadow:0 0 0 3px rgba(20,104,168,.18)}
+.bp{display:flex;flex-wrap:wrap;gap:4px;align-items:stretch;margin-top:6px;list-style:none;padding:0}
+.bp li{flex:1 1 140px;border:1px solid #dce4ec;border-radius:9px;background:#fff;padding:6px 8px;font-size:.7rem;color:#45566c}.bp li b{display:block;color:#2e4258;font-size:.72rem}
+/* completion review */
+.review-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.rv{border:1px solid #dce4ec;border-left:5px solid var(--green);border-radius:9px;padding:7px 9px;background:#fbfdfc}.rv.miss{border-left-color:var(--red);background:#fffafa}
+.card .rv p{margin:2px 0 0;font-size:.75rem;color:#34485e}.rv-k{font-weight:850;color:#13314d}
+.card p.end-answer{margin:4px 0 6px;font-size:.8rem;color:#24384f}
+.completion h3.mini-h{margin-top:12px}
+@media(max-width:720px){.q-grid,.aux,.gloss{grid-template-columns:1fr}}
+@media(max-width:560px){.flow{flex-direction:column}.arr{text-align:center}.arr::before{content:"↓"}.node{text-align:left;display:grid;grid-template-columns:auto 1fr;column-gap:8px;align-items:baseline}.node b{grid-row:span 2}.node i,.node em{grid-column:2}}
+@media print{#clearTrace,.case-tools{display:none!important}}
+.card p.score-big{font-size:2.3rem;color:var(--navy);margin:4px 0}
 </style>
 </head>
 <body>
@@ -41,14 +139,58 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
   <span class="badge" id="scoreBadge">Score 0/12</span>
 </div>
 <main>
+  <section class="card qpanel" id="pageQuestion" aria-labelledby="mainQuestion">
+    <p class="kicker">What question does this challenge answer?</p>
+    <h2 class="main-q" id="mainQuestion">When a new part arrives while the cell is already busy, what must the cell do, and how does the ladder program remember and route that part?</h2>
+    <div class="q-grid">
+      <div>
+        <h3 class="mini-h" id="subQuestionsHeading">The seven tasks answer it step by step</h3>
+        <ol class="subq" id="subQuestions" aria-labelledby="subQuestionsHeading"></ol>
+      </div>
+      <div>
+        <h3 class="mini-h">How to use this page (about 25 minutes)</h3>
+        <ol class="plain-list">
+          <li>Read the requirement and the model assumptions in the purple box below (2 min).</li>
+          <li><b>Tasks 1–5:</b> read the blue question box, open the rung it names, then choose and check (10 min). The simulation stays locked and shows a prepared LOADING state.</li>
+          <li><b>Task 6:</b> the scenario controls unlock. Each case is prepared for you. Predict what the requirement demands, then compare it with the state tiles, “What just happened?” and the timing diagram (8 min).</li>
+          <li><b>Task 7</b>, then <b>Finish exercise</b> to see every question with your result and the correct answer (3 min).</li>
+        </ol>
+        <details class="fold">
+          <summary>By the end you can…</summary>
+          <ul class="plain-list fold-body">
+            <li>explain why a one-scan arrival pulse (NEW_PART) has to become a stored bit;</li>
+            <li>choose the right coil type (ordinary, SET or RESET) for a job;</li>
+            <li>trace how CELL_BUSY, PART_WAITING, BYPASS_ACTIVE and INFEED_HOLD decide M1, RU and M2 on each scan;</li>
+            <li>check a simulated state against a requirement, tag by tag;</li>
+            <li>name the limit of a one-bit waiting buffer.</li>
+          </ul>
+        </details>
+        <details class="fold">
+          <summary>What you should already know</summary>
+          <ul class="plain-list fold-body">
+            <li><b>Scan cycle:</b> READ inputs → SOLVE rungs → WRITE outputs, repeated continuously.</li>
+            <li><b>Contacts are bit tests:</b> NO is TRUE when its bit is 1; NC is TRUE when its bit is 0.</li>
+            <li><b>Series = AND, parallel branches = OR.</b></li>
+            <li><b>On-delay timer:</b> Q becomes 1 when the elapsed time ET reaches the preset PT while IN = 1.</li>
+            <li><b>Rising edge:</b> TRUE for exactly one scan when a signal changes 0 → 1.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <section class="card" id="assessmentContract" aria-label="Assessment constraints">
     <p class="section-label">Assessment constraints</p>
     <p style="margin:0"><b>Complete tasks in order.</b> A hint becomes available only after the first failed attempt. After three incorrect attempts, the correct explanation is shown and the task receives zero points.</p>
+    <details class="fold" id="scoreHelp">
+      <summary>How the score works (12 points)</summary>
+      <div class="fold-body" id="scoreExplain"></div>
+    </details>
   </section>
 
   <div class="note">
     <b>Source requirement and teaching assumptions</b>
-    <p>The Part 08 exercise requires Conveyor 1 to stop when a new part arrives during loading, CNC or unloading. An arrival during CNC must be transferred to Conveyor 2 without CNC processing. Because the slides do not define queue capacity, transfer time or robot-resource details, this model assumes one waiting position, a robot available during CNC, a three-second bypass transfer and a rising-edge pulse named <code>NEW_PART</code>.</p>
+    <p>The Part 08 exercise requires Conveyor 1 to stop when a new part arrives during loading, CNC or unloading. An arrival during CNC must be transferred to Conveyor 2 without CNC processing. Because the slides do not define queue capacity, transfer time or robot-resource details, this model assumes one waiting position, a robot available during CNC, a three-second <a class="gl" href="#g-bypass">bypass</a> transfer and a <a class="gl" href="#g-edge">rising-edge pulse</a> named <code>NEW_PART</code>.</p>
   </div>
   <div class="note safety">
     <b>Control-training boundary</b>
@@ -56,16 +198,23 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
   </div>
 
   <section class="grid2" aria-label="Task and coach">
-    <article class="card task">
+    <article class="card task" id="taskCard" tabindex="-1">
       <p class="kicker">Task</p>
       <h2 id="taskTitle"></h2>
-      <p id="taskCopy"></p>
+      <div class="qbox" id="taskQuestion">
+        <p><b>Question:</b> <span id="taskAsk"></span></p>
+        <p><b>Given:</b> <span id="taskCopy"></span></p>
+        <p><b>Where to look for the answer:</b> <span id="taskLook"></span></p>
+      </div>
+      <div class="hintbox" id="hintBox" hidden></div>
       <div id="testContext"></div>
       <div class="answers" id="answers"></div>
       <div class="actions">
         <button class="btn" id="hintBtn" type="button">Show hint</button>
         <button class="btn primary" id="checkBtn" type="button" disabled>Check answer</button>
       </div>
+      <p class="attempt-info" id="attemptInfo"></p>
+      <div id="taskReview"></div>
       <div class="nav-actions">
         <button class="btn ghost" id="prevTask" type="button">Previous task</button>
         <button class="btn primary" id="nextTask" type="button" disabled>Next task</button>
@@ -75,13 +224,13 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
       <p class="kicker">Coach</p>
       <h2>Read the state before guessing</h2>
       <p>Separate the one-scan arrival event from the stored states that must survive after that event disappears.</p>
-      <div class="coach-feedback" id="coachFeedback">Choose an answer, or use the scenario controls to inspect the logic first.</div>
+      <div class="coach-feedback" id="coachFeedback" aria-live="polite">Choose an answer, or use the scenario controls to inspect the logic first.</div>
       <div class="results" id="testResults"></div>
     </article>
   </section>
 
   <section class="section" aria-labelledby="simHeading">
-    <div class="section-head"><div><h3 id="simHeading">Cell simulation</h3><p>Select a main stage, create a new-part edge and observe one complete PLC scan.</p></div><button class="btn ghost" id="resetBtn" type="button">Reset</button></div>
+    <div class="section-head"><div><h3 id="simHeading">Cell simulation</h3><p class="section-q">What does one PLC scan do with a new part in each stage of the cell?</p><p>Select a main stage, create a new-part edge and observe one complete PLC scan.</p></div><button class="btn ghost" id="resetBtn" type="button">Reset</button></div>
     <div class="controls" id="scenarioButtons">
       <button class="btn scenario" data-scenario="idle" type="button">Prepare idle</button>
       <button class="btn scenario" data-scenario="load" type="button">Prepare loading</button>
@@ -92,15 +241,25 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
       <button class="btn" id="finishMainBtn" type="button">Finish main stage</button>
       <button class="btn danger" id="stopBtn" type="button">Master stop</button>
     </div>
+    <p class="sim-lock" id="simLock"></p>
     <div class="state-grid" id="stateGrid"></div>
     <div class="machine-wrap">
       <div class="machine"><div id="machineVisual"></div><p class="machine-caption" id="machineCaption"></p></div>
-      <div class="scan-story" id="scanStory"></div>
+      <div class="scan-story" id="scanStory" aria-live="polite"></div>
+    </div>
+    <div class="subsection" aria-labelledby="stageMapHeading">
+      <div class="sub-head"><div><h4 id="stageMapHeading">Stage map</h4><p>Which stage is active, which side path is in use, and what is blocking the next step?</p></div></div>
+      <div id="stageMap"></div>
+    </div>
+    <div class="subsection" aria-labelledby="timingHeading">
+      <div class="sub-head"><div><h4 id="timingHeading">Timing diagram</h4><p>How did each signal change from one scan to the next?</p></div><button class="btn" id="clearTrace" type="button">Clear trace</button></div>
+      <div class="timing-scroll" id="timingScroll"></div>
+      <details class="fold"><summary>Show the trace as a table</summary><div class="table-scroll fold-body" id="timingTable"></div></details>
     </div>
   </section>
 
   <section class="section" aria-labelledby="ladderHeading">
-    <div class="section-head"><div><h3 id="ladderHeading">Busy-arrival ladder program</h3><p>Green indicates a TRUE software path. It is not physical electricity flowing through the program.</p></div></div>
+    <div class="section-head"><div><h3 id="ladderHeading">Busy-arrival ladder program</h3><p class="section-q">Which instructions are TRUE right now, and what does each coil write?</p><p>Green indicates a TRUE software path. It is not physical electricity flowing through the program. The diagram shows the bits as stored <em>after</em> the last scan.</p></div></div>
     <div class="ladder-toolbar">
       <button class="btn primary" id="runScanBtn" type="button">Run one scan</button>
       <button class="btn" id="prevRung" type="button">Previous rung</button>
@@ -112,12 +271,35 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
     <div class="detail" id="rungDetail"></div>
   </section>
 
+  <section class="section" id="reference" aria-labelledby="refHeading">
+    <div class="section-head"><div><h3 id="refHeading">Reference</h3><p class="section-q">What does each term on this page mean, and how do the pieces connect?</p></div></div>
+    <div class="ref-body">
+      <details class="fold" id="glossary"><summary>Glossary of the PLC terms used on this page</summary><div class="fold-body"><div class="gloss" id="glossaryList"></div></div></details>
+      <details class="fold" id="bigPicture"><summary>Big picture: from the part at the sensor to the conveyor motor</summary><div class="fold-body">
+        <ol class="bp">
+          <li><b>1 · Physical device</b>A part reaches the photo-eye at the end of Conveyor 1.</li>
+          <li><b>2 · Input module</b>Its signal becomes the SN bit in the input image (READ).</li>
+          <li><b>3 · Instructions</b>Edge detection makes NEW_PART; contacts in R1–R4 and R8 test SN, NEW_PART and the step bits.</li>
+          <li><b>4 · Internal bits</b>Rung results store or update CELL_BUSY, PART_WAITING, BYPASS_ACTIVE and INFEED_HOLD.</li>
+          <li><b>5 · Output image</b>R5 and R6 write the commands M1, RU and M2 (WRITE).</li>
+          <li><b>6 · Actuators</b>The output module drives the Conveyor 1 contactor, the robot and the Conveyor 2 contactor.</li>
+        </ol>
+        <p>The stage, waiting and bypass bits are program memory, not physical devices. Only SN comes from the plant, and only M1, RU and M2 go back to it.</p>
+      </div></details>
+    </div>
+  </section>
+
   <section class="card completion" id="completionPanel" aria-labelledby="completionHeading">
     <p class="kicker">Exercise complete</p>
     <h2 id="completionHeading">Busy-arrival programming evidence</h2>
+    <p class="section-q">Which questions did you answer correctly, and what is the correct answer to each?</p>
     <p class="score-big" id="completionScore">0/12</p>
     <p id="completionMessage"></p>
     <table class="summary" aria-label="Exercise result summary"><thead><tr><th>Evidence</th><th>Result</th></tr></thead><tbody id="summaryBody"></tbody></table>
+    <h3 class="mini-h">Question by question</h3>
+    <ol class="review-list" id="reviewList"></ol>
+    <h3 class="mini-h">The main question, answered</h3>
+    <p class="end-answer">A part that arrives while the cell is busy is held at the infeed (INFEED_HOLD turns M1 off), and its one-scan NEW_PART pulse is turned into a stored bit. During loading or unloading the robot is busy, so the part is remembered in PART_WAITING and released by R8 once the main cell is idle. During CNC the robot is free, so BYPASS_ACTIVE sends the part to Conveyor 2 (RU and M2 for 3 s) while STEP_CNC keeps machining the current part. The master stop clears everything. One BOOL can remember only one waiting part.</p>
     <div class="actions"><button class="btn" id="copyResult" type="button">Copy result</button><button class="btn primary" id="restartBtn" type="button">Try again</button></div>
   </section>
   <p class="footer">PLC training simulation · internal bits are program states, not physical devices.</p>
@@ -128,89 +310,428 @@ main{padding:15px clamp(10px,2.5vw,24px) 40px}.grid2{display:grid;grid-template-
 "use strict";
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = "plc-busy-arrival-assessment-constrained-v1";
+const EVIDENCE_KEY = "plc-busy-arrival-assessment-constrained-v1-case-evidence";
 const MAX_SCORE = 12;
+const MASTERY = 10;
 const taskPoints = [2,1,2,2,1,3,1];
+// copy = the given state; ask = the question; look = where the evidence is ({R2} becomes a rung button).
+// more/why/take/mistake/short appear only after the task is resolved.
 const tasks = [
-  {title:"Predict an arrival during robot loading",copy:"STEP_LOAD = 1 and a new part creates a one-scan NEW_PART pulse. What should the program do with the new part?",rung:1,hint:"The robot is already loading the current part. The one-scan pulse must be converted into stored memory.",options:[["wait","Set PART_WAITING and stop Conveyor 1"],["bypass","Start the CNC bypass immediately"],["ignore","Ignore the arrival until the sensor changes again"]],correct:"wait"},
-  {title:"Choose the memory instruction",copy:"Which instruction should store the fact that one part is waiting after NEW_PART returns to 0?",rung:1,hint:"An ordinary coil would turn the bit off as soon as the pulse disappears. The requirement needs retained state until the part is released.",options:[["set","SET PART_WAITING"],["ordinary","Ordinary PART_WAITING coil"],["contact","Normally open PART_WAITING contact"]],correct:"set"},
-  {title:"Predict an arrival during CNC",copy:"STEP_CNC = 1 when a new part reaches the sensor. The slide exercise says to skip CNC for that new part. Which state and outputs should become active?",rung:2,hint:"The current part stays in the CNC. The new part takes an auxiliary transfer path to Conveyor 2.",options:[["correct","BYPASS_ACTIVE = 1, RU = 1 and M2 = 1; STEP_CNC remains 1"],["reset","Reset STEP_CNC and run the normal unload stage"],["waiting","Set PART_WAITING only and do not use Conveyor 2"]],correct:"correct"},
-  {title:"Complete the Conveyor 1 rule",copy:"Which Boolean rule correctly stops Conveyor 1 while a detected new part must be held at the infeed?",rung:4,hint:"M1 should follow the master enable, but it must be blocked whenever INFEED_HOLD is true.",options:[["m1","M1 = ST AND NOT INFEED_HOLD"],["hold","M1 = ST OR INFEED_HOLD"],["busy","M1 = CELL_BUSY"],["sensor","M1 = SN"]],correct:"m1"},
-  {title:"Protect the current CNC operation",copy:"Why must the CNC-bypass rung avoid resetting STEP_CNC?",rung:2,hint:"Two parts are being handled by two explicitly modeled activities: the original CNC operation and the new-part transfer.",options:[["parallel","The original part must finish CNC while the new part is transferred on the auxiliary bypass"],["timer","Resetting STEP_CNC makes the bypass timer count faster"],["contact","STEP_CNC is a physical sensor and cannot be reset"]],correct:"parallel"},
-  {title:"Verify six busy-arrival cases",copy:"Predict the required result, then compare it with the scan simulation. Complete all six cases.",rung:0,hint:"Check whether the main stage is busy, whether the arrival needs stored waiting memory or an immediate bypass, and whether M1 must be held off.",options:[["pass","The displayed state is correct"],["fail","The displayed state is incorrect"]]},
-  {title:"State the buffer limitation",copy:"What limitation follows from representing the waiting queue with one Boolean PART_WAITING bit?",rung:1,hint:"A Boolean value can remember only 0 or 1, not how many separate parts arrived.",options:[["one","The model can represent only one waiting arrival"],["seconds","The bypass can last only one second"],["stage","The CNC stage can never run at the same time as another state"]],correct:"one"}
+  {title:"Predict an arrival during robot loading",
+   copy:"STEP_LOAD = 1 (the robot is loading the current part); STEP_CNC = 0, STEP_UNLOAD = 0, PART_WAITING = 0 and BYPASS_ACTIVE = 0. A new part reaches the sensor, so NEW_PART = 1 for exactly one scan.",
+   ask:"What should the program do with the new part?",
+   look:"Ladder {R2} (store a waiting arrival), then {R4} and {R5} for Conveyor 1. The simulation stays locked until Task 6, so read the rungs.",
+   subq:"What happens to a part that arrives while the robot is loading?",
+   rung:1,hint:"The robot is already loading the current part. The one-scan pulse must be converted into stored memory.",options:[["wait","Set PART_WAITING and stop Conveyor 1"],["bypass","Start the CNC bypass immediately"],["ignore","Ignore the arrival until the sensor changes again"]],correct:"wait",
+   more:"The robot is busy, so the new part can neither start a cycle nor use the bypass. Rung 2 turns the pulse into the stored PART_WAITING bit; Rung 4 sets INFEED_HOLD, so Rung 5 turns Conveyor 1 off and the part stays at the sensor.",
+   why:{bypass:"The bypass is only for arrivals during CNC (Rung 3 needs STEP_CNC = 1). During loading the robot itself is busy, so it cannot transfer the new part.",ignore:"NEW_PART is TRUE for one scan only. If nothing stores it, the arrival is lost: SN stays 1, so no new rising edge ever occurs and the part is never released into the cell."},
+   take:["A rising-edge pulse lasts one scan; anything needed later must be stored in a bit.","While the robot is busy, the new part waits (PART_WAITING) and Conveyor 1 is held."],
+   mistake:"Treating NEW_PART as if it stayed TRUE while the part waits. It is 0 again on the very next scan.",
+   short:"The robot is busy, so the one-scan pulse must be stored and the infeed held until the cell is free."},
+  {title:"Choose the memory instruction",
+   copy:"On scan n, NEW_PART = 1 while the robot is loading. On scan n + 1, NEW_PART is back to 0, but the part is still at the sensor and has not been released.",
+   ask:"Which instruction should store the fact that one part is waiting after NEW_PART returns to 0?",
+   look:"Ladder {R2}: the instruction type printed under the coil. Compare it with the coil in {R1}.",
+   subq:"Which instruction remembers that arrival after the one-scan pulse ends?",
+   rung:1,hint:"An ordinary coil would turn the bit off as soon as the pulse disappears. The requirement needs retained state until the part is released.",options:[["set","SET PART_WAITING"],["ordinary","Ordinary PART_WAITING coil"],["contact","Normally open PART_WAITING contact"]],correct:"set",
+   more:"A SET coil writes 1 when its rung is TRUE and writes nothing when its rung is FALSE, so the bit survives the end of the pulse. Rung 8 (release) and the master stop are the only things that clear it.",
+   why:{ordinary:"An ordinary coil writes its rung result on every scan. On scan n + 1 NEW_PART = 0, so the rung is FALSE and the coil writes PART_WAITING = 0: the arrival is forgotten one scan later.",contact:"A contact only tests a bit; it never writes one. Rung 2 does contain a PART_WAITING contact (NC, to check that the slot is free), but storing needs a coil."},
+   take:["Ordinary coil: the bit follows the rung result every scan.","SET: write 1 and keep it. Every SET needs a planned RESET (here Rung 8 and the master stop)."],
+   mistake:"Using a SET without deciding where the bit will be reset, so it stays 1 forever.",
+   short:"A SET bit stays 1 after NEW_PART returns to 0; an ordinary coil would drop it on the next scan."},
+  {title:"Predict an arrival during CNC",
+   copy:"STEP_CNC = 1 (the current part is being machined); STEP_LOAD = 0, STEP_UNLOAD = 0 and BYPASS_ACTIVE = 0. A new part reaches the sensor, so NEW_PART = 1 for one scan. The requirement says this new part skips CNC; the model assumes the robot is free during CNC.",
+   ask:"Which state and output commands should become active on that scan?",
+   look:"Ladder {R3} (start the CNC bypass) and {R6} (bypass outputs). Re-read the source requirement in the purple box.",
+   subq:"What happens to a part that arrives while the CNC is machining?",
+   rung:2,hint:"The current part stays in the CNC. The new part takes an auxiliary transfer path to Conveyor 2.",options:[["correct","BYPASS_ACTIVE = 1, RU = 1 and M2 = 1; STEP_CNC remains 1"],["reset","Reset STEP_CNC and run the normal unload stage"],["waiting","Set PART_WAITING only and do not use Conveyor 2"]],correct:"correct",
+   more:"Rung 3 SETs BYPASS_ACTIVE; Rung 6 then commands the robot transfer (RU) and Conveyor 2 (M2) until the 3 s bypass timer is done. Nothing writes STEP_CNC, so the current part keeps machining.",
+   why:{reset:"Resetting STEP_CNC aborts the machining of the part already in the CNC, and the unload stage would remove that unfinished part. The requirement only says the new part skips CNC.",waiting:"Waiting is for loading and unloading, when the robot is busy. During CNC the robot is free and the requirement sends the new part to Conveyor 2 now, so M2 must run."},
+   take:["A main step (STEP_CNC) and a side state (BYPASS_ACTIVE) can both be 1 at the same time.","RU and M2 are driven by BYPASS_ACTIVE, not by the main sequence."],
+   mistake:"Assuming only one state can be active, and therefore switching the CNC stage off.",
+   short:"The new part goes to Conveyor 2 on the bypass while the current part keeps machining."},
+  {title:"Complete the Conveyor 1 rule",
+   copy:"ST = 1 is the master enable (the cell may run). INFEED_HOLD = 1 means a detected new part must be held at the infeed; Rung 4 computes it. M1 is the Conveyor 1 command.",
+   ask:"Which Boolean rule correctly stops Conveyor 1 while a detected new part must be held at the infeed?",
+   look:"Ladder {R5} (Conveyor 1 command): which contacts are in series, and is each NO or NC? {R4} shows what drives INFEED_HOLD.",
+   subq:"Which rule makes Conveyor 1 stop while a part must be held?",
+   rung:4,hint:"M1 should follow the master enable, but it must be blocked whenever INFEED_HOLD is true.",options:[["m1","M1 = ST AND NOT INFEED_HOLD"],["hold","M1 = ST OR INFEED_HOLD"],["busy","M1 = CELL_BUSY"],["sensor","M1 = SN"]],correct:"m1",
+   more:"In ladder this is an NO contact ST in series with an NC contact INFEED_HOLD. Because M1 is recalculated every scan, Conveyor 1 restarts by itself as soon as INFEED_HOLD drops.",
+   why:{hold:"OR turns the stop reason into a run reason: whenever INFEED_HOLD = 1, M1 would be TRUE, so Conveyor 1 would keep feeding parts into a busy cell.",busy:"Conveyor 1 would run only while loading, CNC or unloading is active and stop when the cell is idle (the opposite of what is needed), and ST would be ignored.",sensor:"Conveyor 1 would run only while a part is already at the sensor and stop when the sensor is clear, so no part would ever be carried to the sensor. ST and the busy state are ignored."},
+   take:["NOT in Boolean logic is an NC contact in ladder.","Collecting every hold reason in one bit (INFEED_HOLD) keeps the motor rung simple."],
+   mistake:"Writing the stop condition with OR, which makes it a reason to run.",
+   short:"In ladder: an NO ST contact in series with an NC INFEED_HOLD contact."},
+  {title:"Protect the current CNC operation",
+   copy:"On the arrival scan STEP_CNC = 1 (the current part is in the CNC) and NEW_PART = 1 (a new part is at the sensor). Rung 3 starts the bypass.",
+   ask:"Why must the CNC-bypass rung avoid resetting STEP_CNC?",
+   look:"Ladder {R3}: which bit does its coil write, and which does it leave alone? In the machine picture, orange is the part in the main cycle and purple is the new part.",
+   subq:"Why must the bypass leave the CNC stage alone?",
+   rung:2,hint:"Two parts are being handled by two explicitly modeled activities: the original CNC operation and the new-part transfer.",options:[["parallel","The original part must finish CNC while the new part is transferred on the auxiliary bypass"],["timer","Resetting STEP_CNC makes the bypass timer count faster"],["contact","STEP_CNC is a physical sensor and cannot be reset"]],correct:"parallel",
+   more:"Two parts are in the cell at once: the original part needs STEP_CNC = 1 until its machining is done, while the new part moves on the bypass. The two activities use separate bits so that neither interrupts the other.",
+   why:{timer:"TBYPASS counts only while BYPASS_ACTIVE = 1 (in this simulation 1 s per “Advance” step). STEP_CNC is not an input of the timer, so it cannot change the timing.",contact:"STEP_CNC is an internal step bit, not a sensor; the program can reset it (the master stop does). The reason not to reset it here is the part that is still being machined."},
+   take:["Main-sequence bits (STEP_*) and side states (BYPASS_ACTIVE, PART_WAITING) are independent bits.","Reset only the bits that belong to the event you are handling."],
+   mistake:"Clearing a sequence step as a side effect of handling a different event.",
+   short:"Two parts are handled at once by separate bits, so the bypass must not interrupt the machining."},
+  {title:"Verify six busy-arrival cases",copy:"Predict the required result, then compare it with the scan simulation. Complete all six cases.",
+   ask:"For each prepared case, does the displayed state meet the requirement?",
+   subq:"Does the simulated cell behave correctly in six busy-arrival cases?",
+   rung:0,hint:"Check whether the main stage is busy, whether the arrival needs stored waiting memory or an immediate bypass, and whether M1 must be held off.",options:[["pass","The displayed state is correct"],["fail","The displayed state is incorrect"]],
+   model:"pass",
+   more:"Every prepared state was correct, so the right judgment in each case was “The displayed state is correct”. Together the cases show: an arrival during loading or unloading is stored and Conveyor 1 is held; an arrival during CNC starts the bypass while STEP_CNC stays 1; the bypass ends after 3 s without touching STEP_CNC; a waiting part is released once the cell is idle; the master stop clears every state and output.",
+   verdict:"Passing all six means the program meets the busy-arrival requirement in every stage the requirement names, and that the bypass end, the release and the master stop work. It says nothing about cases the six tests leave out, for example an arrival during POSITION.",
+   why:{fail:"“Incorrect” would mean that at least one checked tag differed from what the requirement demands. Open the evidence for each case in the coach panel: every expected value matched."},
+   take:["Judge the stored bits and outputs, not only the one-scan NEW_PART value.","A test proves only what it checks; list what it does not cover."],
+   mistake:"Changing the simulation after a case is prepared and then judging a different state.",
+   short:"All six displayed states met the requirement."},
+  {title:"State the buffer limitation",
+   copy:"PART_WAITING is a single BOOL tag, so its value can only be 0 or 1. Rung 2 sets it and Rung 8 resets it when the waiting part is released.",
+   ask:"What limitation follows from representing the waiting queue with one Boolean PART_WAITING bit?",
+   look:"Ladder {R2} (all of its contacts, including the NC one) and {R8}.",
+   subq:"What can a one-bit waiting buffer not represent?",
+   rung:1,hint:"A Boolean value can remember only 0 or 1, not how many separate parts arrived.",options:[["one","The model can represent only one waiting arrival"],["seconds","The bypass can last only one second"],["stage","The CNC stage can never run at the same time as another state"]],correct:"one",
+   more:"If a second part arrives during loading or unloading while PART_WAITING = 1, the NC PART_WAITING contact in Rung 2 is FALSE, so nothing new is stored. A counter (INT) or a FIFO queue would be needed to remember several parts.",
+   why:{seconds:"The bypass length comes from the TBYPASS preset (PT = 3.0 s). PART_WAITING has nothing to do with the bypass timing.",stage:"Concurrent states are possible and used here: STEP_CNC stays 1 while BYPASS_ACTIVE = 1. The BOOL limits how many waiting parts can be remembered, not concurrency."},
+   take:["A BOOL stores one yes/no fact, never a quantity.","Real buffers use a counter or a FIFO queue (an array plus an index)."],
+   mistake:"Expecting repeated SETs to add up. Setting a bit that is already 1 changes nothing.",
+   short:"A BOOL says only empty or occupied, so a second arrival is not recorded."}
 ];
+// steps/look/expect are display data; expected() stays the grading rule.
 const tests = [
-  {id:"load",name:"1 · Arrival during loading",description:"STEP_LOAD = 1, then NEW_PART occurs.",expected:s=>s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE&&s.mem.INFEED_HOLD&&!s.mem.M1,reason:"The arrival is stored in PART_WAITING and M1 is stopped; the robot is not free for an immediate bypass."},
-  {id:"cnc",name:"2 · Arrival during CNC",description:"STEP_CNC = 1, then NEW_PART occurs.",expected:s=>s.mem.BYPASS_ACTIVE&&!s.mem.PART_WAITING&&s.mem.RU&&s.mem.M2&&s.mem.STEP_CNC&&!s.mem.M1,reason:"The original CNC stage remains active while the new part uses RU and M2 on the auxiliary bypass."},
-  {id:"bypassDone",name:"3 · Bypass completes",description:"The CNC bypass runs for three seconds.",expected:s=>!s.mem.BYPASS_ACTIVE&&s.mem.STEP_CNC&&!s.mem.RU&&!s.mem.M2,reason:"Only the auxiliary bypass ends; the current part is still in the main CNC stage."},
-  {id:"unload",name:"4 · Arrival during unloading",description:"STEP_UNLOAD = 1, then NEW_PART occurs.",expected:s=>s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE&&s.mem.INFEED_HOLD&&!s.mem.M1,reason:"The robot is unloading, so the new part is remembered in the one-place waiting buffer."},
-  {id:"release",name:"5 · Release a waiting part",description:"A waiting part exists and the main stage becomes idle.",expected:s=>s.mem.STEP_POS&&!s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE,reason:"When the cell returns idle, the stored waiting request starts the next normal cycle and clears the waiting bit."},
-  {id:"stop",name:"6 · Master stop reset",description:"ST changes to 0 while main or auxiliary states are active.",expected:s=>!s.mem.STEP_POS&&!s.mem.STEP_LOAD&&!s.mem.STEP_CNC&&!s.mem.STEP_UNLOAD&&!s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE&&!s.mem.M1&&!s.mem.RU&&!s.mem.M2,reason:"The master stop clears both the main sequence and the auxiliary busy-arrival states."}
+  {id:"load",name:"1 · Arrival during loading",description:"STEP_LOAD = 1, then NEW_PART occurs.",expected:s=>s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE&&s.mem.INFEED_HOLD&&!s.mem.M1,reason:"The arrival is stored in PART_WAITING and M1 is stopped; the robot is not free for an immediate bypass.",
+   ask:"A part arrived while the robot was loading. Does the displayed state meet the requirement?",steps:"Prepare loading → Create NEW_PART edge",look:"State tiles and “What just happened?”; ladder {R2}, {R4} and {R5}.",expect:{PART_WAITING:1,BYPASS_ACTIVE:0,INFEED_HOLD:1,M1:0}},
+  {id:"cnc",name:"2 · Arrival during CNC",description:"STEP_CNC = 1, then NEW_PART occurs.",expected:s=>s.mem.BYPASS_ACTIVE&&!s.mem.PART_WAITING&&s.mem.RU&&s.mem.M2&&s.mem.STEP_CNC&&!s.mem.M1,reason:"The original CNC stage remains active while the new part uses RU and M2 on the auxiliary bypass.",
+   ask:"A part arrived while the CNC was machining. Does the displayed state meet the requirement?",steps:"Prepare CNC → Create NEW_PART edge",look:"State tiles and the stage map; ladder {R3}, {R5} and {R6}.",expect:{BYPASS_ACTIVE:1,PART_WAITING:0,RU:1,M2:1,STEP_CNC:1,M1:0}},
+  {id:"bypassDone",name:"3 · Bypass completes",description:"The CNC bypass runs for three seconds.",expected:s=>!s.mem.BYPASS_ACTIVE&&s.mem.STEP_CNC&&!s.mem.RU&&!s.mem.M2,reason:"Only the auxiliary bypass ends; the current part is still in the main CNC stage.",
+   ask:"The CNC bypass has run for 3 s. Does the displayed state show the bypass ending correctly?",steps:"Prepare CNC → Create NEW_PART edge → Advance bypass 1 s, three times",look:"The TBYPASS.ET row of the timing diagram and the state tiles; ladder {R6} and {R7}.",expect:{BYPASS_ACTIVE:0,STEP_CNC:1,RU:0,M2:0}},
+  {id:"unload",name:"4 · Arrival during unloading",description:"STEP_UNLOAD = 1, then NEW_PART occurs.",expected:s=>s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE&&s.mem.INFEED_HOLD&&!s.mem.M1,reason:"The robot is unloading, so the new part is remembered in the one-place waiting buffer.",
+   ask:"A part arrived while the robot was unloading. Does the displayed state meet the requirement?",steps:"Prepare unloading → Create NEW_PART edge",look:"State tiles and “What just happened?”; ladder {R2}, {R4} and {R5}.",expect:{PART_WAITING:1,BYPASS_ACTIVE:0,INFEED_HOLD:1,M1:0}},
+  {id:"release",name:"5 · Release a waiting part",description:"A waiting part exists and the main stage becomes idle.",expected:s=>s.mem.STEP_POS&&!s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE,reason:"When the cell returns idle, the stored waiting request starts the next normal cycle and clears the waiting bit.",
+   ask:"A part was waiting and the main stage has just finished. Does the displayed state release the waiting part correctly?",steps:"Prepare loading → Create NEW_PART edge → Finish main stage",look:"The stage map and the state tiles; ladder {R8}.",expect:{STEP_POS:1,PART_WAITING:0,BYPASS_ACTIVE:0}},
+  {id:"stop",name:"6 · Master stop reset",description:"ST changes to 0 while main or auxiliary states are active.",expected:s=>!s.mem.STEP_POS&&!s.mem.STEP_LOAD&&!s.mem.STEP_CNC&&!s.mem.STEP_UNLOAD&&!s.mem.PART_WAITING&&!s.mem.BYPASS_ACTIVE&&!s.mem.M1&&!s.mem.RU&&!s.mem.M2,reason:"The master stop clears both the main sequence and the auxiliary busy-arrival states.",
+   ask:"The master stop (ST = 0) was pressed while a bypass was running. Does the displayed state show a complete reset?",steps:"Prepare CNC → Create NEW_PART edge → Master stop",look:"Every state tile and the last column of the timing diagram.",expect:{STEP_POS:0,STEP_LOAD:0,STEP_CNC:0,STEP_UNLOAD:0,PART_WAITING:0,BYPASS_ACTIVE:0,M1:0,RU:0,M2:0}}
 ];
+// task: entry (or its "more" part) is shown only after that task is resolved, so it cannot give an answer away.
+const glossary = [
+  {id:"g-scan",term:"Scan cycle",def:"The PLC repeats READ (inputs into the input image) → SOLVE (the rungs) → WRITE (the output image to the outputs). Each button on this page runs one or two scans."},
+  {id:"g-contact",term:"NO / NC contact",def:"A bit test, not a wire. NO (normally open) is TRUE when its bit is 1; NC (normally closed) is TRUE when its bit is 0, i.e. NOT bit."},
+  {id:"g-edge",term:"Rising edge · one-scan pulse",def:"A signal that is TRUE only on the first scan after its source changes 0 → 1 (R_TRIG in IEC 61131-3). Here NEW_PART = ST AND SN AND NOT (SN on the previous scan). On the next scan it is 0 again, even if the part is still at the sensor."},
+  {id:"g-coil",term:"Ordinary coil vs SET / RESET coil",def:"All three write a bit from a rung result. How they differ is the subject of Task 2.",task:1,more:"An ordinary coil writes its rung result every scan (TRUE → 1, FALSE → 0), so its bit follows the condition. A SET (S) coil writes 1 when its rung is TRUE and nothing when FALSE, so the bit is retained until a RESET (R) coil writes 0."},
+  {id:"g-step",term:"Step bit (STEP_POS, STEP_LOAD, STEP_CNC, STEP_UNLOAD)",def:"An internal memory bit that marks the active stage of the main sequence: POSITION, LOADING, CNC or UNLOADING. When none is 1 the cell is IDLE."},
+  {id:"g-busy",term:"Busy status bit (CELL_BUSY)",def:"Status bit written by Rung 1: 1 while STEP_LOAD, STEP_CNC or STEP_UNLOAD is 1. POSITION does not count as busy in this model."},
+  {id:"g-wait",term:"PART_WAITING (waiting memory)",def:"Internal bit: 1 means an arrival has been stored and is waiting to be released into the cell.",task:6,more:"Because it is one BOOL, it can remember only one waiting part."},
+  {id:"g-bypass",term:"Bypass (CNC bypass)",def:"From the requirement: a part that arrives during CNC goes to Conveyor 2 without CNC processing. Which bits and outputs do this is the subject of Task 3.",task:2,more:"Rung 3 SETs BYPASS_ACTIVE; Rung 6 commands RU (robot transfer) and M2 (Conveyor 2) until TBYPASS reaches 3.0 s; Rung 7 RESETs BYPASS_ACTIVE. STEP_CNC is not touched."},
+  {id:"g-aux",term:"Side state (auxiliary state)",def:"A state bit that is not a main-sequence step, such as PART_WAITING or BYPASS_ACTIVE.",task:4,more:"It can be 1 at the same time as a main step (for example STEP_CNC), so two parts can be handled in parallel."},
+  {id:"g-hold",term:"INFEED_HOLD",def:"Hold request written by Rung 4: 1 when a part is at SN while the cell is busy, a part is waiting or a bypass is active."},
+  {id:"g-ton",term:"On-delay timer (TON) · TBYPASS",def:"While IN = 1, the elapsed time ET counts up to the preset PT; Q becomes 1 when ET ≥ PT. TBYPASS has IN = BYPASS_ACTIVE and PT = 3.0 s. Here time advances only with “Advance bypass 1 s”; “Run one scan” takes no time."},
+  {id:"g-st",term:"Master enable ST · master stop",def:"ST = 1 allows the cell to run. ST = 0 (master stop) clears every step, memory bit, timer and output in this model. A Prepare button sets ST = 1 again."},
+  {id:"g-cmd",term:"Output command (M1, RU, M2)",def:"A bit in the output image that the output module turns into a signal for a contactor or the robot. A command of 1 is not proof that the device moves."},
+  {id:"g-fifo",term:"Counter · FIFO queue",task:6,hide:true,more:"A counter (INT) stores how many parts are waiting; a FIFO (first in, first out) queue stores them in arrival order. Either would replace the single PART_WAITING bit if several waiting parts must be handled."}
+];
+const STAGE_NAMES = {idle:"IDLE",load:"LOADING",cnc:"CNC",unload:"UNLOADING"};
+const TRACE_MAX = 24;
+const TRACE_ROWS = [["ST","ST"],["SN","SN"],["NEW_PART","NEW_PART"],["STEP_POS","STEP_POS"],["STEP_LOAD","STEP_LOAD"],["STEP_CNC","STEP_CNC"],["STEP_UNLOAD","STEP_UNLOAD"],["CELL_BUSY","CELL_BUSY"],["PART_WAITING","PART_WAITING"],["BYPASS_ACTIVE","BYPASS_ACTIVE"],["TBYPASS_ET","TBYPASS.ET (s)"],["INFEED_HOLD","INFEED_HOLD"],["M1","M1 Conveyor 1"],["M2","RU = M2 Conv. 2"]];
+const TRACE_BREAKS = [3,7,12];
+const DIFF_KEYS = ["ST","SN","NEW_PART","STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD","CELL_BUSY","PART_WAITING","BYPASS_ACTIVE","TBYPASS_ET","TBYPASS_Q","INFEED_HOLD","M1","RU","M2"];
+const rungIO = [["STEP_LOAD, STEP_CNC, STEP_UNLOAD","CELL_BUSY (ordinary coil)"],["NEW_PART, STEP_LOAD, STEP_UNLOAD, PART_WAITING","PART_WAITING (SET)"],["NEW_PART, STEP_CNC, BYPASS_ACTIVE","BYPASS_ACTIVE (SET)"],["SN, CELL_BUSY, PART_WAITING, BYPASS_ACTIVE","INFEED_HOLD (ordinary coil)"],["ST, INFEED_HOLD","M1 (ordinary coil)"],["BYPASS_ACTIVE, TBYPASS.Q","RU and M2 (ordinary coils)"],["BYPASS_ACTIVE, TBYPASS.Q","BYPASS_ACTIVE (RESET)"],["ST, PART_WAITING, MAIN_IDLE, BYPASS_ACTIVE","STEP_POS (SET) and PART_WAITING (RESET)"]];
+
 function blankMem(){return {STEP_POS:false,STEP_LOAD:false,STEP_CNC:false,STEP_UNLOAD:false,CELL_BUSY:false,PART_WAITING:false,BYPASS_ACTIVE:false,INFEED_HOLD:false,START_WAITING:false,M1:false,RU:false,M2:false,NEW_PART:false,TBYPASS_ET:0,TBYPASS_Q:false};}
 function fresh(){return {task:0,rung:0,score:0,selected:"",attempts:Array(tasks.length).fill(0),complete:Array(tasks.length).fill(false),awarded:Array(tasks.length).fill(0),answers:Array(tasks.length).fill(""),hints:Array(tasks.length).fill(false),testIndex:0,testPassed:Array(tests.length).fill(false),testSelected:"",testReady:false,testErrors:0,finished:false,scenario:"load",inputs:{ST:true,SN:false},prevSN:false,mem:blankMem(),coach:""};}
 function load(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");if(!x)return fresh();const s=Object.assign(fresh(),x);s.inputs=Object.assign({ST:true,SN:false},x.inputs||{});s.mem=Object.assign(blankMem(),x.mem||{});return s;}catch(e){return fresh();}}
 let state=load();
+// Scan trace for the narrative and timing diagram (not persisted).
+let trace=[],scanNo=0,actionNo=0,pending={label:"Run one scan",short:"scan"};
+let caseSig="",shownTask=null,glossSig="",coachTone={text:null,cls:""},lastTraceEnd=-1;
+const painted={};
+let caseEvidence=loadEvidence();
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+function loadEvidence(){try{const x=JSON.parse(localStorage.getItem(EVIDENCE_KEY)||"null");return Array.isArray(x)?x:[];}catch(e){return [];}}
+function saveEvidence(){try{localStorage.setItem(EVIDENCE_KEY,JSON.stringify(caseEvidence));}catch(e){}}
 function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[c]);}
+function paint(id,html){if(painted[id]===html)return;painted[id]=html;$(id).innerHTML=html;}
+const bit=v=>v?1:0,tf=v=>v?"TRUE":"FALSE";
+function known(k){return !!state.complete[k];}
+function rungLinks(text){return esc(text).replace(/\{R(\d)\}/g,(_,n)=>`<button class="rung-link" type="button" data-rung="${n-1}">R${n}</button>`);}
 function mainIdle(){const m=state.mem;return !m.STEP_POS&&!m.STEP_LOAD&&!m.STEP_CNC&&!m.STEP_UNLOAD;}
 function activeStage(){const m=state.mem;return m.STEP_POS?"POSITION":m.STEP_LOAD?"LOADING":m.STEP_CNC?"CNC":m.STEP_UNLOAD?"UNLOADING":"IDLE";}
-function prepare(name){state.scenario=name;state.inputs={ST:true,SN:false};state.prevSN=false;state.mem=blankMem();if(name==="load")state.mem.STEP_LOAD=true;if(name==="cnc")state.mem.STEP_CNC=true;if(name==="unload")state.mem.STEP_UNLOAD=true;if(name==="idle"){};solve(0);state.coach=`Prepared ${name.toUpperCase()}. Create a NEW_PART edge to test the busy-arrival logic.`;render();}
-function solve(delta=0){const i=state.inputs,m=state.mem;if(delta>0&&m.BYPASS_ACTIVE)m.TBYPASS_ET=Math.min(3,m.TBYPASS_ET+delta);m.TBYPASS_Q=m.BYPASS_ACTIVE&&m.TBYPASS_ET>=3;m.NEW_PART=!!(i.ST&&i.SN&&!state.prevSN);
-  if(!i.ST){Object.assign(m,blankMem());state.prevSN=i.SN;return;}
+function snap(){const i=state.inputs;return Object.assign({ST:!!i.ST,SN:!!i.SN,prevSN:!!state.prevSN},state.mem);}
+function beginAction(label,short){actionNo++;pending={label,short};}
+function prepare(name){beginAction(`Prepare ${STAGE_NAMES[name]||name}`,"prep");trace=[];scanNo=0;state.scenario=name;state.inputs={ST:true,SN:false};state.prevSN=false;state.mem=blankMem();if(name==="load")state.mem.STEP_LOAD=true;if(name==="cnc")state.mem.STEP_CNC=true;if(name==="unload")state.mem.STEP_UNLOAD=true;solve(0);state.coach=`Prepared ${STAGE_NAMES[name]||name.toUpperCase()}. Create a NEW_PART edge to test the busy-arrival logic.`;render();}
+// The rung logic is unchanged; ev only records the values each rung reads, for the narrative.
+function solve(delta=0){
+  const i=state.inputs,m=state.mem,scan={delta,before:snap(),ev:{}},ev=scan.ev;
+  if(delta>0&&m.BYPASS_ACTIVE)m.TBYPASS_ET=Math.min(3,m.TBYPASS_ET+delta);
+  m.TBYPASS_Q=m.BYPASS_ACTIVE&&m.TBYPASS_ET>=3;
+  m.NEW_PART=!!(i.ST&&i.SN&&!state.prevSN);
+  ev.timer={active:m.BYPASS_ACTIVE,et:m.TBYPASS_ET,q:m.TBYPASS_Q};
+  if(!i.ST){Object.assign(m,blankMem());state.prevSN=i.SN;ev.stopped=true;recordScan(scan);return;}
   m.CELL_BUSY=!!(m.STEP_LOAD||m.STEP_CNC||m.STEP_UNLOAD);
+  ev.start={idle:mainIdle(),bypass:m.BYPASS_ACTIVE};
   if(m.NEW_PART&&mainIdle()&&!m.BYPASS_ACTIVE)m.STEP_POS=true;
+  ev.r2={load:m.STEP_LOAD,unload:m.STEP_UNLOAD,waiting:m.PART_WAITING};
   if(m.NEW_PART&&(m.STEP_LOAD||m.STEP_UNLOAD)&&!m.PART_WAITING)m.PART_WAITING=true;
+  ev.r3={cnc:m.STEP_CNC,bypass:m.BYPASS_ACTIVE};
   if(m.NEW_PART&&m.STEP_CNC&&!m.BYPASS_ACTIVE){m.BYPASS_ACTIVE=true;m.TBYPASS_ET=0;m.TBYPASS_Q=false;}
+  ev.r8={waiting:m.PART_WAITING,idle:mainIdle(),bypass:m.BYPASS_ACTIVE,pos:m.STEP_POS};
   m.START_WAITING=!!(i.ST&&m.PART_WAITING&&mainIdle()&&!m.BYPASS_ACTIVE);
   if(m.START_WAITING){m.STEP_POS=true;m.PART_WAITING=false;state.inputs.SN=false;}
+  ev.r7={bypass:m.BYPASS_ACTIVE,q:m.TBYPASS_Q};
   if(m.BYPASS_ACTIVE&&m.TBYPASS_Q){m.BYPASS_ACTIVE=false;m.TBYPASS_ET=0;m.TBYPASS_Q=false;state.inputs.SN=false;}
   m.CELL_BUSY=!!(m.STEP_LOAD||m.STEP_CNC||m.STEP_UNLOAD);
+  ev.r4={sn:state.inputs.SN,busy:m.CELL_BUSY,waiting:m.PART_WAITING,bypass:m.BYPASS_ACTIVE};
   m.INFEED_HOLD=!!(state.inputs.SN&&(m.CELL_BUSY||m.PART_WAITING||m.BYPASS_ACTIVE));
+  ev.r6={bypass:m.BYPASS_ACTIVE,q:m.TBYPASS_Q};
   m.M1=!!(i.ST&&!m.INFEED_HOLD);
   m.RU=!!(m.BYPASS_ACTIVE&&!m.TBYPASS_Q);
   m.M2=m.RU;
   state.prevSN=state.inputs.SN;
+  recordScan(scan);
 }
-function arrival(){state.inputs.SN=false;state.prevSN=false;solve(0);state.inputs.SN=true;solve(0);state.coach=`NEW_PART was TRUE for one scan. The active main stage is ${activeStage()}.`;render();}
-function advance(){solve(1);state.coach=`Bypass elapsed time is ${state.mem.TBYPASS_ET.toFixed(1)} s.`;render();}
-function finishMain(){state.mem.STEP_POS=state.mem.STEP_LOAD=state.mem.STEP_CNC=state.mem.STEP_UNLOAD=false;solve(0);state.coach=state.mem.STEP_POS?"The waiting request was released into the normal positioning stage.":"The main stage is now idle.";render();}
-function stop(){state.inputs.ST=false;solve(0);state.coach="Master stop cleared the main stages, waiting memory, bypass state and output commands.";render();}
-function line(x1,y1,x2,y2,hot){return `<path class="wire${hot?" hot":""}" d="M${x1} ${y1}H${x2}"></path>`;}function vert(x,y1,y2,hot){return `<path class="wire${hot?" hot":""}" d="M${x} ${y1}V${y2}"></path>`;}
-function contact(x,y,name,tag,val,nc=false){const result=nc?!val:!!val;return `<g class="part ${result?"true":"false"}"><path class="symbol" d="M${x-12} ${y-18}V${y+18} M${x+12} ${y-18}V${y+18}${nc?` M${x-19} ${y+15}L${x+19} ${y-15}`:""}"></path><text class="label" x="${x}" y="${y-39}">${esc(name)}</text><text class="tag" x="${x}" y="${y+47}">${esc(tag)} · ${nc?"NC":"NO"}</text><text class="value" x="${x}" y="${y+62}">bit=${val?1:0} · test=${result?"TRUE":"FALSE"}</text></g>`;}
-function coil(x,y,name,tag,val,type="ordinary"){let mark=type==="set"?"S":type==="reset"?"R":"";return `<g class="part ${val?"true":"false"}"><path class="symbol" d="M${x-26} ${y}C${x-11} ${y-25},${x-11} ${y+25},${x-26} ${y} M${x+26} ${y}C${x+11} ${y-25},${x+11} ${y+25},${x+26} ${y}"></path>${mark?`<text class="label" x="${x}" y="${y+5}">${mark}</text>`:""}<text class="label" x="${x}" y="${y-39}">${esc(name)}</text><text class="tag" x="${x}" y="${y+47}">${esc(tag)} · ${type.toUpperCase()}</text><text class="value" x="${x}" y="${y+62}">stored=${val?1:0}</text></g>`;}
-function baseSvg(title,desc,body,result){return `<svg width="920" height="230" viewBox="0 0 920 230" role="img" aria-label="${esc(desc)}"><path class="rail${result?" hot":""}" d="M18 20V210"></path><path class="rail" d="M902 20V210"></path>${body}</svg>`;}
+function recordScan(scan){scan.after=snap();scan.n=++scanNo;scan.action=actionNo;scan.label=pending.label;scan.short=pending.short;scan.prev=trace.length?trace[trace.length-1].after:null;trace.push(scan);if(trace.length>TRACE_MAX)trace.shift();}
+function arrival(){beginAction("Create NEW_PART edge","SN=0");state.inputs.SN=false;state.prevSN=false;solve(0);pending.short="edge";state.inputs.SN=true;solve(0);state.coach=state.mem.NEW_PART?`NEW_PART was TRUE for one scan. The active main stage is ${activeStage()}.`:"ST = 0 (master stop), so the sensor change was not accepted as a NEW_PART edge. Choose a Prepare button to enable the cell again.";render();}
+function advance(){beginAction("Advance bypass 1 s","+1 s");const was=state.mem.BYPASS_ACTIVE;solve(1);const m=state.mem;state.coach=m.BYPASS_ACTIVE?`Bypass elapsed time is ${m.TBYPASS_ET.toFixed(1)} s of 3.0 s.`:was?"The bypass timer reached 3.0 s, so Rung 7 reset BYPASS_ACTIVE and the elapsed time returned to 0.0 s.":"No bypass is active, so the bypass timer does not run (elapsed time 0.0 s).";render();}
+function finishMain(){beginAction("Finish main stage","finish");state.mem.STEP_POS=state.mem.STEP_LOAD=state.mem.STEP_CNC=state.mem.STEP_UNLOAD=false;solve(0);state.coach=state.mem.STEP_POS?"The waiting request was released into the normal positioning stage.":"The main stage is now idle.";render();}
+function stop(){beginAction("Master stop","stop");state.inputs.ST=false;solve(0);state.coach="Master stop cleared the main stages, waiting memory, bypass state and output commands.";render();}
+
+// ---- ladder drawing ----
+function line(x1,y1,x2,y2,hot){return `<path class="wire${hot?" hot":""}" d="M${x1} ${y1}H${x2}"></path>`;}
+function vert(x,y1,y2,hot){return `<path class="wire${hot?" hot":""}" d="M${x} ${y1}V${y2}"></path>`;}
+// compact = label above and one tag/value line below, used where branches are stacked.
+function contact(x,y,name,tag,val,nc=false,compact=false){const result=nc?!val:!!val;const sym=`<path class="symbol" d="M${x-12} ${y-18}V${y+18} M${x+12} ${y-18}V${y+18}${nc?` M${x-19} ${y+15}L${x+19} ${y-15}`:""}"></path>`;
+  if(compact)return `<g class="part ${result?"true":"false"}">${sym}<text class="label sm" x="${x}" y="${y-26}">${esc(name)}</text><text class="pair" x="${x}" y="${y+33}"><tspan class="tag">${esc(tag)} · ${nc?"NC":"NO"}</tspan><tspan class="value" dx="6">bit=${val?1:0} · ${result?"TRUE":"FALSE"}</tspan></text></g>`;
+  return `<g class="part ${result?"true":"false"}">${sym}<text class="label" x="${x}" y="${y-39}">${esc(name)}</text><text class="tag" x="${x}" y="${y+47}">${esc(tag)} · ${nc?"NC":"NO"}</text><text class="value" x="${x}" y="${y+62}">bit=${val?1:0} · test=${result?"TRUE":"FALSE"}</text></g>`;}
+function coil(x,y,name,tag,val,type="ordinary",compact=false){let mark=type==="set"?"S":type==="reset"?"R":"";const sym=`<path class="symbol" d="M${x-26} ${y}C${x-11} ${y-25},${x-11} ${y+25},${x-26} ${y} M${x+26} ${y}C${x+11} ${y-25},${x+11} ${y+25},${x+26} ${y}"></path>${mark?`<text class="label" x="${x}" y="${y+5}">${mark}</text>`:""}`;
+  if(compact)return `<g class="part ${val?"true":"false"}">${sym}<text class="label sm" x="${x}" y="${y-30}">${esc(name)}</text><text class="pair" x="${x}" y="${y+38}"><tspan class="tag">${esc(tag)} · ${type.toUpperCase()}</tspan><tspan class="value" dx="6">stored=${val?1:0}</tspan></text></g>`;
+  return `<g class="part ${val?"true":"false"}">${sym}<text class="label" x="${x}" y="${y-39}">${esc(name)}</text><text class="tag" x="${x}" y="${y+47}">${esc(tag)} · ${type.toUpperCase()}</text><text class="value" x="${x}" y="${y+62}">stored=${val?1:0}</text></g>`;}
+function baseSvg(title,desc,body,result,h=230){return `<svg width="920" height="${h}" viewBox="0 0 920 ${h}" role="img" aria-label="${esc(title)}: ${esc(desc)}"><path class="rail${result?" hot":""}" d="M18 20V${h-20}"></path><path class="rail" d="M902 20V${h-20}"></path>${body}</svg>`;}
 function rungData(index){const m=state.mem,i=state.inputs;switch(index){
-case 0:{const a=m.STEP_LOAD,b=m.STEP_CNC,c=m.STEP_UNLOAD,r=a||b||c;return {title:"Rung 1 · Main-cell busy status",desc:"STEP_LOAD OR STEP_CNC OR STEP_UNLOAD writes CELL_BUSY with an ordinary coil.",result:r,svg:baseSvg("","",`${line(18,115,100,115,true)}${vert(100,65,165,true)}${line(100,65,143,65,a)}${line(167,65,210,65,a)}${line(100,115,143,115,b)}${line(167,115,210,115,b)}${line(100,165,143,165,c)}${line(167,165,210,165,c)}${vert(210,65,165,r)}${line(210,115,700,115,r)}${line(760,115,902,115,r)}${contact(155,65,"Loading","STEP_LOAD",a)}${contact(155,115,"CNC","STEP_CNC",b)}${contact(155,165,"Unloading","STEP_UNLOAD",c)}${coil(730,115,"Busy status","CELL_BUSY",m.CELL_BUSY)}`,r)};}
-case 1:{const branch=m.STEP_LOAD||m.STEP_UNLOAD,r=m.NEW_PART&&branch&&!m.PART_WAITING;return {title:"Rung 2 · Store a waiting arrival",desc:"A new part during loading or unloading sets one retained PART_WAITING bit.",result:r,svg:baseSvg("","",`${line(18,115,90,115,true)}${line(118,115,250,115,m.NEW_PART)}${vert(250,78,152,m.NEW_PART)}${line(250,78,293,78,m.NEW_PART&&m.STEP_LOAD)}${line(317,78,360,78,m.NEW_PART&&m.STEP_LOAD)}${line(250,152,293,152,m.NEW_PART&&m.STEP_UNLOAD)}${line(317,152,360,152,m.NEW_PART&&m.STEP_UNLOAD)}${vert(360,78,152,m.NEW_PART&&branch)}${line(360,115,500,115,m.NEW_PART&&branch)}${line(528,115,700,115,r)}${line(760,115,902,115,r)}${contact(104,115,"Arrival pulse","NEW_PART",m.NEW_PART)}${contact(305,78,"Robot loading","STEP_LOAD",m.STEP_LOAD)}${contact(305,152,"Robot unloading","STEP_UNLOAD",m.STEP_UNLOAD)}${contact(514,115,"Waiting slot free","PART_WAITING",m.PART_WAITING,true)}${coil(730,115,"Store waiting","PART_WAITING",m.PART_WAITING,"set")}`,r)};}
-case 2:{const r=m.NEW_PART&&m.STEP_CNC&&!m.BYPASS_ACTIVE;return {title:"Rung 3 · Start the CNC bypass",desc:"A new part during CNC sets BYPASS_ACTIVE without resetting the current STEP_CNC stage.",result:r,svg:baseSvg("","",`${line(18,115,120,115,true)}${line(148,115,330,115,m.NEW_PART)}${line(358,115,540,115,m.NEW_PART&&m.STEP_CNC)}${line(568,115,700,115,r)}${line(760,115,902,115,r)}${contact(134,115,"Arrival pulse","NEW_PART",m.NEW_PART)}${contact(344,115,"CNC working","STEP_CNC",m.STEP_CNC)}${contact(554,115,"No bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE,true)}${coil(730,115,"Start bypass","BYPASS_ACTIVE",m.BYPASS_ACTIVE,"set")}`,r)};}
-case 3:{const branch=m.CELL_BUSY||m.PART_WAITING||m.BYPASS_ACTIVE,r=i.SN&&branch;return {title:"Rung 4 · Hold the infeed",desc:"The sensor and any busy/waiting/bypass reason write INFEED_HOLD.",result:r,svg:baseSvg("","",`${line(18,115,100,115,true)}${line(128,115,250,115,i.SN)}${vert(250,60,170,i.SN)}${line(250,60,298,60,i.SN&&m.CELL_BUSY)}${line(322,60,370,60,i.SN&&m.CELL_BUSY)}${line(250,115,298,115,i.SN&&m.PART_WAITING)}${line(322,115,370,115,i.SN&&m.PART_WAITING)}${line(250,170,298,170,i.SN&&m.BYPASS_ACTIVE)}${line(322,170,370,170,i.SN&&m.BYPASS_ACTIVE)}${vert(370,60,170,r)}${line(370,115,700,115,r)}${line(760,115,902,115,r)}${contact(114,115,"Part at sensor","SN",i.SN)}${contact(310,60,"Cell busy","CELL_BUSY",m.CELL_BUSY)}${contact(310,115,"Part waiting","PART_WAITING",m.PART_WAITING)}${contact(310,170,"Bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE)}${coil(730,115,"Infeed hold","INFEED_HOLD",m.INFEED_HOLD)}`,r)};}
-case 4:{const r=i.ST&&!m.INFEED_HOLD;return {title:"Rung 5 · Conveyor 1 command",desc:"Conveyor 1 runs only when the master enable is true and no infeed hold is active.",result:r,svg:baseSvg("","",`${line(18,115,140,115,true)}${line(168,115,400,115,i.ST)}${line(428,115,700,115,r)}${line(760,115,902,115,r)}${contact(154,115,"Cell enabled","ST",i.ST)}${contact(414,115,"No infeed hold","INFEED_HOLD",m.INFEED_HOLD,true)}${coil(730,115,"Conveyor 1","M1",m.M1)}`,r)};}
-case 5:{const r=m.BYPASS_ACTIVE&&!m.TBYPASS_Q;return {title:"Rung 6 · CNC-bypass transfer outputs",desc:"While the bypass is active and incomplete, the robot transfer and Conveyor 2 commands are true.",result:r,svg:baseSvg("","",`${line(18,115,140,115,true)}${line(168,115,400,115,m.BYPASS_ACTIVE)}${line(428,115,590,115,r)}${vert(590,78,152,r)}${line(590,78,700,78,r)}${line(760,78,902,78,r)}${line(590,152,700,152,r)}${line(760,152,902,152,r)}${contact(154,115,"Bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE)}${contact(414,115,"Timer incomplete","TBYPASS_Q",m.TBYPASS_Q,true)}${coil(730,78,"Robot transfer","RU",m.RU)}${coil(730,152,"Conveyor 2","M2",m.M2)}`,r)};}
-case 6:{const r=m.BYPASS_ACTIVE&&m.TBYPASS_Q;return {title:"Rung 7 · Finish the bypass",desc:"When the three-second bypass timer is done, RESET clears only BYPASS_ACTIVE.",result:r,svg:baseSvg("","",`${line(18,115,140,115,true)}${line(168,115,400,115,m.BYPASS_ACTIVE)}${line(428,115,700,115,r)}${line(760,115,902,115,r)}${contact(154,115,"Bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE)}${contact(414,115,"Three seconds done","TBYPASS_Q",m.TBYPASS_Q)}${coil(730,115,"End bypass","BYPASS_ACTIVE",m.BYPASS_ACTIVE,"reset")}`,r)};}
-case 7:{const idle=mainIdle(),r=i.ST&&m.PART_WAITING&&idle&&!m.BYPASS_ACTIVE;return {title:"Rung 8 · Release one waiting part",desc:"When the main cell is idle, the waiting memory starts the normal positioning stage and is consumed.",result:r,svg:baseSvg("","",`${line(18,115,90,115,true)}${line(118,115,250,115,i.ST)}${line(278,115,410,115,i.ST&&m.PART_WAITING)}${line(438,115,570,115,i.ST&&m.PART_WAITING&&idle)}${line(598,115,690,115,r)}${vert(690,78,152,r)}${line(690,78,720,78,r)}${line(780,78,902,78,r)}${line(690,152,720,152,r)}${line(780,152,902,152,r)}${contact(104,115,"Cell enabled","ST",i.ST)}${contact(264,115,"Part waiting","PART_WAITING",m.PART_WAITING)}${contact(424,115,"Main cell idle","MAIN_IDLE",idle)}${contact(584,115,"No bypass","BYPASS_ACTIVE",m.BYPASS_ACTIVE,true)}${coil(750,78,"Start positioning","STEP_POS",m.STEP_POS,"set")}${coil(750,152,"Consume waiting","PART_WAITING",m.PART_WAITING,"reset")}`,r)};}
+case 0:{const a=m.STEP_LOAD,b=m.STEP_CNC,c=m.STEP_UNLOAD,r=a||b||c,row=(y,v)=>`${line(80,y,178,y,v)}${line(202,y,300,y,v)}`;const title="Rung 1 · Main-cell busy status",desc="STEP_LOAD OR STEP_CNC OR STEP_UNLOAD writes CELL_BUSY with an ordinary coil.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,125,80,125,true)}${vert(80,45,205,true)}${row(45,a)}${row(125,b)}${row(205,c)}${vert(300,45,205,r)}${line(300,125,700,125,r)}${line(760,125,902,125,r)}${contact(190,45,"Loading","STEP_LOAD",a,false,true)}${contact(190,125,"CNC","STEP_CNC",b,false,true)}${contact(190,205,"Unloading","STEP_UNLOAD",c,false,true)}${coil(730,125,"Busy status","CELL_BUSY",m.CELL_BUSY)}`,r,250)};}
+case 1:{const np=m.NEW_PART,branch=m.STEP_LOAD||m.STEP_UNLOAD,r=np&&branch&&!m.PART_WAITING;const title="Rung 2 · Store a waiting arrival",desc="A new part during loading or unloading sets one retained PART_WAITING bit.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,115,90,115,true)}${line(118,115,230,115,np)}${vert(230,75,155,np)}${line(230,75,323,75,np&&m.STEP_LOAD)}${line(347,75,440,75,np&&m.STEP_LOAD)}${line(230,155,323,155,np&&m.STEP_UNLOAD)}${line(347,155,440,155,np&&m.STEP_UNLOAD)}${vert(440,75,155,np&&branch)}${line(440,115,548,115,np&&branch)}${line(572,115,700,115,r)}${line(760,115,902,115,r)}${contact(104,115,"Arrival pulse","NEW_PART",np)}${contact(335,75,"Robot loading","STEP_LOAD",m.STEP_LOAD,false,true)}${contact(335,155,"Robot unloading","STEP_UNLOAD",m.STEP_UNLOAD,false,true)}${contact(560,115,"Waiting slot free","PART_WAITING",m.PART_WAITING,true)}${coil(730,115,"Store waiting","PART_WAITING",m.PART_WAITING,"set")}`,r)};}
+case 2:{const r=m.NEW_PART&&m.STEP_CNC&&!m.BYPASS_ACTIVE;const title="Rung 3 · Start the CNC bypass",desc="A new part during CNC sets BYPASS_ACTIVE without resetting the current STEP_CNC stage.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,115,120,115,true)}${line(148,115,330,115,m.NEW_PART)}${line(358,115,540,115,m.NEW_PART&&m.STEP_CNC)}${line(568,115,700,115,r)}${line(760,115,902,115,r)}${contact(134,115,"Arrival pulse","NEW_PART",m.NEW_PART)}${contact(344,115,"CNC working","STEP_CNC",m.STEP_CNC)}${contact(554,115,"No bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE,true)}${coil(730,115,"Start bypass","BYPASS_ACTIVE",m.BYPASS_ACTIVE,"set")}`,r)};}
+case 3:{const branch=m.CELL_BUSY||m.PART_WAITING||m.BYPASS_ACTIVE,r=i.SN&&branch,row=(y,v)=>`${line(250,y,338,y,i.SN&&v)}${line(362,y,460,y,i.SN&&v)}`;const title="Rung 4 · Hold the infeed",desc="The sensor and any busy/waiting/bypass reason write INFEED_HOLD.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,125,100,125,true)}${line(128,125,250,125,i.SN)}${vert(250,45,205,i.SN)}${row(45,m.CELL_BUSY)}${row(125,m.PART_WAITING)}${row(205,m.BYPASS_ACTIVE)}${vert(460,45,205,r)}${line(460,125,700,125,r)}${line(760,125,902,125,r)}${contact(114,125,"Part at sensor","SN",i.SN)}${contact(350,45,"Cell busy","CELL_BUSY",m.CELL_BUSY,false,true)}${contact(350,125,"Part waiting","PART_WAITING",m.PART_WAITING,false,true)}${contact(350,205,"Bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE,false,true)}${coil(730,125,"Infeed hold","INFEED_HOLD",m.INFEED_HOLD)}`,r,250)};}
+case 4:{const r=i.ST&&!m.INFEED_HOLD;const title="Rung 5 · Conveyor 1 command",desc="Conveyor 1 runs only when the master enable is true and no infeed hold is active.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,115,140,115,true)}${line(168,115,400,115,i.ST)}${line(428,115,700,115,r)}${line(760,115,902,115,r)}${contact(154,115,"Cell enabled","ST",i.ST)}${contact(414,115,"No infeed hold","INFEED_HOLD",m.INFEED_HOLD,true)}${coil(730,115,"Conveyor 1","M1",m.M1)}`,r)};}
+case 5:{const r=m.BYPASS_ACTIVE&&!m.TBYPASS_Q;const title="Rung 6 · CNC-bypass transfer outputs",desc="While the bypass is active and incomplete, the robot transfer and Conveyor 2 commands are true.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,115,140,115,true)}${line(168,115,400,115,m.BYPASS_ACTIVE)}${line(428,115,590,115,r)}${vert(590,70,160,r)}${line(590,70,700,70,r)}${line(760,70,902,70,r)}${line(590,160,700,160,r)}${line(760,160,902,160,r)}${contact(154,115,"Bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE)}${contact(414,115,"Timer incomplete","TBYPASS_Q",m.TBYPASS_Q,true)}${coil(730,70,"Robot transfer","RU",m.RU,"ordinary",true)}${coil(730,160,"Conveyor 2","M2",m.M2,"ordinary",true)}`,r)};}
+case 6:{const r=m.BYPASS_ACTIVE&&m.TBYPASS_Q;const title="Rung 7 · Finish the bypass",desc="When the three-second bypass timer is done, RESET clears only BYPASS_ACTIVE.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,115,140,115,true)}${line(168,115,400,115,m.BYPASS_ACTIVE)}${line(428,115,700,115,r)}${line(760,115,902,115,r)}${contact(154,115,"Bypass active","BYPASS_ACTIVE",m.BYPASS_ACTIVE)}${contact(414,115,"Three seconds done","TBYPASS_Q",m.TBYPASS_Q)}${coil(730,115,"End bypass","BYPASS_ACTIVE",m.BYPASS_ACTIVE,"reset")}`,r)};}
+case 7:{const idle=mainIdle(),r=i.ST&&m.PART_WAITING&&idle&&!m.BYPASS_ACTIVE;const title="Rung 8 · Release one waiting part",desc="When the main cell is idle, the waiting memory starts the normal positioning stage and is consumed.";return {title,desc,result:r,svg:baseSvg(title,desc,`${line(18,115,90,115,true)}${line(118,115,250,115,i.ST)}${line(278,115,410,115,i.ST&&m.PART_WAITING)}${line(438,115,570,115,i.ST&&m.PART_WAITING&&idle)}${line(598,115,690,115,r)}${vert(690,70,160,r)}${line(690,70,764,70,r)}${line(816,70,902,70,r)}${line(690,160,764,160,r)}${line(816,160,902,160,r)}${contact(104,115,"Cell enabled","ST",i.ST)}${contact(264,115,"Part waiting","PART_WAITING",m.PART_WAITING)}${contact(424,115,"Main cell idle","MAIN_IDLE",idle)}${contact(584,115,"No bypass","BYPASS_ACTIVE",m.BYPASS_ACTIVE,true)}${coil(790,70,"Start positioning","STEP_POS",m.STEP_POS,"set",true)}${coil(790,160,"Consume waiting","PART_WAITING",m.PART_WAITING,"reset",true)}`,r)};}
 default:return rungData(0);}}
 function machineSvg(){const m=state.mem,i=state.inputs;const stage=activeStage();const mainX=stage==="POSITION"?145:stage==="LOADING"?210:stage==="CNC"?290:stage==="UNLOADING"?375:55;const newVisible=i.SN||m.PART_WAITING||m.BYPASS_ACTIVE;const newX=m.BYPASS_ACTIVE?370:i.SN||m.PART_WAITING?80:45;return `<svg viewBox="0 0 450 215" role="img" aria-label="Production cell state"><rect x="18" y="132" width="160" height="24" rx="12" fill="#596d80"/><rect x="320" y="132" width="112" height="24" rx="12" fill="#596d80"/><rect x="250" y="60" width="80" height="96" rx="9" fill="${m.STEP_CNC?"#e7f6f0":"#e4eaf0"}" stroke="#40546a" stroke-width="4"/><text x="290" y="105" text-anchor="middle" font-size="13" font-weight="900" fill="#34485f">CNC</text><path d="M205 54v70 M205 88l38 24" stroke="${m.STEP_LOAD||m.STEP_UNLOAD||m.BYPASS_ACTIVE?"#08785a":"#718397"}" stroke-width="8"/><circle cx="205" cy="50" r="16" fill="#dce3ea" stroke="#40546a" stroke-width="3"/><circle cx="82" cy="95" r="14" fill="${i.SN?"#fff4d8":"#dce3ea"}" stroke="#40546a" stroke-width="3"/><text x="82" y="100" text-anchor="middle" font-size="9" font-weight="900">SN</text><rect x="${mainX}" y="114" width="30" height="18" rx="3" fill="#e8993d" stroke="#7a4914" stroke-width="2"/><rect x="${newX}" y="92" width="27" height="16" rx="3" fill="${newVisible?"#7d64bd":"#d5dce4"}" stroke="#503b85" stroke-width="2" opacity="${newVisible?1:.35}"/><text x="225" y="193" text-anchor="middle" font-size="11" font-weight="900" fill="#43576d">MAIN: ${stage} · AUXILIARY: ${m.BYPASS_ACTIVE?"CNC BYPASS":m.PART_WAITING?"PART WAITING":"NONE"}</text><rect x="18" y="12" width="118" height="25" rx="12" fill="${m.CELL_BUSY?"#fff4d8":"#edf1f5"}" stroke="${m.CELL_BUSY?"#9b5700":"#718397"}"/><text x="77" y="29" text-anchor="middle" font-size="9" font-weight="900">CELL_BUSY=${m.CELL_BUSY?1:0}</text><rect x="144" y="12" width="130" height="25" rx="12" fill="${m.PART_WAITING?"#f1ebfa":"#edf1f5"}" stroke="${m.PART_WAITING?"#6741a5":"#718397"}"/><text x="209" y="29" text-anchor="middle" font-size="9" font-weight="900">PART_WAITING=${m.PART_WAITING?1:0}</text><rect x="282" y="12" width="145" height="25" rx="12" fill="${m.BYPASS_ACTIVE?"#eaf4fc":"#edf1f5"}" stroke="${m.BYPASS_ACTIVE?"#1468a8":"#718397"}"/><text x="354" y="29" text-anchor="middle" font-size="9" font-weight="900">BYPASS_ACTIVE=${m.BYPASS_ACTIVE?1:0}</text></svg>`;}
-function stateItems(){const m=state.mem,i=state.inputs;return [["ST",i.ST],["SN",i.SN],["NEW_PART",m.NEW_PART],["MAIN_STAGE",activeStage(),"info"],["CELL_BUSY",m.CELL_BUSY,"warn"],["PART_WAITING",m.PART_WAITING,"info"],["BYPASS_ACTIVE",m.BYPASS_ACTIVE,"info"],["TBYPASS",`${m.TBYPASS_ET.toFixed(1)} / 3.0 s`,m.BYPASS_ACTIVE?"warn":""],["INFEED_HOLD",m.INFEED_HOLD,"warn"],["M1",m.M1],["RU",m.RU],["M2",m.M2]];}
-function renderState(){ $("stateGrid").innerHTML=stateItems().map(([n,v,k])=>`<div class="state ${k||((v===true)?"on":"")}"><span>${esc(n)}</span><b>${typeof v==="boolean"?(v?"1 · ON":"0 · OFF"):esc(v)}</b></div>`).join("");$("machineVisual").innerHTML=machineSvg();const m=state.mem;$("machineCaption").textContent=`Main stage ${activeStage()}; waiting=${m.PART_WAITING?1:0}; bypass=${m.BYPASS_ACTIVE?1:0}; M1=${m.M1?1:0}; RU=${m.RU?1:0}; M2=${m.M2?1:0}.`;$("scanStory").innerHTML=`<div class="scan-row read"><b>1 · Read inputs</b><span>ST=${state.inputs.ST?1:0}, SN=${state.inputs.SN?1:0}; rising-edge result NEW_PART=${m.NEW_PART?1:0}.</span></div><div class="scan-row solve"><b>2 · Solve memory and status rungs</b><span>Busy=${m.CELL_BUSY?1:0}; waiting=${m.PART_WAITING?1:0}; bypass=${m.BYPASS_ACTIVE?1:0}; bypass timer=${m.TBYPASS_ET.toFixed(1)} s.</span></div><div class="scan-row write"><b>3 · Write output commands</b><span>INFEED_HOLD=${m.INFEED_HOLD?1:0}; M1=${m.M1?1:0}; RU=${m.RU?1:0}; M2=${m.M2?1:0}. These are PLC commands, not proof of physical motion.</span></div>`;document.querySelectorAll(".scenario").forEach(b=>b.classList.toggle("active",b.dataset.scenario===state.scenario));}
-function renderLadder(){const d=rungData(state.rung);$("ladderScroll").innerHTML=d.svg;$("rungStatus").textContent=`${d.title} · rung result ${d.result?"TRUE":"FALSE"}`;$("rungDetail").innerHTML=`<b>${esc(d.title)}</b><br>${esc(d.desc)}`;$("rungTabs").innerHTML=Array.from({length:8},(_,i)=>`<button class="rung-tab ${i===state.rung?"active":""}" type="button" data-rung="${i}">R${i+1}</button>`).join("");}
-function setupTest(index){const t=tests[index];if(!t)return;state.testSelected="";state.testReady=false;if(t.id==="load"){prepare("load");arrival();}if(t.id==="cnc"){prepare("cnc");arrival();}if(t.id==="bypassDone"){prepare("cnc");arrival();advance();advance();advance();}if(t.id==="unload"){prepare("unload");arrival();}if(t.id==="release"){prepare("load");arrival();finishMain();}if(t.id==="stop"){prepare("cnc");arrival();stop();}}
+
+// ---- state tiles with plain meaning ----
+function stateItems(){const m=state.mem,i=state.inputs,et=m.TBYPASS_ET;return [
+  ["ST",i.ST,"",i.ST?"Master enable on: the cell may run.":"Master stop: all states cleared."],
+  ["SN",i.SN,"",i.SN?"A part is at the infeed sensor.":"No part at the sensor."],
+  ["NEW_PART",m.NEW_PART,"",m.NEW_PART?"Rising edge of SN: this scan only.":"No new arrival on this scan."],
+  ["MAIN_STAGE",activeStage(),"info",mainIdle()?"No main step is active.":"This main step is in progress."],
+  ["CELL_BUSY",m.CELL_BUSY,"warn",m.CELL_BUSY?"Loading, CNC or unloading is active.":"No busy stage is active."],
+  ["PART_WAITING",m.PART_WAITING,"info",m.PART_WAITING?"An arrival is stored, waiting for release.":"No arrival is stored."],
+  ["BYPASS_ACTIVE",m.BYPASS_ACTIVE,"info",m.BYPASS_ACTIVE?"The CNC-bypass transfer is in progress.":"No bypass transfer in progress."],
+  ["TBYPASS",`${et.toFixed(1)} / 3.0 s`,m.BYPASS_ACTIVE?"warn":"",m.BYPASS_ACTIVE?`ET of PT: ${(3-et).toFixed(1)} s left; Q = ${bit(m.TBYPASS_Q)} until ET reaches PT.`:"Timer idle (IN = BYPASS_ACTIVE = 0)."],
+  ["INFEED_HOLD",m.INFEED_HOLD,"warn",m.INFEED_HOLD?"Hold request: the part at SN must stay there.":"No hold request."],
+  ["M1",m.M1,"",m.M1?"Conveyor 1 commanded ON (a command, not proof of motion).":"Conveyor 1 commanded OFF."],
+  ["RU",m.RU,"",m.RU?"Robot commanded to transfer a part.":"No robot transfer commanded."],
+  ["M2",m.M2,"",m.M2?"Conveyor 2 commanded ON.":"Conveyor 2 commanded OFF."]];}
+function tileValue(name,s){return name==="MAIN_STAGE"?(s.STEP_POS?"POSITION":s.STEP_LOAD?"LOADING":s.STEP_CNC?"CNC":s.STEP_UNLOAD?"UNLOADING":"IDLE"):name==="TBYPASS"?s.TBYPASS_ET:s[name];}
+function lastGroup(){const last=trace[trace.length-1];return trace.filter(s=>s.action===last.action);}
+function baselineScan(){const s=snap();return {n:++scanNo,action:++actionNo,label:"Saved state",short:"start",before:s,after:s,prev:null,ev:null,delta:0};}
+function renderState(){
+  if(!trace.length)trace.push(baselineScan());
+  const base=lastGroup()[0].prev,now=snap();
+  $("stateGrid").innerHTML=stateItems().map(([n,v,k,meaning])=>{const changed=base&&tileValue(n,base)!==tileValue(n,now);return `<div class="state ${k||((v===true)?"on":"")}${changed?" changed":""}"><span>${esc(n)}${changed?"<em>CHANGED</em>":""}</span><b>${typeof v==="boolean"?(v?"1 · ON":"0 · OFF"):esc(v)}</b><small>${esc(meaning)}</small></div>`;}).join("");
+  $("machineVisual").innerHTML=machineSvg();const m=state.mem,i=state.inputs;
+  $("machineCaption").textContent=`Orange = part in the main cycle (${activeStage()}). Purple = new part: ${m.BYPASS_ACTIVE?"on the bypass to Conveyor 2":m.PART_WAITING?"stored as waiting at the sensor":i.SN?"at the sensor":"none at the sensor"}.`;
+  renderTiming();
+  document.querySelectorAll(".scenario").forEach(b=>b.classList.toggle("active",b.dataset.scenario===state.scenario));}
+
+// ---- "What just happened?" narrative ----
+function bt(name,v,nc=false){return `${name}${nc?" (NC)":""} = ${bit(v)} → ${tf(nc?!v:v)}`;}
+function changes(from,to){if(!from)return [];return DIFF_KEYS.filter(k=>from[k]!==to[k]).map(k=>k==="TBYPASS_ET"?`TBYPASS.ET ${from[k].toFixed(1)} → ${to[k].toFixed(1)} s`:`${k==="TBYPASS_Q"?"TBYPASS.Q":k} ${bit(from[k])} → ${bit(to[k])}`);}
+// Retention wording ("not executed, keeps") is the Task 2 answer, so it is used only after Task 2 is resolved.
+function scanLines(s){
+  const a=s.after,b=s.before,ev=s.ev,np=a.NEW_PART,mem=known(1),out=[];
+  const keep=(tag,v,instr)=>mem?`${instr} not executed, so ${tag} keeps ${bit(v)}`:`${tag} = ${bit(v)}`;
+  const coilW=(tag,v)=>mem?`ordinary coil writes ${tag} = ${bit(v)}`:`${tag} = ${bit(v)}`;
+  if(s.delta>0||ev.timer.active)out.push({hit:true,html:ev.timer.active?`<b>TBYPASS timer</b> · IN = BYPASS_ACTIVE = 1 · ${s.delta>0?`1.0 s of simulated time added: ET ${b.TBYPASS_ET.toFixed(1)} → ${ev.timer.et.toFixed(1)} s`:`this scan takes no simulated time: ET stays ${ev.timer.et.toFixed(1)} s`} · Q = ${bit(ev.timer.q)}${ev.timer.q?" (ET reached PT = 3.0 s)":` (${(3-ev.timer.et).toFixed(1)} s to PT = 3.0 s)`}`:"<b>TBYPASS timer</b> · IN = BYPASS_ACTIVE = 0, so the 1 s step adds nothing: ET stays 0.0 s"});
+  const r1=a.STEP_LOAD||a.STEP_CNC||a.STEP_UNLOAD;
+  out.push({hit:r1,html:`<b>R1 Busy status</b> · ${bt("STEP_LOAD",a.STEP_LOAD)} OR ${bt("STEP_CNC",a.STEP_CNC)} OR ${bt("STEP_UNLOAD",a.STEP_UNLOAD)} ⇒ rung ${tf(r1)} → ${coilW("CELL_BUSY",r1)}`});
+  if(np){const r=ev.start.idle&&!ev.start.bypass;out.push({hit:r,html:`<b>Normal start</b> (base-cell logic, not drawn) · NEW_PART = 1 → TRUE · ${bt("MAIN_IDLE",ev.start.idle)} · ${bt("BYPASS_ACTIVE",ev.start.bypass,true)} ⇒ ${tf(r)}${r?" → SET STEP_POS: this part starts the normal cycle":""}`});}
+  const r2=np&&(ev.r2.load||ev.r2.unload)&&!ev.r2.waiting;
+  out.push({hit:r2,html:`<b>R2 Store waiting</b> · ${bt("NEW_PART",np)} · (${bt("STEP_LOAD",ev.r2.load)} OR ${bt("STEP_UNLOAD",ev.r2.unload)}) · ${bt("PART_WAITING",ev.r2.waiting,true)} ⇒ rung ${tf(r2)} → ${r2?"SET PART_WAITING 0 → 1":keep("PART_WAITING",ev.r2.waiting,"SET")}`});
+  const r3=np&&ev.r3.cnc&&!ev.r3.bypass;
+  out.push({hit:r3,html:`<b>R3 Start bypass</b> · ${bt("NEW_PART",np)} · ${bt("STEP_CNC",ev.r3.cnc)} · ${bt("BYPASS_ACTIVE",ev.r3.bypass,true)} ⇒ rung ${tf(r3)} → ${r3?"SET BYPASS_ACTIVE 0 → 1; TBYPASS starts from 0.0 s":keep("BYPASS_ACTIVE",ev.r3.bypass,"SET")}`});
+  const r8=a.START_WAITING;
+  out.push({hit:r8,html:`<b>R8 Release waiting</b> · ST = 1 → TRUE · ${bt("PART_WAITING",ev.r8.waiting)} · ${bt("MAIN_IDLE",ev.r8.idle)} · ${bt("BYPASS_ACTIVE",ev.r8.bypass,true)} ⇒ rung ${tf(r8)} → ${r8?"SET STEP_POS 0 → 1 and RESET PART_WAITING 1 → 0; the released part leaves the sensor (the simulation writes SN = 0)":mem?`SET and RESET not executed, so STEP_POS keeps ${bit(ev.r8.pos)} and PART_WAITING keeps ${bit(ev.r8.waiting)}`:`STEP_POS = ${bit(ev.r8.pos)}, PART_WAITING = ${bit(ev.r8.waiting)}`}`});
+  const r7=ev.r7.bypass&&ev.r7.q;
+  out.push({hit:r7,html:`<b>R7 Finish bypass</b> · ${bt("BYPASS_ACTIVE",ev.r7.bypass)} · ${bt("TBYPASS.Q",ev.r7.q)} ⇒ rung ${tf(r7)} → ${r7?"RESET BYPASS_ACTIVE 1 → 0 and the timer is cleared; the bypassed part has left the sensor (the simulation writes SN = 0)":keep("BYPASS_ACTIVE",ev.r7.bypass,"RESET")}`});
+  const r4=ev.r4.sn&&(ev.r4.busy||ev.r4.waiting||ev.r4.bypass);
+  out.push({hit:r4,html:`<b>R4 Infeed hold</b> · ${bt("SN",ev.r4.sn)} · (${bt("CELL_BUSY",ev.r4.busy)} OR ${bt("PART_WAITING",ev.r4.waiting)} OR ${bt("BYPASS_ACTIVE",ev.r4.bypass)}) ⇒ rung ${tf(r4)} → ${coilW("INFEED_HOLD",r4)}`});
+  out.push({hit:a.M1,html:`<b>R5 Conveyor 1</b> · ${bt("ST",a.ST)} · ${bt("INFEED_HOLD",a.INFEED_HOLD,true)} ⇒ rung ${tf(a.M1)} → ${coilW("M1",a.M1)}`});
+  const r6=ev.r6.bypass&&!ev.r6.q;
+  out.push({hit:r6,html:`<b>R6 Bypass outputs</b> · ${bt("BYPASS_ACTIVE",ev.r6.bypass)} · ${bt("TBYPASS.Q",ev.r6.q,true)} ⇒ rung ${tf(r6)} → ${mem?`ordinary coils write RU = ${bit(r6)} and M2 = ${bit(r6)}`:`RU = ${bit(r6)}, M2 = ${bit(r6)}`}`});
+  return {lines:out,inScan:{1:r2,2:r3,6:r7,7:r8}};
+}
+// Interpretations tied to a task answer appear only once that task is resolved.
+function storyNotes(last,base,inScan){
+  const a=last.after,b=last.before,ev=last.ev,notes=[];
+  if(ev.stopped){if(last.label==="Create NEW_PART edge")notes.push("The cell is in master stop, so the sensor change is ignored. Choose a Prepare button to set ST = 1 again.");return notes;}
+  if(base&&base.NEW_PART&&!a.NEW_PART&&base.PART_WAITING&&a.PART_WAITING&&known(1))notes.push("PART_WAITING stays 1 although NEW_PART is back to 0: R2 is now FALSE, and a FALSE SET rung writes nothing, so the arrival is still remembered.");
+  if(base&&base.NEW_PART&&!a.NEW_PART&&base.BYPASS_ACTIVE&&a.BYPASS_ACTIVE&&known(1))notes.push("BYPASS_ACTIVE stays 1 for the same reason: it was SET by R3, and only R7 or the master stop resets it.");
+  if(a.NEW_PART&&ev.r3.cnc&&!ev.r3.bypass&&a.STEP_CNC&&known(4))notes.push("STEP_CNC stays 1: R3 writes only BYPASS_ACTIVE, so the part already in the CNC keeps machining while the new part is transferred.");
+  if(a.NEW_PART&&(ev.r2.load||ev.r2.unload)&&ev.r2.waiting&&known(6))notes.push("PART_WAITING was already 1, so R2 could not record this second arrival: one BOOL remembers only one waiting part.");
+  if(a.NEW_PART&&ev.r3.cnc&&ev.r3.bypass&&known(6))notes.push("A bypass was already running, so R3 could not start another one, and no rung stored this arrival.");
+  if(a.NEW_PART&&ev.start.idle&&ev.start.bypass&&known(6))notes.push("The main cell is idle, but BYPASS_ACTIVE = 1 blocks the normal start and R2/R3 need a busy stage, so no rung stored this arrival.");
+  if(a.NEW_PART&&b.STEP_POS)notes.push(`POSITION is not one of the busy stages (R1 uses LOADING, CNC and UNLOADING only), so no rung stored this arrival${a.INFEED_HOLD?"":" and Conveyor 1 is not held"}.`);
+  if(b.SN&&!a.SN)notes.push("SN 1 → 0 on this scan was written by the simulation, not by you: the part has left the sensor.");
+  Object.entries(inScan).forEach(([idx,r])=>{const d=rungData(Number(idx));if(d.result!==r)notes.push(`R${Number(idx)+1} was ${tf(r)} while the scan ran, but the ladder now shows it ${tf(d.result)}: the ladder is drawn from the bits stored after the scan, and a write on this scan changed a bit the rung tests.`);});
+  return notes;
+}
+function storyHtml(){
+  const last=trace[trace.length-1];
+  if(!last.ev)return `<h4 class="story-h">What just happened?</h4><div class="scan-row"><b>No scan explained yet</b><span>The tiles show the state saved on your last visit. ${state.task===5?"Use a scenario control or “Run one scan”":"The scenario controls unlock in Task 6; until then, read the ladder tabs"} to see a scan explained step by step.</span></div>`;
+  const group=lastGroup(),first=group[0],base=first.prev,a=last.after,b=last.before,ev=last.ev;
+  const head=`<h4 class="story-h">What just happened? <span>${esc(last.label)} · ${group.length>1?`scans ${first.n}–${last.n}`:`scan ${last.n}`}</span></h4>`;
+  let pre="";
+  if(last.short==="prep"){const step=["STEP_POS","STEP_LOAD","STEP_CNC","STEP_UNLOAD"].find(k=>b[k]);pre=`You chose “${esc(last.label)}”. The simulation cleared every bit and wrote ST = 1, SN = 0${step?` and ${step} = 1`:" with no main step"} directly (standing in for the base-cell sequence), then solved one scan.`;}
+  if(group.length>1){const c0=changes(first.prev,first.after);pre=`Scan ${first.n} first reads SN = 0, so that scan ${last.n} can see SN change 0 → 1${c0.length?`. On scan ${first.n}: ${c0.join(", ")}`:""}. Scan ${last.n} is explained below.`;}
+  let edge;
+  if(a.NEW_PART)edge="SN changed 0 → 1, so the rising-edge detector gives NEW_PART = 1 for this scan only.";
+  else if(!b.ST)edge="ST = 0, so no edge is accepted: NEW_PART = 0.";
+  else if(b.SN&&b.prevSN)edge="SN was already 1 on the previous scan, so there is no new edge: NEW_PART = 0.";
+  else edge="SN did not change 0 → 1, so NEW_PART = 0.";
+  const read=`<div class="scan-row read"><b>1 · Read inputs</b><span>ST = ${bit(b.ST)} (${b.ST?"cell enabled":"master stop"}) · SN = ${bit(b.SN)} (${b.SN?"part at the sensor":"sensor clear"}) · SN on the previous scan = ${bit(b.prevSN)}. ${edge}</span></div>`;
+  let solveRow,inScan={};
+  if(ev.stopped)solveRow=`<div class="scan-row solve"><b>2 · Solve the rungs</b><span>ST = 0: the master-stop logic of this model clears every step bit, memory bit, timer value and output command before any rung is solved, so R1–R8 are skipped on this scan.</span></div>`;
+  else{const sl=scanLines(last),hits=sl.lines.filter(l=>l.hit),rest=sl.lines.filter(l=>!l.hit);inScan=sl.inScan;
+    solveRow=`<div class="scan-row solve"><b>2 · Solve the rungs: TRUE rungs on this scan</b>${hits.length?`<ol class="chain">${hits.map(l=>`<li>${l.html}</li>`).join("")}</ol>`:"<span>No rung was TRUE on this scan.</span>"}${rest.length?`<details class="fold"><summary>The other ${rest.length} rung${rest.length===1?"":"s"} were FALSE: show their contact tests</summary><ol class="chain quiet fold-body">${rest.map(l=>`<li>${l.html}</li>`).join("")}</ol></details>`:""}<span class="story-sub">Solve order in this simulation: R1, normal start, R2, R3, R8, R7, then R4, R5, R6. A release (R8) or bypass end (R7) therefore reaches the outputs on the same scan.</span></div>`;}
+  const m1=a.M1?"M1 = 1 → Conveyor 1 commanded ON.":`M1 = 0 → Conveyor 1 commanded OFF${!a.ST?" (master stop)":a.INFEED_HOLD?" (INFEED_HOLD = 1 keeps the part at SN)":""}.`;
+  const ru=a.RU?`RU = 1 and M2 = 1 → robot transfer and Conveyor 2 commanded ON (TBYPASS.ET ${a.TBYPASS_ET.toFixed(1)} of 3.0 s).`:"RU = 0 and M2 = 0 → no bypass transfer commanded.";
+  const write=`<div class="scan-row write"><b>3 · Write output commands</b><span>INFEED_HOLD = ${bit(a.INFEED_HOLD)}. ${m1} ${ru} These are PLC commands, not proof of physical motion.</span></div>`;
+  const chg=changes(base,a),notes=storyNotes(last,base,inScan);
+  const diffBody=base?(chg.length?chg.map(c=>`<code class="chg">${esc(c)}</code>`).join(" "):"Nothing changed: the same inputs give the same rung results (a stable state)."):`New starting state: ${DIFF_KEYS.filter(k=>k!=="TBYPASS_ET"&&a[k]).map(k=>`<code class="chg">${k} = 1</code>`).join(" ")||"every bit 0"}`;
+  const diff=`<div class="scan-row diff"><b>4 · What changed${group.length>1?" during this action":" since the previous scan"}</b><span>${diffBody}</span>${notes.map(n=>`<span class="note-line">• ${esc(n)}</span>`).join("")}</div>`;
+  return `${head}${pre?`<p class="story-pre">${pre}</p>`:""}${read}${solveRow}${write}${diff}`;
+}
+
+// ---- stage map ----
+function blocking(){
+  const m=state.mem,i=state.inputs,st=activeStage(),out=[];
+  if(!i.ST)return ["Master stop: ST = 0 has cleared every state, and nothing can start while ST = 0. Choose a Prepare button to enable the cell again."];
+  if(m.BYPASS_ACTIVE)out.push(`Bypass: R7 ends it when TBYPASS.ET reaches 3.0 s (now ${m.TBYPASS_ET.toFixed(1)} s, ${(3-m.TBYPASS_ET).toFixed(1)} s left). Use “Advance bypass 1 s”.`);
+  if(m.PART_WAITING)out.push(mainIdle()?(m.BYPASS_ACTIVE?"Waiting part: R8 is blocked by BYPASS_ACTIVE = 1 (its NC contact is FALSE).":"Waiting part: R8 releases it on the next scan."):`Waiting part: R8 releases it only when the main cell is idle; MAIN_IDLE = 0 while ${st} is active. Use “Finish main stage”.`);
+  if(st==="IDLE"&&!m.PART_WAITING)out.push(m.BYPASS_ACTIVE?"The main cell is idle, but BYPASS_ACTIVE = 1 also blocks the normal start of a new part.":"Nothing is blocking: the next NEW_PART starts the normal cycle (STEP_POS).");
+  if(st!=="IDLE")out.push(`${st} is active. The move to the next main stage belongs to the base-cell sequence, which this page does not model; “Finish main stage” returns the cell to IDLE.`);
+  if(m.INFEED_HOLD)out.push("Conveyor 1 is held (INFEED_HOLD = 1) until the part leaves the sensor or no hold reason remains.");
+  return out;}
+function stageMapHtml(){
+  const m=state.mem,stage=activeStage(),busy=["LOADING","CNC","UNLOADING"],et=m.TBYPASS_ET;
+  const nodes=[["IDLE","no step bit"],["POSITION","STEP_POS"],["LOADING","STEP_LOAD"],["CNC","STEP_CNC"],["UNLOADING","STEP_UNLOAD"]];
+  const flow=nodes.map(([n,tag],k)=>`${k?'<span class="arr" aria-hidden="true"></span>':""}<div class="node${n===stage?" active":""}" role="listitem"><b>${n}</b><span>${tag}</span>${busy.includes(n)?"<i>counts as busy</i>":""}<em>${n===stage?"● ACTIVE NOW":"inactive"}</em></div>`).join("");
+  const paths=known(2);
+  const waitTxt=paths?"SET by R2 when NEW_PART arrives during LOADING or UNLOADING; RESET by R8 once the main cell is IDLE, and the part then starts POSITION.":"Set and reset conditions are shown here after Task 3 is resolved.";
+  const bypTxt=paths?"SET by R3 when NEW_PART arrives during CNC; R6 commands RU and M2 until TBYPASS reaches 3.0 s, then R7 RESETs it. STEP_CNC is not touched.":"Set and reset conditions are shown here after Task 3 is resolved.";
+  return `<div class="flow" role="list" aria-label="Main sequence">${flow}</div>
+<ul class="flow-legend"><li><b>IDLE → POSITION:</b> a NEW_PART edge while the cell is idle and no bypass runs, or R8 releasing a waiting part.</li><li><b>POSITION → LOADING → CNC → UNLOADING:</b> the base-cell sequence, not modelled here. The Prepare buttons place the cell directly in a stage.</li><li><b>Any stage → IDLE:</b> “Finish main stage”.</li></ul>
+<div class="aux"><div class="aux-node${m.PART_WAITING?" on":""}"><b>Side path: waiting slot · PART_WAITING = ${bit(m.PART_WAITING)} (${m.PART_WAITING?"occupied":"empty"})</b><span>${waitTxt}</span></div><div class="aux-node${m.BYPASS_ACTIVE?" on":""}"><b>Side path: CNC bypass · BYPASS_ACTIVE = ${bit(m.BYPASS_ACTIVE)} (${m.BYPASS_ACTIVE?"running":"not running"})</b><div class="tbar" role="img" aria-label="TBYPASS elapsed ${et.toFixed(1)} of 3.0 seconds"><i style="width:${Math.round(et/3*100)}%"></i></div><span>TBYPASS.ET ${et.toFixed(1)} of 3.0 s · Q = ${bit(m.TBYPASS_Q)}</span><span>${bypTxt}</span></div></div>
+<div class="blocking"><b>What is blocking the next step?</b><ul>${blocking().map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`;}
+
+// ---- timing diagram ----
+function timingSvg(){
+  const LW=134,CW=44,RH=19,TOP=38,n=trace.length,rows=TRACE_ROWS.length,W=Math.max(LW+n*CW+14,480),H=TOP+rows*RH+40,yA=TOP+rows*RH;
+  let g=`<rect class="tl-now" x="${LW+(n-1)*CW}" y="2" width="${CW}" height="${yA-2}" rx="5"></rect><text class="tl-label" x="${LW-8}" y="15">scan</text><text class="tl-label" x="${LW-8}" y="30">action</text>`;
+  trace.forEach((s,k)=>{const x=LW+k*CW+CW/2;g+=`<text class="tl-head" x="${x}" y="15">${s.n}</text><text class="tl-cause" x="${x}" y="30">${esc(s.short)}</text>`;});
+  TRACE_ROWS.forEach(([key,label],r)=>{
+    const y0=TOP+r*RH,hi=y0+4,lo=y0+RH-4;
+    if(TRACE_BREAKS.includes(r))g+=`<line class="tl-sep" x1="8" x2="${W-6}" y1="${y0}" y2="${y0}"></line>`;
+    g+=`<text class="tl-label" x="${LW-8}" y="${y0+RH/2+3.5}">${esc(label)}</text>`;
+    if(key==="TBYPASS_ET"){trace.forEach((s,k)=>{const et=s.after.TBYPASS_ET,x=LW+k*CW;if(et>0){const h=(lo-hi)*et/3;g+=`<rect class="tl-bar" x="${x+6}" y="${lo-h}" width="${CW-12}" height="${h}"></rect>`;}if(et>0||s.after.BYPASS_ACTIVE)g+=`<text class="tl-num" x="${x+CW/2}" y="${y0+RH/2+3.5}">${et.toFixed(1)}</text>`;});return;}
+    let d="";trace.forEach((s,k)=>{const v=!!s.after[key],x=LW+k*CW,y=v?hi:lo;d+=(k?`V${y}`:`M${x} ${y}`)+`H${x+CW}`;if(v)g+=`<rect class="tl-fill" x="${x}" y="${hi}" width="${CW}" height="${lo-hi}"></rect>`;});
+    g+=`<path class="tl-wave" d="${d}"></path>`;});
+  g+=`<line class="tl-axis-line" x1="${LW}" x2="${LW+n*CW}" y1="${yA}" y2="${yA}"></line><text class="tl-axis" x="8" y="${yA+16}">PLC scan number → · high trace = 1, low = 0 · shaded column = latest scan</text><text class="tl-axis" x="8" y="${yA+30}">TBYPASS.ET row: bar height = elapsed time of the 3.0 s preset</text>`;
+  const L=trace[n-1].after;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Timing diagram of the last ${n} scan(s). Latest scan: NEW_PART ${bit(L.NEW_PART)}, PART_WAITING ${bit(L.PART_WAITING)}, BYPASS_ACTIVE ${bit(L.BYPASS_ACTIVE)}, M1 ${bit(L.M1)}, M2 ${bit(L.M2)}.">${g}</svg>`;}
+function renderTiming(){
+  paint("timingScroll",timingSvg());
+  paint("timingTable",`<table class="trace-table"><thead><tr><th scope="col">Signal / scan</th>${trace.map(s=>`<th scope="col">${s.n}<br>${esc(s.short)}</th>`).join("")}</tr></thead><tbody>${TRACE_ROWS.map(([key,label])=>`<tr><th scope="row">${esc(label)}</th>${trace.map(s=>`<td>${key==="TBYPASS_ET"?s.after[key].toFixed(1):bit(s.after[key])}</td>`).join("")}</tr>`).join("")}</tbody></table>`);
+  const end=trace[trace.length-1].n;if(end!==lastTraceEnd){lastTraceEnd=end;const sc=$("timingScroll");sc.scrollLeft=sc.scrollWidth;}}
+
+// ---- ladder ----
+function renderLadder(){const d=rungData(state.rung);$("ladderScroll").innerHTML=d.svg;$("rungStatus").textContent=`${d.title} · rung result ${d.result?"TRUE":"FALSE"}`;const io=rungIO[state.rung];$("rungDetail").innerHTML=`<b>${esc(d.title)}</b><br>${esc(d.desc)}<span class="rd-io"><b>Reads:</b> ${esc(io[0])} · <b>Writes:</b> ${esc(io[1])}</span>`;$("rungTabs").innerHTML=Array.from({length:8},(_,i)=>`<button class="rung-tab ${i===state.rung?"active":""}" type="button" data-rung="${i}" aria-label="Rung ${i+1}"${i===state.rung?' aria-current="true"':""}>R${i+1}</button>`).join("");}
+
+// ---- task card ----
+function setupTest(index){const t=tests[index];if(!t)return;caseSig="";state.testSelected="";state.testReady=false;if(t.id==="load"){prepare("load");arrival();}if(t.id==="cnc"){prepare("cnc");arrival();}if(t.id==="bypassDone"){prepare("cnc");arrival();advance();advance();advance();}if(t.id==="unload"){prepare("unload");arrival();}if(t.id==="release"){prepare("load");arrival();finishMain();}if(t.id==="stop"){prepare("cnc");arrival();stop();}caseSig=JSON.stringify(snap());}
 function renderAnswers(){const task=tasks[state.task];const options=task.options;const done=state.complete[state.task];const correct=task.correct;$("answers").innerHTML=options.map(([v,l])=>{let cls="answer";if(done&&v===correct)cls+=" correct";else if(done&&state.answers[state.task]===v&&v!==correct)cls+=" wrong";else if(state.selected===v)cls+=" selected";return `<button class="${cls}" type="button" data-answer="${esc(v)}"${done?" disabled":""}>${esc(l)}</button>`;}).join("");}
+function caseEvidenceHtml(i){const t=tests[i],seen=caseEvidence[i]||null;const rows=Object.entries(t.expect).map(([tag,v])=>{const act=seen&&tag in seen?seen[tag]:null;return `<tr><td>${tag}</td><td>${v}</td><td>${act===null?"–":act}</td><td>${act===null?"–":act===v?"✓ match":"✕ differs"}</td></tr>`;}).join("");
+  return `<details class="fold"><summary>Case ${i+1} evidence: expected vs actual</summary><div class="fold-body"><p><b>Question:</b> ${esc(t.ask)}</p><p><b>Steps applied:</b> ${esc(t.steps)}</p><table class="summary ev"><thead><tr><th>Tag</th><th>Expected</th><th>Actual</th><th>Check</th></tr></thead><tbody>${rows}</tbody></table><p><b>PASS · what this proves:</b> ${esc(t.reason)}</p></div></details>`;}
+function attemptInfo(){
+  const k=state.task,max=taskPoints[k],pts=n=>`${n} of ${max} point${max===1?"":"s"}`;
+  if(k===5){const passed=state.testPassed.filter(Boolean).length,e=state.testErrors;if(state.complete[5])return `Resolved: ${pts(state.awarded[5])} (${e} wrong judgment${e===1?"":"s"}).`;const p=e===0?3:e<=2?2:1;return `Cases passed: ${passed} of ${tests.length} · wrong judgments so far: ${e}. Finishing all six now earns <b>${pts(p)}</b> (0 wrong → 3, 1–2 → 2, 3 or more → 1). The hint button is not used in this task; after a wrong judgment the coach explains the case. The next task unlocks when all six cases pass.`;}
+  const a=state.attempts[k];
+  if(state.complete[k])return state.answers[k]===tasks[k].correct?`Resolved: correct on attempt ${a} → ${pts(state.awarded[k])}.`:`Resolved: attempt limit reached → ${pts(0)}. The correct answer is marked and explained below.`;
+  return `Attempts used: ${a} of 3. A correct answer now earns <b>${pts(points(a+1,max))}</b>. ${a<1?"The hint unlocks after a failed attempt.":state.hints[k]?"Your hint is shown under the question.":"A hint is available: press “Show hint”."}${a===2?" This is your last attempt.":""} The next task unlocks when this task is resolved.`;}
+function reviewHtml(k){
+  const t=tasks[k],correct=k===5?t.model:t.correct,ok=k===5||state.answers[k]===correct,label=t.options.find(o=>o[0]===correct)[1],wrong=t.options.filter(([v])=>v!==correct);
+  const model=k===5?t.more:`${explain(k)} ${t.more}`;
+  return `<div class="review${ok?"":" missed"}"><h3>Model answer: “${esc(label)}”</h3><p>${esc(model)}</p>${t.verdict?`<p><b>What passing all six proves:</b> ${esc(t.verdict)}</p>`:""}<h4>Why the other option${wrong.length>1?"s are":" is"} wrong</h4><ul>${wrong.map(([v,l])=>`<li><b>“${esc(l)}”:</b> ${esc(t.why[v])}</li>`).join("")}</ul><details class="fold"><summary>Key takeaways and a common mistake</summary><div class="fold-body"><ul>${t.take.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><p class="mistake"><b>Common mistake:</b> ${esc(t.mistake)}</p></div></details></div>`;}
+function defaultCoach(){return state.task===5?"Choose a judgment, or use the scenario controls to inspect the logic first.":"Choose an answer, or read the rungs named under “Where to look” first. The scenario controls unlock in Task 6.";}
 function renderTask(){const t=tasks[state.task];
   const scenarioAllowed=state.task===5;
-  document.querySelectorAll("[data-scenario],#arrivalBtn,#advanceBtn,#finishMainBtn,#stopBtn,#runScanBtn,#resetBtn").forEach(el=>{el.disabled=!scenarioAllowed;el.title=scenarioAllowed?"":"Scenario controls unlock in Task 6."});$("taskTitle").textContent=t.title;$("taskCopy").textContent=t.copy;$("stepBadge").textContent=`Task ${state.task+1} of ${tasks.length}`;$("progressBar").value=state.task+1;$("scoreBadge").textContent=`Score ${state.score}/${MAX_SCORE}`;state.rung=t.rung;$("testContext").innerHTML="";$("testResults").innerHTML="";if(state.task===5){const test=tests[state.testIndex];$("testContext").innerHTML=`<div class="test-context"><div><span>Current case</span><b>${esc(test.name)}</b></div><div><span>Completed</span><b>${state.testPassed.filter(Boolean).length} of ${tests.length}</b></div></div><p style="margin-top:7px">${esc(test.description)}</p>`;$("testResults").innerHTML=state.testPassed.map((p,i)=>`<div class="result ${p?"pass":"fail"}">${esc(tests[i].name)}: ${p?"passed":"not completed"}</div>`).join("");}
-  renderAnswers();$("checkBtn").disabled=state.complete[state.task]||!state.selected;$("nextTask").disabled=!state.complete[state.task];$("nextTask").textContent=state.task===tasks.length-1?"Finish exercise":"Next task";$("prevTask").disabled=state.task===0;$("hintBtn").disabled=state.complete[state.task]||state.attempts[state.task]<1||state.hints[state.task];$("coachFeedback").className="coach-feedback";$("coachFeedback").textContent=state.coach||"Choose an answer, or use the scenario controls to inspect the logic first.";renderLadder();}
+  document.querySelectorAll("[data-scenario],#arrivalBtn,#advanceBtn,#finishMainBtn,#stopBtn,#runScanBtn,#resetBtn").forEach(el=>{el.disabled=!scenarioAllowed;el.title=scenarioAllowed?"":"Scenario controls unlock in Task 6.";});
+  $("simLock").className=`sim-lock${scenarioAllowed?" open":""}`;
+  $("simLock").textContent=scenarioAllowed?"Controls unlocked for Task 6. Each case is prepared for you; if you explore, use “Prepare this case again” before you judge.":state.task<5?"Controls locked until Task 6. The cell shows a prepared LOADING state; for Tasks 1–5 read the ladder rungs below.":"Controls are used only in Task 6. The cell shows the state left by the last case.";
+  $("taskTitle").textContent=t.title;
+  if(shownTask!==state.task){shownTask=state.task;state.rung=t.rung;}
+  $("stepBadge").textContent=`Task ${state.task+1} of ${tasks.length}`;$("progressBar").value=state.task+1;$("scoreBadge").textContent=`Score ${state.score}/${MAX_SCORE}`;$("testContext").innerHTML="";$("testResults").innerHTML="";
+  if(state.task===5){const test=tests[state.testIndex];
+    $("taskAsk").textContent=state.complete[5]?t.ask:`Case ${state.testIndex+1} of ${tests.length}: ${test.ask} Predict what the requirement demands first, then compare.`;
+    $("taskCopy").textContent=state.complete[5]?t.copy:`${test.description} Steps already applied for you: ${test.steps}.`;
+    $("taskLook").innerHTML=rungLinks(state.complete[5]?"The evidence for each case is in the coach panel.":test.look);
+    const dirty=!state.complete[5]&&caseSig&&caseSig!==JSON.stringify(snap());
+    $("testContext").innerHTML=`<div class="test-context"><div><span>Current case</span><b>${esc(test.name)}</b></div><div><span>Completed</span><b>${state.testPassed.filter(Boolean).length} of ${tests.length}</b></div></div>${state.complete[5]?"":`<div class="case-tools">${dirty?'<p class="case-warn">You changed the simulation after this case was prepared. “Check answer” judges the state shown now.</p>':""}<button class="btn" type="button" data-action="restore-case">Prepare this case again</button></div>`}`;
+    $("testResults").innerHTML=state.testPassed.map((p,i)=>`<div class="result ${p?"pass":"fail"}">${esc(tests[i].name)}: ${p?"passed":"not completed"}</div>${p?caseEvidenceHtml(i):""}`).join("");}
+  else{$("taskAsk").textContent=t.ask;$("taskCopy").textContent=t.copy;$("taskLook").innerHTML=rungLinks(t.look);}
+  renderAnswers();$("checkBtn").disabled=state.complete[state.task]||!state.selected;$("nextTask").disabled=!state.complete[state.task];$("nextTask").textContent=state.task===tasks.length-1?"Finish exercise":"Next task";$("prevTask").disabled=state.task===0;$("hintBtn").disabled=state.complete[state.task]||state.attempts[state.task]<1||state.hints[state.task];
+  $("hintBox").hidden=!state.hints[state.task];$("hintBox").innerHTML=state.hints[state.task]?`<b>Hint:</b> ${esc(t.hint)}`:"";
+  $("attemptInfo").innerHTML=attemptInfo();
+  $("taskReview").innerHTML=state.complete[state.task]?reviewHtml(state.task):"";
+  $("coachFeedback").className=`coach-feedback${coachTone.text===state.coach&&coachTone.cls?" "+coachTone.cls:""}`;$("coachFeedback").textContent=state.coach||defaultCoach();renderLadder();renderExplain();}
+
+// ---- page-level panels ----
+function renderQuestions(){const passed=state.testPassed.filter(Boolean).length;paint("subQuestions",tasks.map((t,k)=>{let cls="",st;const max=taskPoints[k];
+  if(state.complete[k]){const ok=k===5||state.answers[k]===t.correct;cls=ok?"done":"missed";st=ok?`Answered · ${state.awarded[k]}/${max}`:`Answer shown · 0/${max}`;}
+  else if(k===state.task){cls="current";st=k===5?`In progress · ${passed}/${tests.length} cases`:"Current task";}
+  else st="Not reached yet";
+  return `<li class="${cls}"><a href="#taskCard">${k+1}. ${esc(t.subq)}</a><span class="st">${st}</span></li>`;}).join(""));}
+function renderScoreHelp(){const resolved=state.complete.filter(Boolean).length,possible=state.complete.reduce((s,c,k)=>s+(c?taskPoints[k]:0),0);
+  const rows=tasks.map((t,k)=>k===5?`<tr><td>6 · ${esc(t.title)}</td><td>3</td><td colspan="4">0 wrong judgments → 3 · 1–2 → 2 · 3 or more → 1</td></tr>`:`<tr><td>${k+1} · ${esc(t.title)}</td><td>${taskPoints[k]}</td><td>${points(1,taskPoints[k])}</td><td>${points(2,taskPoints[k])}</td><td>${points(3,taskPoints[k])}</td><td>0</td></tr>`).join("");
+  paint("scoreExplain",`<p>Points are added when a task is resolved and never taken away. The badge “Score x/12” at the top is the running total.</p><div class="table-scroll"><table class="summary"><thead><tr><th>Task</th><th>Max</th><th>Correct on try 1</th><th>Try 2</th><th>Try 3</th><th>Not solved</th></tr></thead><tbody>${rows}</tbody></table></div><p><b>Right now:</b> ${state.score} of the ${possible} points available in the ${resolved} resolved task${resolved===1?"":"s"}; ${MAX_SCORE-possible} points remain in ${tasks.length-resolved} task${tasks.length-resolved===1?"":"s"}. Mastery is ${MASTERY} or more of ${MAX_SCORE}.</p>`);}
+function renderGlossary(){const sig=state.complete.join();if(sig===glossSig)return;glossSig=sig;
+  $("glossaryList").innerHTML=glossary.filter(g=>!g.hide||known(g.task)).map(g=>{const open=g.task===undefined||known(g.task);return `<div class="g-item" id="${g.id}"><b>${esc(g.term)}</b>${g.def?`<p>${esc(g.def)}</p>`:""}${g.more?(open?`<p>${esc(g.more)}</p>`:`<p class="locked">More detail after Task ${g.task+1} is resolved.</p>`):""}</div>`;}).join("");}
+function renderExplain(){if(!trace.length)return;paint("scanStory",storyHtml());paint("stageMap",stageMapHtml());renderQuestions();renderScoreHelp();renderGlossary();}
+
+// ---- checking (rules unchanged) ----
 function points(attempts,max){return attempts<=1?max:attempts===2?Math.max(1,max-1):max>1?1:0;}
-function check(){if(state.task===5){checkTest();return;}const t=tasks[state.task];if(!state.selected)return;state.attempts[state.task]++;const ok=state.selected===t.correct;document.querySelectorAll(".answer").forEach(b=>{const v=b.dataset.answer;b.classList.toggle("correct",ok&&v===t.correct);b.classList.toggle("wrong",!ok&&v===state.selected);});if(ok){const p=points(state.attempts[state.task],taskPoints[state.task]);state.awarded[state.task]=p;state.score+=p;state.complete[state.task]=true;state.answers[state.task]=state.selected;state.coach=`Correct. ${explain(state.task)} ${p} point${p===1?"":"s"} earned.`;$("coachFeedback").className="coach-feedback good";}else if(state.attempts[state.task]>=3){state.complete[state.task]=true;state.awarded[state.task]=0;state.answers[state.task]=state.selected;state.selected=t.correct;state.coach=`Attempt limit reached. Correct explanation: ${explain(state.task)||t.hint}`;$("coachFeedback").className="coach-feedback bad";}else{state.coach="Not yet. Review the rung and try again. A hint is now available.";$("coachFeedback").className="coach-feedback bad";}save();renderTask();}
+function tone(cls){coachTone={text:state.coach,cls};}
+function check(){if(state.task===5){checkTest();return;}const t=tasks[state.task];if(!state.selected)return;state.attempts[state.task]++;const ok=state.selected===t.correct;document.querySelectorAll(".answer").forEach(b=>{const v=b.dataset.answer;b.classList.toggle("correct",ok&&v===t.correct);b.classList.toggle("wrong",!ok&&v===state.selected);});if(ok){const p=points(state.attempts[state.task],taskPoints[state.task]);state.awarded[state.task]=p;state.score+=p;state.complete[state.task]=true;state.answers[state.task]=state.selected;state.coach=`Correct. ${p} point${p===1?"":"s"} earned. The model answer and why the other options are wrong are now shown under the options.`;tone("good");}else if(state.attempts[state.task]>=3){state.complete[state.task]=true;state.awarded[state.task]=0;state.answers[state.task]=state.selected;state.selected=t.correct;state.coach="Attempt limit reached: 0 points. The correct answer is marked, and its explanation is shown under the options.";tone("bad");}else{state.coach=`Not yet: attempt ${state.attempts[state.task]} of 3 used. Review the rungs named under “Where to look” and try again.${state.hints[state.task]?" Your hint stays visible under the question.":" A hint is now available."}`;tone("bad");}save();renderTask();}
 function explain(i){return ["PART_WAITING preserves the arrival after the one-scan NEW_PART pulse disappears, and INFEED_HOLD makes M1 false.","SET stores PART_WAITING = 1 until a later release rung resets it.","BYPASS_ACTIVE creates an auxiliary transfer while STEP_CNC remains active for the original part.","An ordinary M1 coil follows ST AND NOT INFEED_HOLD every scan.","Resetting STEP_CNC would incorrectly interrupt the original part's machining operation.","","One Boolean bit represents only an empty or occupied waiting position, not a count or FIFO queue."][i];}
-function checkTest(){const t=tests[state.testIndex];if(!state.selected)return;const actual=t.expected(state);const chosen=state.selected==="pass";if(chosen===actual&&actual){state.testPassed[state.testIndex]=true;state.coach=`Correct. ${t.reason}`;$("coachFeedback").className="coach-feedback good";if(state.testPassed.every(Boolean)){const p=state.testErrors===0?3:state.testErrors<=2?2:1;state.awarded[5]=p;state.score+=p;state.complete[5]=true;state.answers[5]=`${tests.length}/${tests.length} tests`;state.coach+=` All six cases are complete. ${p} points earned.`;}else{state.testIndex++;setupTest(state.testIndex);state.coach=`Correct. ${t.reason} The next test case has been prepared.`;}}else{state.testErrors++;state.coach=`That judgment does not match the scan. ${t.reason}`;$("coachFeedback").className="coach-feedback bad";}state.selected="";save();renderTask();}
-function hint(){if(state.attempts[state.task]<1||state.complete[state.task]||state.hints[state.task])return;state.hints[state.task]=true;state.coach=`Hint: ${tasks[state.task].hint}`;save();renderTask();}
-function finish(){state.finished=true;save();$("completionPanel").classList.add("show");$("completionScore").textContent=`${state.score}/${MAX_SCORE}`;$("completionMessage").textContent=state.score>=10?"Mastery achieved. You separated arrival events, stored waiting memory, parallel bypass state and output commands.":"Further practice is recommended. Review the difference between NEW_PART, PART_WAITING, BYPASS_ACTIVE and the physical outputs.";$("summaryBody").innerHTML=tasks.map((t,i)=>`<tr><td>${esc(t.title)}</td><td>${state.complete[i]?`${state.awarded[i]}/${taskPoints[i]}`:"Incomplete"}</td></tr>`).join("");$("completionPanel").scrollIntoView({behavior:"smooth",block:"start"});}
+function checkTest(){const t=tests[state.testIndex];if(!state.selected)return;const actual=t.expected(state);const chosen=state.selected==="pass";if(chosen===actual&&actual){state.testPassed[state.testIndex]=true;caseEvidence[state.testIndex]=Object.fromEntries(Object.keys(t.expect).map(k=>[k,bit(state.mem[k])]));saveEvidence();state.coach=`Correct. ${t.reason}`;if(state.testPassed.every(Boolean)){const p=state.testErrors===0?3:state.testErrors<=2?2:1;state.awarded[5]=p;state.score+=p;state.complete[5]=true;state.answers[5]=`${tests.length}/${tests.length} tests`;state.coach+=` All six cases are complete. ${p} points earned.`;}else{state.testIndex++;setupTest(state.testIndex);state.coach=`Correct. ${t.reason} The next test case has been prepared.`;}tone("good");}else{state.testErrors++;state.coach=`That judgment does not match the scan. ${t.reason}`;tone("bad");}state.selected="";save();renderTask();}
+function hint(){if(state.attempts[state.task]<1||state.complete[state.task]||state.hints[state.task])return;state.hints[state.task]=true;state.coach="Hint unlocked. It is shown in the task card, under the question.";save();renderTask();}
+function finalReview(){return tasks.map((t,k)=>{const max=taskPoints[k];let res,ans,ok=true;
+  if(k===5){const e=state.testErrors;res=state.complete[5]?`All six cases judged correctly, with ${e} wrong judgment${e===1?"":"s"} → ${state.awarded[5]}/${max}.`:"Incomplete.";ans=t.short;}
+  else{ok=state.answers[k]===t.correct;const yours=(t.options.find(o=>o[0]===state.answers[k])||["","–"])[1];res=!state.complete[k]?"Incomplete.":ok?`Correct on attempt ${state.attempts[k]} → ${state.awarded[k]}/${max}.`:`Not solved in three attempts (last choice: “${yours}”) → 0/${max}.`;ans=`“${t.options.find(o=>o[0]===t.correct)[1]}”. ${t.short}`;}
+  return `<li class="rv${ok&&state.complete[k]?"":" miss"}"><p><b>${k+1}. ${esc(t.subq)}</b></p><p><span class="rv-k">Your result:</span> ${esc(res)}</p><p><span class="rv-k">Correct answer:</span> ${esc(ans)}</p></li>`;}).join("");}
+function finish(){state.finished=true;save();$("completionPanel").classList.add("show");$("completionScore").textContent=`${state.score}/${MAX_SCORE}`;$("completionMessage").textContent=state.score>=MASTERY?"Mastery achieved. You separated arrival events, stored waiting memory, parallel bypass state and output commands.":"Further practice is recommended. Review the difference between NEW_PART, PART_WAITING, BYPASS_ACTIVE and the physical outputs.";$("summaryBody").innerHTML=tasks.map((t,i)=>`<tr><td>${esc(t.title)}</td><td>${state.complete[i]?`${state.awarded[i]}/${taskPoints[i]}`:"Incomplete"}</td></tr>`).join("");$("reviewList").innerHTML=finalReview();$("completionPanel").scrollIntoView({behavior:"smooth",block:"start"});}
 function render(){renderState();renderTask();}
 
-document.addEventListener("click",e=>{const a=e.target.closest("[data-answer]");if(a&&!state.complete[state.task]){state.selected=a.dataset.answer;renderTask();return;}const r=e.target.closest("[data-rung]");if(r){state.rung=Number(r.dataset.rung);renderLadder();return;}const s=e.target.closest("[data-scenario]");if(s){if(state.task!==5)return;prepare(s.dataset.scenario);return;}});
-$("checkBtn").addEventListener("click",check);$("hintBtn").addEventListener("click",hint);$("prevTask").disabled=true;$("prevTask").addEventListener("click",()=>{if(state.task>0){state.task--;state.selected=state.answers[state.task]||"";state.coach="";render();}});$("nextTask").addEventListener("click",()=>{if(!state.complete[state.task])return;if(state.task===tasks.length-1){finish();return;}state.task++;state.selected="";state.coach="";if(state.task===5)setupTest(state.testIndex);render();});$("resetBtn").addEventListener("click",()=>prepare(state.scenario));$("arrivalBtn").addEventListener("click",arrival);$("advanceBtn").addEventListener("click",advance);$("finishMainBtn").addEventListener("click",finishMain);$("stopBtn").addEventListener("click",stop);$("runScanBtn").addEventListener("click",()=>{solve(0);state.coach="One PLC scan was solved from the current input image.";render();});$("prevRung").addEventListener("click",()=>{state.rung=(state.rung+7)%8;renderLadder();});$("nextRung").addEventListener("click",()=>{state.rung=(state.rung+1)%8;renderLadder();});$("restartBtn").addEventListener("click",()=>{state=fresh();try{localStorage.removeItem(STORAGE_KEY);}catch(e){}$("completionPanel").classList.remove("show");prepare("load");});$("copyResult").addEventListener("click",async()=>{const text=`Production Cell Busy-Arrival Challenge: ${state.score}/${MAX_SCORE}; completed ${state.complete.filter(Boolean).length}/${tasks.length}; operating tests ${state.testPassed.filter(Boolean).length}/${tests.length}.`;try{await navigator.clipboard.writeText(text);$("copyResult").textContent="Copied";}catch(e){$("copyResult").textContent="Copy unavailable";}});
-if(!state.mem.CELL_BUSY&&!state.mem.STEP_LOAD&&!state.mem.STEP_CNC&&!state.mem.STEP_UNLOAD&&!state.mem.STEP_POS)prepare(state.scenario||"load");else render();
+document.addEventListener("click",e=>{
+  const gl=e.target.closest("a.gl");if(gl)$("glossary").open=true;
+  const a=e.target.closest("[data-answer]");if(a&&!state.complete[state.task]){state.selected=a.dataset.answer;renderTask();return;}
+  const r=e.target.closest("[data-rung]");if(r){state.rung=Number(r.dataset.rung);renderLadder();if(r.classList.contains("rung-link"))$("ladderHeading").scrollIntoView({behavior:"smooth",block:"start"});return;}
+  const s=e.target.closest("[data-scenario]");if(s){if(state.task!==5)return;prepare(s.dataset.scenario);return;}
+  const act=e.target.closest("[data-action]");if(act&&act.dataset.action==="restore-case"&&state.task===5&&!state.complete[5]){setupTest(state.testIndex);state.coach=`Case ${state.testIndex+1} was prepared again. Judge the state shown now.`;render();}
+});
+$("checkBtn").addEventListener("click",check);$("hintBtn").addEventListener("click",hint);$("prevTask").disabled=true;$("prevTask").addEventListener("click",()=>{if(state.task>0){state.task--;state.selected=state.answers[state.task]||"";state.coach="";render();}});$("nextTask").addEventListener("click",()=>{if(!state.complete[state.task])return;if(state.task===tasks.length-1){finish();return;}state.task++;state.selected="";state.coach="";if(state.task===5)setupTest(state.testIndex);render();});$("resetBtn").addEventListener("click",()=>prepare(state.scenario));$("arrivalBtn").addEventListener("click",arrival);$("advanceBtn").addEventListener("click",advance);$("finishMainBtn").addEventListener("click",finishMain);$("stopBtn").addEventListener("click",stop);$("runScanBtn").addEventListener("click",()=>{beginAction("Run one scan","scan");solve(0);state.coach="One PLC scan was solved from the current input image.";render();});$("prevRung").addEventListener("click",()=>{state.rung=(state.rung+7)%8;renderLadder();});$("nextRung").addEventListener("click",()=>{state.rung=(state.rung+1)%8;renderLadder();});$("restartBtn").addEventListener("click",()=>{state=fresh();try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(EVIDENCE_KEY);}catch(e){}caseEvidence=[];shownTask=null;$("completionPanel").classList.remove("show");prepare("load");});$("copyResult").addEventListener("click",async()=>{const text=`Production Cell Busy-Arrival Challenge: ${state.score}/${MAX_SCORE}; completed ${state.complete.filter(Boolean).length}/${tasks.length}; operating tests ${state.testPassed.filter(Boolean).length}/${tests.length}.`;try{await navigator.clipboard.writeText(text);$("copyResult").textContent="Copied";}catch(e){$("copyResult").textContent="Copy unavailable";}});
+$("clearTrace").addEventListener("click",()=>{const last=trace[trace.length-1];trace=trace.filter(s=>s.action===last.action);renderState();renderExplain();});
+// A reload during Task 6 re-prepares the current case (the saved state alone cannot rebuild e.g. the master-stop case).
+if(state.task===5&&!state.complete[5]){setupTest(state.testIndex);render();}
+else if(!state.mem.CELL_BUSY&&!state.mem.STEP_LOAD&&!state.mem.STEP_CNC&&!state.mem.STEP_UNLOAD&&!state.mem.STEP_POS)prepare(state.scenario||"load");else render();
 })();
 </script>
 </body>

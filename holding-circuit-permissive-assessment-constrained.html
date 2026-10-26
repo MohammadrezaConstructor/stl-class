@@ -824,7 +824,7 @@ svg {
   <section class="card" id="assessmentContract" aria-label="Assessment constraints">
     <p class="section-label">Assessment constraints</p>
     <p style="margin:0"><b>Complete tasks in order.</b> A hint becomes available only after the first failed attempt. After three incorrect attempts, the correct explanation is shown and the task receives zero points.</p>
-    <p class="section-question" style="margin:6px 0 0">Answers: <em>What rules decide my score?</em> Points per task are listed under “How is my score calculated?” next to the score bar. While a question is open, any live value that would give the answer away is shown as “?”.</p>
+    <p class="section-question" style="margin:6px 0 0">This section answers: <em>What rules decide my score?</em> Points per task are listed under “How is my score calculated?” next to the score bar. While a question is open, any live value that would give the answer away is shown as “?”.</p>
   </section>
 
   <style>
@@ -982,7 +982,8 @@ svg {
     #conveyor-safety-ladder-exercise .test-context strong{display:block}
     #conveyor-safety-ladder-exercise .test-context span{color:var(--muted-foreground)}
     #conveyor-safety-ladder-exercise .completion-score{
-      margin:0;
+      margin:0 0 4px;
+      line-height:1.15;
       font-size:clamp(1.6rem,8vw,2.8rem);
       font-weight:500;
     }
@@ -1203,6 +1204,7 @@ svg {
       padding-block:4px;
     }
     #conveyor-safety-ladder-exercise details > summary:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:var(--radius-sm)}
+    #conveyor-safety-ladder-exercise .qp-outcomes > summary{margin:12px 0 6px}
     #conveyor-safety-ladder-exercise .qp-details{margin-top:10px;padding-top:6px;border-top:1px solid var(--border)}
     #conveyor-safety-ladder-exercise .q-box{
       margin-top:10px;
@@ -1325,7 +1327,7 @@ svg {
     #conveyor-safety-ladder-exercise .tl-val{fill:color-mix(in srgb,var(--foreground) 62%,transparent);font-size:9.5px;text-anchor:middle}
     #conveyor-safety-ladder-exercise .tl-axis{fill:color-mix(in srgb,var(--foreground) 70%,transparent);font-size:10px}
     #conveyor-safety-ladder-exercise .replay-controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0}
-    #conveyor-safety-ladder-exercise .replay-controls .replay-label{flex:1 1 180px;min-width:0;font-weight:500}
+    #conveyor-safety-ladder-exercise .replay-controls .replay-label{order:-1;flex:1 1 100%;min-width:0;font-weight:500}
     #conveyor-safety-ladder-exercise .case-picker{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
     #conveyor-safety-ladder-exercise .case-picker .btn{white-space:normal}
     #conveyor-safety-ladder-exercise .narrative{margin:4px 0 0;padding-inline-start:22px}
@@ -1363,6 +1365,14 @@ svg {
     #conveyor-safety-ladder-exercise .final-review dd{margin:0;overflow-wrap:anywhere}
     #conveyor-safety-ladder-exercise .end-summary{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
     #conveyor-safety-ladder-exercise .end-summary .main-answer{margin:4px 0 8px}
+    #conveyor-safety-ladder-exercise .intro-card > p.section-question,
+    #conveyor-safety-ladder-exercise .scan-model > p.section-question{
+      margin:2px 0 8px;
+      color:color-mix(in srgb,var(--foreground) 74%,transparent);
+    }
+    #conveyor-safety-ladder-exercise .big-picture > summary,
+    #conveyor-safety-ladder-exercise #glossaryPanel > summary{font-size:var(--font-size-normal)}
+    #conveyor-safety-ladder-exercise .big-picture[open] > summary{margin-bottom:4px}
     #conveyor-safety-ladder-exercise .summary-table small{display:block;color:color-mix(in srgb,var(--foreground) 74%,transparent)}
     @media (max-width:700px){
       #conveyor-safety-ladder-exercise .chain{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1386,8 +1396,8 @@ svg {
     <ol class="subq-list" id="subQuestionList" aria-label="Sub-questions and their status"></ol>
     <p class="text-small" id="mainQuestionStatus" style="margin:6px 0 0"></p>
     <div class="qp-grid">
-      <div>
-        <h3 class="mini-heading">By the end you can…</h3>
+      <details class="qp-outcomes" open>
+        <summary>By the end you can…</summary>
         <ul>
           <li>Trace one PLC scan for this conveyor as READ inputs → SOLVE Rungs 1, 2, 3 → UPDATE outputs.</li>
           <li>Predict the <code>MOTOR_RUN</code> command for a start, a release, a stop, an open guard, an overload trip and an overload reset.</li>
@@ -1396,11 +1406,11 @@ svg {
           <li>Separate the cause of a stop from its downstream symptoms.</li>
           <li>Explain why <code>MOTOR_RUN = 1</code> is a command, not proof that the motor turns.</li>
         </ul>
-      </div>
+      </details>
       <div>
         <h3 class="mini-heading">How to use this page (about 25 minutes)</h3>
         <ol>
-          <li>Read the sub-questions above and the big-picture chain below (3 min).</li>
+          <li>Read the sub-questions above; open “Big picture” below if the signal chain is new to you (3 min).</li>
           <li>For each task, read the <b>Question</b>, the <b>Given</b> values and <b>Where to look</b> (1 min).</li>
           <li>Study the PLC data table and the ladder, choose an answer, then press <b>Check answer</b> (2 min).</li>
           <li>If you miss, open the hint (it unlocks after the first miss) and try again.</li>
@@ -1418,13 +1428,13 @@ svg {
         <li><b>Scan cycle:</b> the PLC reads all inputs, solves the rungs from top to bottom, then updates the outputs, and repeats.</li>
       </ul>
     </details>
-    <p class="text-small" style="margin:8px 0 0"><a href="#bigPicture">Big picture ↓</a> · <a href="#glossaryPanel">Glossary ↓</a> · <a href="#taskCard">Current task ↓</a></p>
+    <p class="text-small" style="margin:8px 0 0"><a href="#bigPicture">Big picture ↓</a> · <a href="#glossaryPanel">Glossary ↓</a> · <a href="#taskCard" id="currentTaskLink">Current task ↓</a></p>
   </section>
 
   <section class="card intro-card" aria-labelledby="exerciseIntroHeading">
     <p class="section-label">Practice environment</p>
     <h1 id="exerciseIntroHeading">Conveyor holding circuit and permissives</h1>
-    <p class="section-question">Answers: <em>What is this exercise about, and which layers (device, bit, instruction, command) must I keep apart?</em></p>
+    <p class="section-question">This section answers: <em>What is this exercise about, and which layers (device, bit, instruction, command) must I keep apart?</em></p>
     <p>Apply an IF–THEN rule as PLC data and ladder instructions. The exercise separates the physical buttons, stored bits, contact tests, rung results, coil writes and output commands.</p>
     <div class="concept-strip" aria-label="Core concept guide">
       <div class="concept-item"><strong>Physical input</strong><span>A push button or field device changes an electrical input signal.</span></div>
@@ -1438,10 +1448,9 @@ svg {
     </div>
   </section>
 
-  <section class="card" id="bigPicture" aria-labelledby="bigPictureHeading">
-    <p class="section-label">Big picture</p>
-    <h2 id="bigPictureHeading">From push button to conveyor motor</h2>
-    <p class="section-question">Answers: <em>How does a physical button press become a motor command in this conveyor, and where does each tag live?</em> Follow the steps 1 → 8.</p>
+  <details class="card big-picture" id="bigPicture">
+    <summary><span id="bigPictureHeading">Big picture: from push button to conveyor motor (8 steps)</span></summary>
+    <p class="section-question">This section answers: <em>How does a physical button press become a motor command in this conveyor, and where does each tag live?</em> Follow the steps 1 → 8.</p>
     <ol class="chain" aria-label="Signal chain from field device to actuator">
       <li><b>Field device</b><span>Momentary Start <abbr title="push button">PB</abbr> (N.O.). Stop PB is wired <abbr title="normally closed">N.C.</abbr>, so its circuit is closed until pressed. Guard switch and <abbr title="overload">OL</abbr> relay are closed while healthy.</span></li>
       <li><b>Input module</b><span>Each 24 V input channel becomes 1 (voltage present) or 0 (no voltage).</span></li>
@@ -1454,7 +1463,7 @@ svg {
     </ol>
     <p class="chain-note"><b>Two meanings of “normally”.</b> The physical Stop button is normally closed (N.C.), so <code>STOP_OK = 1</code> while nobody presses it. The software contact that tests <code>STOP_OK</code> is normally open (N.O.): it is TRUE while the bit is 1. A broken wire also gives 0, the same value as a pressed Stop button; that is why the exercise uses positive healthy-state tags.</p>
     <p class="chain-note"><b>Command, not proof.</b> <code>MOTOR_RUN = 1</code> only commands the output. Proving that the motor turns needs a feedback input, such as a contactor auxiliary contact or a speed sensor, which this exercise does not have.</p>
-  </section>
+  </details>
 
   <div class="exercise-meta" aria-label="Exercise progress">
     <span id="exerciseStep" class="viz-badge">Task 1 of 6</span>
@@ -1464,7 +1473,7 @@ svg {
 
   <details class="card score-explain" id="scoreExplain">
     <summary><span>How is my score calculated?</span><span class="text-small text-muted" id="scoreExplainSummary"></span></summary>
-    <p class="section-question">Answers: <em>What does the score mean, which points have I earned or lost, and what is still possible?</em></p>
+    <p class="section-question">This section answers: <em>What does the score mean, which points have I earned or lost, and what is still possible?</em></p>
     <div class="table-responsive">
       <table class="score-table" aria-label="Points per task">
         <thead><tr><th scope="col">Task</th><th scope="col">How points are earned</th><th scope="col">Status</th><th scope="col">Points</th></tr></thead>
@@ -1477,32 +1486,32 @@ svg {
   <section class="card" id="taskCard" aria-labelledby="taskHeading">
     <p class="section-label">Task</p>
     <h2 id="taskHeading" class="task-heading">Predict the holding circuit</h2>
-    <p class="section-question">Answers: <em>What exactly am I asked, what is given, and where is the evidence?</em></p>
+    <p class="section-question">This section answers: <em>What exactly am I asked, what is given, and where is the evidence?</em></p>
     <p id="taskCopy" class="task-copy"></p>
     <div id="testContext"></div>
     <div id="taskQuestion"></div>
   </section>
 
-  <section class="card" aria-labelledby="coachHeading">
+  <section class="card" id="coachCard" aria-labelledby="coachHeading">
     <p class="section-label" id="coachHeading">Coach</p>
-    <p class="section-question">Answers: <em>What does the result of my last action mean, and what should I do next?</em></p>
+    <p class="section-question">This section answers: <em>What does the result of my last action mean, and what should I do next?</em></p>
     <p id="coachCopy" class="coach-copy" aria-live="polite"></p>
   </section>
 
   <div id="exerciseWork">
     <div class="strip-head">
       <p class="section-label">PLC data table for this scan</p>
-      <p class="section-question">Answers: <em>Which bit values does the PLC hold on this scan, and what does each value mean physically?</em></p>
+      <p class="section-question">This section answers: <em>Which bit values does the PLC hold on this scan, and what does each value mean physically?</em></p>
     </div>
     <div class="state-strip" id="stateStrip" aria-label="Live PLC state"></div>
 
     <section class="card scan-model" aria-labelledby="scanModelHeading">
       <h3 id="scanModelHeading">What the PLC does during the current scan</h3>
-      <p class="section-question">Answers: <em>In which order does the PLC read the inputs, solve the three rungs and update the outputs on this scan?</em></p>
+      <p class="section-question">This section answers: <em>In which order does the PLC read the inputs, solve the three rungs and update the outputs on this scan?</em></p>
       <p id="scanModelNote" hidden>The holding contact does not receive a special signal from the coil. The ordinary coil writes <code>RUN_REQ</code>; the contact reads the same stored bit when the rung is evaluated again.</p>
-      <p id="scanModelNeutral">Every scan the PLC first READS all inputs into the input image, then SOLVES Rung 1, Rung 2 and Rung 3 in order using stored bit values, then UPDATES the output modules. While a prediction is open, any result that would give the answer away is shown as “?”.</p>
+      <p id="scanModelNeutral">Every scan the PLC first READS all inputs into the input image, then SOLVES Rung 1, Rung 2 and Rung 3 in order using stored bit values, then UPDATES the output modules.</p>
       <div class="scan-story" id="scanStory"></div>
-      <p class="logic-legend">Green ladder lines show a TRUE logical path. They do not represent real water or electrical current flowing through the software diagram.</p>
+      <p class="logic-legend">Green ladder lines show a TRUE logical path. They do not represent real water or electrical current flowing through the software diagram. Like online monitoring, the ladder is coloured with the bit values stored at the end of this scan; the scan replay (shown after you answer) lists what each contact read during the scan.</p>
     </section>
 
     <div class="ladder-head">
@@ -1512,7 +1521,7 @@ svg {
       </div>
       <span class="scroll-cue text-small" id="scrollCue">Swipe rung horizontally if needed ↔</span>
     </div>
-    <p class="section-question" id="ladderQuestion" style="margin:0">Answers: <em>Which instructions are TRUE on this scan, and what does each right-hand instruction store?</em></p>
+    <p class="section-question" id="ladderQuestion" style="margin:0">This section answers: <em>Which instructions are TRUE on this scan, and what does each right-hand instruction store?</em></p>
     <p class="ladder-note" id="ladderNote" hidden></p>
 
     <div class="ladder-scroll" id="ladderScroll" aria-live="polite"></div>
@@ -1533,13 +1542,14 @@ svg {
     <section class="card resolution-card" id="resolutionPanel" hidden aria-labelledby="resolutionHeading">
       <p class="section-label">Answer and explanation</p>
       <h3 id="resolutionHeading">Model answer</h3>
-      <p class="section-question">Answers: <em>What is the correct answer to this task, and why is each other option wrong?</em></p>
+      <p class="section-question">This section answers: <em>What is the correct answer to this task, and why is each other option wrong?</em></p>
       <div id="resolutionBody"></div>
       <div id="replayBlock">
         <h4 class="mini-heading">Scan replay and timing diagram</h4>
-        <p class="section-question">Answers: <em>What does each signal do scan by scan, and what caused each change?</em> Step through the scans; the narrative below the diagram follows the selected scan.</p>
+        <p class="section-question">This section answers: <em>What does each signal do scan by scan, and what caused each change?</em> Step through the scans; the narrative below the diagram follows the selected scan.</p>
         <div class="case-picker" id="replayCases" role="group" aria-label="Choose an operating case to replay"></div>
         <div class="timing-scroll" id="timingDiagram"></div>
+        <p class="text-small" style="margin:2px 0 0">High line = 1, low line = 0; each value is the bit at the end of that scan. Blue rows are inputs, green rows are bits written by the rungs, a dashed red row is a what-if that is not in the program.</p>
         <div class="replay-controls" role="group" aria-label="Scan replay controls">
           <button type="button" class="btn btn-ghost" id="replayPrev">Previous scan</button>
           <span class="replay-label" id="replayLabel"></span>
@@ -1561,7 +1571,7 @@ svg {
   <section class="card" id="completionPanel" hidden aria-labelledby="completionHeading">
     <p class="section-label">Exercise complete</p>
     <h2 id="completionHeading">Conveyor holding-circuit challenge</h2>
-    <p class="section-question">Answers: <em>How did I do on each question, why did I earn or lose points, and what is the answer to the main question?</em></p>
+    <p class="section-question">This section answers: <em>How did I do on each question, why did I earn or lose points, and what is the answer to the main question?</em></p>
     <p class="completion-score" id="completionScore">0/10</p>
     <p id="completionMessage"></p>
     <table class="summary-table" aria-label="Exercise result summary">
@@ -1579,7 +1589,7 @@ svg {
 
   <details class="card" id="glossaryPanel">
     <summary>Glossary — what does each PLC term on this page mean?</summary>
-    <p class="section-question">Answers: <em>What exactly do the PLC words used in this exercise mean?</em> A term that is the answer to a task you have not resolved yet unlocks when that task is resolved.</p>
+    <p class="section-question">This section answers: <em>What exactly do the PLC words used in this exercise mean?</em> A term that is the answer to a task you have not resolved yet unlocks when that task is resolved.</p>
     <dl class="glossary-list" id="glossaryList"></dl>
   </details>
 
@@ -2025,6 +2035,7 @@ svg {
           inputs: { start: false, stop: true, guard: true, overload: true },
           mem: { runReq: false, motor: false, lamp: false },
           /* Explanation-only records: they never change scoring. */
+          reached: 0,
           wrongPicks: [[], [], [], [], [], []],
           outcome: ["", "", "", "", "", ""],
           testChecked: Array(testCases.length).fill(false),
@@ -2047,6 +2058,9 @@ svg {
       }
 
       let state = loadState();
+
+      const outcomes = root.querySelector(".qp-outcomes");
+      if (outcomes && window.matchMedia && window.matchMedia("(max-width:700px)").matches) outcomes.open = false;
 
       const els = {
         step: root.querySelector("#exerciseStep"),
@@ -2102,7 +2116,9 @@ svg {
         finalReview: root.querySelector("#finalReview"),
         endSummary: root.querySelector("#endSummary"),
         glossaryList: root.querySelector("#glossaryList"),
-        exerciseMeta: root.querySelector(".exercise-meta")
+        exerciseMeta: root.querySelector(".exercise-meta"),
+        taskCard: root.querySelector("#taskCard"),
+        coachCard: root.querySelector("#coachCard")
       };
 
       function saveState() {
@@ -2369,16 +2385,17 @@ svg {
         return false;
       }
 
-      /* Tasks resolve in order, so the first unresolved task is the furthest one the student has reached. */
+      /* Tasks resolve in order, so the first unresolved task is the furthest one that can be opened. */
       function frontier() {
         const index = state.completed.indexOf(false);
         return index < 0 ? tasks.length : index;
       }
 
-      /* A resolved task's explanation is held back while a later task that tests the same idea is open. */
+      /* A resolved task's explanation is held back once the student has opened a later task that tests
+         the same idea, until that later task is resolved too. */
       function blockedBy(index) {
         const later = (tasks[index] && tasks[index].alsoTestedBy) || [];
-        const open = later.find(t => !state.completed[t] && frontier() >= t);
+        const open = later.find(t => !state.completed[t] && state.reached >= t);
         return open === undefined ? -1 : open;
       }
 
@@ -2433,7 +2450,7 @@ svg {
           <div class="scan-card"><b>2 · Solve rungs in order</b><span>${esc(rungOneSummary)}</span></div>
           <div class="scan-card"><b>3 · Update outputs</b><span>${esc(outputSummary)}</span></div>`;
         /* The holding-contact note repeats the Task 1 hint and names the writing instruction (Task 2). */
-        const showNote = state.finished || (state.completed[0] && state.completed[1]);
+        const showNote = state.finished || (explanationOpen(0) && explanationOpen(1));
         els.scanModelNote.hidden = !showNote;
         els.scanModelNeutral.hidden = showNote;
       }
@@ -2493,10 +2510,467 @@ svg {
           </fieldset>`;
       }
 
+      /* Write HTML only when it changed, so live regions are not re-announced and layout is not redone. */
+      function setHtml(element, html) {
+        if (element._html === html) return;
+        element._html = html;
+        element.innerHTML = html;
+      }
+
+      function plural(count, word) {
+        return `${count} ${word}${count === 1 ? "" : "s"}`;
+      }
+
+      function optionText(task, id) {
+        const option = task.options.find(item => item[0] === id);
+        return option ? option[1].trim() : id;
+      }
+
+      function renderTaskQuestion() {
+        const task = tasks[state.stage];
+        const test = state.stage === 3 ? testCases[state.testIndex] : null;
+        const given = test ? test.given : task.given;
+        setHtml(els.taskQuestion, `
+          <div class="q-box" role="group" aria-label="Question for this task">
+            <p class="q-text"><b>Question:</b> ${esc(test ? test.question : task.question)}</p>
+            ${test ? `<p class="text-small" style="margin-top:4px">${esc(task.question)}</p>` : ""}
+            <p class="text-small" style="margin-top:8px"><b>Given</b></p>
+            <dl class="given-list">${given.map(item => `<dt>${esc(item[0])}</dt><dd>${esc(item[1])}</dd>`).join("")}</dl>
+            <p class="look-line"><b>Where to look for the answer:</b> ${esc(task.look)}</p>
+          </div>`);
+      }
+
+      /* ---- Scan replay: a short scenario solved scan by scan with the same solveScan() as the page ---- */
+      const replayView = { key: "", cursor: 0, caseIndex: 0, stage: -1 };
+
+      function simulateReplay(replay) {
+        let mem = { runReq: replay.from, motor: replay.from, lamp: replay.from };
+        let setBit = replay.from;
+        return replay.scans.map(step => {
+          const inputs = Object.assign({}, DEFAULT_INPUTS, step.set);
+          const prev = Object.assign({}, mem);
+          const next = solveScan(inputs, prev);
+          const prevSetBit = setBit;
+          /* What-if only: a SET coil writes 1 while its rung is TRUE and otherwise keeps the bit. */
+          if (next.runReq) setBit = true;
+          mem = next;
+          return { inputs, prev, next, note: step.note, setBit, prevSetBit };
+        });
+      }
+
+      function currentReplay() {
+        if (replayView.stage !== state.stage) {
+          replayView.stage = state.stage;
+          replayView.caseIndex = state.testIndex;
+        }
+        if (state.stage === 3) {
+          const index = state.completed[3] ? replayView.caseIndex : state.testIndex;
+          return { key: `3:${index}`, replay: testCases[index].replay };
+        }
+        return { key: String(state.stage), replay: tasks[state.stage].replay };
+      }
+
+      function timingSvg(trace, cursor, asked, whatIfSet) {
+        const rows = [
+          ["START_PB", step => step.inputs.start, ""],
+          ["STOP_OK", step => step.inputs.stop, ""],
+          ["GUARD_OK", step => step.inputs.guard, ""],
+          ["OL_OK", step => step.inputs.overload, ""],
+          ["RUN_REQ", step => step.next.runReq, " is-output"],
+          ["MOTOR_RUN", step => step.next.motor, " is-output"]
+        ];
+        if (whatIfSet) rows.push(["MOTOR_RUN if (S)", step => step.setBit, " is-whatif"]);
+        const labelW = 122;
+        const colW = 50;
+        const rowH = 28;
+        const top = 34;
+        const width = labelW + trace.length * colW + 8;
+        const height = top + rows.length * rowH + 6;
+        const bottom = top + rows.length * rowH;
+        let out = `<rect class="tl-cursor" x="${labelW + cursor * colW + 2}" y="3" width="${colW - 4}" height="${bottom - 1}" rx="5"></rect>`;
+        out += `<text class="tl-axis" x="4" y="16">Scan →</text>`;
+        trace.forEach((step, k) => {
+          const x = labelW + k * colW;
+          out += `<line class="tl-grid" x1="${x}" y1="22" x2="${x}" y2="${bottom}"></line>`;
+          out += `<text class="tl-head" x="${x + colW / 2}" y="16">${k + 1}</text>`;
+          if (k === asked) out += `<text class="tl-sub" x="${x + colW / 2}" y="28">asked</text>`;
+        });
+        out += `<line class="tl-grid" x1="${labelW + trace.length * colW}" y1="22" x2="${labelW + trace.length * colW}" y2="${bottom}"></line>`;
+        rows.forEach((row, r) => {
+          const y0 = top + r * rowH;
+          const high = y0 + 6;
+          const low = y0 + rowH - 6;
+          const values = trace.map(row[1]);
+          const ys = values.map(value => value ? high : low);
+          let d = `M${labelW} ${ys[0]}`;
+          ys.forEach((y, k) => {
+            if (k > 0 && y !== ys[k - 1]) d += `V${y}`;
+            d += `H${labelW + (k + 1) * colW}`;
+          });
+          out += `<line class="tl-grid" x1="0" y1="${y0 + rowH}" x2="${width}" y2="${y0 + rowH}"></line>`;
+          out += `<text class="tl-label" x="4" y="${y0 + rowH / 2 + 4}">${esc(row[0])}</text>`;
+          out += `<path class="tl-wave${row[2]}" d="${d}"></path>`;
+          values.forEach((value, k) => {
+            out += `<text class="tl-val" x="${labelW + k * colW + colW / 2}" y="${value ? high + 13 : low - 4}">${value ? 1 : 0}</text>`;
+          });
+        });
+        const table = `<table class="sr-status"><caption>Signal values per scan</caption><tr><th>Signal</th>${trace.map((step, k) => `<th>Scan ${k + 1}</th>`).join("")}</tr>${rows.map(row => `<tr><th>${esc(row[0])}</th>${trace.map(step => `<td>${row[1](step) ? 1 : 0}</td>`).join("")}</tr>`).join("")}</table>`;
+        return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Timing diagram over ${trace.length} scans; scan ${cursor + 1} is selected and scan ${asked + 1} is the one the task asks about">${out}</svg>${table}`;
+      }
+
+      function bit(value) {
+        return value ? 1 : 0;
+      }
+
+      function truth(value) {
+        return value ? "TRUE" : "FALSE";
+      }
+
+      function changeTag(text) {
+        return `<span class="chg">changed: ${esc(text)}</span>`;
+      }
+
+      function writeNote(name, before, after) {
+        return before === after
+          ? `<span class="keep">(no change, still ${bit(after)})</span>`
+          : changeTag(`${name} ${bit(before)} → ${bit(after)}`);
+      }
+
+      /* Numbered cause → effect chain for one scan of a replay. */
+      function narrativeItems(trace, k, whatIfSet) {
+        const step = trace[k];
+        const before = k > 0 ? trace[k - 1] : null;
+        const i = step.inputs;
+        const p = step.prev;
+        const n = step.next;
+        const inputNames = [["START_PB", "start"], ["STOP_OK", "stop"], ["GUARD_OK", "guard"], ["OL_OK", "overload"]];
+        const changed = before
+          ? inputNames.filter(item => before.inputs[item[1]] !== i[item[1]]).map(item => changeTag(`${item[0]} ${bit(before.inputs[item[1]])} → ${bit(i[item[1]])}`))
+          : [];
+        const items = [];
+        items.push(`<b>READ inputs.</b> ${inputNames.map(item => `${item[0]} = ${bit(i[item[1]])}`).join(", ")}. RUN_REQ holds ${bit(p.runReq)} from the previous scan. ${changed.length ? changed.join(" ") : before ? "No input changed since the previous scan." : "This is the first scan of the replay."}`);
+
+        const series = [["STOP_OK", i.stop], ["GUARD_OK", i.guard], ["OL_OK", i.overload]];
+        const blocker = series.find(item => !item[1]);
+        const branch = i.start || p.runReq;
+        let verdict;
+        if (blocker) {
+          verdict = `The first FALSE series test from the left rail is ${blocker[0]}, so Rung 1 is FALSE whatever the Start/Hold branch does.`;
+        } else if (n.runReq) {
+          verdict = `All three permissives are TRUE and the Start/Hold branch is TRUE (through ${i.start && p.runReq ? "both Start and Hold" : i.start ? "the Start contact" : "the Hold contact"}), so Rung 1 is TRUE.`;
+        } else {
+          verdict = "All three permissives are TRUE, but neither branch is TRUE (START_PB = 0 and the hold contact reads RUN_REQ = 0), so Rung 1 is FALSE.";
+        }
+        const tests = `${series.map(item => `${item[0]} = ${bit(item[1])} → ${truth(item[1])}`).join(" · ")}<br>Start branch: START_PB = ${bit(i.start)} → ${truth(i.start)} · Hold branch: RUN_REQ read as ${bit(p.runReq)} → ${truth(p.runReq)} · Start OR Hold → ${truth(branch)}`;
+        items.push(`<b>SOLVE Rung 1 (N.O. tests, left to right).</b> ${verdict}<span class="tests">${tests}</span>`);
+
+        let keep = "";
+        if (n.runReq && p.runReq && !i.start) keep = "RUN_REQ stays 1 because the hold contact read the 1 written on the previous scan; START_PB is no longer needed.";
+        else if (n.runReq && !p.runReq) keep = "Start made the rung TRUE. From the next scan the hold contact reads this stored 1.";
+        else if (!n.runReq && p.runReq) keep = "The hold is broken: from the next scan the hold contact reads 0.";
+        else if (!n.runReq && !blocker && !i.start) keep = "RUN_REQ stays 0: the permissives are healthy again, but nothing starts the rung. A new Start press is needed.";
+        else if (!n.runReq && blocker) keep = `RUN_REQ stays 0 while ${blocker[0]} is 0.`;
+        items.push(`<b>Rung 1 coil writes RUN_REQ = ${bit(n.runReq)}.</b> ${writeNote("RUN_REQ", p.runReq, n.runReq)} ${keep ? `<span class="keep">${esc(keep)}</span>` : ""}`);
+
+        let rungTwo = `<b>SOLVE Rung 2.</b> The RUN_REQ contact reads the value Rung 1 has just written (${bit(n.runReq)}) → ${truth(n.runReq)}, so the ordinary coil writes MOTOR_RUN = ${bit(n.motor)}. ${writeNote("MOTOR_RUN", p.motor, n.motor)}`;
+        if (whatIfSet) {
+          rungTwo += ` <span class="keep">What-if: a SET (S) coil here would ${n.runReq ? "write 1" : "do nothing because its rung is FALSE"}, leaving MOTOR_RUN = ${bit(step.setBit)}${step.setBit !== n.motor ? ", still commanding the motor ON although RUN_REQ = 0" : ""}.</span>`;
+        }
+        items.push(rungTwo);
+        items.push(`<b>SOLVE Rung 3.</b> The MOTOR_RUN contact reads ${bit(n.motor)} → ${truth(n.motor)}, so the coil writes RUN_LAMP = ${bit(n.lamp)}. ${writeNote("RUN_LAMP", p.lamp, n.lamp)}`);
+        const outputChange = p.motor !== n.motor ? ` ${changeTag(`motor output ${p.motor ? "ON" : "OFF"} → ${n.motor ? "ON" : "OFF"}`)}` : "";
+        items.push(`<b>UPDATE outputs.</b> ${n.motor ? "The motor-contactor output is switched ON and the running lamp lights. MOTOR_RUN = 1 is a command, not proof that the motor turns." : "The motor-contactor output and the running lamp are OFF."}${outputChange}`);
+        return items;
+      }
+
+      function renderReplay() {
+        if (els.resolutionPanel.hidden || els.replayBlock.hidden) return;
+        const current = currentReplay();
+        const replay = current.replay;
+        const trace = simulateReplay(replay);
+        if (replayView.key !== current.key) {
+          replayView.key = current.key;
+          replayView.cursor = replay.asked;
+        }
+        const k = Math.max(0, Math.min(trace.length - 1, replayView.cursor));
+        replayView.cursor = k;
+        setHtml(els.timingDiagram, timingSvg(trace, k, replay.asked, Boolean(replay.whatIfSet)));
+        els.replayLabel.textContent = `Scan ${k + 1} of ${trace.length}: ${trace[k].note}${k === replay.asked ? "" : ` (the task asks about scan ${replay.asked + 1})`}`;
+        els.replayPrev.disabled = k === 0;
+        els.replayNext.disabled = k === trace.length - 1;
+        els.replayAsked.disabled = k === replay.asked;
+        setHtml(els.replayNarrative, narrativeItems(trace, k, Boolean(replay.whatIfSet)).map(item => `<li>${item}</li>`).join(""));
+      }
+
+      /* ---- Scores explained ---- */
+      function pointsRuleText(index) {
+        if (index === 3) return "6 cases: 2 points with no wrong prediction, 1 point with 1–2 wrong predictions, 0 with 3 or more. A wrong prediction does not end the task.";
+        const points = [1, 2, 3].map(attempt => pointsForAttempt(index, attempt));
+        return `Correct on 1st try: ${points[0]} · 2nd try: ${points[1]} · 3rd try: ${points[2]} · three misses: 0.`;
+      }
+
+      function testPointsNow() {
+        return state.testErrors === 0 ? 2 : state.testErrors <= 2 ? 1 : 0;
+      }
+
+      function stillPossible(index) {
+        if (state.completed[index]) return state.awarded[index];
+        if (index === 3) return testPointsNow();
+        return state.attempts[index] < 3 ? pointsForAttempt(index, state.attempts[index] + 1) : 0;
+      }
+
+      function pointsWhy(index) {
+        const max = taskPoints[index];
+        const earned = state.awarded[index];
+        if (!state.completed[index]) return "Not resolved yet.";
+        if (index === 3) {
+          const errors = plural(state.testErrors, "wrong prediction");
+          return earned === max ? "Full points: no wrong prediction." : `${plural(max - earned, "point")} lost: ${errors} (0 wrong earns 2, 1–2 wrong earn 1).`;
+        }
+        const misses = (state.wrongPicks[index] || []).length;
+        if (state.outcome[index] === "limit") return `${plural(max, "point")} lost: attempt limit reached after three incorrect answers.`;
+        if (earned === max) return "Full points: correct on the first attempt.";
+        if (state.outcome[index] === "correct") return `${plural(max - earned, "point")} lost: ${plural(misses || state.attempts[index] - 1, "incorrect answer")} before the correct one${earned === 0 ? " (only a first-try answer scores on this task)" : ""}.`;
+        return `${plural(max - earned, "point")} lost after ${plural(state.attempts[index], "attempt")}.`;
+      }
+
+      function taskStatusText(index) {
+        if (state.completed[index]) {
+          if (index === 3) return `Resolved: ${testCases.length}/${testCases.length} cases, ${plural(state.testErrors, "wrong prediction")}.`;
+          if (state.outcome[index] === "limit") return "Resolved: attempt limit reached.";
+          if (state.outcome[index] === "correct") return `Resolved: correct on attempt ${state.attempts[index]}.`;
+          return `Resolved after ${plural(state.attempts[index], "attempt")}.`;
+        }
+        if (index > frontier()) return `Opens after Task ${index}.`;
+        if (index === 3) return `In progress: ${state.testPassed.filter(Boolean).length} of ${testCases.length} cases, ${plural(state.testErrors, "wrong prediction")} so far, on track for ${plural(testPointsNow(), "point")}.`;
+        const used = state.attempts[index];
+        return `In progress: ${used} of 3 attempts used; a correct answer now earns ${plural(pointsForAttempt(index, used + 1), "point")}.`;
+      }
+
+      function renderScoreExplain() {
+        const possible = tasks.reduce((total, task, index) => total + stillPossible(index), 0);
+        els.scoreExplainSummary.textContent = state.finished
+          ? `Final score ${state.score}/${MAX_SCORE}`
+          : `Score ${state.score}/${MAX_SCORE} · up to ${possible}/${MAX_SCORE} still possible`;
+        setHtml(els.scoreExplainBody, tasks.map((task, index) => {
+          const reached = index <= frontier();
+          return `
+            <tr>
+              <td>Task ${index + 1}${reached ? ` · ${esc(task.title)}` : ""}</td>
+              <td>${esc(pointsRuleText(index))}</td>
+              <td>${esc(taskStatusText(index))}${state.completed[index] ? ` ${esc(pointsWhy(index))}` : ""}</td>
+              <td>${state.completed[index] ? state.awarded[index] : "–"}/${taskPoints[index]}</td>
+            </tr>`;
+        }).join(""));
+        els.scoreExplainNote.textContent = `The score counts resolved tasks only.${state.finished ? "" : ` Highest score still possible: ${possible}/${MAX_SCORE}.`} At the end, 8/10 or more is reported as “Mastery achieved”; below 8 as “Further practice recommended”.`;
+      }
+
+      /* ---- Page-level question panel ---- */
+      function renderQuestionPanel() {
+        const reach = frontier();
+        const html = tasks.map((task, index) => {
+          const resolved = state.completed[index];
+          const current = !state.finished && index === state.stage;
+          const blocker = blockedBy(index);
+          let status;
+          let statusClass;
+          if (resolved) {
+            status = `Answered · ${state.awarded[index]}/${taskPoints[index]} points`;
+            statusClass = "is-answered";
+          } else if (index === reach && !state.finished) {
+            status = index === 3 ? `Not answered yet · ${state.testPassed.filter(Boolean).length} of ${testCases.length} cases done` : `Not answered yet · ${state.attempts[index]} of 3 attempts used`;
+            statusClass = "is-current";
+          } else {
+            status = `Not answered · opens after Task ${index}`;
+            statusClass = "is-locked";
+          }
+          const action = current
+            ? `<a href="#taskCard">Go to the question ↓</a>`
+            : !state.finished && index <= reach
+              ? `<button type="button" class="btn btn-ghost" data-goto="${index}">${resolved ? "Review" : "Open"} Task ${index + 1}</button>`
+              : "";
+          const answer = !resolved
+            ? ""
+            : blocker < 0
+              ? `<p class="subq-answer"><b>Short answer:</b> ${esc(task.answer)}</p>`
+              : `<p class="subq-answer text-muted">Short answer held back while Task ${blocker + 1} is open, because it asks about the same idea.</p>`;
+          return `
+            <li class="subq${current ? " is-current" : ""}${resolved ? " is-answered" : ""}">
+              <span class="subq-num" aria-hidden="true">${index + 1}</span>
+              <div class="subq-body">
+                <p><b>Task ${index + 1}:</b> ${esc(task.subQuestion)}</p>
+                <div class="subq-meta"><span class="status-pill ${statusClass}">${esc(status)}</span>${current ? `<span class="status-pill is-current">You are here</span>` : ""}${action}</div>
+                ${answer}
+              </div>
+            </li>`;
+        }).join("");
+        setHtml(els.subQuestionList, html);
+        const taskLink = root.querySelector("#currentTaskLink");
+        if (taskLink) {
+          taskLink.href = state.finished ? "#completionPanel" : "#taskCard";
+          taskLink.textContent = state.finished ? "Your results ↓" : "Current task ↓";
+        }
+        const answered = state.completed.filter(Boolean).length;
+        els.mainQuestionStatus.textContent = answered === tasks.length
+          ? `All ${tasks.length} sub-questions are answered. The full answer to the main question is in the end summary.`
+          : `${answered} of ${tasks.length} sub-questions answered. The full answer to the main question appears in the end summary when all six are answered.`;
+      }
+
+      function renderGlossary() {
+        setHtml(els.glossaryList, glossary.map(entry => {
+          const locked = entry.task !== undefined && !explanationOpen(entry.task);
+          let text = entry.def;
+          if (locked) {
+            text = state.completed[entry.task]
+              ? `Definition held back while Task ${blockedBy(entry.task) + 1} is open, because that task asks about the same idea.`
+              : `Definition unlocks when Task ${entry.task + 1} is resolved, because that task asks about this term.`;
+          }
+          return `<div${locked ? ` class="is-locked"` : ""}><dt>${esc(entry.term)}</dt><dd>${esc(text)}</dd></div>`;
+        }).join(""));
+      }
+
+      /* ---- Answer and explanation after a task (or a Task 4 case) is resolved ---- */
+      function sentence(text) {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+      }
+
+      function resultLine(index) {
+        const earned = state.awarded[index];
+        const max = taskPoints[index];
+        return `Your result: ${taskStatusText(index).replace(/^Resolved: /, "")} ${earned}/${max} ${max === 1 ? "point" : "points"}. ${pointsWhy(index)}`;
+      }
+
+      function optionReviewHtml(options, correct, why, wrongPicks, answeredCorrectly) {
+        return `<ul class="option-review">${options.map(option => {
+          const ok = option[0] === correct;
+          const mark = ok ? (answeredCorrectly ? " (your answer)" : "") : wrongPicks.includes(option[0]) ? " (you chose this)" : "";
+          return `<li class="${ok ? "is-correct" : "is-wrong"}"><span class="verdict">${ok ? "Correct" : "Wrong"}${mark}:</span> ${esc(option[1].trim())}<span class="why">${esc(why[option[0]] || "")}</span></li>`;
+        }).join("")}</ul>`;
+      }
+
+      function lessonsHtml(task) {
+        return `
+          <div class="lesson-grid">
+            <div>
+              <h4 class="mini-heading">Key takeaways</h4>
+              <ul class="plain-list">${task.takeaways.map(item => `<li>${esc(item)}</li>`).join("")}</ul>
+            </div>
+            <div class="mistake-box"><strong>Common mistake</strong><p>${esc(task.mistake)}</p></div>
+          </div>`;
+      }
+
+      function caseDetailHtml(index) {
+        const test = testCases[index];
+        const why = {
+          on: test.expected === "on" ? test.reason : test.whyWrong,
+          off: test.expected === "off" ? test.reason : test.whyWrong
+        };
+        const options = tasks[3].options;
+        return `
+          <p class="model-answer"><b>${esc(test.name)}.</b> ${esc(test.question)} <b>Answer: MOTOR_RUN = ${test.expected === "on" ? "ON" : "OFF"}.</b></p>
+          <h4 class="mini-heading">Why each option is right or wrong</h4>
+          ${optionReviewHtml(options, test.expected, why, [], false)}`;
+      }
+
+      function renderTestResolution() {
+        const task = tasks[3];
+        if (state.completed[3]) {
+          els.resolutionHeading.textContent = "Model answer · all six cases";
+          const rows = testCases.map((test, index) => `<tr><td>${esc(test.name)}</td><td>${test.expected === "on" ? "ON" : "OFF"}</td><td>${state.testMisses[index] ? plural(state.testMisses[index], "wrong prediction") : "Correct first time"}</td></tr>`).join("");
+          setHtml(els.resolutionBody, `
+            <p class="result-line">${esc(resultLine(3))}</p>
+            <p class="model-answer"><b>Answer:</b> ${esc(task.model)}</p>
+            <div class="table-responsive"><table class="score-table" aria-label="Correct command for each case"><thead><tr><th scope="col">Case</th><th scope="col">MOTOR_RUN</th><th scope="col">Your predictions</th></tr></thead><tbody>${rows}</tbody></table></div>
+            <h4 class="mini-heading">Explain one case in detail</h4>
+            ${caseDetailHtml(replayView.caseIndex)}`);
+          setHtml(els.replayCases, testCases.map((test, index) => `<button type="button" class="btn" data-case="${index}" aria-pressed="${index === replayView.caseIndex ? "true" : "false"}">${esc(test.name)}</button>`).join(""));
+          setHtml(els.resolutionLessons, lessonsHtml(task));
+          return;
+        }
+        const index = state.testIndex;
+        const misses = state.testMisses[index] || 0;
+        const passed = state.testPassed[index];
+        els.resolutionHeading.textContent = `Answer for case ${testCases[index].name}`;
+        const result = passed
+          ? (misses ? `Your result: correct after ${plural(misses, "wrong prediction")} on this case.` : "Your result: correct first time on this case.")
+          : "Your prediction did not match the PLC result shown above. Select the matching command and check again to complete this case.";
+        setHtml(els.resolutionBody, `<p class="result-line">${esc(result)} Task 4 so far: ${plural(state.testErrors, "wrong prediction")}, on track for ${plural(testPointsNow(), "point")}.</p>${caseDetailHtml(index)}`);
+        setHtml(els.replayCases, "");
+        setHtml(els.resolutionLessons, "");
+      }
+
+      function renderTaskResolution() {
+        const index = state.stage;
+        const task = tasks[index];
+        els.resolutionHeading.textContent = "Model answer";
+        setHtml(els.resolutionBody, `
+          <p class="result-line">${esc(resultLine(index))}</p>
+          <p class="model-answer"><b>Answer:</b> ${esc(task.model)}</p>
+          <h4 class="mini-heading">Why each option is right or wrong</h4>
+          ${optionReviewHtml(task.options, task.correct, task.why, state.wrongPicks[index] || [], state.outcome[index] === "correct")}`);
+        setHtml(els.replayCases, "");
+        setHtml(els.resolutionLessons, lessonsHtml(task));
+      }
+
+      function renderResolution() {
+        const stage = state.stage;
+        const show = !state.finished && Boolean(state.completed[stage] || (stage === 3 && caseRevealed()));
+        els.resolutionPanel.hidden = !show;
+        if (!show) return;
+        const blocker = state.completed[stage] ? blockedBy(stage) : -1;
+        els.replayBlock.hidden = blocker >= 0;
+        if (blocker >= 0) {
+          els.resolutionHeading.textContent = "Model answer held back";
+          setHtml(els.resolutionBody, `<p class="locked-note">You resolved this task earlier (${esc(resultLine(stage).replace(/^Your result: /, ""))}). Its explanation returns once Task ${blocker + 1} is resolved, because Task ${blocker + 1} asks about the same idea.</p>`);
+          setHtml(els.replayCases, "");
+          setHtml(els.resolutionLessons, "");
+          return;
+        }
+        currentReplay();
+        if (stage === 3) renderTestResolution();
+        else renderTaskResolution();
+        renderReplay();
+      }
+
+      /* ---- Final results ---- */
+      function renderFinalReview() {
+        setHtml(els.finalReview, tasks.map((task, index) => {
+          let yourResult;
+          let correct;
+          if (index === 3) {
+            const misses = testCases.map((test, k) => state.testMisses[k] ? `${test.name} (${state.testMisses[k]} wrong)` : "").filter(Boolean);
+            yourResult = `${state.testPassed.filter(Boolean).length}/${testCases.length} cases, ${plural(state.testErrors, "wrong prediction")}${misses.length ? `: ${misses.join("; ")}` : ""}.`;
+            correct = testCases.map(test => `${test.name}: ${test.expected === "on" ? "ON" : "OFF"}`).join(" · ");
+          } else {
+            const picks = (state.wrongPicks[index] || []).map(id => `“${optionText(task, id)}”`);
+            yourResult = `${sentence(taskStatusText(index).replace(/^Resolved: /, ""))}${picks.length ? ` Incorrect answer${picks.length === 1 ? "" : "s"}: ${picks.join(", ")}.` : ""}`;
+            correct = optionText(task, task.correct);
+          }
+          return `
+            <li>
+              <h4>Task ${index + 1} · ${esc(task.title)}</h4>
+              <dl>
+                <dt>Question</dt><dd>${esc(index === 3 ? task.subQuestion : task.question)}</dd>
+                <dt>Your result</dt><dd>${esc(yourResult)}</dd>
+                <dt>Correct answer</dt><dd>${esc(correct)}</dd>
+                <dt>Why</dt><dd>${esc(task.answer)}</dd>
+                <dt>Points</dt><dd>${state.awarded[index]}/${taskPoints[index]} · ${esc(pointsWhy(index))}</dd>
+              </dl>
+            </li>`;
+        }).join(""));
+        setHtml(els.endSummary, `
+          <h3 class="mini-heading">You have now answered</h3>
+          <p><b>Main question:</b> How do a holding contact and three healthy-state permissives decide, scan by scan, whether the PLC commands the conveyor motor ON?</p>
+          <p class="main-answer"><b>Answer:</b> ${esc(MAIN_ANSWER)}</p>
+          <ol class="plain-list">${tasks.map(task => `<li><b>${esc(task.subQuestion)}</b> ${esc(task.answer)}</li>`).join("")}</ol>`);
+      }
+
       function defaultCoach() {
         if (state.completed[state.stage]) {
-          if (state.stage === 3) return "All required operating cases are complete. Review the TRUE instruction paths and the values written by the coils, then continue.";
-          return "This task is complete. You can review the rungs or continue to the next task.";
+          if (state.stage === 3) return "All required operating cases are complete. Review the TRUE instruction paths, the values written by the coils and the case replays below, then continue.";
+          return explanationOpen(state.stage)
+            ? "This task is complete. Its model answer and scan replay are below the Check button; continue when you are ready."
+            : "This task is complete. You can review the rungs or continue to the next task.";
         }
         if (state.stage === 3) {
           return "Predict first. After you check, compare your answer with the live bit values and TRUE/FALSE rung results.";
@@ -2511,8 +2985,11 @@ svg {
           return;
         }
         const task = tasks[state.stage];
+        state.reached = Math.max(state.reached || 0, state.stage);
         els.work.hidden = false;
         els.completionPanel.hidden = true;
+        els.taskCard.hidden = false;
+        els.coachCard.hidden = false;
         els.step.textContent = `Task ${state.stage + 1} of ${tasks.length}`;
         els.progress.value = state.stage + 1;
         els.score.textContent = `Score ${state.score}/${MAX_SCORE}`;
@@ -2525,6 +3002,11 @@ svg {
         renderScanStory();
         renderRung();
         renderAnswers();
+        renderTaskQuestion();
+        renderQuestionPanel();
+        renderScoreExplain();
+        renderGlossary();
+        renderResolution();
 
         const hasSelection = state.stage === 3 ? Boolean(state.testSelected) : Boolean(state.selected);
         els.checkButton.disabled = state.completed[state.stage] || !hasSelection || (state.stage === 3 && state.testReadyNext);
@@ -2536,12 +3018,18 @@ svg {
           els.checkButton.textContent = "Task complete";
         }
         els.hintButton.textContent = state.hints[state.stage] ? "Hint shown" : "Show a hint";
-        els.hintButton.disabled = state.completed[state.stage] || state.attempts[state.stage] < 1 || state.hints[state.stage];
+        els.hintButton.disabled = state.completed[state.stage] || !hintUnlocked(state.stage) || state.hints[state.stage];
         els.backButton.disabled = state.stage === 0;
         els.nextButton.disabled = !state.completed[state.stage];
         els.nextButton.textContent = state.stage === tasks.length - 1 ? "Finish exercise" : "Next task";
         saveState();
         reportHeight();
+      }
+
+      /* The hint unlocks after the first failed attempt. Task 4 adds every check (also correct ones)
+         to attempts[3], so its failed predictions are counted by testErrors instead. */
+      function hintUnlocked(stage) {
+        return stage === 3 ? state.testErrors >= 1 : state.attempts[stage] >= 1;
       }
 
       function pointsForAttempt(stage, attempt) {
@@ -2565,33 +3053,22 @@ svg {
           state.answers[state.stage] = state.selected;
           const points = pointsForAttempt(state.stage, state.attempts[state.stage]);
           award(state.stage, points);
-          const feedback = [
-            "Correct. The ordinary coil first writes RUN_REQ = 1. On the following scan, the RUN_REQ contact reads that stored 1 and keeps the branch TRUE after START_PB is released, while every required permissive remains TRUE.",
-            "Correct. The MOTOR_RUN ordinary coil is the writing instruction. The RUN_REQ contact on the left reads stored data; it does not write the motor command.",
-            "Correct. The ordinary coil writes the current rung result whenever Rung 2 is solved. When RUN_REQ = 0, it writes MOTOR_RUN = 0; the physical channel changes during output update.",
-            "",
-            "Correct. OL_OK is the first FALSE test. RUN_REQ, MOTOR_RUN and RUN_LAMP becoming 0 are downstream results.",
-            "Correct. An ordinary coil follows the rung result. A retained SET instruction would keep the bit at 1 until separate reset logic executed, which is inappropriate for this direct motor command."
-          ];
-          state.coach = `${feedback[state.stage]} ${points} point${points === 1 ? "" : "s"} earned.`;
+          state.outcome[state.stage] = "correct";
+          state.coach = `Correct: “${optionText(task, task.correct)}”. ${points} point${points === 1 ? "" : "s"} earned. The model answer, why each other option is wrong and a scan replay are shown below.`;
           els.srStatus.textContent = "Correct answer.";
         } else {
-          const feedback = [
-            "START_PB is only the initial path. The RUN_REQ holding contact reads the stored RUN_REQ bit and maintains the branch after START_PB is released.",
-            "The MOTOR_RUN ordinary coil at the right writes the rung result. Contacts and the left rail do not write MOTOR_RUN.",
-            "The correct instruction is an ordinary coil because it writes 0 automatically when the rung becomes false.",
-            "",
-            "OL_OK is the first false permissive. RUN_REQ, MOTOR_RUN and RUN_LAMP are downstream results.",
-            "An ordinary coil follows the rung result. A retained SET instruction would require separate reset logic."
-          ];
+          (state.wrongPicks[state.stage] = state.wrongPicks[state.stage] || []).push(state.selected);
           if(state.attempts[state.stage] >= 3){
             award(state.stage,0);
             state.answers[state.stage] = task.correct;
             state.selected = task.correct;
-            state.coach = `Attempt limit reached. Correct explanation: ${feedback[state.stage]}`;
+            state.outcome[state.stage] = "limit";
+            state.coach = `Attempt limit reached: this task scores 0. The correct answer is “${optionText(task, task.correct)}”; its explanation is shown below under “Answer and explanation”.`;
             els.srStatus.textContent = "Attempt limit reached. Correct explanation displayed.";
           }else{
-            state.coach = "Not yet. Review the rung and try again. A hint is now available.";
+            const used = state.attempts[state.stage];
+            const nextPoints = pointsForAttempt(state.stage, used + 1);
+            state.coach = `Not yet: “${optionText(task, state.selected)}” is not correct. Review the rung and try again. A hint is now available. Attempt ${used} of 3 used; a correct answer on the next attempt earns ${nextPoints} of ${taskPoints[state.stage]} point${taskPoints[state.stage] === 1 ? "" : "s"}.`;
             els.srStatus.textContent = "Answer not correct yet.";
           }
         }
@@ -2613,23 +3090,26 @@ svg {
         if (!test || !state.testSelected) return;
         applyTestCase(state.testIndex);
         state.attempts[3] += 1;
+        state.testChecked[state.testIndex] = true;
         const actual = state.mem.motor ? "on" : "off";
         if (state.testSelected === test.expected && actual === test.expected) {
           state.testPassed[state.testIndex] = true;
-          state.coach = `Correct. ${test.reason} Remember: MOTOR_RUN = 1 is a PLC output command, not proof that the physical motor is rotating.`;
+          state.coach = `Correct: the PLC writes MOTOR_RUN = ${actual.toUpperCase()} on this scan. The reason and a scan replay are shown below.`;
           els.srStatus.textContent = `Test ${state.testIndex + 1} correct.`;
           if (state.testPassed.every(Boolean)) {
             const points = state.testErrors === 0 ? 2 : state.testErrors <= 2 ? 1 : 0;
             award(3, points);
             state.answers[3] = `${state.testPassed.filter(Boolean).length}/${testCases.length} tests`;
-            state.coach += ` All ${testCases.length} tests are complete. ${points} point${points === 1 ? "" : "s"} earned.`;
+            state.coach += ` All ${testCases.length} cases are complete. ${points} point${points === 1 ? "" : "s"} earned.`;
             state.testReadyNext = false;
           } else {
             state.testReadyNext = true;
+            state.coach += " Press “Next test case” to continue.";
           }
         } else {
           state.testErrors += 1;
-          state.coach = `The PLC command result is MOTOR_RUN = ${actual.toUpperCase()}. ${test.reason}`;
+          state.testMisses[state.testIndex] = (state.testMisses[state.testIndex] || 0) + 1;
+          state.coach = `The PLC command result is MOTOR_RUN = ${actual.toUpperCase()}. That is wrong prediction ${state.testErrors} in Task 4 (0 wrong earns 2 points, 1–2 wrong earn 1, 3 or more earn 0). The explanation is below; select the matching command and check again to complete this case.`;
           els.srStatus.textContent = `Test ${state.testIndex + 1} needs another answer.`;
         }
         render();
@@ -2643,8 +3123,10 @@ svg {
         state.testReadyNext = false;
         state.coach = "";
         prepareStage(state.stage);
+        /* A case that was already passed must not be predicted (and scored) a second time. */
+        if (state.stage === 3 && !state.completed[3] && state.testPassed[state.testIndex]) state.testReadyNext = true;
         render();
-        root.scrollIntoView({ behavior: "smooth", block: "start" });
+        (els.exerciseMeta || root).scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
       function finishExercise() {
@@ -2672,6 +3154,9 @@ svg {
       function renderCompletion() {
         els.work.hidden = true;
         els.completionPanel.hidden = false;
+        /* The last task and its coach message are stale once the results are shown. */
+        els.taskCard.hidden = true;
+        els.coachCard.hidden = true;
         els.step.textContent = "Complete";
         els.progress.value = tasks.length;
         els.score.textContent = `Score ${state.score}/${MAX_SCORE}`;
@@ -2681,9 +3166,13 @@ svg {
           : "Further practice is recommended. Retry the exercise and separate the physical device, stored tag, software test and coil write at each step.";
         els.summaryBody.innerHTML = tasks.map((task, index) => `
           <tr>
-            <td>${esc(task.title)}</td>
+            <td>${esc(task.title)}<small>${esc(pointsWhy(index))}</small></td>
             <td>${state.awarded[index]}/${taskPoints[index]}</td>
           </tr>`).join("");
+        renderFinalReview();
+        renderQuestionPanel();
+        renderScoreExplain();
+        renderGlossary();
         reportHeight();
       }
 
@@ -2700,6 +3189,32 @@ svg {
           render();
           return;
         }
+        const target = event.target.closest("[data-goto]");
+        if (target) {
+          const index = Number(target.getAttribute("data-goto"));
+          if (!state.finished && index <= frontier()) goToStage(index);
+          return;
+        }
+        const pick = event.target.closest("[data-case]");
+        if (pick) {
+          replayView.caseIndex = Number(pick.getAttribute("data-case"));
+          render();
+        }
+      });
+
+      els.replayPrev.addEventListener("click", () => {
+        replayView.cursor -= 1;
+        renderReplay();
+      });
+
+      els.replayNext.addEventListener("click", () => {
+        replayView.cursor += 1;
+        renderReplay();
+      });
+
+      els.replayAsked.addEventListener("click", () => {
+        replayView.cursor = currentReplay().replay.asked;
+        renderReplay();
       });
 
       els.previousRung.addEventListener("click", () => {
@@ -2717,7 +3232,7 @@ svg {
       });
 
       els.hintButton.addEventListener("click", () => {
-        if(state.attempts[state.stage] < 1 || state.completed[state.stage] || state.hints[state.stage]) return;
+        if(!hintUnlocked(state.stage) || state.completed[state.stage] || state.hints[state.stage]) return;
         state.hints[state.stage] = true;
         state.coach = `Hint: ${tasks[state.stage].hint}`;
         render();
