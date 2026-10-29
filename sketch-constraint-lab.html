@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sketch Constraint Lab</title>
+<meta name="description" content="Onshape-style 2D sketch environment: draw lines, rectangles, circles, arcs, slots and polygons, then add geometric constraints and dimensions to turn the same primitives into different, fully defined sketches.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f4f6f8'/%3E%3Cpath d='M6 24h20M6 24V8l20 16' fill='none' stroke='%231a73e8' stroke-width='2.5'/%3E%3Ccircle cx='6' cy='24' r='2.6' fill='%23222'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#eef1f4; --panel:#fff; --ink:#1f2328; --muted:#5f6b78; --line:#d5dbe1; --soft:#f5f7f9;
+  --free:#1a73e8; --def:#1f2328; --over:#d93025; --sel:#f29900; --ok:#188038; --accent:#1a73e8;
+  --radius:8px; --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;display:flex;flex-direction:column;min-height:100vh}
+header{display:flex;align-items:baseline;gap:14px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-wrap:wrap}
+header h1{font-size:18px;margin:0;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);font-size:13px}
+#toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
+.tgroup{display:flex;gap:2px;align-items:center;padding-right:8px;margin-right:2px;border-right:1px solid var(--line)}
+.tgroup:last-child{border-right:none}
+.tgroup .glabel{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px;writing-mode:vertical-rl;transform:rotate(180deg)}
+.tb{width:34px;height:34px;display:inline-grid;place-items:center;border:1px solid transparent;border-radius:6px;background:none;color:var(--ink);cursor:pointer;position:relative;padding:0}
+.tb svg{width:20px;height:20px}
+.tb:hover{background:var(--soft);border-color:var(--line)}
+.tb.on{background:#e8f0fe;border-color:#a8c7fa;color:#0b57d0}
+.tb.hint::after{content:"";position:absolute;right:3px;top:3px;width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.tb:disabled{opacity:.35;cursor:default}
+.tb .k{position:absolute;right:2px;bottom:0;font-size:9px;color:var(--muted);font-family:var(--mono)}
+#sides{width:46px;height:28px;border:1px solid var(--line);border-radius:6px;padding:0 4px;font:inherit}
+main{flex:1;display:grid;grid-template-columns:310px 1fr 300px;min-height:0}
+aside{background:var(--panel);overflow-y:auto;padding:12px 14px;min-height:0}
+#left{border-right:1px solid var(--line)} #right{border-left:1px solid var(--line)}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:14px 0 6px}
+h2:first-child{margin-top:0}
+#stage{position:relative;min-height:420px;overflow:hidden;background:#fbfcfd}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#hud{position:absolute;left:10px;bottom:8px;font:12px var(--mono);color:var(--muted);pointer-events:none;background:rgba(251,252,253,.85);padding:2px 6px;border-radius:4px}
+#prompt{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:#202124;color:#fff;padding:6px 12px;border-radius:6px;font-size:13px;pointer-events:none;max-width:90%;text-align:center}
+#prompt:empty{display:none}
+#dimEdit{position:absolute;display:none;width:84px;font:13px var(--mono);padding:3px 5px;border:2px solid var(--accent);border-radius:4px;z-index:5}
+#stageBtns{position:absolute;right:10px;top:10px;display:flex;gap:4px}
+.mini{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:4px 9px;font:inherit;font-size:12px;cursor:pointer;color:var(--ink)}
+.mini:hover{background:var(--soft)}
+.lessons{display:flex;flex-direction:column;gap:3px}
+.lessons button{text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 9px;font:inherit;font-size:13px;cursor:pointer;color:var(--ink)}
+.lessons button:hover{background:var(--soft)}
+.lessons button.on{border-color:var(--accent);background:#e8f0fe}
+.lessons .tag{font-size:10px;color:var(--sel);font-weight:600;text-transform:uppercase;margin-left:4px}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;background:var(--soft);margin-top:8px}
+.card h3{margin:0 0 4px;font-size:15px}
+.card p{margin:0 0 8px}
+ol.steps{margin:6px 0 8px;padding-left:20px}
+ol.steps li{margin:2px 0;color:var(--muted);cursor:pointer}
+ol.steps li.done{color:var(--ink)}
+ol.steps li.cur{color:var(--ink);font-weight:600}
+.stepText{background:var(--panel);border-left:3px solid var(--accent);padding:8px 10px;border-radius:4px;margin:6px 0}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:6px;padding:6px 11px;font:inherit;font-size:13px;cursor:pointer}
+.btn.ghost{background:var(--panel);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.c-free{color:var(--free)} .c-def{color:var(--def)} .c-over{color:var(--over)}
+#dofBox{display:flex;align-items:center;gap:12px}
+#dofNum{font:700 34px/1 var(--mono)}
+#dofState{font-weight:600}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.legend{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:12px;color:var(--muted);margin-top:8px;align-items:center}
+.legend i{display:inline-block;width:26px;height:0;border-top:2.5px solid}
+#check{margin-top:8px;padding:8px 10px;border-radius:6px;font-size:13px}
+#check.pass{background:#e6f4ea;color:var(--ok)} #check.fail{background:#fce8e6;color:#a50e0e}
+#selInfo{font-size:13px}
+#selInfo .opts{color:var(--muted);margin-top:4px}
+#conList{list-style:none;margin:0;padding:0;font-size:13px}
+#conList li{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:4px;cursor:pointer}
+#conList li:hover,#conList li.hl{background:#fef7e0}
+#conList li.sel{background:#feefc3}
+#conList .sym{width:22px;text-align:center;font-weight:700;font-family:var(--mono)}
+#conList .flag{color:var(--over);font-size:11px;font-weight:600}
+#conList .x{margin-left:auto;border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px}
+#log{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+#log div{background:var(--soft);border-radius:4px;padding:4px 7px}
+#log b{color:var(--ink)}
+.help{font-size:12.5px;color:var(--muted)}
+.help kbd{font:11px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 3px;background:var(--panel);color:var(--ink)}
+@media (max-width:1100px){
+  main{display:flex;flex-direction:column}
+  aside{overflow:visible;flex:none}
+  #left{order:1;border-right:none;border-bottom:1px solid var(--line)}
+  #stage{order:2;height:65vh;flex:none} #right{order:3;border-left:none;border-top:1px solid var(--line)}
+  .tgroup{flex-wrap:wrap;border-right:none}
+  .tgroup .glabel{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Sketch Constraint Lab</h1>
+  <p>How shapes + constraints in an Onshape-style sketch produce different 2D designs — and when a sketch is fully defined.</p>
+</header>
+<div id="toolbar"></div>
+<main>
+  <aside id="left">
+    <h2>Lessons &amp; challenges</h2>
+    <div class="lessons" id="lessonList"></div>
+    <div class="card" id="lessonCard"></div>
+  </aside>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="prompt"></div>
+    <div id="hud"></div>
+    <div id="stageBtns">
+      <button class="mini" id="btnFit" title="Zoom to fit (F)">Fit</button>
+      <button class="mini" id="btnBadges" title="Show / hide constraint icons">Constraints: on</button>
+    </div>
+    <input id="dimEdit" type="text" inputmode="decimal" aria-label="Dimension value">
+  </div>
+  <aside id="right">
+    <h2>Sketch status</h2>
+    <div id="dofBox"><div id="dofNum">0</div><div><div id="dofState"></div><div class="help">degrees of freedom left</div></div></div>
+    <div class="legend">
+      <i style="border-color:var(--free)"></i><span>Under-defined — can still move</span>
+      <i style="border-color:var(--def)"></i><span>Fully defined</span>
+      <i style="border-color:var(--over)"></i><span>Over-defined / conflicting</span>
+      <i style="border-color:var(--muted);border-top-style:dashed"></i><span>Construction geometry</span>
+    </div>
+    <div id="check" hidden></div>
+    <h2>Selection</h2>
+    <div id="selInfo"></div>
+    <h2>Constraints <span id="conCount"></span></h2>
+    <ul id="conList"></ul>
+    <h2>What just happened</h2>
+    <div id="log"></div>
+    <h2>Controls</h2>
+    <div class="help">
+      Click to select (selection accumulates), click empty space or <kbd>Esc</kbd> to clear, drag on empty space to box-select.
+      Drag geometry to see what is still free. Wheel = zoom, right/middle-drag = pan.
+      Pick entities, then a constraint — or pick the constraint first, then the entities.
+      Double-click a dimension to edit it. <kbd>Del</kbd> deletes, <kbd>Ctrl</kbd>+<kbd>Z</kbd>/<kbd>Y</kbd> undo/redo.
+    </div>
+  </aside>
+</main>
+<script>
+/* ===================== CORE: model + constraint solver (no DOM) ===================== */
+const Core = (() => {
+  const DEG = Math.PI / 180;
+  const TOL = 1e-7;
+
+  function newModel() {
+    const M = { P: [], ents: [], cons: [], nextId: 1 };
+    // the sketch origin: a locked point, like Onshape's origin
+    const o = addPoint(M, 0, 0);
+    o.origin = true; o.locked = true;
+    return M;
+  }
+  const clone = M => JSON.parse(JSON.stringify(M));
+  const byId = (M, id) => M.ents.find(e => e.id === id) || M.cons.find(c => c.id === id);
+  const ent = (M, id) => M.ents.find(e => e.id === id);
+
+  function param(M, v) { M.P.push(v); return M.P.length - 1; }
+  function addPoint(M, x, y, owner = null) {
+    const e = { id: M.nextId++, t: 'point', xi: param(M, x), yi: param(M, y), owner };
+    M.ents.push(e); return e;
+  }
+  function addLine(M, x1, y1, x2, y2, construction = false) {
+    const e = { id: M.nextId++, t: 'line', construction };
+    const a = addPoint(M, x1, y1, e.id), b = addPoint(M, x2, y2, e.id);
+    e.a = a.id; e.b = b.id; M.ents.push(e); return e;
+  }
+  function addCircle(M, cx, cy, r, construction = false) {
+    const e = { id: M.nextId++, t: 'circle', construction };
+    const c = addPoint(M, cx, cy, e.id);
+    e.c = c.id; e.ri = param(M, r); M.ents.push(e); return e;
+  }
+  // arc runs counter-clockwise from a to b around centre c
+  function addArc(M, cx, cy, r, a0, a1, construction = false) {
+    const e = { id: M.nextId++, t: 'arc', construction };
+    const c = addPoint(M, cx, cy, e.id);
+    const a = addPoint(M, cx + r * Math.cos(a0), cy + r * Math.sin(a0), e.id);
+    const b = addPoint(M, cx + r * Math.cos(a1), cy + r * Math.sin(a1), e.id);
+    e.c = c.id; e.a = a.id; e.b = b.id; M.ents.push(e);
+    M.cons.push({ id: M.nextId++, t: 'arcR', refs: [e.id] });
+    return e;
+  }
+
+  // ---------- geometry accessors (read from parameter vector P) ----------
+  const XY = (M, P, id) => { const p = ent(M, id); return [P[p.xi], P[p.yi]]; };
+  const pparams = (M, id) => { const p = ent(M, id); return [p.xi, p.yi]; };
+  function radius(M, P, e) {
+    if (e.t === 'circle') return P[e.ri];
+    const c = XY(M, P, e.c), a = XY(M, P, e.a);
+    return Math.hypot(a[0] - c[0], a[1] - c[1]);
+  }
+  function entParams(M, id) {
+    const e = ent(M, id);
+    if (e.t === 'point') return [e.xi, e.yi];
+    if (e.t === 'line') return [...pparams(M, e.a), ...pparams(M, e.b)];
+    if (e.t === 'circle') return [...pparams(M, e.c), e.ri];
+    return [...pparams(M, e.c), ...pparams(M, e.a), ...pparams(M, e.b)];
+  }
+  const isCurve = e => e && (e.t === 'circle' || e.t === 'arc');
+  const cross = (u, v) => u[0] * v[1] - u[1] * v[0];
+  const dot = (u, v) => u[0] * v[0] + u[1] * v[1];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+  const len = u => Math.hypot(u[0], u[1]);
+  const wrapPi = a => { while (a > Math.PI) a -= 2 * Math.PI; while (a <= -Math.PI) a += 2 * Math.PI; return a; };
+  function lineVec(M, P, id) { const l = ent(M, id); const a = XY(M, P, l.a), b = XY(M, P, l.b); return [a, b, sub(b, a)]; }
+  function signedDistPtLine(M, P, pid, lid) {
+    const [a, , d] = lineVec(M, P, lid); return cross(d, sub(XY(M, P, pid), a)) / (len(d) || 1e-12);
+  }
+  // the end point of curve i that an active coincident constraint joins to an end point of curve j
+  function sharedPoint(M, i, j) {
+    const ends = e => e.t === 'line' || e.t === 'arc' ? [e.a, e.b] : [];
+    const ei = ends(i), ej = ends(j);
+    for (const c of M.cons) {
+      if (c.flag || c.t !== 'coincident') continue;
+      const [p, q] = c.refs;
+      if (ei.includes(p) && (ej.includes(q) || q === j.id)) return p;
+      if (ei.includes(q) && (ej.includes(p) || p === j.id)) return q;
+    }
+    return null;
+  }
+  const lineAngle =(M, P, l1, l2) => { const d1 = lineVec(M, P, l1)[2], d2 = lineVec(M, P, l2)[2]; return Math.atan2(cross(d1, d2), dot(d1, d2)); };
+
+  // ---------- constraint definitions ----------
+  // each: deps(M,c) -> param indices ; res(M,P,c) -> residual array
+  const CT = {
+    coincident: {
+      label: 'Coincident', sym: '●',
+      deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const [i, j] = c.refs.map(id => ent(M, id));
+        if (i.t === 'point' && j.t === 'point') { const a = XY(M, P, i.id), b = XY(M, P, j.id); return [a[0] - b[0], a[1] - b[1]]; }
+        const [p, q] = i.t === 'point' ? [i, j] : [j, i];
+        if (p.t === 'point' && q.t === 'line') return [signedDistPtLine(M, P, p.id, q.id)];
+        if (p.t === 'point' && isCurve(q)) { const c0 = XY(M, P, q.c); return [len(sub(XY(M, P, p.id), c0)) - radius(M, P, q)]; }
+        // line + line -> collinear
+        return [signedDistPtLine(M, P, j.a, i.id), signedDistPtLine(M, P, j.b, i.id)];
+      }
+    },
+    horizontal: {
+      label: 'Horizontal', sym: 'H', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const [a, b] = c.refs.length === 1 ? [ent(M, c.refs[0]).a, ent(M, c.refs[0]).b] : c.refs;
+        return [XY(M, P, a)[1] - XY(M, P, b)[1]];
+      }
+    },
+    vertical: {
+      label: 'Vertical', sym: 'V', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const [a, b] = c.refs.length === 1 ? [ent(M, c.refs[0]).a, ent(M, c.refs[0]).b] : c.refs;
+        return [XY(M, P, a)[0] - XY(M, P, b)[0]];
+      }
+    },
+    parallel: {
+      label: 'Parallel', sym: '∥', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) { const d1 = lineVec(M, P, c.refs[0])[2], d2 = lineVec(M, P, c.refs[1])[2]; return [cross(d1, d2) / (len(d1) * len(d2) || 1e-12)]; }
+    },
+    perpendicular: {
+      label: 'Perpendicular', sym: '⊥', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) { const d1 = lineVec(M, P, c.refs[0])[2], d2 = lineVec(M, P, c.refs[1])[2]; return [dot(d1, d2) / (len(d1) * len(d2) || 1e-12)]; }
+    },
+    equal: {
+      label: 'Equal', sym: '=', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const [i, j] = c.refs.map(id => ent(M, id));
+        if (i.t === 'line') return [len(lineVec(M, P, i.id)[2]) - len(lineVec(M, P, j.id)[2])];
+        return [radius(M, P, i) - radius(M, P, j)];
+      }
+    },
+    tangent: {
+      label: 'Tangent', sym: 'T', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const [i, j] = c.refs.map(id => ent(M, id));
+        // tangency at a shared end point: "distance = r" is a double root there, so use
+        // "radius ⟂ line" (or "centres collinear with the joint") instead
+        const E = sharedPoint(M, i, j);
+        if (E != null) {
+          const e = XY(M, P, E), u = sub(e, XY(M, P, j.c));
+          const v = i.t === 'line' ? lineVec(M, P, i.id)[2] : sub(e, XY(M, P, i.c));
+          return [(i.t === 'line' ? dot(u, v) : cross(u, v)) / (len(u) * len(v) || 1e-12)];
+        }
+        if (i.t === 'line') return [c.s * signedDistPtLine(M, P, j.c, i.id) - radius(M, P, j)];
+        const d = len(sub(XY(M, P, i.c), XY(M, P, j.c))), r1 = radius(M, P, i), r2 = radius(M, P, j);
+        return [c.s > 0 ? d - (r1 + r2) : d - Math.abs(r1 - r2)];
+      },
+      init(M, P, c) { // pick the tangency branch closest to the current geometry
+        const [i, j] = c.refs.map(id => ent(M, id));
+        if (i.t === 'line') c.s = signedDistPtLine(M, P, j.c, i.id) >= 0 ? 1 : -1;
+        else { const d = len(sub(XY(M, P, i.c), XY(M, P, j.c))), r1 = radius(M, P, i), r2 = radius(M, P, j); c.s = Math.abs(d - r1 - r2) <= Math.abs(d - Math.abs(r1 - r2)) ? 1 : -1; }
+      }
+    },
+    concentric: {
+      label: 'Concentric', sym: '◎', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const pts = c.refs.map(id => { const e = ent(M, id); return e.t === 'point' ? e.id : e.c; });
+        const a = XY(M, P, pts[0]), b = XY(M, P, pts[1]); return [a[0] - b[0], a[1] - b[1]];
+      }
+    },
+    midpoint: {
+      label: 'Midpoint', sym: 'M', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) {
+        const [p, l] = c.refs.map(id => ent(M, id)); const q = XY(M, P, p.id), a = XY(M, P, l.a), b = XY(M, P, l.b);
+        return [q[0] - (a[0] + b[0]) / 2, q[1] - (a[1] + b[1]) / 2];
+      }
+    },
+    symmetric: {
+      label: 'Symmetric', sym: '⇋', deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) { // refs: point, point, axis line
+        const p = XY(M, P, c.refs[0]), q = XY(M, P, c.refs[1]); const [a, , d] = lineVec(M, P, c.refs[2]);
+        const m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], L = len(d) || 1e-12;
+        return [cross(d, sub(m, a)) / L, dot(d, sub(q, p)) / L];
+      }
+    },
+    fix: {
+      label: 'Fix', sym: '⚓', deps: (M, c) => entParams(M, c.refs[0]),
+      res(M, P, c) { return entParams(M, c.refs[0]).map((pi, k) => P[pi] - c.at[k]); },
+      init(M, P, c) { c.at = entParams(M, c.refs[0]).map(pi => P[pi]); }
+    },
+    // ---- dimensions (driving) ----
+    distance: {
+      label: 'Distance', dim: true, deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) { return [len(sub(XY(M, P, c.refs[0]), XY(M, P, c.refs[1]))) - c.v]; },
+      measure(M, P, c) { return len(sub(XY(M, P, c.refs[0]), XY(M, P, c.refs[1]))); }
+    },
+    ptline: {
+      label: 'Distance', dim: true, deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) { return [c.s * signedDistPtLine(M, P, c.refs[0], c.refs[1]) - c.v]; },
+      measure(M, P, c) { return Math.abs(signedDistPtLine(M, P, c.refs[0], c.refs[1])); },
+      init(M, P, c) { c.s = signedDistPtLine(M, P, c.refs[0], c.refs[1]) >= 0 ? 1 : -1; }
+    },
+    diameter: {
+      label: 'Diameter', dim: true, deps: (M, c) => entParams(M, c.refs[0]),
+      res(M, P, c) { return [2 * radius(M, P, ent(M, c.refs[0])) - c.v]; },
+      measure(M, P, c) { return 2 * radius(M, P, ent(M, c.refs[0])); }
+    },
+    radius: {
+      label: 'Radius', dim: true, deps: (M, c) => entParams(M, c.refs[0]),
+      res(M, P, c) { return [radius(M, P, ent(M, c.refs[0])) - c.v]; },
+      measure(M, P, c) { return radius(M, P, ent(M, c.refs[0])); }
+    },
+    angle: {
+      label: 'Angle', dim: true, deps: (M, c) => c.refs.flatMap(id => entParams(M, id)),
+      res(M, P, c) { return [wrapPi(c.s * lineAngle(M, P, c.refs[0], c.refs[1]) - c.v * DEG)]; },
+      measure(M, P, c) { return Math.abs(lineAngle(M, P, c.refs[0], c.refs[1])) / DEG; },
+      init(M, P, c) { c.s = lineAngle(M, P, c.refs[0], c.refs[1]) >= 0 ? 1 : -1; }
+    },
+    // hidden: an arc's end point stays on its circle
+    arcR: {
+      label: 'Arc', hidden: true, deps: (M, c) => entParams(M, c.refs[0]),
+      res(M, P, c) {
+        const e = ent(M, c.refs[0]), C = XY(M, P, e.c);
+        return [len(sub(XY(M, P, e.b), C)) - len(sub(XY(M, P, e.a), C))];
+      }
+    }
+  };
+
+  // ---------- system assembly ----------
+  const active = M => M.cons.filter(c => !c.flag);
+  function freeMap(M) {
+    const locked = new Set();
+    for (const e of M.ents) if (e.t === 'point' && e.locked) { locked.add(e.xi); locked.add(e.yi); }
+    const col = new Map(); let n = 0;
+    M.P.forEach((_, i) => { if (!locked.has(i)) col.set(i, n++); });
+    return { col, n };
+  }
+  function residuals(M, P, cons) { const F = []; for (const c of cons) F.push(...CT[c.t].res(M, P, c)); return F; }
+  function jacobian(M, P, cons, fm) {
+    const rows = [], h = 1e-6;
+    for (const c of cons) {
+      const deps = [...new Set(CT[c.t].deps(M, c))].filter(i => fm.col.has(i));
+      const k = CT[c.t].res(M, P, c).length;
+      const block = Array.from({ length: k }, () => new Float64Array(fm.n));
+      for (const i of deps) {
+        const v = P[i];
+        P[i] = v + h; const fp = CT[c.t].res(M, P, c);
+        P[i] = v - h; const fmn = CT[c.t].res(M, P, c);
+        P[i] = v;
+        for (let r = 0; r < k; r++) block[r][fm.col.get(i)] = (fp[r] - fmn[r]) / (2 * h);
+      }
+      rows.push(...block);
+    }
+    return rows;
+  }
+  const norm = F => Math.sqrt(F.reduce((s, x) => s + x * x, 0));
+  function solveLinear(A, b) { // Gaussian elimination with partial pivoting (A small, dense)
+    const n = b.length; A = A.map(r => Float64Array.from(r)); b = Float64Array.from(b);
+    for (let k = 0; k < n; k++) {
+      let p = k; for (let i = k + 1; i < n; i++) if (Math.abs(A[i][k]) > Math.abs(A[p][k])) p = i;
+      [A[k], A[p]] = [A[p], A[k]]; [b[k], b[p]] = [b[p], b[k]];
+      const d = A[k][k]; if (Math.abs(d) < 1e-300) continue;
+      for (let i = k + 1; i < n; i++) { const f = A[i][k] / d; if (!f) continue; for (let j = k; j < n; j++) A[i][j] -= f * A[k][j]; b[i] -= f * b[k]; }
+    }
+    const x = new Float64Array(n);
+    for (let k = n - 1; k >= 0; k--) { let s = b[k]; for (let j = k + 1; j < n; j++) s -= A[k][j] * x[j]; x[k] = Math.abs(A[k][k]) < 1e-300 ? 0 : s / A[k][k]; }
+    return x;
+  }
+
+  /* Minimum-movement Gauss-Newton: dx = -W⁻¹Jᵀ(J W⁻¹ Jᵀ + μI)⁻¹ F.
+     Heavy weights keep chosen parameters (e.g. the one being dragged) where they are,
+     and under-defined geometry moves as little as possible — like dragging in Onshape. */
+  function solve(M, opts = {}) {
+    const cons = opts.cons || active(M);
+    if (!cons.length) return { ok: true, err: 0 };
+    const fm = freeMap(M), w = new Float64Array(fm.n).fill(1);
+    if (opts.heavy) for (const i of opts.heavy) if (fm.col.has(i)) w[fm.col.get(i)] = 1e4;
+    let P = M.P.slice(), F = residuals(M, P, cons), err = norm(F), mu = 1e-9;
+    for (let it = 0; it < 120 && err > 1e-10; it++) {
+      const J = jacobian(M, P, cons, fm), m = J.length;
+      const A = Array.from({ length: m }, (_, i) => {
+        const r = new Float64Array(m);
+        for (let j = 0; j <= i; j++) { let s = 0; const Ji = J[i], Jj = J[j]; for (let k = 0; k < fm.n; k++) if (Ji[k] && Jj[k]) s += Ji[k] * Jj[k] / w[k]; r[j] = s; }
+        return r;
+      });
+      for (let i = 0; i < m; i++) { for (let j = i + 1; j < m; j++) A[i][j] = A[j][i]; A[i][i] += mu * (1 + A[i][i]); }
+      const y = solveLinear(A, F);
+      const dx = new Float64Array(fm.n);
+      for (let i = 0; i < m; i++) if (y[i]) for (let k = 0; k < fm.n; k++) if (J[i][k]) dx[k] -= J[i][k] * y[i] / w[k];
+      let step = 1, improved = false;
+      for (let ls = 0; ls < 12; ls++) {
+        const Pn = P.slice();
+        for (const [pi, k] of fm.col) Pn[pi] += step * dx[k];
+        const Fn = residuals(M, Pn, cons), en = norm(Fn);
+        if (isFinite(en) && en < err) { P = Pn; F = Fn; err = en; improved = true; break; }
+        step /= 2;
+      }
+      if (improved) mu = Math.max(mu / 3, 1e-12); else { mu *= 100; if (mu > 1e6) break; }
+    }
+    const ok = err < 1e-6 && !degenerate(M, P);
+    if (ok || opts.force) M.P = P;
+    return { ok, err };
+  }
+  // reject collapsed geometry (zero-length lines, zero/negative radii)
+  function degenerate(M, P) {
+    for (const e of M.ents) {
+      if (e.t === 'line' && len(lineVec(M, P, e.id)[2]) < 1e-4) return true;
+      if (e.t === 'circle' && P[e.ri] < 1e-4) return true;
+      if (e.t === 'arc' && radius(M, P, e) < 1e-4) return true;
+    }
+    return false;
+  }
+
+  // ---------- rank / degrees of freedom ----------
+  function rref(J, ncols) {
+    const R = J.map(r => Float64Array.from(r)); const m = R.length;
+    let scale = 0; for (const r of R) for (const v of r) scale = Math.max(scale, Math.abs(v));
+    const tol = 1e-8 * Math.max(1, scale); const pivots = []; let row = 0;
+    for (let c = 0; c < ncols && row < m; c++) {
+      let p = row; for (let i = row + 1; i < m; i++) if (Math.abs(R[i][c]) > Math.abs(R[p][c])) p = i;
+      if (Math.abs(R[p][c]) <= tol) continue;
+      [R[row], R[p]] = [R[p], R[row]];
+      const d = R[row][c]; for (let k = 0; k < ncols; k++) R[row][k] /= d;
+      for (let i = 0; i < m; i++) if (i !== row && R[i][c]) { const f = R[i][c]; for (let k = 0; k < ncols; k++) R[i][k] -= f * R[row][k]; }
+      pivots.push(c); row++;
+    }
+    return { R, pivots, rank: pivots.length };
+  }
+  const rankOf = (M, cons) => { const fm = freeMap(M); return rref(jacobian(M, M.P, cons, fm), fm.n).rank; };
+  function analyze(M) {
+    const cons = active(M), fm = freeMap(M);
+    const { R, pivots, rank } = rref(jacobian(M, M.P, cons, fm), fm.n);
+    const pivSet = new Set(pivots), free = [];
+    for (let c = 0; c < fm.n; c++) if (!pivSet.has(c)) free.push(c);
+    // null-space basis: one vector per free column
+    const nulls = free.map(f => { const v = new Float64Array(fm.n); v[f] = 1; pivots.forEach((pc, r) => { v[pc] = -R[r][f]; }); return v; });
+    const undetermined = new Set();
+    for (const [pi, k] of fm.col) if (nulls.some(v => Math.abs(v[k]) > 1e-6)) undetermined.add(pi);
+    const state = {};
+    for (const e of M.ents) state[e.id] = entParams(M, e.id).some(pi => undetermined.has(pi)) ? 'free' : 'defined';
+    for (const c of M.cons) if (c.flag) for (const id of c.refs) state[id] = 'over';
+    return { dof: fm.n - rank, state, nulls, fm, over: M.cons.some(c => c.flag) };
+  }
+  // does every allowed motion of the sketch keep g(P) unchanged?  (design-intent test)
+  function implied(M, g, an = analyze(M)) {
+    const h = 1e-6;
+    return an.nulls.every(v => {
+      const Pp = M.P.slice(), Pm = M.P.slice();
+      for (const [pi, k] of an.fm.col) { Pp[pi] += h * v[k]; Pm[pi] -= h * v[k]; }
+      return Math.abs(g(Pp) - g(Pm)) / (2 * h) < 1e-5;
+    });
+  }
+
+  // ---------- add a constraint the way Onshape does: solve, then flag conflicts/redundancy ----------
+  function addConstraint(M, t, refs, extra = {}) {
+    const c = Object.assign({ id: M.nextId++, t, refs }, extra);
+    if (CT[t].init) CT[t].init(M, M.P, c);
+    if (CT[t].measure && c.v == null) c.v = CT[t].measure(M, M.P, c);
+    const before = active(M), rank0 = rankOf(M, before), saved = M.P.slice();
+    M.cons.push(c);
+    const r = solve(M);
+    if (!r.ok) { M.P = saved; c.flag = 'conflict'; return c; }
+    const k = CT[t].res(M, M.P, c).length;
+    if (rankOf(M, active(M)) - rank0 < k) c.flag = 'redundant';
+    return c;
+  }
+  // after deleting something, re-test flagged constraints in order
+  function reclassify(M) {
+    const flagged = M.cons.filter(c => c.flag);
+    for (const c of flagged) {
+      const rank0 = rankOf(M, active(M)), saved = M.P.slice();
+      delete c.flag;
+      const r = solve(M);
+      if (!r.ok) { M.P = saved; c.flag = 'conflict'; continue; }
+      if (rankOf(M, active(M)) - rank0 < CT[c.t].res(M, M.P, c).length) c.flag = 'redundant';
+    }
+  }
+  function setDimension(M, c, v) {
+    const old = c.v, saved = M.P.slice(); c.v = v;
+    if (c.flag) return true;
+    const r = solve(M);
+    if (!r.ok) { c.v = old; M.P = saved; return false; }
+    return true;
+  }
+  function deleteEntities(M, ids) {
+    const kill = new Set(ids);
+    for (const id of ids) { const e = ent(M, id); if (e && e.t === 'point' && e.owner && !e.origin) kill.add(e.owner); }
+    for (const e of M.ents) if (e.owner && kill.has(e.owner)) kill.add(e.id);
+    for (const e of M.ents) if (e.origin) kill.delete(e.id);
+    M.ents = M.ents.filter(e => !kill.has(e.id));
+    M.cons = M.cons.filter(c => !kill.has(c.id) && !c.refs.some(r => kill.has(r)));
+    reclassify(M);
+  }
+
+  return {
+    DEG, TOL, CT, newModel, clone, ent, byId, addPoint, addLine, addCircle, addArc, addConstraint,
+    solve, analyze, implied, reclassify, setDimension, deleteEntities, XY, radius, lineVec,
+    signedDistPtLine, lineAngle, entParams, isCurve, len, sub, dot, cross, residuals
+  };
+})();
+/* ===================== SHAPE TOOLS: primitives + the constraints each tool adds ===================== */
+const Shapes = (() => {
+  const C = Core;
+  // every tool returns { ents, cons, summary } so the UI can explain "what the tool really made"
+  function count(cons) {
+    const n = {}; for (const c of cons) n[c.t] = (n[c.t] || 0) + 1;
+    return Object.entries(n).map(([t, k]) => `${k} ${C.CT[t].label.toLowerCase()}`).join(' · ');
+  }
+  function polyline(M, pts, closed) {
+    const lines = [];
+    for (let i = 0; i < pts.length - (closed ? 0 : 1); i++) {
+      const p = pts[i], q = pts[(i + 1) % pts.length]; lines.push(C.addLine(M, p[0], p[1], q[0], q[1]));
+    }
+    const cons = [];
+    for (let i = 0; i < lines.length - (closed ? 0 : 1); i++)
+      cons.push(C.addConstraint(M, 'coincident', [lines[i].b, lines[(i + 1) % lines.length].a]));
+    return { lines, cons };
+  }
+  function rectangle(M, x1, y1, x2, y2) {
+    const { lines, cons } = polyline(M, [[x1, y1], [x2, y1], [x2, y2], [x1, y2]], true);
+    cons.push(C.addConstraint(M, 'horizontal', [lines[0].id]), C.addConstraint(M, 'horizontal', [lines[2].id]),
+      C.addConstraint(M, 'vertical', [lines[1].id]), C.addConstraint(M, 'vertical', [lines[3].id]));
+    return { ents: lines, cons, summary: `4 lines · ${count(cons)}` };
+  }
+  function centerRectangle(M, cx, cy, x2, y2) {
+    const dx = Math.abs(x2 - cx) || 1, dy = Math.abs(y2 - cy) || 1;
+    const r = rectangle(M, cx - dx, cy - dy, cx + dx, cy + dy);
+    const L = r.ents;
+    const d1 = C.addLine(M, cx - dx, cy - dy, cx + dx, cy + dy, true), d2 = C.addLine(M, cx + dx, cy - dy, cx - dx, cy + dy, true);
+    const extra = [C.addConstraint(M, 'coincident', [d1.a, L[0].a]), C.addConstraint(M, 'coincident', [d1.b, L[2].a]),
+      C.addConstraint(M, 'coincident', [d2.a, L[1].a]), C.addConstraint(M, 'coincident', [d2.b, L[3].a])];
+    const mid = C.addPoint(M, cx, cy);
+    extra.push(C.addConstraint(M, 'midpoint', [mid.id, d1.id]));
+    const cons = [...r.cons, ...extra];
+    return { ents: [...L, d1, d2, mid], cons, summary: `4 lines + 2 construction diagonals + centre point · ${count(cons)} (one midpoint is enough: a rectangle's diagonals always bisect each other)` };
+  }
+  function circle(M, cx, cy, r) { const e = C.addCircle(M, cx, cy, r); return { ents: [e], cons: [], summary: 'a centre point + a radius (3 degrees of freedom), no constraints' }; }
+  function arc(M, cx, cy, r, a0, a1) { const e = C.addArc(M, cx, cy, r, a0, a1); return { ents: [e], cons: [], summary: 'a centre + start + end point, tied by a hidden "same radius" rule (5 DOF)' }; }
+  function polygon(M, cx, cy, r, n, rot = Math.PI / 2) {
+    const pts = []; for (let i = 0; i < n; i++) { const a = rot + 2 * Math.PI * i / n; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+    const { lines, cons } = polyline(M, pts, true);
+    const circ = C.addCircle(M, cx, cy, r, true);
+    for (const l of lines) cons.push(C.addConstraint(M, 'coincident', [l.a, circ.id]));
+    for (let i = 1; i < n; i++) cons.push(C.addConstraint(M, 'equal', [lines[0].id, lines[i].id]));
+    return { ents: [...lines, circ], cons, summary: `${n} lines + construction circle · ${count(cons)}` };
+  }
+  function slot(M, x1, y1, x2, y2, r) {
+    const L = Math.hypot(x2 - x1, y2 - y1) || 1, ang = Math.atan2(y2 - y1, x2 - x1);
+    const nx = -Math.sin(ang) * r, ny = Math.cos(ang) * r;
+    const bottom = C.addLine(M, x1 - nx, y1 - ny, x2 - nx, y2 - ny), top = C.addLine(M, x2 + nx, y2 + ny, x1 + nx, y1 + ny);
+    const right = C.addArc(M, x2, y2, r, ang - Math.PI / 2, ang + Math.PI / 2), left = C.addArc(M, x1, y1, r, ang + Math.PI / 2, ang + 3 * Math.PI / 2);
+    const axis = C.addLine(M, x1, y1, x2, y2, true);
+    const cons = [
+      C.addConstraint(M, 'coincident', [bottom.b, right.a]), C.addConstraint(M, 'coincident', [right.b, top.a]),
+      C.addConstraint(M, 'coincident', [top.b, left.a]), C.addConstraint(M, 'coincident', [left.b, bottom.a]),
+      C.addConstraint(M, 'tangent', [bottom.id, right.id]), C.addConstraint(M, 'tangent', [top.id, right.id]),
+      C.addConstraint(M, 'tangent', [top.id, left.id]), C.addConstraint(M, 'tangent', [bottom.id, left.id]),
+      C.addConstraint(M, 'equal', [left.id, right.id]),
+      C.addConstraint(M, 'coincident', [axis.a, left.c]), C.addConstraint(M, 'coincident', [axis.b, right.c])
+    ];
+    return { ents: [bottom, right, top, left, axis], cons, summary: `2 lines + 2 arcs + construction axis · ${count(cons)}` };
+  }
+  return { rectangle, centerRectangle, circle, arc, polygon, slot, polyline, count };
+})();
+/* ===================== LESSONS: same primitives, different constraints → different shapes ===================== */
+const Lessons = (() => {
+  const C = Core, S = Shapes;
+  const add = (M, t, refs, x) => C.addConstraint(M, t, refs, x);
+  const ORIGIN = M => M.ents.find(e => e.origin).id;
+
+  const quad = M => S.polyline(M, [[-24, -14], [34, -20], [24, 24], [-14, 18]], true).lines;
+  const tri = M => S.polyline(M, [[-22, -12], [30, -18], [6, 30]], true).lines;
+
+  const L = [
+    {
+      id: 'quad', title: 'One quadrilateral, many shapes',
+      intro: 'Four lines joined end-to-end (4 coincident constraints) can be <b>any</b> quadrilateral. Each constraint you add removes freedom and turns it into a more specific shape.',
+      build: M => ({ q: quad(M) }),
+      steps: [
+        { title: 'Free quadrilateral — 8 DOF', text: 'Four corner points × 2 coordinates = 8 degrees of freedom. The lines are <b class="c-free">blue</b>: under-defined. Drag any corner — it can become any four-sided shape.' },
+        { title: 'Parallel → trapezoid', text: 'A <b>Parallel</b> constraint between the bottom and top lines removes 1 DOF. Every shape it can now take is a trapezoid.', apply: (M, R) => add(M, 'parallel', [R.q[0].id, R.q[2].id]) },
+        { title: 'Parallel again → parallelogram', text: 'Making the left and right sides parallel too gives a parallelogram (6 DOF: position 2, rotation 1, two side lengths, one corner angle).', apply: (M, R) => add(M, 'parallel', [R.q[1].id, R.q[3].id]) },
+        { title: 'Perpendicular → rectangle', text: 'One <b>Perpendicular</b> constraint fixes the corner angle at 90°. The other three corners follow automatically — adding more would be <b class="c-over">redundant</b>.', apply: (M, R) => add(M, 'perpendicular', [R.q[0].id, R.q[1].id]) },
+        { title: 'Equal → square', text: '<b>Equal</b> length on two adjacent sides makes it a square. 4 DOF left: where it is (2), how it is rotated (1) and how big it is (1). <i>Try instead: undo the perpendicular and add Equal — you get a rhombus.</i>', apply: (M, R) => add(M, 'equal', [R.q[0].id, R.q[1].id]) },
+        { title: 'Horizontal → orientation fixed', text: '<b>Horizontal</b> on the bottom edge removes the rotation.', apply: (M, R) => add(M, 'horizontal', [R.q[0].id]) },
+        { title: 'Coincident with origin → location fixed', text: 'Snapping the bottom-left corner to the sketch origin removes 2 more DOF. Only the size is left.', apply: (M, R) => add(M, 'coincident', [R.q[0].a, ORIGIN(M)]) },
+        { title: 'Dimension → fully defined', text: 'A 40 mm <b>dimension</b> removes the last DOF. The sketch turns <b class="c-def">black</b>: fully defined. Double-click the dimension and change it — the whole square follows your design intent.', apply: (M, R) => add(M, 'distance', [R.q[0].a, R.q[0].b], { v: 40 }) }
+      ]
+    },
+    {
+      id: 'tri', title: 'Triangle family',
+      intro: 'Three lines in a loop. Equal, perpendicular and angle constraints decide whether it is scalene, isosceles, equilateral or right-angled.',
+      build: M => ({ t: tri(M) }),
+      steps: [
+        { title: 'Scalene triangle — 6 DOF', text: '3 corners × 2 = 6 DOF. Any triangle is possible.' },
+        { title: 'Equal → isosceles', text: 'Two equal sides make an isosceles triangle (5 DOF).', apply: (M, R) => add(M, 'equal', [R.t[1].id, R.t[2].id]) },
+        { title: 'Equal again → equilateral', text: 'A second Equal makes all three sides the same. All angles become 60° without ever being dimensioned.', apply: (M, R) => add(M, 'equal', [R.t[0].id, R.t[1].id]) },
+        { title: 'Horizontal base', text: 'Fix the orientation with Horizontal on the base.', apply: (M, R) => add(M, 'horizontal', [R.t[0].id]) },
+        { title: 'Midpoint of base on origin', text: 'A <b>Midpoint</b> constraint between the origin and the base centres the triangle on the origin.', apply: (M, R) => add(M, 'midpoint', [ORIGIN(M), R.t[0].id]) },
+        { title: 'Dimension → fully defined', text: 'One side length (50 mm) fully defines the equilateral triangle. Compare: a general triangle needs 3 dimensions.', apply: (M, R) => add(M, 'distance', [R.t[0].a, R.t[0].b], { v: 50 }) }
+      ]
+    },
+    {
+      id: 'slot', title: 'Building a slot from lines and arcs',
+      intro: 'Onshape\'s Slot tool is really two lines and two arcs held together by constraints. Here we add those constraints one by one.',
+      build: M => {
+        const bottom = C.addLine(M, -20, -9, 22, -12), top = C.addLine(M, 24, 13, -18, 10);
+        const right = C.addArc(M, 26, 0, 12, -1.4, 1.5), left = C.addArc(M, -22, 2, 10, 1.6, 4.6);
+        return { bottom, top, right, left };
+      },
+      steps: [
+        { title: 'Loose pieces — 18 DOF', text: 'Two lines (4 DOF each) and two arcs (5 DOF each: centre, start, end with a hidden equal-radius rule).' },
+        { title: 'Coincident endpoints → closed profile', text: 'Joining the four ends removes 8 DOF. It is closed, but it has corners where line meets arc.', apply: (M, R) => { add(M, 'coincident', [R.bottom.b, R.right.a]); add(M, 'coincident', [R.right.b, R.top.a]); add(M, 'coincident', [R.top.b, R.left.a]); add(M, 'coincident', [R.left.b, R.bottom.a]); } },
+        { title: 'Tangent → smooth joins', text: '<b>Tangent</b> at each join removes the corners (4 DOF). The arcs may still have different radii: a tapered slot.', apply: (M, R) => { add(M, 'tangent', [R.bottom.id, R.right.id]); add(M, 'tangent', [R.top.id, R.right.id]); add(M, 'tangent', [R.top.id, R.left.id]); add(M, 'tangent', [R.bottom.id, R.left.id]); } },
+        { title: 'Equal arcs → straight slot', text: 'Equal radii make the two lines parallel: a classic slot (5 DOF).', apply: (M, R) => add(M, 'equal', [R.left.id, R.right.id]) },
+        { title: 'Horizontal + origin', text: 'Lay the slot horizontal and put the left arc centre on the origin.', apply: (M, R) => { add(M, 'horizontal', [R.bottom.id]); add(M, 'coincident', [R.left.c, ORIGIN(M)]); } },
+        { title: 'Dimensions → fully defined', text: 'Centre-to-centre length 50 mm and radius 8 mm. These are the two numbers a machinist needs.', apply: (M, R) => { add(M, 'distance', [R.left.c, R.right.c], { v: 50 }); add(M, 'radius', [R.right.id], { v: 8 }); } }
+      ]
+    },
+    {
+      id: 'flange', title: 'Bolt-hole flange',
+      intro: 'Six circles. Concentric, coincident-on-curve and equal constraints turn them into a flange with a bolt circle (PCD) — using a <b>construction</b> circle that never becomes part of the part.',
+      build: M => ({
+        body: C.addCircle(M, 2, -1, 38), pcd: C.addCircle(M, -3, 4, 22, true),
+        h: [C.addCircle(M, 26, 6, 5), C.addCircle(M, 2, 28, 4), C.addCircle(M, -22, -2, 6), C.addCircle(M, 4, -24, 4.5)]
+      }),
+      steps: [
+        { title: 'Six free circles — 18 DOF', text: 'Each circle has 3 DOF (centre x, y and radius). The dashed one is <b>construction</b> geometry (Q).' },
+        { title: 'Concentric + origin', text: 'Make the bolt circle concentric with the body, and put the body centre on the origin.', apply: (M, R) => { add(M, 'concentric', [R.pcd.id, R.body.id]); add(M, 'coincident', [R.body.c, ORIGIN(M)]); } },
+        { title: 'Hole centres on the bolt circle', text: 'Coincident between each hole centre and the construction circle: every hole now slides only around the PCD.', apply: (M, R) => R.h.forEach(h => add(M, 'coincident', [h.c, R.pcd.id])) },
+        { title: 'Equal holes', text: 'Three Equal constraints give all four holes one size — change one, they all change.', apply: (M, R) => R.h.slice(1).forEach(h => add(M, 'equal', [R.h[0].id, h.id])) },
+        { title: 'Horizontal / vertical alignment', text: 'Align two hole centres horizontally with the body centre and two vertically: the holes are now at 0°, 90°, 180°, 270°.', apply: (M, R) => { add(M, 'horizontal', [R.h[0].c, R.body.c]); add(M, 'horizontal', [R.h[2].c, R.body.c]); add(M, 'vertical', [R.h[1].c, R.body.c]); add(M, 'vertical', [R.h[3].c, R.body.c]); } },
+        { title: 'Three diameters → fully defined', text: 'Body Ø80, PCD Ø50, holes Ø8. Only three numbers drive the whole flange.', apply: (M, R) => { add(M, 'diameter', [R.body.id], { v: 80 }); add(M, 'diameter', [R.pcd.id], { v: 50 }); add(M, 'diameter', [R.h[0].id], { v: 8 }); } }
+      ]
+    },
+    {
+      id: 'hex', title: 'Hexagon (Polygon tool)',
+      intro: 'The Polygon tool draws 6 lines on a construction circle with equal sides. Count the DOF that are left and remove them.',
+      build: M => ({ p: S.polygon(M, 8, 6, 26, 6, 0.3) }),
+      steps: [
+        { title: 'What the tool made — 4 DOF', text: 'The tool already added coincident, on-circle and equal constraints. Left: centre (2), size (1), rotation (1). Drag a corner to rotate it.' },
+        { title: 'Horizontal flat', text: 'Horizontal on one side fixes the rotation.', apply: (M, R) => add(M, 'horizontal', [R.p.ents[0].id]) },
+        { title: 'Centre on origin', text: 'Coincident between the construction circle centre and the origin.', apply: (M, R) => add(M, 'coincident', [R.p.ents[6].c, ORIGIN(M)]) },
+        { title: 'Across-flats dimension → fully defined', text: 'A 24 mm distance between opposite flats (the spanner size) fully defines the hexagon.', apply: (M, R) => add(M, 'ptline', [R.p.ents[3].a, R.p.ents[0].id], { v: 24 }) }
+      ]
+    },
+    {
+      id: 'ch-trap', title: 'Challenge: isosceles trapezoid', challenge: true,
+      intro: 'Add constraints so this quadrilateral is <b>always</b> an isosceles trapezoid (top ∥ bottom, equal legs) no matter how it is dragged. Don\'t fully define it — it must still be able to change size.',
+      build: M => ({ q: quad(M) }),
+      check(M, R, an) {
+        const q = R.q, d = (i, P) => C.lineVec(M, P, q[i].id)[2];
+        const par = P => C.cross(d(0, P), d(2, P)) / (C.len(d(0, P)) * C.len(d(2, P)));
+        const legs = P => C.len(d(1, P)) - C.len(d(3, P));
+        const legsPar = P => C.cross(d(1, P), d(3, P)) / (C.len(d(1, P)) * C.len(d(3, P)));
+        if (an.over) return [false, 'Remove the red (over-defining) constraints first.'];
+        if (!C.implied(M, par, an)) return [false, 'Top and bottom are not forced to stay parallel.'];
+        if (!C.implied(M, legs, an)) return [false, 'The two legs are not forced to stay the same length.'];
+        if (C.implied(M, legsPar, an) && Math.abs(legsPar(M.P)) < 1e-6) return [false, 'Legs are parallel — that\'s a parallelogram/rectangle, not a trapezoid.'];
+        if (an.dof < 3) return [false, `Too constrained (${an.dof} DOF) — it should still be free to move and resize.`];
+        return [true, 'Design intent captured: drag it and it stays an isosceles trapezoid.'];
+      }
+    },
+    {
+      id: 'ch-plate', title: 'Challenge: centred hole', challenge: true,
+      intro: 'Make the hole stay in the centre of the plate whatever its width and height. Tip: a construction diagonal and a <b>Midpoint</b> constraint, or <b>Symmetric</b>.',
+      build: M => ({ r: S.rectangle(M, -30, -20, 40, 25).ents, c: C.addCircle(M, 12, 8, 7) }),
+      check(M, R, an) {
+        const cx = P => C.XY(M, P, R.c.c)[0] - (C.XY(M, P, R.r[0].a)[0] + C.XY(M, P, R.r[1].b)[0]) / 2;
+        const cy = P => C.XY(M, P, R.c.c)[1] - (C.XY(M, P, R.r[0].a)[1] + C.XY(M, P, R.r[1].b)[1]) / 2;
+        if (an.over) return [false, 'Remove the red (over-defining) constraints first.'];
+        if (!C.implied(M, cx, an) || !C.implied(M, cy, an)) return [false, 'The hole can still drift away from the centre. Drag a corner to see it.'];
+        return [true, 'The hole follows the centre whatever the plate size.'];
+      }
+    },
+    {
+      id: 'ch-L', title: 'Challenge: fully define the L-bracket', challenge: true,
+      intro: 'This L-profile was drawn with the Line tool, which inferred horizontal/vertical constraints. Fully define it (turn it black) with the origin and dimensions — no red constraints allowed.',
+      build: M => {
+        const r = S.polyline(M, [[-10, -10], [50, -10], [50, 4], [8, 4], [8, 40], [-10, 40]], true);
+        r.lines.forEach((l, i) => add(M, i % 2 ? 'vertical' : 'horizontal', [l.id]));
+        return { l: r.lines };
+      },
+      check(M, R, an) {
+        if (an.over) return [false, 'Red constraints over-define the sketch — delete them.'];
+        if (an.dof > 0) return [false, `${an.dof} degree${an.dof > 1 ? 's' : ''} of freedom left.`];
+        return [true, 'Fully defined — every line is black.'];
+      }
+    },
+    { id: 'blank', title: 'Blank sketch (sandbox)', intro: 'Free drawing. Use the tools above, then constrain your own design.', build: () => ({}) }
+  ];
+  return L;
+})();
+/* ===================== UI part A: state, toolbar, rendering ===================== */
+const C = Core;
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+const COL = { free: '#1a73e8', defined: '#1f2328', over: '#d93025', sel: '#f29900', hover: '#fbbc04', pre: '#0b57d0', grid: '#e8ecf0', grid2: '#d7dde3' };
+
+const st = {
+  M: C.newModel(), undo: [], redo: [], tool: 'select', sel: [], hover: null, draw: null, drag: null, box: null,
+  view: { s: 5, ox: 0, oy: 0 }, an: null, badges: true, badgeBoxes: [], dimBoxes: [], mouse: null,
+  lesson: null, R: null, step: 0, log: []
+};
+
+const ic = p => `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const TOOLS = [
+  { g: 'Sketch', items: [
+    ['select', 'Select / drag', 'Esc', ic('<path d="M5 3l10 7-4.5 1L13 16l-2 1-2.5-5L5 15z"/>')],
+    ['line', 'Line — click points; chains until Esc. Infers H/V and coincident', 'L', ic('<path d="M4 16L16 4"/><circle cx="4" cy="16" r="1.6" fill="currentColor"/><circle cx="16" cy="4" r="1.6" fill="currentColor"/>')],
+    ['rect', 'Corner rectangle', 'R', ic('<rect x="3.5" y="5" width="13" height="10"/>')],
+    ['crect', 'Center-point rectangle', '', ic('<rect x="3.5" y="5" width="13" height="10"/><path d="M3.5 5l13 10M16.5 5l-13 10" stroke-dasharray="1.5 1.5" stroke-width="1"/>')],
+    ['circle', 'Center-point circle', 'C', ic('<circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="1" fill="currentColor"/>')],
+    ['arc', 'Center-point arc (counter-clockwise)', 'A', ic('<path d="M16 10a6 6 0 0 0-12 0"/><circle cx="10" cy="10" r="1" fill="currentColor"/>')],
+    ['slot', 'Slot — click both centres, then the width', '', ic('<path d="M6 6h8a4 4 0 0 1 0 8H6a4 4 0 0 1 0-8z"/>')],
+    ['polygon', 'Inscribed polygon — centre, then a corner', '', ic('<path d="M10 3l6 3.5v7L10 17l-6-3.5v-7z"/>')],
+    ['point', 'Point', '', ic('<circle cx="10" cy="10" r="2.4" fill="currentColor"/>')],
+    ['construction', 'Toggle construction on selected geometry', 'Q', ic('<path d="M4 16L16 4" stroke-dasharray="2.5 2"/>')]
+  ] },
+  { g: 'Constrain', items: [
+    ['dimension', 'Dimension — line, 2 points, point+line, circle, arc, 2 lines (angle)', 'D', ic('<path d="M3 14h14M3 11v6M17 11v6M5 12.5L3 14l2 1.5M15 12.5l2 1.5-2 1.5"/><path d="M7 7h6" stroke-width="1.2"/>')],
+    ['coincident', 'Coincident — 2 points, point+curve, 2 lines (collinear)', 'I', ic('<circle cx="10" cy="10" r="2.6" fill="currentColor"/><path d="M3 15l5-3.5M17 5l-5 3.5"/>')],
+    ['concentric', 'Concentric — 2 circles/arcs, or circle + point', 'N', ic('<circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="3"/>')],
+    ['parallel', 'Parallel — 2+ lines', 'B', ic('<path d="M5 16L12 4M9 16l7-12"/>')],
+    ['tangent', 'Tangent — line + circle/arc, or 2 circles/arcs', 'T', ic('<circle cx="10" cy="12" r="4.5"/><path d="M2.5 7.5h15"/>')],
+    ['horizontal', 'Horizontal — lines, or 2 points', 'H', ic('<path d="M3 10h14"/><text x="10" y="7" font-size="6" text-anchor="middle" fill="currentColor" stroke="none">H</text>')],
+    ['vertical', 'Vertical — lines, or 2 points', 'V', ic('<path d="M10 3v14"/><text x="14.5" y="12" font-size="6" text-anchor="middle" fill="currentColor" stroke="none">V</text>')],
+    ['perpendicular', 'Perpendicular — 2 lines', 'P', ic('<path d="M4 16h12M8 16V4"/><path d="M8 12.5h3.5V16" stroke-width="1"/>')],
+    ['equal', 'Equal — lines (length) or circles/arcs (radius)', 'E', ic('<path d="M5 8h10M5 12h10"/>')],
+    ['midpoint', 'Midpoint — point + line', 'M', ic('<path d="M3 13h14"/><circle cx="10" cy="13" r="2" fill="currentColor"/><path d="M10 9V4"/>')],
+    ['symmetric', 'Symmetric — 2 points/circles/lines + axis line (pick axis last)', 'S', ic('<path d="M10 3v14" stroke-dasharray="2 1.5"/><circle cx="5" cy="10" r="1.8" fill="currentColor"/><circle cx="15" cy="10" r="1.8" fill="currentColor"/>')],
+    ['fix', 'Fix — lock geometry where it is', 'X', ic('<path d="M10 3v10M6 7h8M5 12a5 5 0 0 0 10 0"/>')]
+  ] },
+  { g: 'Edit', items: [
+    ['undo', 'Undo', 'Ctrl+Z', ic('<path d="M7 5L3 9l4 4"/><path d="M3 9h9a5 5 0 0 1 0 10H9"/>')],
+    ['redo', 'Redo', 'Ctrl+Y', ic('<path d="M13 5l4 4-4 4"/><path d="M17 9H8a5 5 0 0 0 0 10h3"/>')],
+    ['delete', 'Delete selection', 'Del', ic('<path d="M4 6h12M8 6V4h4v2M6 6l1 11h6l1-11"/>')],
+    ['clear', 'Clear sketch', '', ic('<path d="M4 4l12 12M16 4L4 16"/>')]
+  ] }
+];
+const CONSTRAINT_TOOLS = ['dimension', 'coincident', 'concentric', 'parallel', 'tangent', 'horizontal', 'vertical', 'perpendicular', 'equal', 'midpoint', 'symmetric', 'fix'];
+const DRAW_TOOLS = ['line', 'rect', 'crect', 'circle', 'arc', 'slot', 'polygon', 'point'];
+
+// ---------- view transforms ----------
+const W2S = (x, y) => [st.view.ox + x * st.view.s, st.view.oy - y * st.view.s];
+const S2W = (sx, sy) => [(sx - st.view.ox) / st.view.s, (st.view.oy - sy) / st.view.s];
+const XY = id => C.XY(st.M, st.M.P, id);
+const E = id => C.ent(st.M, id);
+
+function resize() {
+  const r = cv.getBoundingClientRect(), d = devicePixelRatio || 1;
+  const first = !cv.width;
+  cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+  ctx.setTransform(d, 0, 0, d, 0, 0);
+  if (first) fit(); else render();
+}
+function fit() {
+  const r = cv.getBoundingClientRect();
+  let x0 = -20, x1 = 20, y0 = -20, y1 = 20;
+  for (const e of st.M.ents) {
+    let pts = [];
+    if (e.t === 'point') pts = [XY(e.id)];
+    if (e.t === 'circle' || e.t === 'arc') { const c = XY(e.c), rr = C.radius(st.M, st.M.P, e); pts = [[c[0] - rr, c[1] - rr], [c[0] + rr, c[1] + rr]]; }
+    for (const [x, y] of pts) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  }
+  const pad = 1.35, s = Math.min(r.width / ((x1 - x0) * pad), r.height / ((y1 - y0) * pad));
+  st.view.s = Math.max(0.5, Math.min(40, s));
+  st.view.ox = r.width / 2 - (x0 + x1) / 2 * st.view.s; st.view.oy = r.height / 2 + (y0 + y1) / 2 * st.view.s;
+  render();
+}
+
+// ---------- rendering ----------
+function stateOf(id) {
+  if (st.sel.includes(id)) return COL.sel;
+  if (st.hover === id || hoverRefs().includes(id)) return COL.hover;
+  return COL[(st.an && st.an.state[id]) || 'free'];
+}
+function hoverRefs() { const c = st.hover && st.M.cons.find(k => k.id === st.hover); return c ? c.refs : []; }
+
+function drawGrid(w, h) {
+  const steps = [1, 2, 5, 10, 20, 50, 100, 200]; let g = steps.find(s => s * st.view.s >= 14) || 200;
+  const [wx0, wy1] = S2W(0, 0), [wx1, wy0] = S2W(w, h);
+  ctx.lineWidth = 1;
+  for (let x = Math.floor(wx0 / g) * g; x <= wx1; x += g) { const sx = Math.round(W2S(x, 0)[0]) + .5; ctx.strokeStyle = Math.round(x / g) % 5 ? COL.grid : COL.grid2; ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, h); ctx.stroke(); }
+  for (let y = Math.floor(wy0 / g) * g; y <= wy1; y += g) { const sy = Math.round(W2S(0, y)[1]) + .5; ctx.strokeStyle = Math.round(y / g) % 5 ? COL.grid : COL.grid2; ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(w, sy); ctx.stroke(); }
+  const [ox, oy] = W2S(0, 0);
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(217,48,37,.55)'; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox + 40, oy); ctx.stroke();
+  ctx.strokeStyle = 'rgba(24,128,56,.55)'; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ox, oy - 40); ctx.stroke();
+  return g;
+}
+function strokeEnt(e, color, width) {
+  const M = st.M;
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(e.construction ? [7, 5] : []);
+  ctx.beginPath();
+  if (e.t === 'line') { const a = W2S(...XY(e.a)), b = W2S(...XY(e.b)); ctx.moveTo(...a); ctx.lineTo(...b); }
+  else if (e.t === 'circle') { const c = W2S(...XY(e.c)); ctx.arc(c[0], c[1], M.P[e.ri] * st.view.s, 0, 2 * Math.PI); }
+  else if (e.t === 'arc') {
+    const c = XY(e.c), a = XY(e.a), b = XY(e.b), sc = W2S(...c);
+    const a0 = Math.atan2(a[1] - c[1], a[0] - c[0]), a1 = Math.atan2(b[1] - c[1], b[0] - c[0]);
+    ctx.arc(sc[0], sc[1], C.radius(M, M.P, e) * st.view.s, -a0, -a1, true);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+}
+function drawPoint(e, color) {
+  const [x, y] = W2S(...XY(e.id));
+  if (e.origin) {
+    ctx.fillStyle = st.sel.includes(e.id) || st.hover === e.id ? color : '#5f6b78';
+    ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 2 * Math.PI); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); return;
+  }
+  const owner = e.owner && E(e.owner), isCentre = owner && owner.c === e.id;
+  ctx.fillStyle = color;
+  if (isCentre) { ctx.strokeStyle = color; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x - 4, y); ctx.lineTo(x + 4, y); ctx.moveTo(x, y - 4); ctx.lineTo(x, y + 4); ctx.stroke(); return; }
+  const r = e.owner ? 2.6 : 3.4;
+  ctx.beginPath(); ctx.arc(x, y, st.sel.includes(e.id) || st.hover === e.id ? r + 1.5 : r, 0, 2 * Math.PI); ctx.fill();
+}
+function arrow(x, y, ang) {
+  ctx.beginPath(); ctx.moveTo(x, y);
+  ctx.lineTo(x - 8 * Math.cos(ang - 0.35), y - 8 * Math.sin(ang - 0.35));
+  ctx.lineTo(x - 8 * Math.cos(ang + 0.35), y - 8 * Math.sin(ang + 0.35)); ctx.closePath(); ctx.fill();
+}
+function dimText(c) {
+  const v = c.v, f = Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(2);
+  return c.t === 'diameter' ? 'Ø' + f : c.t === 'radius' ? 'R' + f : c.t === 'angle' ? f + '°' : f;
+}
+function dimLabel(c, x, y, color) {
+  const t = dimText(c); ctx.font = '600 12.5px ui-monospace,Consolas,monospace';
+  const w = ctx.measureText(t).width + 10, h = 18;
+  ctx.fillStyle = 'rgba(251,252,253,.92)'; ctx.fillRect(x - w / 2, y - h / 2, w, h);
+  ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.strokeRect(x - w / 2 + .5, y - h / 2 + .5, w - 1, h - 1);
+  ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y + 1);
+  st.dimBoxes.push({ id: c.id, x: x - w / 2, y: y - h / 2, w, h, cx: x, cy: y });
+}
+// geometry of each dimension's label anchor (screen space) — shared by drawing and label dragging
+function dimGeom(c) {
+  const M = st.M;
+  if (c.t === 'distance' || c.t === 'ptline') {
+    let a = W2S(...XY(c.refs[0])), b;
+    if (c.t === 'ptline') { const [la, , d] = C.lineVec(M, M.P, c.refs[1]); const p = XY(c.refs[0]), L2 = C.dot(d, d), t = C.dot(C.sub(p, la), d) / L2; b = W2S(la[0] + t * d[0], la[1] + t * d[1]); }
+    else b = W2S(...XY(c.refs[1]));
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, n = [-dy / L, dx / L];
+    const off = c.off != null ? c.off : 22;
+    return { kind: 'lin', a, b, n, off, a2: [a[0] + n[0] * off, a[1] + n[1] * off], b2: [b[0] + n[0] * off, b[1] + n[1] * off] };
+  }
+  if (c.t === 'diameter' || c.t === 'radius') {
+    const e = E(c.refs[0]), cc = W2S(...XY(e.c)), r = C.radius(M, M.P, e) * st.view.s;
+    let ang = c.ang;
+    if (ang == null) { const k = M.cons.filter(d => d.t === 'diameter' || d.t === 'radius').indexOf(c); ang = -Math.PI / 4 + 0.5 * k; if (e.t === 'arc') { const a = XY(e.a), b = XY(e.b), k = XY(e.c); let a0 = Math.atan2(a[1] - k[1], a[0] - k[0]), a1 = Math.atan2(b[1] - k[1], b[0] - k[0]); if (a1 < a0) a1 += 2 * Math.PI; ang = -(a0 + a1) / 2; } }
+    return { kind: 'rad', cc, r, ang };
+  }
+  if (c.t === 'angle') {
+    const [a1, b1] = C.lineVec(M, M.P, c.refs[0]), [a2, b2] = C.lineVec(M, M.P, c.refs[1]);
+    const d1 = C.sub(b1, a1), d2 = C.sub(b2, a2), den = C.cross(d1, d2);
+    let v;
+    if (Math.abs(den) > 1e-9) { const t = C.cross(C.sub(a2, a1), d2) / den; v = [a1[0] + t * d1[0], a1[1] + t * d1[1]]; }
+    else v = [(a1[0] + b1[0] + a2[0] + b2[0]) / 4, (a1[1] + b1[1] + a2[1] + b2[1]) / 4];
+    const th1 = Math.atan2(d1[1], d1[0]); const th2 = th1 + c.s * Math.abs(C.lineAngle(M, M.P, c.refs[0], c.refs[1]));
+    return { kind: 'ang', v: W2S(...v), th1, th2, rad: c.rad != null ? c.rad : 40 };
+  }
+}
+function drawDim(c) {
+  const g = dimGeom(c); if (!g) return;
+  const color = c.flag ? COL.over : st.sel.includes(c.id) ? COL.sel : st.hover === c.id ? '#b06000' : '#3c4043';
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 1;
+  if (g.kind === 'lin') {
+    const { a, b, a2, b2, n } = g, ext = Math.sign(g.off || 1) * 4;
+    ctx.beginPath(); ctx.moveTo(...a); ctx.lineTo(a2[0] + n[0] * ext, a2[1] + n[1] * ext); ctx.moveTo(...b); ctx.lineTo(b2[0] + n[0] * ext, b2[1] + n[1] * ext);
+    ctx.moveTo(...a2); ctx.lineTo(...b2); ctx.stroke();
+    const ang = Math.atan2(b2[1] - a2[1], b2[0] - a2[0]); arrow(...b2, ang); arrow(...a2, ang + Math.PI);
+    dimLabel(c, (a2[0] + b2[0]) / 2, (a2[1] + b2[1]) / 2, color);
+  } else if (g.kind === 'rad') {
+    const { cc, r, ang } = g, u = [Math.cos(ang), Math.sin(ang)];
+    const tip = [cc[0] + u[0] * r, cc[1] + u[1] * r], out = [cc[0] + u[0] * (r + 30), cc[1] + u[1] * (r + 30)];
+    const from = c.t === 'diameter' ? [cc[0] - u[0] * r, cc[1] - u[1] * r] : cc;
+    ctx.beginPath(); ctx.moveTo(...from); ctx.lineTo(...out); ctx.stroke(); arrow(...tip, ang);
+    if (c.t === 'diameter') arrow(...from, ang + Math.PI);
+    dimLabel(c, out[0] + u[0] * 14, out[1] + u[1] * 10, color);
+  } else {
+    const { v, th1, th2, rad } = g;
+    ctx.beginPath(); ctx.arc(v[0], v[1], rad, -th1, -th2, th2 > th1); ctx.stroke();
+    const m = (th1 + th2) / 2; dimLabel(c, v[0] + Math.cos(m) * (rad + 16), v[1] - Math.sin(m) * (rad + 16), color);
+  }
+}
+function anchorOf(id) { // screen anchor for constraint icons on an entity
+  const e = E(id);
+  if (e.t === 'point') return W2S(...XY(id));
+  if (e.t === 'line') { const a = XY(e.a), b = XY(e.b); return W2S((a[0] + b[0]) / 2, (a[1] + b[1]) / 2); }
+  const c = XY(e.c), r = C.radius(st.M, st.M.P, e);
+  if (e.t === 'arc') { const a = XY(e.a), b = XY(e.b); let a0 = Math.atan2(a[1] - c[1], a[0] - c[0]), a1 = Math.atan2(b[1] - c[1], b[0] - c[0]); if (a1 < a0) a1 += 2 * Math.PI; const m = (a0 + a1) / 2; return W2S(c[0] + r * Math.cos(m), c[1] + r * Math.sin(m)); }
+  return W2S(c[0] + r * Math.cos(Math.PI / 4), c[1] + r * Math.sin(Math.PI / 4));
+}
+function drawBadges() {
+  const stack = {};
+  for (const c of st.M.cons) {
+    const T = C.CT[c.t]; if (T.hidden || T.dim) continue;
+    let owners = c.refs;
+    if (c.t === 'coincident' || c.t === 'midpoint' || c.t === 'symmetric' || c.t === 'concentric') owners = [c.refs[0]];
+    if ((c.t === 'horizontal' || c.t === 'vertical') && c.refs.length === 2) owners = [c.refs[0]];
+    for (const id of owners) {
+      const p = anchorOf(id), k = stack[id] = (stack[id] || 0) + 1;
+      const x = p[0] + 10 + (k - 1) * 17, y = p[1] - 14;
+      const on = st.sel.includes(c.id) || st.hover === c.id;
+      ctx.fillStyle = c.flag ? '#fce8e6' : on ? '#feefc3' : 'rgba(255,255,255,.92)';
+      ctx.strokeStyle = c.flag ? COL.over : on ? COL.sel : '#9aa4ae'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(x - 7.5, y - 7.5, 15, 15, 3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = c.flag ? COL.over : '#3c4043'; ctx.font = '700 10px system-ui,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(T.sym, x, y + .5);
+      st.badgeBoxes.push({ id: c.id, x: x - 7.5, y: y - 7.5, w: 15, h: 15 });
+    }
+  }
+}
+function render() {
+  const r = cv.getBoundingClientRect(), w = r.width, h = r.height;
+  ctx.clearRect(0, 0, w, h); st.badgeBoxes = []; st.dimBoxes = [];
+  const g = drawGrid(w, h);
+  const M = st.M;
+  for (const e of M.ents) if (e.t !== 'point' && e.construction) strokeEnt(e, stateOf(e.id), 1.3);
+  for (const e of M.ents) if (e.t !== 'point' && !e.construction) strokeEnt(e, stateOf(e.id), st.sel.includes(e.id) || st.hover === e.id ? 3 : 2);
+  for (const e of M.ents) if (e.t === 'point') drawPoint(e, stateOf(e.id));
+  for (const c of M.cons) if (C.CT[c.t].dim) drawDim(c);
+  if (st.badges) drawBadges();
+  drawPreview();
+  if (st.box) { ctx.strokeStyle = COL.pre; ctx.fillStyle = 'rgba(26,115,232,.08)'; ctx.setLineDash([4, 3]); const b = st.box; ctx.fillRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0); ctx.strokeRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0); ctx.setLineDash([]); }
+  const m = st.mouse ? S2W(...st.mouse) : null;
+  $('hud').textContent = `grid ${g} mm` + (m ? `   x ${m[0].toFixed(1)}  y ${m[1].toFixed(1)}` : '');
+}
+/* ===================== UI part B: drawing tools, inference, constraints, panels ===================== */
+function snapshot() { st.undo.push(C.clone(st.M)); if (st.undo.length > 200) st.undo.shift(); st.redo = []; }
+function undo() { if (!st.undo.length) return; st.redo.push(C.clone(st.M)); st.M = st.undo.pop(); st.sel = []; changed(); }
+function redo() { if (!st.redo.length) return; st.undo.push(C.clone(st.M)); st.M = st.redo.pop(); st.sel = []; changed(); }
+function log(html) { st.log.unshift(html); st.log.length = Math.min(st.log.length, 6); $('log').innerHTML = st.log.map(t => `<div>${t}</div>`).join(''); }
+function prompt(t) { $('prompt').textContent = t || ''; }
+
+function label(id) {
+  const e = E(id);
+  if (!e) { const c = st.M.cons.find(k => k.id === id); return c ? C.CT[c.t].label : '?'; }
+  if (e.origin) return 'Origin';
+  const same = st.M.ents.filter(k => k.t === e.t && !k.origin && (e.t !== 'point' || !k.owner));
+  const name = { line: 'Line', circle: 'Circle', arc: 'Arc', point: 'Point' }[e.t];
+  if (e.t === 'point' && e.owner) { const o = E(e.owner); return (o.c === e.id ? 'Centre of ' : o.a === e.id ? 'Start of ' : 'End of ') + label(o.id); }
+  return `${name} ${same.indexOf(e) + 1}`;
+}
+
+// ---------- hit testing ----------
+function hit(sx, sy, { skip = [], pointsOnly = false } = {}) {
+  for (const b of [...st.dimBoxes, ...st.badgeBoxes]) if (!pointsOnly && sx >= b.x && sx <= b.x + b.w && sy >= b.y && sy <= b.y + b.h) return b.id;
+  let best = null, bd = 9;
+  for (const e of st.M.ents) if (e.t === 'point' && !skip.includes(e.id)) { const p = W2S(...XY(e.id)), d = Math.hypot(p[0] - sx, p[1] - sy); if (d < bd) { bd = d; best = e.id; } }
+  if (best || pointsOnly) return best;
+  bd = 7; const [wx, wy] = S2W(sx, sy);
+  for (const e of st.M.ents) {
+    if (e.t === 'point' || skip.includes(e.id)) continue;
+    let d = Infinity;
+    if (e.t === 'line') { const a = W2S(...XY(e.a)), b = W2S(...XY(e.b)), ab = C.sub(b, a), t = Math.max(0, Math.min(1, C.dot(C.sub([sx, sy], a), ab) / (C.dot(ab, ab) || 1))); d = Math.hypot(a[0] + t * ab[0] - sx, a[1] + t * ab[1] - sy); }
+    else {
+      const c = XY(e.c), r = C.radius(st.M, st.M.P, e); d = Math.abs(Math.hypot(wx - c[0], wy - c[1]) - r) * st.view.s;
+      if (e.t === 'arc') { const a = XY(e.a), b = XY(e.b); let a0 = Math.atan2(a[1] - c[1], a[0] - c[0]), a1 = Math.atan2(b[1] - c[1], b[0] - c[0]), m = Math.atan2(wy - c[1], wx - c[0]); a1 = (a1 - a0 + 4 * Math.PI) % (2 * Math.PI); m = (m - a0 + 4 * Math.PI) % (2 * Math.PI); if (m > a1) d = Infinity; }
+    }
+    if (d < bd) { bd = d; best = e.id; }
+  }
+  return best;
+}
+// snapping while drawing: existing point → coincident, curve → point-on-curve
+function snap(sx, sy, skip = []) {
+  const id = hit(sx, sy, { skip, pointsOnly: true });
+  if (id) return { pos: XY(id), ref: id };
+  const cid = hit(sx, sy, { skip });
+  const w = S2W(sx, sy);
+  if (cid && E(cid)) {
+    const e = E(cid);
+    if (e.t === 'line') { const [a, , d] = C.lineVec(st.M, st.M.P, cid), t = C.dot(C.sub(w, a), d) / C.dot(d, d); return { pos: [a[0] + t * d[0], a[1] + t * d[1]], ref: cid }; }
+    if (C.isCurve(e)) { const c = XY(e.c), r = C.radius(st.M, st.M.P, e), u = C.sub(w, c), L = C.len(u) || 1; return { pos: [c[0] + u[0] / L * r, c[1] + u[1] / L * r], ref: cid }; }
+  }
+  return { pos: w, ref: null };
+}
+const inferHV = (a, b) => { const ang = Math.abs(Math.atan2(b[1] - a[1], b[0] - a[0])) / C.DEG; return ang < 4 || ang > 176 ? 'horizontal' : Math.abs(ang - 90) < 4 ? 'vertical' : null; };
+function attach(pointId, s, made) { if (s && s.ref && s.ref !== pointId) made.push(C.addConstraint(st.M, 'coincident', [pointId, s.ref])); }
+
+// ---------- drawing tools ----------
+function toolClick(sx, sy) {
+  const t = st.tool, d = st.draw;
+  const sn = snap(sx, sy), p = sn.pos;
+  if (t === 'point') { snapshot(); const e = C.addPoint(st.M, ...p), made = []; attach(e.id, sn, made); done('Point', `1 point (2 DOF)${made.length ? ' + coincident with ' + label(sn.ref) : ''}`); return; }
+  if (!d) { st.draw = { pts: [p], snaps: [sn] }; render(); return; }
+  d.pts.push(p); d.snaps.push(sn);
+  const M = st.M, [a, b] = d.pts;
+  if (t === 'line') {
+    if (Math.hypot(b[0] - a[0], b[1] - a[1]) < 1e-3) { d.pts.pop(); d.snaps.pop(); return; }
+    snapshot();
+    let end = b; const hv = inferHV(a, b);
+    if (hv === 'horizontal') end = [b[0], a[1]]; if (hv === 'vertical') end = [a[0], b[1]];
+    if (d.snaps[1].ref) end = b;
+    const l = C.addLine(M, a[0], a[1], end[0], end[1]), made = [];
+    if (d.prev) made.push(C.addConstraint(M, 'coincident', [l.a, d.prev]));
+    else attach(l.a, d.snaps[0], made);
+    const closes = d.first && d.snaps[1].ref === d.first;
+    attach(l.b, d.snaps[1], made);
+    if (hv) made.push(C.addConstraint(M, hv, [l.id]));
+    log(`<b>Line</b> → 1 line (4 DOF)${made.length ? ' + ' + Shapes.count(made) + ' inferred' : ''}`);
+    if (closes) { st.draw = null; prompt(''); changed(); return; }
+    st.draw = { pts: [XY(l.b)], snaps: [{ ref: null }], prev: l.b, first: d.first || l.a };
+    changed(); return;
+  }
+  if (t === 'rect' || t === 'crect' || t === 'circle' || t === 'polygon') {
+    if (Math.hypot(b[0] - a[0], b[1] - a[1]) < 1e-3) { d.pts.pop(); d.snaps.pop(); return; }
+    snapshot(); let r, made = [];
+    if (t === 'rect') { r = Shapes.rectangle(M, a[0], a[1], b[0], b[1]); attach(r.ents[0].a, d.snaps[0], made); attach(r.ents[2].a, d.snaps[1], made); }
+    if (t === 'crect') { r = Shapes.centerRectangle(M, a[0], a[1], b[0], b[1]); attach(r.ents[6].id, d.snaps[0], made); }
+    if (t === 'circle') { r = Shapes.circle(M, a[0], a[1], Math.hypot(b[0] - a[0], b[1] - a[1])); attach(r.ents[0].c, d.snaps[0], made); if (d.snaps[1].ref) attach(d.snaps[1].ref, { ref: r.ents[0].id }, made); }
+    if (t === 'polygon') { const n = Math.max(3, Math.min(12, +$('sides').value || 6)); r = Shapes.polygon(M, a[0], a[1], Math.hypot(b[0] - a[0], b[1] - a[1]), n, Math.atan2(b[1] - a[1], b[0] - a[0])); attach(r.ents[n].c, d.snaps[0], made); }
+    done({ rect: 'Corner rectangle', crect: 'Center rectangle', circle: 'Circle', polygon: 'Polygon' }[t], r.summary + (made.length ? ` + ${made.length} snapped` : ''));
+    return;
+  }
+  if (t === 'arc' || t === 'slot') {
+    if (d.pts.length < 3) { if (Math.hypot(b[0] - a[0], b[1] - a[1]) < 1e-3) { d.pts.pop(); d.snaps.pop(); } render(); return; }
+    snapshot(); const c3 = d.pts[2], made = []; let r;
+    if (t === 'arc') {
+      const rad = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      r = Shapes.arc(M, a[0], a[1], rad, Math.atan2(b[1] - a[1], b[0] - a[0]), Math.atan2(c3[1] - a[1], c3[0] - a[0]));
+      attach(r.ents[0].c, d.snaps[0], made);
+    } else {
+      const ab = C.sub(b, a), L = C.len(ab) || 1, w = Math.abs(C.cross(ab, C.sub(c3, a))) / L;
+      r = Shapes.slot(M, a[0], a[1], b[0], b[1], Math.max(w, 0.5));
+      attach(r.ents[3].c, d.snaps[0], made); attach(r.ents[1].c, d.snaps[1], made);
+    }
+    done(t === 'arc' ? 'Arc' : 'Slot', r.summary); return;
+  }
+}
+function done(name, summary) { log(`<b>${name} tool</b> → ${summary}`); st.draw = null; changed(); }
+function drawPreview() {
+  const d = st.draw; if (!d || !st.mouse) return;
+  const sn = snap(...st.mouse), m = sn.pos, a = d.pts[0];
+  ctx.strokeStyle = COL.pre; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.beginPath();
+  const S = p => W2S(...p), t = st.tool;
+  let hv = null;
+  if (t === 'line') { hv = inferHV(a, m); let e = m; if (!sn.ref && hv === 'horizontal') e = [m[0], a[1]]; if (!sn.ref && hv === 'vertical') e = [a[0], m[1]]; ctx.moveTo(...S(a)); ctx.lineTo(...S(e)); }
+  if (t === 'rect') { const [x, y] = S(a), [x2, y2] = S(m); ctx.rect(x, y, x2 - x, y2 - y); }
+  if (t === 'crect') { const [x, y] = S(a), [x2, y2] = S(m); ctx.rect(2 * x - x2, 2 * y - y2, 2 * (x2 - x), 2 * (y2 - y)); }
+  if (t === 'circle' || t === 'polygon' || (t === 'arc' && d.pts.length === 1)) { const [x, y] = S(a); ctx.arc(x, y, Math.hypot(m[0] - a[0], m[1] - a[1]) * st.view.s, 0, 2 * Math.PI); }
+  if (t === 'arc' && d.pts.length === 2) { const b = d.pts[1], [x, y] = S(a); ctx.setLineDash([]); ctx.arc(x, y, Math.hypot(b[0] - a[0], b[1] - a[1]) * st.view.s, -Math.atan2(b[1] - a[1], b[0] - a[0]), -Math.atan2(m[1] - a[1], m[0] - a[0]), true); }
+  if (t === 'slot') {
+    const b = d.pts[1] || m; ctx.moveTo(...S(a)); ctx.lineTo(...S(b));
+    if (d.pts.length === 2) { const ab = C.sub(b, a), L = C.len(ab) || 1, w = Math.abs(C.cross(ab, C.sub(m, a))) / L * st.view.s; for (const p of [a, b]) { const [x, y] = S(p); ctx.moveTo(x + w, y); ctx.arc(x, y, w, 0, 2 * Math.PI); } }
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  if (sn.ref) { const [x, y] = S(m); ctx.strokeStyle = COL.sel; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 7, 0, 2 * Math.PI); ctx.stroke(); }
+  if (t === 'line' && hv && !sn.ref) { const [x, y] = S(m); ctx.fillStyle = COL.pre; ctx.font = '700 11px system-ui'; ctx.fillText(hv === 'horizontal' ? 'H' : 'V', x + 12, y - 10); }
+}
+const TOOL_PROMPTS = {
+  line: 'Line: click start, click end. Keeps chaining — Esc to finish. Near-horizontal/vertical lines get H/V constraints.',
+  rect: 'Corner rectangle: click two opposite corners.', crect: 'Center rectangle: click the centre, then a corner.',
+  circle: 'Circle: click the centre, then a point on the circle.', arc: 'Arc: click centre, start point, end point (counter-clockwise).',
+  slot: 'Slot: click the two arc centres, then move out to set the width and click.', polygon: 'Polygon: click the centre, then a corner. Number of sides is next to the tool.',
+  point: 'Point: click anywhere — on a line/circle it gets a coincident constraint.'
+};
+
+// ---------- constraint application from a selection ----------
+function plan(type, ids) {
+  const es = ids.map(E).filter(Boolean);
+  if (es.length !== ids.length) return { st: 'bad', msg: 'Select geometry, not constraints.' };
+  const P = es.filter(e => e.t === 'point'), L = es.filter(e => e.t === 'line'), K = es.filter(C.isCurve), n = es.length;
+  const ok = list => ({ st: 'ok', list }), more = msg => ({ st: 'more', msg }), bad = msg => ({ st: 'bad', msg });
+  const ptOf = e => e.t === 'point' ? e.id : e.c;
+  switch (type) {
+    case 'coincident':
+      if (n < 2) return more('Coincident: pick 2 points, a point and a curve, or 2 lines.');
+      if (P.length === n) return ok(P.slice(1).map(p => ['coincident', [P[0].id, p.id]]));
+      if (n === 2 && P.length === 1) return ok([['coincident', [P[0].id, (L[0] || K[0]).id]]]);
+      if (n === 2 && L.length === 2) return ok([['coincident', [L[0].id, L[1].id]]]);
+      if (n === 2 && K.length === 2) return ok([['concentric', [K[0].id, K[1].id]], ['equal', [K[0].id, K[1].id]]]);
+      return bad('Coincident needs 2 points, a point + a curve, or 2 lines.');
+    case 'horizontal': case 'vertical':
+      if (L.length === n && n) return ok(L.map(l => [type, [l.id]]));
+      if (P.length === n && n === 2) return ok([[type, [P[0].id, P[1].id]]]);
+      if (P.length === n && n === 1) return more(`${C.CT[type].label}: pick a second point.`);
+      return n ? bad(`${C.CT[type].label} works on lines or on 2 points.`) : more(`${C.CT[type].label}: pick lines, or 2 points.`);
+    case 'parallel': case 'perpendicular':
+      if (L.length === n && n >= 2) return type === 'perpendicular' && n > 2 ? bad('Perpendicular takes exactly 2 lines.') : ok(L.slice(1).map(l => [type, [L[0].id, l.id]]));
+      return L.length === n ? more(`${C.CT[type].label}: pick ${n ? 'another' : '2'} line${n ? '' : 's'}.`) : bad(`${C.CT[type].label} works on lines only.`);
+    case 'equal':
+      if (n >= 2 && (L.length === n || K.length === n)) return ok(es.slice(1).map(e => ['equal', [es[0].id, e.id]]));
+      if (n < 2 && P.length === 0) return more('Equal: pick 2+ lines, or 2+ circles/arcs.');
+      return bad('Equal needs all lines or all circles/arcs.');
+    case 'tangent':
+      if (n === 2 && L.length === 1 && K.length === 1) return ok([['tangent', [L[0].id, K[0].id]]]);
+      if (n === 2 && K.length === 2) return ok([['tangent', [K[0].id, K[1].id]]]);
+      return n < 2 && !P.length ? more('Tangent: pick a line and a circle/arc, or 2 circles/arcs.') : bad('Tangent needs a line + a curve, or 2 curves.');
+    case 'concentric':
+      if (n === 2 && K.length >= 1 && (K.length === 2 || P.length === 1)) return ok([['concentric', [es[0].id, es[1].id]]]);
+      return n < 2 && !L.length ? more('Concentric: pick 2 circles/arcs, or a circle and a point.') : bad('Concentric needs 2 circles/arcs, or a circle + a point.');
+    case 'midpoint':
+      if (n === 2 && P.length === 1 && L.length === 1) return ok([['midpoint', [P[0].id, L[0].id]]]);
+      return n < 2 && !K.length ? more('Midpoint: pick a point and a line.') : bad('Midpoint needs a point and a line.');
+    case 'symmetric': {
+      if (n < 3) return more('Symmetric: pick 2 points (or 2 circles, or 2 lines), then the axis line last.');
+      const ax = es[n - 1]; if (n !== 3 || ax.t !== 'line') return bad('Symmetric: exactly 2 items + an axis line picked last.');
+      const [u, v] = es;
+      if (u.t === 'point' && v.t === 'point') return ok([['symmetric', [u.id, v.id, ax.id]]]);
+      if (C.isCurve(u) && C.isCurve(v)) return ok([['symmetric', [u.c, v.c, ax.id]], ['equal', [u.id, v.id]]]);
+      if (u.t === 'line' && v.t === 'line') { // pair the end points that are closest to being mirror images
+        const [a, , d] = C.lineVec(st.M, st.M.P, ax.id), mir = p => { const q = C.sub(p, a), t = C.dot(q, d) / C.dot(d, d), f = [a[0] + t * d[0], a[1] + t * d[1]]; return [2 * f[0] - p[0], 2 * f[1] - p[1]]; };
+        const dd = (p, q) => C.len(C.sub(mir(XY(p)), XY(q))), straight = dd(u.a, v.a) + dd(u.b, v.b) <= dd(u.a, v.b) + dd(u.b, v.a);
+        return ok([['symmetric', [u.a, straight ? v.a : v.b, ax.id]], ['symmetric', [u.b, straight ? v.b : v.a, ax.id]]]);
+      }
+      return bad('Symmetric: the 2 items must be of the same kind.');
+    }
+    case 'fix': return n ? ok(es.map(e => ['fix', [e.id]])) : more('Fix: pick geometry to lock in place.');
+    case 'dimension':
+      if (n === 1 && L.length) return ok([['distance', [L[0].a, L[0].b]]]);
+      if (n === 1 && K.length) return ok([[K[0].t === 'circle' ? 'diameter' : 'radius', [K[0].id]]]);
+      if (n === 2 && P.length === 2) return ok([['distance', [P[0].id, P[1].id]]]);
+      if (n === 2 && P.length === 1 && L.length === 1) return ok([['ptline', [P[0].id, L[0].id]]]);
+      if (n === 2 && L.length === 2) {
+        const par = Math.abs(C.CT.parallel.res(st.M, st.M.P, { refs: [L[0].id, L[1].id] })[0]) < 1e-6;
+        return ok([par ? ['ptline', [L[1].a, L[0].id]] : ['angle', [L[0].id, L[1].id]]]);
+      }
+      if (n === 2 && P.length === 1 && K.length === 1) return ok([['distance', [P[0].id, K[0].c]]]);
+      if (n === 2 && K.length === 2) return ok([['distance', [K[0].c, K[1].c]]]);
+      if (n === 1) return more('Dimension: pick a second point or line — or this is a point: pick another.');
+      return n ? bad('No dimension for that selection.') : more('Dimension: pick a line, circle, arc, 2 points, point + line, or 2 lines.');
+  }
+}
+function applyConstraint(type, ids) {
+  const p = plan(type, ids);
+  if (p.st !== 'ok') return p;
+  snapshot();
+  const made = p.list.map(([t, refs]) => C.addConstraint(st.M, t, refs));
+  const bad = made.filter(c => c.flag);
+  const names = made.map(c => C.CT[c.t].label).join(' + ');
+  const before = st.an ? st.an.dof : null;
+  changed();
+  const after = st.an.dof;
+  if (bad.length) log(`<b class="c-over">${names}</b> ${bad[0].flag === 'conflict' ? 'conflicts with existing constraints — it cannot be satisfied' : 'is redundant — it removes no freedom'}. It is shown in red; delete it (or undo).`);
+  else log(`<b>${names}</b> on ${ids.map(label).join(', ')} → removed ${before - after} DOF (${after} left).`);
+  if (made.some(c => C.CT[c.t].dim) && !bad.length) openDimEdit(made[made.length - 1]);
+  return p;
+}
+
+// ---------- dimension editing ----------
+let editing = null;
+function openDimEdit(c) {
+  render();
+  const b = st.dimBoxes.find(k => k.id === c.id); if (!b) return;
+  editing = c; const inp = $('dimEdit');
+  inp.style.display = 'block'; inp.style.left = (b.cx - 42) + 'px'; inp.style.top = (b.cy - 13) + 'px';
+  inp.value = +c.v.toFixed(3); inp.focus(); inp.select();
+}
+function closeDimEdit(commit) {
+  const inp = $('dimEdit'); if (!editing) return;
+  const c = editing; editing = null; inp.style.display = 'none';
+  if (!commit) return;
+  const v = parseFloat(inp.value.replace(',', '.'));
+  if (!isFinite(v) || v <= 0 || (c.t === 'angle' && v >= 180)) { log('<b class="c-over">Invalid value</b> — dimensions must be positive (angles below 180°).'); return; }
+  if (Math.abs(v - c.v) < 1e-12) return;
+  snapshot();
+  if (!C.setDimension(st.M, c, v)) { st.undo.pop(); log(`<b class="c-over">${v}</b> is impossible with the other constraints — the solver kept ${dimText(c)}.`); }
+  else log(`<b>${C.CT[c.t].label}</b> set to ${dimText(c)} — geometry re-solved.`);
+  changed();
+}
+$('dimEdit').addEventListener('keydown', e => { if (e.key === 'Enter') closeDimEdit(true); if (e.key === 'Escape') closeDimEdit(false); e.stopPropagation(); });
+$('dimEdit').addEventListener('blur', () => closeDimEdit(true));
+/* ===================== UI part C: events, panels, lessons, start-up ===================== */
+function setTool(t) {
+  if (t === 'undo') return undo(); if (t === 'redo') return redo();
+  if (t === 'delete') return deleteSel();
+  if (t === 'clear') { snapshot(); st.M = C.newModel(); st.sel = []; log('<b>Cleared</b> the sketch.'); return changed(); }
+  if (t === 'construction') {
+    const es = st.sel.map(E).filter(e => e && e.t !== 'point');
+    if (!es.length) { log('Select lines/circles/arcs first, then press <b>Q</b> to toggle construction.'); return; }
+    snapshot(); es.forEach(e => e.construction = !e.construction);
+    log(`<b>Construction</b> toggled on ${es.map(e => label(e.id)).join(', ')} — construction geometry helps position other geometry but is not part of the profile.`);
+    return changed();
+  }
+  st.draw = null;
+  if (CONSTRAINT_TOOLS.includes(t) && st.sel.length) {
+    const p = applyConstraint(t, st.sel);
+    if (p.st === 'ok') { st.sel = []; st.tool = 'select'; prompt(''); return changed(); }
+    if (p.st === 'bad') { log(p.msg); return; }
+  }
+  st.tool = t;
+  prompt(CONSTRAINT_TOOLS.includes(t) ? plan(t, st.sel).msg : TOOL_PROMPTS[t] || '');
+  if (DRAW_TOOLS.includes(t)) st.sel = [];
+  refreshToolbar(); render(); updateSelInfo();
+}
+function deleteSel() {
+  if (!st.sel.length) return;
+  snapshot();
+  const cons = st.sel.filter(id => st.M.cons.some(c => c.id === id)), ents = st.sel.filter(id => E(id));
+  st.M.cons = st.M.cons.filter(c => !cons.includes(c.id));
+  C.deleteEntities(st.M, ents);
+  log(`<b>Deleted</b> ${st.sel.length} item${st.sel.length > 1 ? 's' : ''}. Freed constraints were re-checked.`);
+  st.sel = []; changed();
+}
+function changed() {
+  st.an = C.analyze(st.M);
+  const { dof, over } = st.an, el = $('dofState');
+  $('dofNum').textContent = dof;
+  $('dofNum').style.color = over ? COL.over : dof ? COL.free : COL.defined;
+  el.innerHTML = over ? '<span class="chip" style="background:#fce8e6;color:#a50e0e">Over-defined</span>' : dof ? '<span class="chip" style="background:#e8f0fe;color:#0b57d0">Under-defined</span>' : '<span class="chip" style="background:#e6f4ea;color:#188038">Fully defined</span>';
+  updateConList(); updateSelInfo(); refreshToolbar(); updateLessonCheck(); render();
+}
+function updateConList() {
+  const cons = st.M.cons.filter(c => !C.CT[c.t].hidden);
+  $('conCount').textContent = `(${cons.length})`;
+  $('conList').innerHTML = cons.map(c => `<li data-id="${c.id}" class="${st.sel.includes(c.id) ? 'sel' : ''}${st.hover === c.id ? ' hl' : ''}">
+    <span class="sym">${C.CT[c.t].dim ? dimText(c).replace(/[\d.]+/, '#') : C.CT[c.t].sym}</span>
+    <span>${C.CT[c.t].label}${C.CT[c.t].dim ? ' ' + dimText(c) : ''} <span style="color:var(--muted)">· ${[...new Set(c.refs.map(r => label(r).replace(/^(Start|End|Centre) of /, '')))].join(', ')}</span>
+    ${c.flag ? `<span class="flag">${c.flag}</span>` : ''}</span><button class="x" title="Delete">×</button></li>`).join('') || '<li style="color:var(--muted);cursor:default">None yet.</li>';
+}
+function updateSelInfo() {
+  const s = st.sel;
+  if (!s.length) { $('selInfo').innerHTML = '<span style="color:var(--muted)">Nothing selected.</span>'; return; }
+  const valid = CONSTRAINT_TOOLS.filter(t => plan(t, s).st === 'ok').map(t => C.CT[t] ? C.CT[t].label : 'Dimension');
+  $('selInfo').innerHTML = `${s.map(label).join(', ')}<div class="opts">${valid.length ? 'Can apply: <b>' + valid.join(', ') + '</b> (green dots in the toolbar)' : 'No constraint fits this selection yet — keep picking.'}</div>`;
+}
+function refreshToolbar() {
+  document.querySelectorAll('.tb').forEach(b => {
+    const t = b.dataset.t;
+    b.classList.toggle('on', st.tool === t);
+    b.classList.toggle('hint', CONSTRAINT_TOOLS.includes(t) && st.sel.length > 0 && plan(t, st.sel).st === 'ok');
+  });
+}
+function buildToolbar() {
+  const tb = $('toolbar');
+  tb.innerHTML = TOOLS.map(g => `<div class="tgroup"><span class="glabel">${g.g}</span>${g.items.map(([t, tip, k, svg]) =>
+    `<button class="tb" data-t="${t}" title="${tip}${k ? ' (' + k + ')' : ''}" aria-label="${tip}">${svg}${k && k.length === 1 ? `<span class="k">${k}</span>` : ''}</button>${t === 'polygon' ? '<input id="sides" type="number" min="3" max="12" value="6" title="Polygon sides">' : ''}`).join('')}</div>`).join('');
+  tb.addEventListener('click', e => { const b = e.target.closest('.tb'); if (b) setTool(b.dataset.t); });
+}
+
+// ---------- pointer interaction ----------
+const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+let down = null;
+cv.addEventListener('contextmenu', e => e.preventDefault());
+cv.addEventListener('pointerdown', e => {
+  cv.setPointerCapture(e.pointerId);
+  const [sx, sy] = pos(e);
+  if (editing) closeDimEdit(true);
+  if (e.button === 1 || e.button === 2) { down = { pan: true, sx, sy, ox: st.view.ox, oy: st.view.oy }; return; }
+  down = { sx, sy, id: st.tool === 'select' ? hit(sx, sy) : null, moved: false };
+});
+cv.addEventListener('pointermove', e => {
+  const [sx, sy] = pos(e); st.mouse = [sx, sy];
+  if (down && down.pan) { st.view.ox = down.ox + sx - down.sx; st.view.oy = down.oy + sy - down.sy; return render(); }
+  if (down && !down.moved && Math.hypot(sx - down.sx, sy - down.sy) > 4) { down.moved = true; startDrag(down); }
+  if (down && down.moved) { dragTo(sx, sy); return; }
+  const h = DRAW_TOOLS.includes(st.tool) ? null : hit(sx, sy);
+  if (h !== st.hover) { st.hover = h; updateConList(); }
+  cv.style.cursor = DRAW_TOOLS.includes(st.tool) ? 'crosshair' : h ? 'pointer' : 'default';
+  render();
+});
+cv.addEventListener('pointerup', e => {
+  const [sx, sy] = pos(e), d = down; down = null;
+  if (!d || d.pan) return;
+  if (d.moved) { endDrag(); return; }
+  if (DRAW_TOOLS.includes(st.tool)) return toolClick(sx, sy);
+  const id = hit(sx, sy);
+  if (CONSTRAINT_TOOLS.includes(st.tool)) {
+    if (!id || !E(id)) return;
+    if (!st.sel.includes(id)) st.sel.push(id);
+    const p = applyConstraint(st.tool, st.sel);
+    if (p.st !== 'more') { if (p.st === 'bad') log(p.msg); st.sel = []; }
+    prompt(p.st === 'more' ? p.msg : plan(st.tool, []).msg);
+    return changed();
+  }
+  if (!id) st.sel = [];
+  else if (st.sel.includes(id)) st.sel = st.sel.filter(k => k !== id);
+  else st.sel.push(id);
+  changed();
+});
+cv.addEventListener('dblclick', e => {
+  const [sx, sy] = pos(e);
+  if (st.tool === 'line' && st.draw) { st.draw = null; prompt(''); return render(); }
+  const id = hit(sx, sy), c = st.M.cons.find(k => k.id === id);
+  if (c && C.CT[c.t].dim) openDimEdit(c);
+});
+cv.addEventListener('wheel', e => {
+  e.preventDefault(); const [sx, sy] = pos(e), [wx, wy] = S2W(sx, sy);
+  st.view.s = Math.max(0.3, Math.min(80, st.view.s * Math.exp(-e.deltaY * 0.0015)));
+  st.view.ox = sx - wx * st.view.s; st.view.oy = sy + wy * st.view.s; render();
+}, { passive: false });
+
+function startDrag(d) {
+  const id = d.id;
+  if (!id) { st.box = { x0: d.sx, y0: d.sy, x1: d.sx, y1: d.sy }; return; }
+  const c = st.M.cons.find(k => k.id === id);
+  if (c) { if (C.CT[c.t].dim) { snapshot(); st.drag = { dim: c }; } return; }
+  const e = E(id); if (e.origin) return;
+  snapshot();
+  st.drag = { id, w0: S2W(d.sx, d.sy), P0: st.M.P.slice() };
+}
+function dragTo(sx, sy) {
+  if (st.box) { st.box.x1 = sx; st.box.y1 = sy; return render(); }
+  const dg = st.drag; if (!dg) return;
+  if (dg.dim) { // move a dimension label
+    const g = dimGeom(dg.dim);
+    if (g.kind === 'lin') dg.dim.off = (sx - g.a[0]) * g.n[0] + (sy - g.a[1]) * g.n[1];
+    if (g.kind === 'rad') dg.dim.ang = Math.atan2(sy - g.cc[1], sx - g.cc[0]);
+    if (g.kind === 'ang') dg.dim.rad = Math.max(15, Math.hypot(sx - g.v[0], sy - g.v[1]) - 16);
+    return render();
+  }
+  const M = st.M, e = E(dg.id), w = S2W(sx, sy), dx = w[0] - dg.w0[0], dy = w[1] - dg.w0[1];
+  const keep = M.P.slice(), heavy = [];
+  const move = pid => { const p = E(pid); M.P[p.xi] = dg.P0[p.xi] + dx; M.P[p.yi] = dg.P0[p.yi] + dy; heavy.push(p.xi, p.yi); };
+  if (e.t === 'point') move(e.id);
+  else if (e.t === 'line') { move(e.a); move(e.b); }
+  else if (e.t === 'circle') { const c = XY(e.c); M.P[e.ri] = Math.hypot(w[0] - c[0], w[1] - c[1]); heavy.push(e.ri); }
+  else { move(e.c); move(e.a); move(e.b); }
+  const r = C.solve(M, { heavy });
+  if (!r.ok) M.P = keep;
+  st.an = C.analyze(M); render();
+}
+function endDrag() {
+  if (st.box) {
+    const b = st.box, x0 = Math.min(b.x0, b.x1), x1 = Math.max(b.x0, b.x1), y0 = Math.min(b.y0, b.y1), y1 = Math.max(b.y0, b.y1);
+    const inside = id => { const [x, y] = W2S(...XY(id)); return x >= x0 && x <= x1 && y >= y0 && y <= y1; };
+    for (const e of st.M.ents) {
+      let ok = false;
+      if (e.t === 'point') ok = !e.owner && inside(e.id);
+      if (e.t === 'line') ok = inside(e.a) && inside(e.b);
+      if (C.isCurve(e)) { const c = W2S(...XY(e.c)), r = C.radius(st.M, st.M.P, e) * st.view.s; ok = c[0] - r >= x0 && c[0] + r <= x1 && c[1] - r >= y0 && c[1] + r <= y1; }
+      if (ok && !st.sel.includes(e.id)) st.sel.push(e.id);
+    }
+    st.box = null; return changed();
+  }
+  if (st.drag && !st.drag.dim) {
+    const moved = st.drag.P0.some((v, i) => Math.abs(v - st.M.P[i]) > 1e-9);
+    if (!moved) { st.undo.pop(); log('That geometry is <b>fully defined</b> — it cannot be dragged.'); }
+  }
+  st.drag = null; changed();
+}
+
+// ---------- keyboard ----------
+const KEYS = { l: 'line', r: 'rect', c: 'circle', a: 'arc', d: 'dimension', i: 'coincident', n: 'concentric', b: 'parallel', t: 'tangent', h: 'horizontal', v: 'vertical', p: 'perpendicular', e: 'equal', m: 'midpoint', s: 'symmetric', x: 'fix', q: 'construction' };
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); return e.shiftKey ? redo() : undo(); }
+  if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); return redo(); }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (k === 'escape') { if (st.draw) st.draw = null; else { st.sel = []; st.tool = 'select'; } prompt(''); return changed(); }
+  if (k === 'delete' || k === 'backspace') { e.preventDefault(); return deleteSel(); }
+  if (k === 'f') return fit();
+  if (KEYS[k]) setTool(KEYS[k]);
+});
+
+// ---------- constraint list interaction ----------
+$('conList').addEventListener('click', e => {
+  const li = e.target.closest('li[data-id]'); if (!li) return;
+  const id = +li.dataset.id;
+  if (e.target.closest('.x')) { st.sel = [id]; return deleteSel(); }
+  st.sel = st.sel.includes(id) ? st.sel.filter(k => k !== id) : [...st.sel.filter(k => !E(k)), id]; changed();
+});
+$('conList').addEventListener('mouseover', e => { const li = e.target.closest('li[data-id]'); const id = li ? +li.dataset.id : null; if (id !== st.hover) { st.hover = id; render(); } });
+$('conList').addEventListener('mouseleave', () => { st.hover = null; render(); });
+$('btnFit').onclick = fit;
+$('btnBadges').onclick = () => { st.badges = !st.badges; $('btnBadges').textContent = 'Constraints: ' + (st.badges ? 'on' : 'off'); render(); };
+
+// ---------- lessons ----------
+function loadLesson(L, upto = 0) {
+  st.lesson = L; st.M = C.newModel(); st.R = L.build(st.M); C.solve(st.M);
+  st.step = 0; st.undo = []; st.redo = []; st.sel = []; st.draw = null; st.tool = 'select'; prompt('');
+  for (let i = 1; i <= upto; i++) { L.steps[i].apply(st.M, st.R); st.step = i; }
+  st.log = []; log(`<b>${L.title}</b> loaded.`);
+  history.replaceState(null, '', '#' + L.id + (upto ? ':' + upto : ''));
+  renderLessonList(); renderLessonCard(); changed(); fit();
+}
+function stepTo(k) {
+  const L = st.lesson; if (!L.steps || k < 0 || k >= L.steps.length) return;
+  if (k === st.step + 1) {
+    snapshot(); const before = C.analyze(st.M).dof;
+    L.steps[k].apply(st.M, st.R); st.step = k; changed();
+    history.replaceState(null, '', '#' + L.id + ':' + k);
+    log(`Step ${k}: <b>${L.steps[k].title}</b> → ${before} → ${st.an.dof} DOF.`);
+  } else loadLesson(L, k);
+  renderLessonCard();
+}
+function renderLessonList() {
+  $('lessonList').innerHTML = Lessons.map((L, i) => `<button data-i="${i}" class="${st.lesson === L ? 'on' : ''}">${L.title.replace(/^Challenge: /, '')}${L.challenge ? '<span class="tag">challenge</span>' : ''}</button>`).join('');
+}
+$('lessonList').addEventListener('click', e => { const b = e.target.closest('button'); if (b) loadLesson(Lessons[+b.dataset.i]); });
+function renderLessonCard() {
+  const L = st.lesson, card = $('lessonCard');
+  let h = `<h3>${L.title}</h3><p>${L.intro}</p>`;
+  if (L.steps) {
+    const s = L.steps[st.step];
+    h += `<div class="stepText"><b>Step ${st.step}: ${s.title}</b><br>${s.text}</div>
+      <div class="row"><button class="btn ghost" id="stPrev" ${st.step ? '' : 'disabled'}>◀ Back</button>
+      <button class="btn" id="stNext" ${st.step < L.steps.length - 1 ? '' : 'disabled'}>Apply next step ▶</button>
+      <button class="btn ghost" id="stReset">Restart</button></div>
+      <ol class="steps" start="0">${L.steps.map((x, i) => `<li data-k="${i}" class="${i < st.step ? 'done' : i === st.step ? 'cur' : ''}">${x.title}</li>`).join('')}</ol>
+      <p class="help">Between steps, drag the geometry: everything blue can still move. Try your own constraints too — Restart brings the lesson back.</p>`;
+  } else {
+    h += `<div class="row"><button class="btn ghost" id="stReset">Restart</button></div>`;
+    if (L.challenge) h += `<p class="help" style="margin-top:8px">The check below updates live. "Forced" means it holds however the sketch is dragged — a coincidence that only looks right does not count.</p>`;
+  }
+  card.innerHTML = h;
+  const on = (id, f) => { const b = $(id); if (b) b.onclick = f; };
+  on('stPrev', () => stepTo(st.step - 1)); on('stNext', () => stepTo(st.step + 1)); on('stReset', () => loadLesson(L));
+  card.querySelectorAll('li[data-k]').forEach(li => li.onclick = () => stepTo(+li.dataset.k));
+}
+function updateLessonCheck() {
+  const el = $('check'), L = st.lesson;
+  if (!L || !L.check) { el.hidden = true; return; }
+  let res;
+  try { res = L.check(st.M, st.R, st.an); } catch { res = [false, 'Some of the challenge geometry was deleted — press Restart.']; }
+  el.hidden = false; el.className = res[0] ? 'pass' : 'fail';
+  el.innerHTML = (res[0] ? '✔ ' : '✘ ') + res[1];
+}
+
+// ---------- start ----------
+buildToolbar();
+new ResizeObserver(resize).observe($('stage'));
+{ // deep link: #lessonId or #lessonId:step  (e.g. #flange:5)
+  const [id, k] = decodeURIComponent(location.hash.slice(1)).split(':'), L = Lessons.find(l => l.id === id) || Lessons[0];
+  loadLesson(L, Math.max(0, Math.min(+k || 0, L.steps ? L.steps.length - 1 : 0)));
+}
+</script>
+</body>
+</html>
