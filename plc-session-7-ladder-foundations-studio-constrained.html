@@ -1,282 +1,385 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PLC 7 · Reading a ladder diagram</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PLC 7 · Ladder programming bench</title>
 <style>
-:root{color-scheme:light;--ink:#20342f;--muted:#50625b;--active:#086453;--soft:#e4f2e9;--line:#ced8ce;--paper:#f8f7f2;--white:#fffefa;--mono:ui-monospace,Consolas,monospace;font:16px/1.5 system-ui,sans-serif;color:var(--ink);background:var(--paper)}
-*{box-sizing:border-box}
-body{margin:0}
-main{max-width:1000px;margin:auto;padding:0 clamp(14px,4vw,48px) 30px}
-header,.sheet-head,.controls-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-header{padding:16px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
-a{color:var(--active);text-underline-offset:4px}
-header a{font-size:.92rem}
-label[for="lessonSelect"],.eyebrow,.rung-number{font:700 .75rem var(--mono);letter-spacing:.05em;text-transform:uppercase}
-.picker{display:flex;align-items:center;gap:8px}
-select,button,input{font:inherit}
-select,button{border:1px solid #acb9ae;background:var(--white);color:var(--ink);border-radius:5px;cursor:pointer}
-select{padding:5px;max-width:100%}
-a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a16010;outline-offset:3px}
-.eyebrow{color:var(--active);margin:24px 0 6px}
-h1{font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-.045em;line-height:1.12;margin:0}
-h2{font-size:1.08rem;letter-spacing:-.015em;margin:0}
-p{margin:0}
-#problem{max-width:80ch;margin:8px 0 18px}
-.sheet{border:1px solid var(--line);border-radius:10px;background:var(--white);overflow:hidden}
-.sheet-head{padding:11px 15px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-.rung-number{color:var(--muted);font-size:.73rem;margin-right:.6em}
-.rung-picker{font-size:.87rem}
-.diagram{padding:3px 10px}
-svg{display:block;width:100%;max-width:730px;margin:auto}
-svg text{text-anchor:middle;fill:var(--ink);font:650 15px var(--mono)}
-svg .reading{font-size:13px;font-weight:600;fill:var(--muted)}
-svg .active-text{fill:var(--active)}
-svg .rail,svg .wire,svg .symbol{fill:none;stroke:#58685e;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-svg .wire{stroke:#87958c;stroke-dasharray:4 4}
-svg .lit{stroke:var(--active);stroke-dasharray:none;stroke-width:3}
-svg .rail{stroke-width:4}
-svg .timer-block{fill:#f1f5ef;stroke:#53675d;stroke-width:2}
-svg .timer-enabled{fill:var(--soft);stroke:var(--active)}
-.result{padding:12px 15px;background:#ecf2eb;border-top:1px solid var(--line);min-height:3em;font-size:.97rem}
-.controls{padding:13px 15px 16px;border-top:1px solid var(--line)}
-.reset{padding:4px 5px;border:0;background:transparent;color:var(--active);text-decoration:underline;text-underline-offset:3px;font-size:.9rem}
-.input-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:9px}
-.input-row label,.time-step{cursor:pointer;display:inline-flex;align-items:center;gap:7px;min-height:38px;border:1px solid var(--line);padding:5px 10px;border-radius:6px;font-size:.91rem}
-.input-row label:has(:checked){background:var(--soft);border-color:#9dbca9}
-.input-row input{accent-color:var(--active);margin:0}
-.bit{font:700 .73rem var(--mono)}
-.time-step:disabled{color:var(--muted);cursor:default;background:#f1f1eb}
-#try{font-size:.92rem;color:var(--muted);margin:10px 0 0}
-.reading-note{margin-top:15px;font-size:.93rem;max-width:82ch}
-.reading-note p{margin-top:4px}
-[hidden]{display:none!important}
-@media(max-width:520px){.eyebrow{margin-top:18px}.sheet-head,.controls{padding-inline:11px}.diagram{padding:2px}.result{padding:10px 11px}.input-row{gap:6px}header{gap:7px}.picker label{font-size:.7rem}.picker select{font-size:.85rem}}
-</style>
-</head>
-<body>
-<main>
-<header>
-  <a href="index.html">← Learning home</a>
-  <div class="picker"><label for="lessonSelect">Example</label><select id="lessonSelect">
-    <option value="signal">1 · Box sensor</option><option value="logic">2 · Press controls</option>
-    <option value="holding">3 · Holding circuit</option><option value="timer">4 · Warning timer</option>
-  </select></div>
-</header>
-<p class="eyebrow">PLC 7 · Ladder foundations</p>
-<h1 id="title">Read a sensor contact and a coil</h1>
-<p id="problem"></p>
-<section class="sheet" aria-labelledby="rungName">
-  <div class="sheet-head">
-    <h2><span id="rungNumber" class="rung-number"></span><span id="rungName"></span></h2>
-    <select id="rungSelect" class="rung-picker" aria-label="Rung to display" hidden></select>
-  </div>
-  <div class="diagram"><svg id="ladder" role="img" aria-labelledby="diagramTitle diagramDesc"></svg></div>
-  <p id="result" class="result" role="status"></p>
-  <div class="controls">
-    <div class="controls-head"><h2>Change the inputs</h2><button type="button" id="reset" class="reset">Reset example</button></div>
-    <div id="inputs" class="input-row"></div>
-    <p id="try"></p>
-  </div>
+:root{color-scheme:light;--ink:#20342f;--muted:#50625b;--active:#086453;--soft:#e5f2eb;--line:#c9d4cb;--paper:#f8f7f2;--white:#fffefa;--mono:ui-monospace,Consolas,monospace;font:16px/1.4 system-ui,sans-serif;color:var(--ink);background:var(--paper)}
+*{box-sizing:border-box}body{margin:0}main{max-width:1280px;margin:auto;padding:0 clamp(12px,3vw,36px) 24px}
+header,.bar,.toolbar,.section-head,.editor-fields{display:flex;align-items:center;flex-wrap:wrap;gap:8px}header,.section-head{justify-content:space-between}header{padding:12px 0;border-bottom:1px solid var(--line)}
+a{color:var(--active);text-underline-offset:3px}header a{font-size:.9rem}.eyebrow,.tag,.address,.flag,.scan,.bit{font:650 .77rem var(--mono)}
+h1,h2,h3,p{margin:0}h1{font-size:clamp(1.5rem,3vw,2.2rem);letter-spacing:-.05em}h2{font-size:1.04rem}h3{font-size:.94rem}
+.intro{padding:14px 0}.eyebrow{color:var(--active);text-transform:uppercase;letter-spacing:.07em}.intro p:last-child{max-width:90ch;margin-top:3px}
+select,button,input{font:inherit}select,button{border:1px solid #aab8ad;border-radius:4px;background:var(--white);color:var(--ink);padding:5px 9px;cursor:pointer}
+button.primary,button[aria-pressed=true]{background:var(--active);color:white;border-color:var(--active)}button:disabled{cursor:default;opacity:.55}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,svg [role=button]:focus-visible{outline:3px solid #ac620c;outline-offset:2px}
+.toolbar{background:#eaf0e9;border:1px solid var(--line);border-radius:8px 8px 0 0;padding:8px 12px}.toolbar .scan{margin-left:auto;color:var(--muted)}
+.bench{display:grid;grid-template-columns:minmax(0,1fr) minmax(235px,29%);border:1px solid var(--line);border-top:0;background:var(--white)}
+.program,.io{min-width:0}.program-head,.io,.editor,.tests{padding:11px 13px}.io{border-left:1px solid var(--line);background:#f6f8f2}
+.program-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}.flag{color:var(--active)}
+.diagram{overflow:auto;background:#fffefa}.diagram svg{display:block;width:100%}.diagram:focus-visible{outline:3px solid #ac620c;outline-offset:-3px}
+svg text{fill:var(--ink);font:650 14px var(--mono);text-anchor:middle;pointer-events:none}
+svg .small{font-size:12px;fill:var(--muted)}svg .rung-label{text-anchor:start;font:650 13px system-ui,sans-serif;fill:#395349}
+svg .rail,svg .wire,svg .symbol{fill:none;stroke:#596d61;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}svg .wire{stroke:#96a69c;stroke-dasharray:4 4}svg .lit{stroke:var(--active);stroke-dasharray:none;stroke-width:3}svg .rail{stroke-width:3}
+svg .hit{fill:transparent;stroke:transparent;stroke-width:1.5}svg .selected .hit{fill:#f4eddc;stroke:#97601d}svg [role=button]{cursor:pointer}svg [role=button]:hover .hit{stroke:#97601d}
+svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2}
+.hint,.status{color:var(--muted);font-size:.86rem}.hint{padding:5px 13px 9px}.editor{border-top:1px solid var(--line);background:#f5f5ed}.editor-fields{align-items:flex-end;margin:8px 0}.editor-fields label{font-size:.81rem;font-weight:650}.editor-fields select,.editor-fields input{display:block;font:600 .87rem var(--mono);margin-top:3px;max-width:100%}.editor-fields input{width:6em;padding:5px}#instructionInfo{font-size:.88rem;min-height:1.4em}
+.io .subhead{color:var(--muted);margin:10px 0 3px;font-size:.85rem}.io-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:.86rem}
+.io-row small{display:block;color:var(--muted);font:500 .75rem system-ui,sans-serif}.address{color:var(--muted);font-size:.7rem}.io-row input{accent-color:var(--active);cursor:pointer}
+.io-head{color:var(--muted);font:600 .71rem var(--mono);border:none;padding-bottom:1px}.io-row label{cursor:pointer;display:flex;align-items:center;gap:3px}.bit{color:var(--muted);min-width:3ch}.bit.on{color:var(--active)}
+.io .section-head button{font-size:.8rem}.tests{margin-top:10px;border:1px solid var(--line);border-radius:6px;background:var(--white)}
+.tests .hint{padding:0;margin:4px 0}.tests ul{list-style:none;padding:0;margin:8px 0 0}.tests li{padding:4px 0;border-top:1px solid var(--line);font-size:.87rem}.fail{color:#8e401b}.pass{color:var(--active)}[hidden]{display:none!important}
+@media(max-width:750px){.bench{grid-template-columns:1fr}.io{border-left:0;border-top:1px solid var(--line)}.toolbar .scan{margin-left:0}.diagram svg{max-width:none}.program-head{flex-wrap:wrap}}
+@media(max-width:430px){header, .bar{gap:5px}header{font-size:.83rem}.program-head,.io,.editor,.tests{padding:9px}.toolbar{padding:8px}.toolbar button{font-size:.87rem}.editor-fields{gap:6px}.intro{padding:9px 0}}
+.view-switch{display:none}
+@media(max-width:750px){
+  .view-switch{display:flex;gap:6px;padding:6px 8px;border:1px solid var(--line);background:var(--white)}
+  .view-switch button{font-size:.84rem;padding:5px 10px}
+  .view-switch button[aria-pressed="true"]{background:var(--active);border-color:var(--active);color:white}
+  #workbench[data-view="ladder"] #io-pane,#workbench[data-view="io"] #program-pane{display:none}
+}
+</style></head>
+<body><main>
+<header><a href="index.html">← Learning home</a><div class="bar"><label for="lessonSelect">Program</label><select id="lessonSelect">
+<option value="signal">Box sensor</option><option value="logic">Press controls</option><option value="holding">Holding circuit</option><option value="timer">Warning timer</option></select></div></header>
+<div class="intro"><p class="eyebrow">PLC 7 · Ladder programming bench</p><h1 id="programTitle"></h1><p id="problem"></p></div>
+<div class="toolbar" aria-label="PLC scan controls"><b>PLC</b><button id="runBtn" aria-pressed="false">Run</button><button id="holdBtn" aria-pressed="true">Hold</button><button id="stepBtn">Step one scan</button><span class="scan" id="scanInfo"></span></div>
+<div id="view-switch" class="view-switch" role="group" aria-label="Workspace view">
+  <button type="button" data-view="ladder" aria-controls="program-pane" aria-pressed="true">Ladder</button>
+  <button type="button" data-view="io" aria-controls="io-pane" aria-pressed="false">Field I/O</button>
+</div>
+<div id="workbench" class="bench" data-view="ladder">
+<section id="program-pane" class="program" aria-label="Ladder program">
+  <div class="program-head"><h2>Program monitor</h2><span class="flag" id="programState"></span></div>
+  <div class="diagram" id="diagram" tabindex="0" aria-label="Ladder diagram, scroll horizontally if needed"><svg id="ladder" role="group" aria-label="Program rungs. Select an instruction to inspect or edit it."></svg></div>
+  <p class="hint">Solid teal traces the path from the left rail. TRUE or FALSE is the contact test from the last scan. Select a symbol to inspect it.</p>
+  <section class="editor" aria-labelledby="editorTitle">
+    <div class="section-head"><h2 id="editorTitle">Instruction editor</h2><button id="restoreBtn">Restore reference</button></div>
+    <div class="editor-fields" id="editorFields"></div><p id="instructionInfo"></p>
+    <p class="status" id="notice" role="status"></p>
+  </section>
 </section>
-<section class="reading-note">
-  <h2>How to read the rung</h2>
-  <p>Start at the left rail. Each contact shows whether its test is <b>TRUE</b> or <b>FALSE</b>. The solid teal line shows how far the path reaches. A dashed segment has no path from the left rail.</p>
-  <p id="symbolNote"></p>
-</section>
-</main>
-<script>
-(function runLesson(){
-  const byId = id => document.getElementById(id);
-  const contact = (tag, inverted = false) => ({ tag, inverted });
-  const rung = (name, columns, target, reason, preset = 0) => ({ name, columns, target, reason, preset });
+<aside id="io-pane" class="io"><div class="section-head"><h2>I/O monitor</h2><button id="resetBtn">Reset I/O</button></div>
+<p class="subhead">Input switches</p><div class="io-row io-head"><span>Tag / address</span><span>Field</span><span>PLC</span></div><div id="inputs"></div>
+<p class="subhead">Outputs and memory</p><div id="outputs"></div><p class="status" id="modeHelp" style="margin-top:9px"></p></aside>
+</div>
+<section class="tests"><div class="section-head"><h2>Program check</h2><button id="testBtn">Run reference cases</button></div><p class="hint" id="task"></p><p id="testSummary" role="status"></p><ul id="testResults"></ul></section>
+</main><script>
+(function programmingBench(){
+  const $ = id => document.getElementById(id);
   const onOff = value => value ? "ON" : "OFF";
-  const truth = value => value ? "TRUE" : "FALSE";
-
+  const input = (tag,address,name,initial=false) => ({tag,address,name,initial});
+  const signal = (tag,address,name) => ({tag,address,name});
+  const contact = (tag,inverted=false) => ({tag,inverted});
+  const rung = (name,columns,target,preset=0) => ({name,columns,target,preset,pairSeries:false});
+  const trial = (name,...steps) => ({name,steps});
   const lessons = {
-    signal: {
-      title:"Read a sensor contact and a coil",
-      problem:"When a box reaches a photoelectric sensor, the controller must command the conveyor motor to run. Removing the box must turn the command off.",
-      inputs:[["SENSOR","Box at sensor",false]],
-      prompt:"Switch the sensor ON and follow the path all the way to MOTOR. Then switch it OFF.",
-      note:"The two vertical bars are a normally open contact. Its test is TRUE when the stored bit is ON. The parentheses mark a coil. An ordinary coil writes ON when the path reaches it and OFF otherwise.",
-      rungs:[rung("Detect a box",[[contact("SENSOR")]],"MOTOR", b => b.SENSOR ? "The sensor is ON. Its normally open contact passes the path to the motor coil." : "The sensor is OFF. Its normally open contact blocks the path to the motor coil.")]
+    signal:{
+      title:"Box sensor and conveyor",problem:"The motor command should be ON exactly while a box is detected.",
+      task:"Switch SENSOR on and step. Change its contact to NC, apply the edit, then check the box-present and box-absent cases.",
+      inputs:[input("SENSOR","%I0.1","Box detected")], outputs:[signal("MOTOR","%Q0.0","Motor command")],
+      rungs:[rung("Detect a box",[[contact("SENSOR")]],"MOTOR")],
+      cases:[trial("No box",{}),trial("Box present",{SENSOR:true}),trial("Box leaves",{SENSOR:true},{SENSOR:false})]
     },
-    logic: {
-      title:"Read two paths through a press control",
-      problem:"A press needs a closed guard and no fault. Either the foot switch or the panel button can request a stroke.",
-      inputs:[["GUARD","Guard closed",true],["FOOT","Foot switch",false],["PANEL","Panel button",false],["FAULT","Fault active",false]],
-      prompt:"Turn on the panel button, then turn on the fault. Which contact breaks the path to PRESS?",
-      note:"Contacts in series must all pass. Parallel branches give a choice of paths. The slash on FAULT marks a normally closed contact. It passes when the FAULT bit is OFF.",
-      rungs:[rung("Command the press",[[contact("GUARD")],[contact("FOOT"),contact("PANEL")],[contact("FAULT",true)]],"PRESS", b => {
-        if (!b.GUARD) return "The guard contact blocks the path before it reaches either request.";
-        if (!b.FOOT && !b.PANEL) return "Both request contacts are FALSE. Neither branch carries the path across the gap.";
-        if (b.FAULT) return "A request reaches FAULT, but the fault bit is ON. Its normally closed contact blocks the path.";
-        return "The guard is closed, a request passes, and the FAULT bit is OFF. The path reaches the press coil.";
-      })]
+    logic:{
+      title:"Press with two request paths",problem:"With the guard closed and no fault, either the foot switch or the panel button should command a press stroke.",
+      task:"Select FOOT, wire its pair in series, then turn on FOOT alone and step. Run the reference cases to find which requests still work.",
+      inputs:[input("GUARD","%I0.0","Guard closed",true),input("FOOT","%I0.1","Foot switch"),input("PANEL","%I0.2","Panel button"),input("FAULT","%I0.3","Fault active")],
+      outputs:[signal("PRESS","%Q0.0","Press solenoid")],
+      rungs:[rung("Command the press",[[contact("GUARD")],[contact("FOOT"),contact("PANEL")],[contact("FAULT",true)]],"PRESS")],
+      cases:[trial("No request",{}),trial("Foot alone",{FOOT:true}),trial("Panel alone",{PANEL:true}),trial("Both requests",{FOOT:true,PANEL:true}),trial("Guard open",{GUARD:false,FOOT:true}),trial("Active fault",{PANEL:true,FAULT:true})]
     },
-    holding: {
-      title:"Read the contact that holds a motor on",
-      problem:"A brief press of Start must keep the conveyor running until Stop is pressed, the guard opens, or the overload trips. A stored run request also lights the run lamp.",
-      inputs:[["START_PB","Start held",false],["STOP_OK","Stop released",true],["GUARD_OK","Guard closed",true],["OL_OK","Overload healthy",true]],
-      prompt:"Select Start held, then clear it to release Start. Open the guard and close it again. Does the motor restart?",
-      note:"The lower RUN_REQUEST contact reads the bit written by the coil. The diagram shows the settled state after each input change. After Start is released, the holding branch can carry the path by itself.",
-      rungs:[
-        rung("Hold the run request",[[contact("STOP_OK")],[contact("GUARD_OK")],[contact("OL_OK")],[contact("START_PB"),contact("RUN_REQUEST")]],"RUN_REQUEST", b => {
-          if (!b.STOP_OK || !b.GUARD_OK || !b.OL_OK) return "A required condition is missing. The series path breaks and the stored run request clears.";
-          if (b.START_PB) return "Start completes the upper path. Once the coil writes ON, its own contact also passes on the next scan.";
-          if (b.RUN_REQUEST) return "Start is released. The lower contact reads the stored ON bit and keeps the coil on.";
-          return "The series contacts pass, but both branches are open. A fresh Start press is needed.";
-        }),
-        rung("Run the conveyor",[[contact("RUN_REQUEST")]],"M1", b => b.RUN_REQUEST ? "The stored run request is ON, so this contact passes and commands the conveyor motor ON." : "The stored run request is OFF, so the motor command stays OFF."),
-        rung("Light the run lamp",[[contact("RUN_REQUEST")]],"RUN_LAMP", b => b.RUN_REQUEST ? "The lamp coil follows the ON run request, even after Start is released." : "The run request is OFF, so the lamp coil is OFF.")
-      ]
+    holding:{
+      title:"Motor holding circuit",problem:"A momentary Start request should hold the motor and lamp on. Stop, an open guard or a tripped overload must clear the request.",
+      task:"Turn on START_PB, step, release it, then step again. Replace the holding contact with START_PB and check the Start-and-release case.",
+      inputs:[input("START_PB","%I0.0","Start held"),input("STOP_OK","%I0.1","Stop released",true),input("GUARD_OK","%I0.2","Guard closed",true),input("OL_OK","%I0.3","Overload healthy",true)],
+      outputs:[signal("RUN_REQUEST","%M0.0","Stored request"),signal("M1","%Q0.0","Conveyor motor"),signal("RUN_LAMP","%Q0.1","Run indicator")],
+      rungs:[rung("Store run request",[[contact("STOP_OK")],[contact("GUARD_OK")],[contact("OL_OK")],[contact("START_PB"),contact("RUN_REQUEST")]],"RUN_REQUEST"),rung("Run conveyor",[[contact("RUN_REQUEST")]],"M1"),rung("Light run lamp",[[contact("RUN_REQUEST")]],"RUN_LAMP")],
+      cases:[trial("Ready, no Start",{}),trial("Start and release",{START_PB:true},{START_PB:false}),trial("Stop and restore",{START_PB:true},{START_PB:false,STOP_OK:false},{STOP_OK:true}),trial("Guard opens",{START_PB:true},{START_PB:false,GUARD_OK:false}),trial("Overload trips",{START_PB:true},{START_PB:false,OL_OK:false})]
     },
-    timer: {
-      title:"Read a three-second warning timer",
-      problem:"Enabling the conveyor must first sound a horn for three seconds. When the delay ends, the horn must stop and the conveyor must run.",
-      inputs:[["ST","Process enabled",false]],
-      prompt:"Switch ST on. Advance the simulated clock one second at a time. Compare the horn and motor rungs before and after 3 s.",
-      note:"TON is an on-delay timer. ET is elapsed time and PT is the preset. Q turns ON when ET reaches PT. Switching ST off resets both ET and Q.",
-      rungs:[
-        rung("Time the warning",[[contact("ST")]],"T_WARN", (b, et) => !b.ST ? "The timer input is OFF, so elapsed time is zero." : et < 3 ? "The timer is enabled. The horn sounds while the timer counts toward 3 s." : "Elapsed time has reached 3 s. The timer's done bit is ON.",3),
-        rung("Sound the horn",[[contact("ST")],[contact("T_WARN.Q",true)]],"HORN", b => !b.ST ? "ST is OFF. Even though the normally closed done contact is TRUE, no path reaches it." : b["T_WARN.Q"] ? "The done bit is ON. Its normally closed contact is FALSE, ending the warning." : "ST is ON and the done bit is OFF. Its normally closed contact passes, sounding the horn."),
-        rung("Start the conveyor",[[contact("ST")],[contact("T_WARN.Q")]],"M1", b => !b.ST ? "ST is OFF and the conveyor command is OFF." : b["T_WARN.Q"] ? "The done bit is ON. Both contacts pass and the conveyor starts." : "The timer is still counting. Its normally open done contact blocks the motor command.")
-      ]
+    timer:{
+      title:"Three-second conveyor warning",problem:"Enable should sound the horn for three seconds. Only when the timer is done should the horn stop and the conveyor start.",
+      task:"Switch ST on and step until Q turns ON. Select the TON block, change its preset to 2 s, then test the warning duration.",
+      inputs:[input("ST","%I0.0","Enable conveyor")],
+      outputs:[signal("T_WARN.ET","TON.ET","Elapsed time"),signal("T_WARN.Q","TON.Q","Timer done"),signal("HORN","%Q0.0","Warning horn"),signal("M1","%Q0.1","Conveyor motor")],
+      rungs:[rung("Time the warning",[[contact("ST")]],"T_WARN",3),rung("Sound horn",[[contact("ST")],[contact("T_WARN.Q",true)]],"HORN"),rung("Start conveyor",[[contact("ST")],[contact("T_WARN.Q")]],"M1")],
+      cases:[trial("Disabled",{}),trial("Warning starts",{ST:true}),trial("Still warning at 2 s",{ST:true},{},{}),trial("Motor starts at 3 s",{ST:true},{},{},{}),trial("Disable resets timer",{ST:true},{},{},{},{ST:false})]
     }
   };
-
-  let current, bits, elapsed, selectedRung;
-  const test = item => item.inverted ? !bits[item.tag] : Boolean(bits[item.tag]);
-
-  function solve(seconds = 0) {
-    for (const row of current.rungs) {
-      const path = row.columns.every(column => column.some(test));
-      if (row.preset) {
-        elapsed = path ? Math.min(row.preset, elapsed + seconds) : 0;
-        bits["T_WARN.Q"] = elapsed >= row.preset;
-      } else {
-        bits[row.target] = path;
-      }
-    }
-    draw();
-  }
-
-  function draw() {
-    const row = current.rungs[selectedRung];
-    const svg = byId("ladder");
-    const width = Math.max(258, Math.round(svg.getBoundingClientRect().width));
-    const left = 14, right = width - 14;
-    const cell = (right - left) / (row.columns.length + 1);
-    const y = 72, lower = 165;
-    const branch = row.columns.some(column => column.length > 1);
-    const height = branch ? lower + 37 : y + 42;
-    svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
-    const fragments = [];
-    const path = (d, classes) => fragments.push(`<path class="${classes}" d="${d}"/>`);
-    const wire = (x1,y1,x2,y2,live) => path(`M${x1} ${y1} L${x2} ${y2}`,`wire${live ? " lit" : ""}`);
-    const label = (x,baseline,tag) => {
-      const parts = cell < 105 && tag.includes("_") ? tag.split(/_(?=[^_]*$)/) : [tag];
-      const size = cell < 76 ? 12 : 15;
-      parts.forEach((part,i) => fragments.push(`<text x="${x}" y="${baseline - (parts.length - i - 1) * 19}" style="font-size:${size}px">${part}${i < parts.length-1 ? "_" : ""}</text>`));
-    };
-    const reading = (x,baseline,txt,live) => fragments.push(`<text x="${x}" y="${baseline}" class="reading${live ? " active-text" : ""}">${txt}</text>`);
-    const drawContact = (item,x,cy,incoming,xLeft,xRight) => {
-      const passed = test(item);
-      const through = incoming && passed;
-      const gap = 6;
-      wire(xLeft,cy,x-gap,cy,incoming);
-      path(`M${x-gap} ${cy-12}v24 M${x+gap} ${cy-12}v24`+(item.inverted ? ` M${x-10} ${cy+13}l20 -26` : ""),`symbol${through ? " lit" : ""}`);
-      wire(x+gap,cy,xRight,cy,through);
-      label(x,cy-21,item.tag);
-      reading(x,cy+28,truth(passed),passed);
-      return through;
-    };
-    path(`M${left} 14 V${height-10}`, "rail lit");
-    path(`M${right} 14 V${height-10}`, "rail");
-    let powered = true;
-    row.columns.forEach((column,i) => {
-      const start = left + i*cell, end = start + cell, x = (start+end)/2;
-      if (column.length === 1) {
-        powered = drawContact(column[0],x,y,powered,start,end);
-        return;
-      }
-      const entry = start+2, exit=end-2;
-      wire(start,y,entry,y,powered);
-      wire(entry,y,entry,lower,powered);
-      const upperOn = drawContact(column[0],x,y,powered,entry,exit);
-      const lowerOn = drawContact(column[1],x,lower,powered,entry,exit);
-      wire(exit,lower,exit,y,lowerOn);
-      powered = upperOn || lowerOn;
-      wire(exit,y,end,y,powered);
+  const blankPLC = () => ({memory:{},enabled:false,elapsed:0,trace:null,scans:0});
+  const defaults = lesson => Object.fromEntries(lesson.inputs.map(i=>[i.tag,i.initial]));
+  // Keep each contact's coordinates in the editable group even when the pair is laid out in series.
+  function columns(row) {
+    return row.columns.flatMap((group,col) => {
+      const items = group.map((item,branch) => ({...item,col,branch}));
+      return items.length > 1 && row.pairSeries ? items.map(item => [item]) : [items];
     });
-    const lastStart = right-cell, x = lastStart + cell/2;
-    if (row.preset) {
-      const half = Math.min(58,cell*.36);
-      wire(lastStart,y,x-half,y,powered);
-      wire(x+half,y,right,y,bits["T_WARN.Q"]);
-      fragments.push(`<rect x="${x-half}" y="${y-23}" width="${2*half}" height="46" rx="2" class="timer-block${powered ? " timer-enabled" : ""}"/>`);
-      label(x,y-31,row.target);
-      fragments.push(`<text x="${x}" y="${y-3}">TON</text>`);
-      reading(x,y+13,`PT ${row.preset} s`,powered);
-      reading(x,y+38,`Q ${onOff(bits["T_WARN.Q"])}`,bits["T_WARN.Q"]);
-    } else {
-      wire(lastStart,y,x-12,y,powered);
-      path(`M${x-5} ${y-13} Q${x-19} ${y} ${x-5} ${y+13} M${x+5} ${y-13} Q${x+19} ${y} ${x+5} ${y+13}`,`symbol${powered ? " lit" : ""}`);
-      wire(x+12,y,right,y,powered);
-      label(x,y-21,row.target);
-      reading(x,y+28,onOff(bits[row.target]),bits[row.target]);
+  }
+  function scan(program,plc,field,seconds) {
+    const memory = {...plc.memory,...field};
+    plc.trace = program.map(row => {
+      let powered = true;
+      const groups = columns(row).map(group => {
+        const readings = group.map(item => {
+          const bit = Boolean(memory[item.tag]);
+          const pass = item.inverted ? !bit : bit;
+          return {bit,pass,incoming:powered,through:powered && pass};
+        });
+        powered = readings.some(reading => reading.through);
+        return readings;
+      });
+      let out = powered;
+      if (row.preset) {
+        plc.elapsed = powered && plc.enabled ? Math.min(row.preset,plc.elapsed+seconds) : 0;
+        plc.enabled = powered;
+        memory[row.target+".ET"] = plc.elapsed;
+        out = plc.elapsed >= row.preset;
+        memory[row.target+".Q"] = out;
+      } else {
+        memory[row.target] = out;
+      }
+      return {groups,powered,out};
+    });
+    plc.memory = memory;
+    plc.scans++;
+  }
+
+  let lesson,program,plc,field,selected,running=false,lastTick=0,compiled=false;
+  const workCopies = {};
+  const selectedRow = () => program[selected.r];
+  const selectedItem = () => selected.action ? null : selectedRow().columns[selected.col][selected.branch];
+  function loadProgram() {
+    if (lesson) workCopies[lesson.title] = program;
+    lesson = lessons[$("lessonSelect").value];
+    program = workCopies[lesson.title] || structuredClone(lesson.rungs);
+    selected = {r:0,col:0,branch:0};
+    $("programTitle").textContent = lesson.title;
+    $("problem").textContent = lesson.problem;
+    $("task").textContent = lesson.task;
+    clearTests();
+    resetIO();
+    populateEditor();
+  }
+  function resetIO() {
+    running = false;
+    field = defaults(lesson);
+    plc = blankPLC();
+    scan(program,plc,field,0);
+    compiled = true;
+    $("notice").textContent = "";
+    $("inputs").innerHTML = lesson.inputs.map(i =>
+      `<div class="io-row"><span><b class="tag">${i.tag}</b> <span class="address">${i.address}</span><small>${i.name}</small></span><label title="${i.name}"><input type="checkbox" id="${i.tag}" aria-label="${i.name} (${i.tag})" ${field[i.tag] ? "checked" : ""}><span id="field-${i.tag}" class="bit"></span></label><span class="bit" id="read-${i.tag}"></span></div>`).join("");
+    $("outputs").innerHTML = lesson.outputs.map(i =>
+      `<div class="io-row"><span><b class="tag">${i.tag}</b> <span class="address">${i.address}</span><small>${i.name}</small></span><span></span><span class="bit" id="out-${i.tag}"></span></div>`).join("");
+    render();
+  }
+  function takeScan(dt) {
+    const changed = !compiled;
+    scan(program,plc,field,dt);
+    compiled = true;
+    if (changed) $("notice").textContent = `Scan ${plc.scans} executed the updated program.`;
+    render();
+  }
+  function render() {
+    const pending = lesson.inputs.some(i => field[i.tag] !== plc.memory[i.tag]);
+    const modified = JSON.stringify(program) !== JSON.stringify(lesson.rungs);
+    $("runBtn").setAttribute("aria-pressed",String(running));
+    $("holdBtn").setAttribute("aria-pressed",String(!running));
+    $("stepBtn").disabled = running;
+    $("scanInfo").textContent = `${running ? "RUN" : "HOLD"} · Scan ${plc.scans}${pending ? " · Input pending" : ""}`;
+    $("programState").textContent = `${modified ? "Edited" : "Reference"}${compiled ? "" : " · Awaiting scan"}`;
+    $("modeHelp").textContent = running ? "RUN reads field inputs and evaluates all rungs repeatedly. Hold freezes the last scan." : "HOLD keeps the last scan. Change a switch, then step to read it. Each step advances one simulated second.";
+    for (const i of lesson.inputs) {
+      showBit("field-"+i.tag,field[i.tag]);
+      showBit("read-"+i.tag,plc.memory[i.tag]);
     }
-    const descriptions = row.columns.map(column => column.map(item => `${item.tag}, ${item.inverted ? "normally closed" : "normally open"} contact, ${truth(test(item))}`).join(" or ")).join(" then ");
-    const output = row.preset ? `ET ${elapsed} of ${row.preset} s · Q ${onOff(bits["T_WARN.Q"])}` : `${row.target} ${onOff(bits[row.target])}`;
-    const explanation = row.reason(bits,elapsed);
-    svg.innerHTML = `<title id="diagramTitle">${row.name}</title><desc id="diagramDesc">From left to right: ${descriptions}. ${output}.</desc>`+fragments.join("");
-    const multiple = current.rungs.length > 1;
-    byId("rungNumber").hidden = multiple;
-    byId("rungNumber").textContent = `R${selectedRung + 1}`;
-    byId("rungName").textContent = multiple ? "Select a rung" : row.name;
-    const feedback = `<strong>${output}.</strong> ${explanation}`;
-    if (byId("result").innerHTML !== feedback) byId("result").innerHTML = feedback;
-    const advance = byId("advance");
-    if (advance) advance.disabled = !bits.ST || bits["T_WARN.Q"];
+    for (const i of lesson.outputs) {
+      if (i.tag.endsWith(".ET")) $("out-"+i.tag).textContent = (plc.memory[i.tag] || 0).toFixed(1)+" s";
+      else showBit("out-"+i.tag,plc.memory[i.tag]);
+    }
+    drawDiagram();
+    describeInstruction();
+  }
+  function showBit(id,value) {
+    const node = $(id);
+    node.textContent = onOff(value);
+    node.classList.toggle("on",Boolean(value));
   }
 
-  function loadLesson(){
-    current = lessons[byId("lessonSelect").value];
-    bits = {};
-    elapsed = 0;
-    selectedRung = 0;
-    byId("title").textContent = current.title;
-    byId("problem").textContent = current.problem;
-    byId("symbolNote").textContent = current.note;
-    byId("try").innerHTML = `<b>Try it.</b> ${current.prompt}`;
-    const selector = byId("rungSelect");
-    selector.innerHTML = current.rungs.map((row,i) => `<option value="${i}">R${i+1} · ${row.name}</option>`).join("");
-    selector.hidden = current.rungs.length === 1;
-    byId("inputs").innerHTML = current.inputs.map(([tag,label,initial]) => {
-      bits[tag] = initial;
-      return `<label><input type="checkbox" id="${tag}" data-tag="${tag}" ${initial ? "checked" : ""}>${label} <span class="bit">${onOff(initial)}</span></label>`;
-    }).join("") + (current === lessons.timer ? '<button type="button" class="time-step" id="advance">Advance 1 s</button>' : "");
-    solve();
+  function drawDiagram() {
+    const svg = $("ladder");
+    const layouts = program.map(columns);
+    const maxCols = Math.max(...layouts.map(groups => groups.length));
+    const minWidth = 32+(maxCols+1)*103;
+    svg.style.minWidth = minWidth+"px";
+    const width = Math.max(minWidth,Math.round(svg.getBoundingClientRect().width));
+    const left=15,right=width-15,cell=(right-left)/(maxCols+1);
+    const rowHeight = layouts.map(groups=>groups.some(group=>group.length>1) ? 150 : 89);
+    const height = rowHeight.reduce((a,b)=>a+b,0)+8;
+    svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
+    const parts=[];
+    const line=(x1,y1,x2,y2,live)=>parts.push(`<path class="wire${live ? " lit" : ""}" d="M${x1} ${y1}L${x2} ${y2}"/>`);
+    const label=(x,y,text,cls="")=>parts.push(`<text x="${x}" y="${y}" class="${cls}">${text}</text>`);
+    const focus = svg.contains(document.activeElement) && document.activeElement.id;
+    parts.push(`<path class="rail lit" d="M${left} 4V${height-4}"/><path class="rail" d="M${right} 4V${height-4}"/>`);
+    let top=0;
+    program.forEach((row,r)=>{
+      const y=top+54,low=y+58,last=compiled ? plc.trace[r] : null;
+      label(left+6,top+15,`R${r+1}   ${row.name}`,"rung-label");
+      let incoming=Boolean(last);
+      layouts[r].forEach((group,c)=>{
+        const start=left+c*cell,end=start+cell,x=(start+end)/2;
+        const entry=group.length>1 ? start+2 : start, exit=group.length>1 ? end-2 : end;
+        if (group.length>1) {
+          line(start,y,entry,y,incoming);line(entry,y,entry,low,incoming);
+        }
+        group.forEach((item,b)=>{
+          const cy=b ? low : y;
+          const value=last?.groups[c][b];
+          const isSelected = selected.r===r && !selected.action && selected.col===item.col && selected.branch===item.branch;
+          parts.push(`<g id="sym-${r}-${item.col}-${item.branch}" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="Rung ${r+1}, ${item.tag}, ${item.inverted ? "normally closed" : "normally open"}, ${value ? value.pass ? "true" : "false" : "awaiting scan"}" data-r="${r}" data-col="${item.col}" data-branch="${item.branch}" class="${isSelected?"selected":""}"><rect class="hit" x="${x-cell/2+4}" y="${cy-28}" width="${cell-8}" height="54" rx="4"/>`);
+          line(entry,cy,x-7,cy,value?.incoming);line(x+7,cy,exit,cy,value?.through);
+          parts.push(`<path class="symbol${value?.through ? " lit" : ""}" d="M${x-7} ${cy-10}v20 M${x+7} ${cy-10}v20${item.inverted ? ` M${x-10} ${cy+11}l20 -22` : ""}"/>`);
+          label(x,cy-15,item.tag);label(x,cy+21,value ? value.pass ? "TRUE" : "FALSE" : "—","small"+(value?.pass ? " on" : ""));
+          parts.push("</g>");
+        });
+        incoming=Boolean(last?.groups[c].some(value=>value.through));
+        if(group.length>1){line(exit,low,exit,y,last?.groups[c][1].through);line(exit,y,end,y,incoming);}
+      });
+      const actionX=right-cell/2, edge = row.preset ? 36 : 12;
+      line(left+layouts[r].length*cell,y,actionX-edge,y,last?.powered);
+      const sel=selected.r===r && selected.action;
+      parts.push(`<g id="sym-${r}-action" role="button" tabindex="0" aria-pressed="${Boolean(sel)}" aria-label="Rung ${r+1}, ${row.target}, ${row.preset ? "on-delay timer" : "output coil"}" data-r="${r}" data-action="1" class="${sel ? "selected" : ""}"><rect class="hit" x="${actionX-cell/2+3}" y="${y-31}" width="${cell-6}" height="61" rx="4"/>`);
+      line(actionX+edge,y,right,y,last?.out);
+      if(row.preset){
+        parts.push(`<rect class="timer" x="${actionX-edge}" y="${y-12}" width="${2*edge}" height="24" rx="2"/>`);
+        label(actionX,y+5,`TON ${row.preset}s`,"small");
+      } else {
+        parts.push(`<path class="symbol${last?.out ? " lit" : ""}" d="M${actionX-5} ${y-12}Q${actionX-19} ${y} ${actionX-5} ${y+12} M${actionX+5} ${y-12}Q${actionX+19} ${y} ${actionX+5} ${y+12}"/>`);
+      }
+      label(actionX,y-16,row.target);
+      label(actionX,y+24,last ? (row.preset ? "Q " : "")+onOff(last.out) : "—","small"+(last?.out ? " on" : ""));
+      parts.push("</g>");
+      top+=rowHeight[r];
+    });
+    svg.innerHTML=parts.join("");
+    if(focus) document.getElementById(focus)?.focus({preventScroll:true});
   }
 
-  byId("inputs").addEventListener("change", e => {
-    const {tag} = e.target.dataset;
-    if (!tag) return;
-    bits[tag] = e.target.checked;
-    e.target.parentElement.querySelector(".bit").textContent = onOff(bits[tag]);
-    solve();
+  function populateEditor(){
+    const row=selectedRow(),item=selectedItem();
+    const fields=$("editorFields");
+    $("editorTitle").textContent = `R${selected.r+1} · ${item ? "Contact editor" : row.preset ? "Timer editor" : "Output coil"}`;
+    if(item){
+      const tags=[...lesson.inputs,...lesson.outputs.filter(i=>!i.tag.endsWith(".ET"))];
+      fields.innerHTML=`<label>Read tag<select id="editTag">${tags.map(i=>`<option value="${i.tag}" ${item.tag===i.tag?"selected":""}>${i.tag}</option>`).join("")}</select></label>
+        <label>Instruction<select id="editSense"><option value="NO">NO · true if ON</option><option value="NC">NC · true if OFF</option></select></label>
+        ${row.columns[selected.col].length>1 ? '<label>Pair layout<select id="editLayout"><option value="parallel">Parallel · OR</option><option value="series">Series · AND</option></select></label>' : ""}
+        <button id="applyBtn" class="primary">Apply edit</button>`;
+      $("editSense").value=item.inverted?"NC":"NO";
+      if($("editLayout")) $("editLayout").value=row.pairSeries?"series":"parallel";
+    }else if(row.preset){
+      fields.innerHTML=`<label>Preset (seconds)<input type="number" id="editPreset" min="1" max="60" step="1" required value="${row.preset}"></label><button id="applyBtn" class="primary">Apply edit</button>`;
+    }else fields.innerHTML=`<span class="tag">Write ${row.target}</span>`;
+    describeInstruction();
+  }
+  function describeInstruction(){
+    if(!compiled){$("instructionInfo").textContent="Program changed. Its path and instruction values will appear after the next scan.";return;}
+    const row=selectedRow(),last=plc.trace[selected.r],item=selectedItem();
+    if (!item){
+      $("instructionInfo").textContent=row.preset ? `${row.target} input ${onOff(last.powered)}. ET ${plc.elapsed.toFixed(1)} s of ${row.preset} s. Q ${onOff(last.out)}.` : `The ${last.powered ? "complete" : "broken"} path writes ${row.target} ${onOff(last.out)}.`;
+      return;
+    }
+    const layout=columns(row);
+    const c=layout.findIndex(group=>group.some(i=>i.col===selected.col&&i.branch===selected.branch));
+    const b=layout[c].findIndex(i=>i.col===selected.col&&i.branch===selected.branch);
+    const sample=last.groups[c][b];
+    $("instructionInfo").textContent=`Last scan read ${item.tag} ${onOff(sample.bit)}. Its ${item.inverted?"NC":"NO"} contact was ${sample.pass?"TRUE":"FALSE"}. ${!sample.incoming ? "The upstream path was blocked." : sample.through ? "The path passed this contact." : "The path stopped here."}`;
+  }
+  function applyEdit(){
+    const row=selectedRow(),item=selectedItem();
+    if(item){
+      item.tag=$("editTag").value;
+      item.inverted=$("editSense").value==="NC";
+      if($("editLayout"))row.pairSeries=$("editLayout").value==="series";
+    }else{
+      if(!$("editPreset").reportValidity())return;
+      row.preset=$("editPreset").valueAsNumber;
+    }
+    compiled=false;
+    clearTests();
+    $("notice").textContent="Edit applied. Run or step to execute the changed program.";
+    render();
+  }
+  function clearTests(){$("testResults").innerHTML="";$("testSummary").textContent="";}
+  function runCases(){
+    let passed=0;
+    const results=lesson.cases.map(tc=>{
+      const expected=blankPLC(),actual=blankPLC(),simFields=defaults(lesson);
+      let difference="";
+      tc.steps.forEach((step,i)=>{
+        Object.assign(simFields,step);
+        scan(lesson.rungs,expected,simFields,i===0?0:1);
+        scan(program,actual,simFields,i===0?0:1);
+        for(const {tag} of lesson.outputs){
+          const ref=expected.memory[tag],got=actual.memory[tag];
+          const format=v=>typeof v==="number" ? v+" s" : onOff(v);
+          if (got!==ref && !difference) difference=`scan ${i+1}, ${tag} expected ${format(ref)}, got ${format(got)}`;
+        }
+      });
+      if(!difference)passed++;
+      return `<li><b class="${difference?"fail":"pass"}">${difference?"FAIL":"PASS"}</b> · ${tc.name}${difference?" — "+difference:""}</li>`;
+    });
+    $("testResults").innerHTML=results.join("");
+    $("testSummary").textContent=`${passed}/${results.length} reference cases passed. Each case starts with fresh memory.`;
+  }
+
+  function selectSymbol(node){
+    if(!node)return;
+    selected=node.dataset.action ? {r:+node.dataset.r,action:true} : {r:+node.dataset.r,col:+node.dataset.col,branch:+node.dataset.branch};
+    $("notice").textContent="";
+    populateEditor();
+    drawDiagram();
+  }
+  $("ladder").addEventListener("click",event=>selectSymbol(event.target.closest("g[data-r]")));
+  $("ladder").addEventListener("keydown",event=>{
+    if(event.key==="Enter"||event.key===" "){event.preventDefault();selectSymbol(event.target.closest("g[data-r]"));}
   });
-  byId("inputs").addEventListener("click", e => {
-    if (e.target.id === "advance") solve(1);
+  $("inputs").addEventListener("change",event=>{
+    field[event.target.id]=event.target.checked;
+    render();
   });
-  byId("rungSelect").addEventListener("change",e => { selectedRung = Number(e.target.value); draw(); });
-  byId("reset").addEventListener("click",loadLesson);
-  byId("lessonSelect").addEventListener("change",loadLesson);
-  loadLesson();
-  window.addEventListener("resize",draw);
+  $("editorFields").addEventListener("click",event=>{if(event.target.id==="applyBtn")applyEdit();});
+  $("restoreBtn").addEventListener("click",()=>{
+    program=structuredClone(lesson.rungs);
+    compiled=false;
+    clearTests();
+    populateEditor();
+    $("notice").textContent="Reference program restored. The next scan executes it.";
+    render();
+  });
+  $("runBtn").addEventListener("click",()=>{
+    if(!running){running=true;lastTick=performance.now();takeScan(0);}
+  });
+  $("holdBtn").addEventListener("click",()=>{running=false;render();});
+  $("stepBtn").addEventListener("click",()=>{if(!running)takeScan(1);});
+  $("resetBtn").addEventListener("click",resetIO);
+  $("testBtn").addEventListener("click",runCases);
+  $("lessonSelect").addEventListener("change",loadProgram);
+  $("view-switch").addEventListener("click",event=>{
+    const button=event.target.closest("button[data-view]");
+    if(!button)return;
+    $("workbench").dataset.view=button.dataset.view;
+    for(const tab of $("view-switch").querySelectorAll("button"))tab.setAttribute("aria-pressed",String(tab===button));
+    if(button.dataset.view==="ladder")drawDiagram();
+  });
+  window.addEventListener("resize",drawDiagram);
+  loadProgram();
+  window.setInterval(()=>{
+    if(!running)return;
+    const now=performance.now(),dt=(now-lastTick)/1000;
+    lastTick=now;
+    takeScan(dt);
+  },200);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
