@@ -1,509 +1,273 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLC Tank Process — Sequential IF–THEN Logic</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mixing tank · IF–THEN rules</title>
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: #f4f6f8; color: #1f2933; margin: 0; padding: 24px; line-height: 1.5; }
-  .panel { max-width: 860px; margin: 0 auto; background: #fff;
-    border: 1px solid #d9e0e6; border-radius: 12px; padding: 24px; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  h2 { font-size: 16px; margin: 0 0 8px; }
-  .sub { color: #62707d; font-size: 14px; margin: 0 0 18px; }
-  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
-    border-radius: 50%; background: #1c64f2; color: #fff; font-size: 13px; font-weight: 700; margin-right: 6px; }
-  .block { border-top: 1px solid #e4e7eb; padding-top: 18px; margin-top: 22px; }
-  .block > p { font-size: 14px; margin: 0 0 10px; }
-  .note { font-size: 13px; color: #62707d; }
-
-  /* 1 · The problem */
-  .problem { border: 1px solid #d9e0e6; border-left: 4px solid #15445f; border-radius: 8px;
-    background: #fbfcfd; padding: 14px 16px; font-size: 14.5px; }
-  .problem p { margin: 0 0 10px; }
-  .problem p:last-child { margin-bottom: 0; }
-  .c, .a { border-radius: 4px; padding: 1px 3px; }
-  .c { background: #fff3bf; box-shadow: inset 0 -2px 0 #f59f00; }
-  .a { background: #d3f9d8; box-shadow: inset 0 -2px 0 #2f9e44; }
-  .c sup, .a sup { font-size: 10px; font-weight: 700; color: #52606d; margin-left: 2px; }
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: #52606d; margin-top: 8px; }
-
-  /* 2 · From the problem to rules */
-  .anatomy { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 14px; }
-  .anatomy div { border: 1px solid #d9e0e6; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; }
-  .anatomy .if { border-top: 4px solid #f59f00; }
-  .anatomy .then { border-top: 4px solid #2f9e44; }
-  .anatomy b { display: block; font-size: 14px; margin-bottom: 2px; }
-  .devices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; font-size: 13.5px; }
-  .devices div { background: #f7f9fb; border-radius: 8px; padding: 10px 12px; }
-  .devices ul { margin: 4px 0 0; padding-left: 18px; }
-  .ruletable { display: grid; gap: 8px; }
-  .rt-row { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 10px; align-items: start;
-    border: 1px solid #d9e0e6; border-radius: 8px; padding: 10px 12px; font-size: 13.5px; }
-  .rt-row.head { border: 0; padding: 0 12px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: #7b8794; }
-  .rt-row .from { grid-column: 2 / -1; font-size: 12.5px; color: #62707d; font-style: italic; }
-  .rt-num { font-weight: 700; color: #52606d; }
-  .rt-if { background: #fff8db; border-radius: 6px; padding: 4px 8px; }
-  .rt-then { background: #ebfbee; border-radius: 6px; padding: 4px 8px; }
-  .kw { font-weight: 700; color: #1c64f2; }
-
-  /* 3 · Try it */
-  .modes { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-  .mode { background: #fff; color: #3e4c59; border: 1px solid #cbd2d9; }
-  .mode.active { background: #eff5ff; border-color: #1c64f2; color: #174ea6; }
-  .controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
-  button { font: inherit; font-size: 14px; font-weight: 600; border: none; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
-  button:focus-visible, select:focus-visible { outline: 3px solid rgba(28,100,242,.35); outline-offset: 2px; }
-  .btn-start { background: #1c64f2; color: #fff; }
-  .btn-start:disabled { background: #aec4f5; cursor: default; }
-  .btn-reset { background: #e4e7eb; color: #3e4c59; }
-  .badge-state { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-    padding: 6px 12px; border-radius: 8px; background: #e4e7eb; color: #7b8794; }
-  .badge-state.fill  { background: #d0ebff; color: #1971c2; }
-  .badge-state.mix   { background: #e5dbff; color: #6741d9; }
-  .badge-state.drain { background: #ffe8cc; color: #e8590c; }
-  .timer { font-family: "Courier New", monospace; font-size: 22px; font-weight: 700;
-    background: #15445f; color: #ffd43b; padding: 6px 14px; border-radius: 8px; letter-spacing: 2px; }
-  .speed { font-size: 13px; color: #62707d; display: flex; align-items: center; gap: 6px; }
-  select { padding: 5px 8px; border: 1px solid #cbd2d9; border-radius: 6px; font-size: 13px; }
-
-  .main { display: flex; gap: 24px; flex-wrap: wrap; }
-  .vis { flex: 1 1 320px; min-width: 0; }
-  .side { flex: 1 1 260px; min-width: 0; }
-
-  .section-title { font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
-    color: #7b8794; margin: 0 0 10px; }
-  .section-title small { text-transform: none; letter-spacing: 0; }
-
-  .cond-item { border: 1px solid #d9e0e6; border-radius: 10px; padding: 9px 12px; margin-bottom: 8px; }
-  .cond-item .cname { font-size: 14px; font-weight: 600; }
-  .cond-item .cval { font-size: 12.5px; color: #62707d; }
-  .cond-item .cval b.t { color: #2b8a3e; }
-  .cond-item .cval b.f { color: #c92a2a; }
-  .seg { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
-  .seg button { padding: 6px 10px; font-size: 13px; background: #fff; border: 1px solid #cbd2d9; color: #3e4c59; }
-  .seg button[aria-pressed="true"] { background: #fff3bf; border-color: #f59f00; color: #1f2933; }
-
-  .out { display: flex; align-items: center; gap: 12px; border: 1px solid #d9e0e6;
-    border-radius: 10px; padding: 9px 14px; margin-bottom: 8px; }
-  .ind { width: 32px; height: 32px; border-radius: 50%; background: #d2d6db;
-    border: 3px solid #b4bcc4; transition: all .15s; flex-shrink: 0; }
-  .ind.on[data-kind="valve"]  { background: #2f9e44; border-color: #2b8a3e; box-shadow: 0 0 14px rgba(47,158,68,.6); }
-  .ind.on[data-kind="motor"]  { background: #6741d9; border-color: #5f3dc4; box-shadow: 0 0 14px rgba(103,65,217,.6); }
-  .out .olabel { font-size: 14px; font-weight: 600; }
-  .out .ostate { font-size: 12px; color: #62707d; }
-
-  .change { margin: 16px 0 12px; border-radius: 8px; padding: 10px 14px; font-size: 14px;
-    background: #eff5ff; border: 1px solid #cfe0ff; }
-  .change:empty { display: none; }
-
-  .rulecard { border: 1px solid #d9e0e6; border-left: 4px solid #c3ccd5; border-radius: 8px;
-    padding: 12px 14px; margin-bottom: 10px; background: #fbfcfd; transition: all .15s; }
-  .rulecard.active { border-left-color: #1c64f2; background: #eff5ff; }
-  .rulehead { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
-  .rulenum { font-size: 12px; font-weight: 700; color: #52606d; }
-  .badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; background: #e4e7eb; color: #7b8794; }
-  .badge.on { background: #d0ebff; color: #1971c2; }
-  .ruletext { font-size: 14px; }
-  .cond { display: inline-block; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
-  .cond.true  { background: #d3f9d8; color: #2b8a3e; }
-  .cond.false { background: #ffe3e3; color: #c92a2a; }
-
-  .scan { margin-top: 14px; font-size: 12px; color: #7b8794; display: flex; align-items: center; gap: 6px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: #1c64f2; animation: pulse 1.2s infinite; flex-shrink: 0; }
-  @keyframes pulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
-
-  .flow { stroke: #74c0fc; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 3 7;
-    opacity: 0; transition: opacity .15s; }
-  .flow.show { opacity: 1; animation: dash .6s linear infinite; }
-  .flow-out { stroke: #5cb89a; }
-  @keyframes dash { to { stroke-dashoffset: -10; } }
-  .swirl { opacity: 0; transition: opacity .2s; transform-origin: 165px 185px; }
-  .swirl.show { opacity: 1; animation: spin 1.6s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .motorbox { transition: fill .2s, stroke .2s; }
-  .motorbox.run { fill: #6741d9; stroke: #5f3dc4; }
-  [hidden] { display: none !important; }
-
-  @media (max-width: 600px) {
-    body { padding: 12px; }
-    .panel { padding: 16px; }
-    .anatomy, .devices { grid-template-columns: 1fr; }
-    .rt-row { grid-template-columns: 1fr; gap: 6px; }
-    .rt-row.head { display: none; }
-    .rt-row .from { grid-column: 1; }
+  :root {
+    color-scheme: light;
+    --paper: #f8f7f2; --white: #fffefa; --ink: #203731; --muted: #51625a;
+    --line: #cdd5cc; --teal: #086454; --tint: #e9f4ed; --amber: #84500e;
+    --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
   }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 1100px; margin: auto; padding: 24px clamp(16px, 4vw, 48px) 40px; }
+  nav { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  nav a { color: var(--teal); font-size: .9rem; text-underline-offset: 3px; }
+  .eyebrow, .rule-number, .rule-tag, .keyword { font: 700 .74rem/1.3 var(--mono); letter-spacing: .045em; }
+  .eyebrow { color: var(--teal); text-transform: uppercase; margin: 24px 0 6px; }
+  h1, h2, p { margin: 0; }
+  h1 { font-size: clamp(2rem, 5vw, 3.3rem); letter-spacing: -.055em; line-height: 1.08; }
+  h2 { font-size: 1.22rem; line-height: 1.25; letter-spacing: -.025em; }
+  .problem { max-width: 76ch; margin: 12px 0 24px; }
+  .spread { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: clamp(18px, 3vw, 36px); }
+  .intro { margin: 6px 0 14px; color: var(--muted); font-size: .92rem; }
+  .rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .rules li { padding: 12px 14px; border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; background: var(--white); }
+  .rules .waiting { border-left-color: #af721e; }
+  .rules .used { border-left-color: var(--teal); background: var(--tint); }
+  .rule-head { display: flex; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+  .rule-number { color: var(--muted); }
+  .rule-tag { margin-left: auto; color: var(--muted); font-size: .68rem; }
+  .waiting .rule-tag, .if { color: var(--amber); }
+  .used .rule-tag, .then { color: var(--teal); }
+  .rules p { margin-top: 3px; font-size: .95rem; line-height: 1.45; }
+  .keyword { display: inline-block; width: 3.4em; }
+  .bench { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--white); }
+  .bench-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px 0; }
+  .phase { color: var(--teal); background: var(--tint); border-radius: 20px; padding: 3px 12px; font-size: .88rem; font-weight: 700; }
+  .scene { display: block; width: 100%; max-height: 229px; color: var(--ink); }
+  .scene text { fill: currentColor; font: 700 12px system-ui, sans-serif; }
+  .scene .hardware { fill: #b7c3bc; stroke: #425e55; stroke-width: 1.5; }
+  .scene .hardware.on { fill: #75cfa6; }
+  .flow, .swirl { opacity: 0; }
+  .flow { fill: none; stroke: #479d8e; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 3 7; }
+  .flow.on { opacity: 1; animation: flow .65s linear infinite; }
+  .swirl { transform-origin: 194px 165px; }
+  .swirl.on { opacity: 1; animation: spin 2s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -10; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .bench-controls { padding: 12px 16px 16px; border-top: 1px solid var(--line); }
+  .run { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  button { font: 650 .89rem/1.3 system-ui, sans-serif; padding: 9px 13px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--white); cursor: pointer; }
+  #start { color: white; background: var(--teal); border-color: var(--teal); }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #9c6115; outline-offset: 3px; }
+  input { accent-color: var(--teal); }
+  .auto { display: inline-flex; align-items: center; gap: 4px; font-size: .85rem; cursor: pointer; }
+  .auto input { width: 16px; height: 16px; }
+  .sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .sliders label { display: flex; justify-content: space-between; gap: 4px; font-size: .85rem; font-weight: 650; }
+  .sliders output { white-space: nowrap; font-family: var(--mono); }
+  .sliders input { display: block; margin: 3px 0 0; width: 100%; min-height: 26px; cursor: pointer; }
+  .sliders input:disabled { cursor: default; }
+  .note { margin-top: 4px; font-size: .8rem; color: var(--muted); }
+  .feedback { padding: 10px 16px; min-height: 3.9em; background: var(--tint); border-top: 1px solid var(--line); color: #164d41; font-size: .93rem; }
+  @media (max-width: 720px) { .spread { grid-template-columns: 1fr; } }
+  @media (max-width: 420px) {
+    .bench-head, .bench-controls { padding-inline: 12px; }
+    .sliders { grid-template-columns: 1fr; gap: 4px; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
 </style>
 </head>
 <body>
-<div class="panel">
-  <h1>PLC Tank Process — Sequential IF–THEN Logic</h1>
-  <p class="sub">Read the problem, see how it is written as four IF–THEN rules, then change the conditions and watch how the outputs follow the rules.</p>
-
-  <!-- 1 · The problem -->
-  <section aria-labelledby="h-problem">
-    <h2 id="h-problem"><span class="step-num">1</span>The problem</h2>
-    <div class="problem">
-      <p>Let us consider a simple tank system. The system has two inlet pipes, A and B, which fill the tank with two different liquids. There is a motor that mixes the liquids inside the tank. There is also an outlet pipe, C, which drains the mixture after mixing is complete.</p>
-      <p>The process begins <span class="c">when the operator presses the start switch<sup>R1</sup></span>. When the process starts, <span class="a">valves A and B open<sup>R1</sup></span> so that the two liquids can enter the tank. A level switch detects when the tank has reached the desired level. <span class="c">Once the tank is full<sup>R2</sup></span>, <span class="a">valves A and B close, and the motor starts mixing<sup>R2</sup></span>.</p>
-      <p>The motor runs for a fixed time, for example 30 seconds. <span class="c">When this time is complete<sup>R3</sup></span>, <span class="a">the motor stops and valve C opens<sup>R3</sup></span> to drain the tank. <span class="c">When the tank is empty<sup>R4</sup></span>, <span class="a">valve C closes<sup>R4</sup></span>, and the system is ready for the next cycle.</p>
-      <p>This example helps us understand how a PLC controls a sequence of operations. The PLC does not only turn one device on or off. It controls a process step by step.</p>
-    </div>
-    <div class="legend">
-      <span><span class="c">yellow</span> = a condition (becomes an <b>IF</b>)</span>
-      <span><span class="a">green</span> = an action (becomes a <b>THEN</b>)</span>
-      <span>R1–R4 = the rule it becomes</span>
-    </div>
-  </section>
-
-  <!-- 2 · From the problem to IF–THEN rules -->
-  <section class="block" aria-labelledby="h-rules">
-    <h2 id="h-rules"><span class="step-num">2</span>From the problem to IF–THEN rules</h2>
-    <p>Every rule the PLC uses has the same two parts:</p>
-    <div class="anatomy">
-      <div class="if"><b><span class="kw">IF</span> — the condition</b>Something the PLC can check, whose answer is only TRUE or FALSE: is the start switch pressed? Is the tank full? Are the 30 seconds over?</div>
-      <div class="then"><b><span class="kw">THEN</span> — the action</b>What the PLC does to the outputs when the condition is TRUE: open or close a valve, start or stop the motor.</div>
-    </div>
-    <div class="devices">
-      <div><b>Conditions come from the inputs</b> (what the PLC reads)
-        <ul><li>Start switch — pressed or not</li><li>Level switch — tank full or not</li><li>Tank empty — yes or no</li><li>The PLC's own 30-second timer — over or not</li></ul></div>
-      <div><b>Actions go to the outputs</b> (what the PLC drives)
-        <ul><li>Valve A — open or closed</li><li>Valve B — open or closed</li><li>Mixing motor — running or stopped</li><li>Valve C — open or closed</li></ul></div>
-    </div>
-    <p>Each highlighted condition and action in the problem becomes one rule:</p>
-    <div class="ruletable" id="ruleTable"></div>
-    <p class="note" style="margin-top:10px">The rules are used one after the other: Rule 1 → Rule 2 → Rule 3 → Rule 4 → back to Rule 1. The PLC remembers which step the process is in (Idle, Filling, Mixing or Draining), so it knows which rule comes next.</p>
-  </section>
-
-  <!-- 3 · Try it -->
-  <section class="block" aria-labelledby="h-try">
-    <h2 id="h-try"><span class="step-num">3</span>Try it: change the conditions, watch the outputs</h2>
-    <div class="modes" role="group" aria-label="How to run the process">
-      <button class="mode active" id="modeAuto" aria-pressed="true">Watch it run</button>
-      <button class="mode" id="modeManual" aria-pressed="false">Change the conditions yourself</button>
-    </div>
-    <p id="modeHelp" class="note"></p>
-
-    <div class="controls">
-      <button class="btn-start" id="startBtn">▶ Start</button>
-      <button class="btn-reset" id="resetBtn">Reset</button>
-      <span class="badge-state" id="stateBadge">Idle</span>
-      <span class="timer" id="timer">00:00:30</span>
-      <span class="speed" id="speedBox">Speed:
-        <select id="speed">
-          <option value="1">1×</option>
-          <option value="2" selected>2×</option>
-          <option value="5">5×</option>
-          <option value="10">10×</option>
-        </select>
-      </span>
-    </div>
-
-    <div class="main">
-      <div class="vis">
-        <div class="section-title">Process</div>
-        <svg viewBox="0 0 360 330" width="100%" role="img" aria-label="Tank with inlet valves A and B, a mixing motor, level switch, and outlet valve C">
-          <!-- Inlet A -->
-          <rect x="6" y="50" width="78" height="9" rx="3" fill="#8a99a8"/>
-          <rect x="28" y="44" width="18" height="21" rx="3" id="valveA" fill="#b4bcc4"/>
-          <text x="14" y="42" font-size="14" font-weight="700" fill="#15445f">A</text>
-          <!-- Inlet B -->
-          <rect x="6" y="68" width="78" height="9" rx="3" fill="#8a99a8"/>
-          <rect x="28" y="62" width="18" height="21" rx="3" id="valveB" fill="#b4bcc4"/>
-          <text x="14" y="92" font-size="14" font-weight="700" fill="#15445f">B</text>
-          <!-- pour streams -->
-          <line class="flow" id="streamA" x1="100" y1="80" x2="100" y2="120"/>
-          <line class="flow" id="streamB" x1="120" y1="80" x2="120" y2="120"/>
-
-          <!-- Tank walls -->
-          <rect x="64" y="86" width="16" height="186" fill="#15445f"/>
-          <rect x="250" y="86" width="16" height="186" fill="#15445f"/>
-          <rect x="64" y="256" width="202" height="16" fill="#15445f"/>
-
-          <!-- Liquid -->
-          <rect id="liquid" x="80" y="256" width="170" height="0" fill="#74c0fc"/>
-          <!-- graduation lines -->
-          <g stroke="#fff" stroke-width="1" opacity="0.35">
-            <line x1="80" y1="128" x2="250" y2="128"/>
-            <line x1="80" y1="170" x2="250" y2="170"/>
-            <line x1="80" y1="212" x2="250" y2="212"/>
-          </g>
-
-          <!-- Swirl (mixing) -->
-          <g class="swirl" id="swirl" fill="none" stroke="#3b6e8f" stroke-width="4" stroke-linecap="round">
-            <path d="M120 185 A45 45 0 0 1 210 185"/>
-            <path d="M210 185 L202 176 M210 185 L201 193"/>
-          </g>
-
-          <!-- Stirrer shaft + paddle -->
-          <rect x="160" y="44" width="10" height="194" fill="#2c5f7a"/>
-          <rect x="138" y="230" width="54" height="8" rx="2" fill="#2c5f7a"/>
-          <!-- Motor -->
-          <rect class="motorbox" id="motorbox" x="120" y="12" width="90" height="30" rx="5" fill="#b4bcc4" stroke="#8a99a8" stroke-width="2"/>
-          <text x="165" y="32" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">Motor</text>
-
-          <!-- Level switch -->
-          <rect x="266" y="92" width="20" height="16" rx="3" id="levelSwitch" fill="#b4bcc4"/>
-          <text x="292" y="104" font-size="12" font-weight="600" fill="#15445f">Level switch</text>
-
-          <!-- Outlet C -->
-          <rect x="266" y="238" width="86" height="9" rx="3" fill="#8a99a8"/>
-          <rect x="300" y="232" width="18" height="21" rx="3" id="valveC" fill="#b4bcc4"/>
-          <text x="330" y="266" font-size="14" font-weight="700" fill="#15445f">C</text>
-          <line class="flow flow-out" id="streamC" x1="280" y1="243" x2="352" y2="243"/>
-        </svg>
-      </div>
-
-      <div class="side">
-        <div class="section-title">Conditions <small>— inputs the PLC checks</small></div>
-        <div id="conditions"></div>
-        <div class="section-title" style="margin-top:14px;">Outputs <small>— what the PLC drives</small></div>
-        <div id="outputs"></div>
-      </div>
-    </div>
-
-    <div class="change" id="change" aria-live="polite"></div>
-
-    <div class="section-title">Control rules (checked every scan)</div>
-    <div id="rules"></div>
-
-    <div class="scan"><span class="dot"></span> The PLC checks all four rules again and again — many times per second. One check of all the rules is called a scan.</div>
-  </section>
-</div>
-
-<script>
-  const MIX_TIME = 30;                 // seconds the motor mixes (from the problem)
-  const FILL_RATE = 22;                // % per second while A & B are open
-  const DRAIN_RATE = 26;               // % per second while C is open
-
-  // The four rules, as written from the problem text.
-  const RULES = [
-    { cond: "the start switch is pressed AND the tank is not full", act: "open valves A and B",
-      from: "“The process begins when the operator presses the start switch. When the process starts, valves A and B open…”" },
-    { cond: "the level switch detects that the tank is full", act: "close valves A and B, and start the motor",
-      from: "“Once the tank is full, valves A and B close, and the motor starts mixing.”" },
-    { cond: "the motor has mixed for 30 seconds", act: "stop the motor, and open valve C",
-      from: "“When this time is complete, the motor stops and valve C opens to drain the tank.”" },
-    { cond: "the tank is empty", act: "close valve C — ready for the next cycle",
-      from: "“When the tank is empty, valve C closes, and the system is ready for the next cycle.”" }
-  ];
-
-  // --- Process state ---
-  let mode = "auto";                   // auto: the process runs by itself | manual: the student sets the conditions
-  let phase = "idle";                  // idle | fill | mix | drain
-  let level = 0;                       // 0–100 %
-  let timer = MIX_TIME;                // mixing countdown (automatic mode)
-  let speed = 2;
-  let running = false;
-  let startUntil = 0;                  // automatic mode: Start reads as pressed until this time (ms)
-  let manual = { start: false, tank: "empty", timeDone: false };
-  let last = performance.now();
-
-  // --- DOM references ---
-  const $ = id => document.getElementById(id);
-  const liquid = $("liquid"), swirl = $("swirl"), motorbox = $("motorbox");
-  const valveA = $("valveA"), valveB = $("valveB"), valveC = $("valveC"), lvlSw = $("levelSwitch");
-  const streamA = $("streamA"), streamB = $("streamB"), streamC = $("streamC");
-  const timerEl = $("timer"), stateEl = $("stateBadge"), startBtn = $("startBtn");
-  const rulesEl = $("rules"), outputsEl = $("outputs"), condEl = $("conditions"), changeEl = $("change");
-
-  function pill(t, txt) { return `<span class="cond ${t ? "true" : "false"}">${txt}</span>`; }
-  function fmtTime(s) { return "00:00:" + String(Math.ceil(s)).padStart(2, "0"); }
-
-  $("ruleTable").innerHTML = `<div class="rt-row head"><span>Rule</span><span>IF (condition)</span><span>THEN (action)</span></div>` +
-    RULES.map((r, i) => `<div class="rt-row"><span class="rt-num">Rule ${i + 1}</span>
-      <span class="rt-if"><span class="kw">IF</span> ${r.cond}</span>
-      <span class="rt-then"><span class="kw">THEN</span> ${r.act}</span>
-      <span class="from">From the problem: ${r.from}</span></div>`).join("");
-
-  // --- The conditions the PLC reads, in either mode ---
-  function conditions() {
-    if (mode === "manual") {
-      return { start: manual.start, full: manual.tank === "full", empty: manual.tank === "empty", timeDone: manual.timeDone };
-    }
-    return { start: performance.now() < startUntil, full: level >= 100, empty: level <= 0, timeDone: timer <= 0 };
-  }
-
-  // --- One PLC scan: check the rule for the current step; if its IF is TRUE, do its THEN ---
-  function scan() {
-    const c = conditions();
-    let fired = -1;
-    if (phase === "idle" && c.start && !c.full) { phase = "fill"; fired = 0; }
-    else if (phase === "fill" && c.full) { phase = "mix"; timer = MIX_TIME; manual.timeDone = false; fired = 1; }
-    else if (phase === "mix" && c.timeDone) { phase = "drain"; fired = 2; }
-    else if (phase === "drain" && c.empty) { phase = "idle"; running = false; timer = MIX_TIME; fired = 3; }
-    if (fired >= 0) changeEl.innerHTML = firedText(fired);
-    return fired;
-  }
-  function firedText(i) {
-    return `<b>Rule ${i + 1} fired.</b> Its IF part is now TRUE (${RULES[i].cond}), so the PLC carried out its THEN part: <b>${RULES[i].act}</b>.`;
-  }
-
-  // --- Automatic mode: the process itself moves the level and the timer ---
-  function tick(dt) {
-    if (phase === "fill") level = Math.min(100, level + FILL_RATE * dt);
-    else if (phase === "mix") timer = Math.max(0, timer - dt);
-    else if (phase === "drain") level = Math.max(0, level - DRAIN_RATE * dt);
-  }
-
-  // --- Manual mode: the student changes one condition; the PLC scans at once ---
-  const NEXT = { idle: 0, fill: 1, mix: 2, drain: 3 };
-  function setCondition(key, value, label) {
-    manual[key] = value;
-    // Keep scanning until no rule fires, as the PLC would on its following scans.
-    const fired = [];
-    for (let n = 0; n < 4; n++) { const f = scan(); if (f < 0) break; fired.push(f); }
-    if (fired.length) {
-      changeEl.innerHTML = `You changed <b>${label}</b>. ` + fired.map((f, k) => (k ? "On the next scan, " : "") + firedText(f)).join(" ");
-    } else {
-      const labels = { idle: "Idle", fill: "Filling", mix: "Mixing", drain: "Draining" };
-      changeEl.innerHTML = `You changed <b>${label}</b>. No output changed: the process is in the <b>${labels[phase]}</b> step, so the PLC is waiting for Rule ${NEXT[phase] + 1}, and its IF part (${RULES[NEXT[phase]].cond}) is still FALSE.`;
-    }
-    render();
-  }
-
-  // --- Render everything from current state ---
-  function render() {
-    const c = conditions();
-    const vA = phase === "fill", vB = phase === "fill";
-    const motor = phase === "mix", vC = phase === "drain";
-    const shownLevel = mode === "manual" ? { empty: 0, part: 55, full: 100 }[manual.tank] : level;
-
-    // Liquid
-    const h = (shownLevel / 100) * 170;
-    liquid.setAttribute("y", 256 - h);
-    liquid.setAttribute("height", h);
-    liquid.setAttribute("fill", (phase === "mix" || phase === "drain") ? "#5cb89a" : "#74c0fc");
-
-    // Animations / colours
-    swirl.classList.toggle("show", motor);
-    motorbox.classList.toggle("run", motor);
-    valveA.setAttribute("fill", vA ? "#2f9e44" : "#b4bcc4");
-    valveB.setAttribute("fill", vB ? "#2f9e44" : "#b4bcc4");
-    valveC.setAttribute("fill", vC ? "#2f9e44" : "#b4bcc4");
-    lvlSw.setAttribute("fill", c.full ? "#ffd43b" : "#b4bcc4");
-    streamA.classList.toggle("show", vA);
-    streamB.classList.toggle("show", vB);
-    streamC.classList.toggle("show", vC);
-
-    // Timer + state badge
-    timerEl.textContent = mode === "manual" ? (phase === "mix" ? (manual.timeDone ? "30 s over" : "timing…") : "--:--") : fmtTime(timer);
-    const labels = { idle: "Idle", fill: "Filling", mix: "Mixing", drain: "Draining" };
-    stateEl.textContent = labels[phase];
-    stateEl.className = "badge-state " + (phase === "idle" ? "" : phase);
-    startBtn.disabled = (phase !== "idle");
-
-    // Conditions: buttons in manual mode, live read-outs in automatic mode
-    const yes = (t, a, b) => `<b class="${t ? "t" : "f"}">${t ? a : b}</b>`;
-    if (mode === "manual") {
-      condEl.innerHTML = `
-        <div class="cond-item"><div class="cname">Start switch</div>
-          <div class="cval">Start pressed: ${yes(c.start, "TRUE", "FALSE")}</div>
-          <div class="seg"><button data-set="start" data-v="1" aria-pressed="${manual.start}">Pressed</button><button data-set="start" data-v="0" aria-pressed="${!manual.start}">Released</button></div></div>
-        <div class="cond-item"><div class="cname">Tank level</div>
-          <div class="cval">Tank full: ${yes(c.full, "TRUE", "FALSE")} · Tank empty: ${yes(c.empty, "TRUE", "FALSE")}</div>
-          <div class="seg"><button data-set="tank" data-v="empty" aria-pressed="${manual.tank === "empty"}">Empty</button><button data-set="tank" data-v="part" aria-pressed="${manual.tank === "part"}">Partly filled</button><button data-set="tank" data-v="full" aria-pressed="${manual.tank === "full"}">Full</button></div></div>
-        <div class="cond-item"><div class="cname">30-second mixing timer</div>
-          <div class="cval">30 s over: ${yes(c.timeDone, "TRUE", "FALSE")} <span class="note">(restarts when mixing starts)</span></div>
-          <div class="seg"><button data-set="timeDone" data-v="0" aria-pressed="${!manual.timeDone}">Not yet</button><button data-set="timeDone" data-v="1" aria-pressed="${manual.timeDone}">30 s over</button></div></div>`;
-    } else {
-      condEl.innerHTML = [
-        ["Start switch", "Start pressed", c.start],
-        ["Level switch", "Tank full", c.full],
-        ["Tank level", "Tank empty", c.empty],
-        ["30-second mixing timer", "30 s over", c.timeDone]
-      ].map(([n, q, t]) => `<div class="cond-item"><div class="cname">${n}</div><div class="cval">${q}: ${yes(t, "TRUE", "FALSE")}</div></div>`).join("");
-    }
-
-    // Output indicators
-    const outs = [
-      { label: "Valve A", kind: "valve", on: vA, txt: ["open", "closed"] },
-      { label: "Valve B", kind: "valve", on: vB, txt: ["open", "closed"] },
-      { label: "Motor",   kind: "motor", on: motor, txt: ["running", "stopped"] },
-      { label: "Valve C", kind: "valve", on: vC, txt: ["open", "closed"] }
-    ];
-    outputsEl.innerHTML = outs.map(o => `
-      <div class="out">
-        <div class="ind ${o.on ? "on" : ""}" data-kind="${o.kind}"></div>
-        <div><div class="olabel">${o.label}</div>
-        <div class="ostate">${o.on ? "ON — " + o.txt[0] : "OFF — " + o.txt[1]}</div></div>
-      </div>`).join("");
-
-    // Rule cards: every IF is shown TRUE/FALSE; the active rule is the one for the current step
-    const cards = [
-      `<span class="kw">IF</span> Start ${pill(c.start, "pressed")} <span class="kw">AND</span> Tank ${pill(!c.full, "not full")} <span class="kw">THEN</span> open valves A and B`,
-      `<span class="kw">IF</span> Level switch ${pill(c.full, "detects full")} <span class="kw">THEN</span> close A and B, start motor`,
-      `<span class="kw">IF</span> Motor mixed for 30 s ${pill(c.timeDone, "time over")} <span class="kw">THEN</span> stop motor, open valve C`,
-      `<span class="kw">IF</span> Tank ${pill(c.empty, "is empty")} <span class="kw">THEN</span> close valve C — ready for next cycle`
-    ];
-    const activeIdx = { fill: 0, mix: 1, drain: 2 }[phase];
-    rulesEl.innerHTML = cards.map((text, i) => {
-      const active = i === activeIdx;
-      const next = i === NEXT[phase];
-      const badge = active ? "ACTIVE — its action is in effect" : next ? "next — waiting for its IF to become TRUE" : "waiting";
-      return `
-      <div class="rulecard ${active ? "active" : ""}">
-        <div class="rulehead">
-          <span class="rulenum">Rule ${i + 1}</span>
-          <span class="badge ${active ? "on" : ""}">${badge}</span>
+<main>
+  <nav><a href="index.html">← Learning home</a></nav>
+  <header>
+    <p class="eyebrow">PLC · Sequential control</p>
+    <h1>Control a mixing tank</h1>
+    <p class="problem">An operator presses Start to make one batch. Two inlet valves, A and B, fill the tank. Once it is full, the mixer runs for 30 seconds. Outlet C then drains the tank. When it is empty, the machine waits for a new press of Start.</p>
+  </header>
+  <div class="spread">
+    <section aria-labelledby="rules-heading">
+      <h2 id="rules-heading">The four IF–THEN rules</h2>
+      <p class="intro">Each rule starts with the current step. The tank can be empty during filling, but only an empty tank <em>during draining</em> ends the batch.</p>
+      <ol id="rules" class="rules"></ol>
+    </section>
+    <section class="bench" aria-labelledby="bench-heading">
+      <div class="bench-head"><h2 id="bench-heading">Try the conditions</h2><span id="phase" class="phase">Idle</span></div>
+      <svg class="scene" viewBox="0 0 405 236" role="img" aria-labelledby="scene-title scene-desc">
+        <title id="scene-title">Mixing tank</title>
+        <desc id="scene-desc"></desc>
+        <!-- Pipework, valves and inlet streams -->
+        <g fill="none" stroke="#879b92" stroke-width="7" stroke-linejoin="round">
+          <path d="M22 61 H135 V85"/><path d="M22 85 H111 V102"/>
+          <path d="M263 199 H351 V212"/>
+        </g>
+        <rect id="valveA" class="hardware" x="57" y="53" width="18" height="16" rx="2"/>
+        <rect id="valveB" class="hardware" x="57" y="77" width="18" height="16" rx="2"/>
+        <text id="labelAB" x="22" y="42">A + B closed</text>
+        <!-- Vessel, liquid, and full switch -->
+        <path d="M101 105 V213 H268 V105" fill="#f0f4ef" stroke="#425e55" stroke-width="8" stroke-linejoin="round"/>
+        <rect id="liquid" x="105" y="209" width="159" height="0" fill="#90cfbe"/>
+        <g fill="none" stroke="#84988c" stroke-width="1">
+          <path d="M248 118 H263 M255 140 H263 M248 163 H263 M255 186 H263"/>
+        </g>
+        <rect id="levelSwitch" class="hardware" x="265" y="112" width="16" height="12" rx="2"/>
+        <text x="287" y="122">Full switch</text><text id="labelSwitch" x="287" y="139">Clear</text>
+        <path class="flow" id="streamA" d="M135 88 V209"/>
+        <path class="flow" id="streamB" d="M111 105 V209"/>
+        <!-- Stirrer and mixer -->
+        <path d="M194 69 V182 M170 183 H218" fill="none" stroke="#425e55" stroke-width="6" stroke-linecap="round"/>
+        <rect id="motor" class="hardware" x="155" y="43" width="78" height="27" rx="6"/>
+        <text id="labelMotor" x="194" y="33" text-anchor="middle">Mixer off</text>
+        <g id="swirl" class="swirl" fill="none" stroke="#086454" stroke-width="3.5" stroke-linecap="round">
+          <path d="M175 168 A20 16 0 0 1 211 158 M211 158 l-1 -7 m1 7 l-7 -2"/>
+        </g>
+        <!-- Outlet -->
+        <rect id="valveC" class="hardware" x="302" y="190" width="18" height="17" rx="2"/>
+        <text id="labelC" x="287" y="179">C closed</text>
+        <path class="flow" id="streamC" d="M351 215 V230"/>
+      </svg>
+      <div class="bench-controls">
+        <div class="run">
+          <button id="start" type="button">Press Start</button>
+          <button id="reset" type="button">Reset</button>
+          <label class="auto"><input id="automatic" type="checkbox" checked> Run automatically (5×)</label>
         </div>
-        <div class="ruletext">${text}</div>
-      </div>`;
-    }).join("");
+        <div class="sliders">
+          <div>
+            <label for="level">Tank level <output id="level-value" for="level" aria-live="off">0%</output></label>
+            <input id="level" type="range" min="0" max="100" value="0" aria-valuetext="0%, empty">
+          </div>
+          <div>
+            <label for="elapsed">Mixing time <output id="time-value" for="elapsed" aria-live="off">—</output></label>
+            <input id="elapsed" type="range" min="0" max="30" value="0" disabled>
+          </div>
+        </div>
+        <p class="note">Press Start to watch a batch. Move a slider to pause automatic changes and try a condition yourself.</p>
+      </div>
+      <p id="feedback" class="feedback" role="status"></p>
+    </section>
+  </div>
+</main>
+<script>
+  const byId = id => document.getElementById(id);
+  const mixSeconds = 30;
+  const rules = [
+    { step: 'Idle', condition: 'the tank is idle, Start is pressed, and the level is below 100%', action: 'open A and B to begin filling.',
+      matches: pressed => pressed && level < 100 },
+    { step: 'Filling', condition: 'the tank is filling and the level reaches 100%', action: 'close A and B and start the mixer.',
+      matches: () => level === 100 },
+    { step: 'Mixing', condition: 'the mixer is running and the timer reaches 30 seconds', action: 'stop the mixer and open C to drain.',
+      matches: () => elapsed === mixSeconds },
+    { step: 'Draining', condition: 'the tank is draining and the level reaches 0%', action: 'close C and return to idle.',
+      matches: () => level === 0 }
+  ];
+  let step = 0, lastUsed = null, level = 0, elapsed = 0;
+  let lastTick = performance.now();
+
+  const list = byId('rules');
+  rules.forEach((rule, index) => {
+    const row = document.createElement('li');
+    row.innerHTML = `<div class="rule-head"><span class="rule-number">R0${index + 1}</span>
+      <b>${rule.step}</b><span class="rule-tag"></span></div>
+      <p><span class="keyword if">IF</span>${rule.condition},</p>
+      <p><span class="keyword then">THEN</span>${rule.action}</p>`;
+    list.append(row);
+  });
+
+  function say(message) {
+    const feedback = byId('feedback');
+    if (feedback.textContent !== message) feedback.textContent = message;
   }
 
-  // --- Loop (the scan) ---
+  function applyRules(pressed = false) {
+    const messages = [];
+    while (rules[step].matches(pressed)) {
+      lastUsed = step;
+      messages.push(`R0${step + 1} matched (${rules[step].condition}) → ${rules[step].action}`);
+      step = (step + 1) % rules.length;
+      pressed = false;
+      if (step === 2 || step === 0) elapsed = 0;
+    }
+    if (messages.length) say(messages.join(' '));
+    return messages.length > 0;
+  }
+
+  function draw() {
+    const filling = step === 1, mixing = step === 2, draining = step === 3;
+    const surface = 209 - level * .91;
+    byId('liquid').setAttribute('y', surface);
+    byId('liquid').setAttribute('height', 209 - surface);
+    byId('streamA').setAttribute('d', `M135 88 V${surface}`);
+    byId('streamB').setAttribute('d', `M111 105 V${surface}`);
+    for (const id of ['valveA', 'valveB', 'streamA', 'streamB']) byId(id).classList.toggle('on', filling);
+    for (const id of ['motor', 'swirl']) byId(id).classList.toggle('on', mixing);
+    for (const id of ['valveC', 'streamC']) byId(id).classList.toggle('on', draining);
+    byId('levelSwitch').classList.toggle('on', level === 100);
+    byId('labelAB').textContent = filling ? 'A + B open' : 'A + B closed';
+    byId('labelMotor').textContent = mixing ? 'Mixer on' : 'Mixer off';
+    byId('labelC').textContent = draining ? 'C open' : 'C closed';
+    byId('labelSwitch').textContent = level === 100 ? 'Full' : 'Clear';
+    byId('phase').textContent = rules[step].step;
+    byId('scene-desc').textContent = `${rules[step].step}. Inlets ${filling ? 'open' : 'closed'}, mixer ${mixing ? 'running' : 'off'}, outlet ${draining ? 'open' : 'closed'}.`;
+    // Reserve the endpoint readings for an actually empty or full tank.
+    const percent = level === 0 || level === 100 ? level : Math.max(1, Math.min(99, Math.round(level)));
+    byId('level').value = percent;
+    byId('level-value').textContent = percent + '%';
+    byId('level').setAttribute('aria-valuetext', `${percent}%${level === 0 ? ', empty' : level === 100 ? ', full' : ''}`);
+    byId('elapsed').disabled = !mixing;
+    byId('elapsed').value = Math.floor(elapsed);
+    byId('elapsed').setAttribute('aria-valuetext', Math.floor(elapsed) + ' seconds');
+    byId('time-value').textContent = mixing || draining ? Math.floor(elapsed) + ' s' : '—';
+    Array.from(list.children).forEach((row, index) => {
+      row.classList.toggle('waiting', index === step);
+      row.classList.toggle('used', index === lastUsed);
+      row.querySelector('.rule-tag').textContent = index === step ? 'Waiting here' : index === lastUsed ? 'Last used' : '';
+    });
+  }
+
+  function reset() {
+    step = 0; lastUsed = null; level = 0; elapsed = 0;
+    byId('automatic').checked = true;
+    lastTick = performance.now();
+    say('The tank is empty. All valves are closed and the mixer is off. R01 is waiting for Start.');
+    draw();
+  }
+
+  byId('start').addEventListener('click', () => {
+    lastTick = performance.now();
+    if (!applyRules(true)) {
+      say(step === 0
+        ? 'Start had no effect. R01 needs a tank below full. Lower the level and press Start again.'
+        : `Start had no effect. R01 only starts an idle tank. This batch is already ${rules[step].step.toLowerCase()}.`);
+    }
+    draw();
+  });
+  byId('level').addEventListener('input', event => {
+    byId('automatic').checked = false;
+    level = Number(event.target.value);
+    if (!applyRules()) {
+      const waitingFor = ['a press of Start with the tank below full', 'the full switch at 100%',
+        '30 seconds of mixing', 'an empty tank at 0%'][step];
+      say(`At ${level}%, the tank stays ${rules[step].step.toLowerCase()}. R0${step + 1} is waiting for ${waitingFor}.`);
+    }
+    draw();
+  });
+  byId('elapsed').addEventListener('input', event => {
+    byId('automatic').checked = false;
+    elapsed = Number(event.target.value);
+    if (!applyRules()) say(`After ${elapsed} seconds the mixer stays on. R03 needs 30 seconds before outlet C can open.`);
+    draw();
+  });
+  byId('automatic').addEventListener('change', () => { lastTick = performance.now(); });
+  byId('reset').addEventListener('click', reset);
+
   setInterval(() => {
     const now = performance.now();
-    let dt = (now - last) / 1000; last = now;
-    // Manual mode changes only when the student presses a button, so it re-renders from setCondition().
-    if (mode !== "auto") return;
-    if (running) tick(dt * speed);
-    scan();
-    render();
-  }, 50);
-
-  // --- Controls ---
-  function reset() {
-    phase = "idle"; level = 0; timer = MIX_TIME; running = false; startUntil = 0;
-    manual = { start: false, tank: "empty", timeDone: false };
-    changeEl.innerHTML = mode === "manual"
-      ? "Everything is off and the tank is empty. Press the start switch to make Rule 1's IF part TRUE."
-      : "Press ▶ Start to begin. Watch the Conditions panel: each time a condition becomes TRUE, a rule fires and the outputs change.";
-  }
-  function setMode(m) {
-    mode = m;
-    $("modeAuto").classList.toggle("active", m === "auto");
-    $("modeAuto").setAttribute("aria-pressed", m === "auto");
-    $("modeManual").classList.toggle("active", m === "manual");
-    $("modeManual").setAttribute("aria-pressed", m === "manual");
-    $("modeHelp").textContent = m === "auto"
-      ? "The process runs by itself: the liquid rises and falls and the timer counts down, so the conditions change on their own."
-      : "Nothing happens by itself. You are the sensors: set each condition with the buttons in the Conditions panel, and see which rule's IF becomes TRUE and what the outputs do.";
-    startBtn.hidden = m === "manual";
-    $("speedBox").hidden = m === "manual";
-    reset(); render();
-  }
-
-  startBtn.addEventListener("click", () => {
-    if (phase === "idle") { level = 0; timer = MIX_TIME; running = true; startUntil = performance.now() + 1200; }
-  });
-  $("resetBtn").addEventListener("click", () => { reset(); render(); });
-  $("speed").addEventListener("change", e => speed = parseFloat(e.target.value));
-  $("modeAuto").addEventListener("click", () => setMode("auto"));
-  $("modeManual").addEventListener("click", () => setMode("manual"));
-  condEl.addEventListener("click", e => {
-    const b = e.target.closest("[data-set]");
-    if (!b) return;
-    const key = b.dataset.set;
-    const value = key === "tank" ? b.dataset.v : b.dataset.v === "1";
-    const label = { start: "Start switch", tank: "Tank level", timeDone: "30-second timer" }[key] + " → " + b.textContent;
-    setCondition(key, value, label);
-  });
-
-  setMode("auto");
+    const dt = Math.min((now - lastTick) / 1000, .25) * 5;
+    lastTick = now;
+    if (step === 0 || !byId('automatic').checked) return;
+    if (step === 1) level = Math.min(100, level + dt * 5);
+    if (step === 2) elapsed = Math.min(mixSeconds, elapsed + dt);
+    if (step === 3) level = Math.max(0, level - dt * 5);
+    applyRules();
+    draw();
+  }, 100);
+  reset();
 </script>
 </body>
 </html>
