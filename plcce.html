@@ -34,6 +34,8 @@
   .waiting .rule-tag, .if { color: var(--amber); }
   .used .rule-tag, .then { color: var(--teal); }
   .rules p { margin-top: 3px; font-size: .95rem; line-height: 1.45; }
+  .condition-value { display: inline-block; padding: 1px 4px; border-radius: 3px; background: #efefea; color: var(--muted); font: 700 .68rem/1.35 var(--mono); }
+  .condition-value.on { color: var(--teal); background: #d9eee3; }
   .keyword { display: inline-block; width: 3.4em; }
   .bench { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--white); }
   .bench-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px 0; }
@@ -83,7 +85,7 @@
   <div class="spread">
     <section aria-labelledby="rules-heading">
       <h2 id="rules-heading">The four IF–THEN rules</h2>
-      <p class="intro">Each rule starts with the current step. The tank can be empty during filling, but only an empty tank <em>during draining</em> ends the batch.</p>
+      <p class="intro"><b>ON</b> means a condition is true now. <b>OFF</b> means it is false. When every part of an IF is ON, the tank takes the THEN action and changes step. “Last used” marks the rule that just ran.</p>
       <ol id="rules" class="rules"></ol>
     </section>
     <section class="bench" aria-labelledby="bench-heading">
@@ -106,7 +108,7 @@
           <path d="M248 118 H263 M255 140 H263 M248 163 H263 M255 186 H263"/>
         </g>
         <rect id="levelSwitch" class="hardware" x="265" y="112" width="16" height="12" rx="2"/>
-        <text x="287" y="122">Full switch</text><text id="labelSwitch" x="287" y="139">Clear</text>
+        <text x="287" y="122">Full switch</text><text id="labelSwitch" x="287" y="139">OFF</text>
         <path class="flow" id="streamA" d="M135 88 V209"/>
         <path class="flow" id="streamB" d="M111 105 V209"/>
         <!-- Stirrer and mixer -->
@@ -137,7 +139,7 @@
             <input id="elapsed" type="range" min="0" max="30" value="0" disabled>
           </div>
         </div>
-        <p class="note">Press Start to watch a batch. Move a slider to pause automatic changes and try a condition yourself.</p>
+        <p class="note">Start is ON only for the instant you press it. Press Start to watch a batch, or move a slider to pause and try a condition yourself.</p>
       </div>
       <p id="feedback" class="feedback" role="status"></p>
     </section>
@@ -147,14 +149,14 @@
   const byId = id => document.getElementById(id);
   const mixSeconds = 30;
   const rules = [
-    { step: 'Idle', condition: 'the tank is idle, Start is pressed, and the level is below 100%', action: 'open A and B to begin filling.',
-      matches: pressed => pressed && level < 100 },
-    { step: 'Filling', condition: 'the tank is filling and the level reaches 100%', action: 'close A and B and start the mixer.',
-      matches: () => level === 100 },
-    { step: 'Mixing', condition: 'the mixer is running and the timer reaches 30 seconds', action: 'stop the mixer and open C to drain.',
-      matches: () => elapsed === mixSeconds },
-    { step: 'Draining', condition: 'the tank is draining and the level reaches 0%', action: 'close C and return to idle.',
-      matches: () => level === 0 }
+    { step: 'Idle', action: 'open A and B to begin filling.',
+      conditions: [['the tank is idle', () => step === 0], ['Start is pressed', pressed => pressed], ['the level is below 100%', () => level < 100]] },
+    { step: 'Filling', action: 'close A and B and start the mixer.',
+      conditions: [['the tank is filling', () => step === 1], ['the full switch detects 100%', () => level === 100]] },
+    { step: 'Mixing', action: 'stop the mixer and open C to drain.',
+      conditions: [['the mixer is running', () => step === 2], ['the timer reaches 30 seconds', () => elapsed === mixSeconds]] },
+    { step: 'Draining', action: 'close C and return to idle.',
+      conditions: [['the tank is draining', () => step === 3], ['the level reaches 0%', () => level === 0]] }
   ];
   let step = 0, lastUsed = null, level = 0, elapsed = 0;
   let lastTick = performance.now();
@@ -164,7 +166,8 @@
     const row = document.createElement('li');
     row.innerHTML = `<div class="rule-head"><span class="rule-number">R0${index + 1}</span>
       <b>${rule.step}</b><span class="rule-tag"></span></div>
-      <p><span class="keyword if">IF</span>${rule.condition},</p>
+      <p><span class="keyword if">IF</span>${rule.conditions.map(([label]) =>
+        `${label}&nbsp;<span class="condition-value"></span>`).join(' and ')},</p>
       <p><span class="keyword then">THEN</span>${rule.action}</p>`;
     list.append(row);
   });
@@ -176,9 +179,10 @@
 
   function applyRules(pressed = false) {
     const messages = [];
-    while (rules[step].matches(pressed)) {
+    while (rules[step].conditions.every(([, test]) => test(pressed))) {
       lastUsed = step;
-      messages.push(`R0${step + 1} matched (${rules[step].condition}) → ${rules[step].action}`);
+      const reason = rules[step].conditions.map(([label]) => label).join(' and ');
+      messages.push(`R0${step + 1} turned ON (${reason}) → ${rules[step].action}`);
       step = (step + 1) % rules.length;
       pressed = false;
       if (step === 2 || step === 0) elapsed = 0;
@@ -201,9 +205,9 @@
     byId('labelAB').textContent = filling ? 'A + B open' : 'A + B closed';
     byId('labelMotor').textContent = mixing ? 'Mixer on' : 'Mixer off';
     byId('labelC').textContent = draining ? 'C open' : 'C closed';
-    byId('labelSwitch').textContent = level === 100 ? 'Full' : 'Clear';
+    byId('labelSwitch').textContent = level === 100 ? 'ON' : 'OFF';
     byId('phase').textContent = rules[step].step;
-    byId('scene-desc').textContent = `${rules[step].step}. Inlets ${filling ? 'open' : 'closed'}, mixer ${mixing ? 'running' : 'off'}, outlet ${draining ? 'open' : 'closed'}.`;
+    byId('scene-desc').textContent = `${rules[step].step}. Full switch ${level === 100 ? 'ON' : 'OFF'}. Inlets ${filling ? 'open' : 'closed'}, mixer ${mixing ? 'running' : 'off'}, outlet ${draining ? 'open' : 'closed'}.`;
     // Reserve the endpoint readings for an actually empty or full tank.
     const percent = level === 0 || level === 100 ? level : Math.max(1, Math.min(99, Math.round(level)));
     byId('level').value = percent;
@@ -216,7 +220,15 @@
     Array.from(list.children).forEach((row, index) => {
       row.classList.toggle('waiting', index === step);
       row.classList.toggle('used', index === lastUsed);
-      row.querySelector('.rule-tag').textContent = index === step ? 'Waiting here' : index === lastUsed ? 'Last used' : '';
+      // Start is a momentary press. The view shows the state after the press has been handled.
+      const values = rules[index].conditions.map(([, test]) => test(false));
+      row.querySelectorAll('.condition-value').forEach((badge, part) => {
+        badge.textContent = values[part] ? 'ON' : 'OFF';
+        badge.classList.toggle('on', values[part]);
+      });
+      const state = values.every(Boolean) ? 'IF ON now' : 'IF OFF now';
+      const marker = index === step ? 'Waiting here' : index === lastUsed ? 'Last used' : '';
+      row.querySelector('.rule-tag').textContent = marker ? `${marker} · ${state}` : state;
     });
   }
 
