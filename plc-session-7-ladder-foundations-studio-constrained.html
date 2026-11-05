@@ -29,6 +29,8 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
 .io-head{color:var(--muted);font:600 .71rem var(--mono);border:none;padding-bottom:1px}.io-row label{cursor:pointer;display:flex;align-items:center;gap:3px}.bit{color:var(--muted);min-width:3ch}.bit.on{color:var(--active)}
 .io .section-head button{font-size:.8rem}.tests{margin-top:10px;border:1px solid var(--line);border-radius:6px;background:var(--white)}
 .tests .hint{padding:0;margin:4px 0}.tests ul{list-style:none;padding:0;margin:8px 0 0}.tests li{padding:4px 0;border-top:1px solid var(--line);font-size:.87rem}.fail{color:#8e401b}.pass{color:var(--active)}[hidden]{display:none!important}
+.layout-tools{margin-top:8px;font-size:.86rem}.layout-tools summary{cursor:pointer;color:var(--active);font-weight:650;width:fit-content}
+.layout-tools .bar{margin-top:7px}.layout-tools button{font-size:.83rem}
 @media(max-width:750px){.bench{grid-template-columns:1fr}.io{border-left:0;border-top:1px solid var(--line)}.toolbar .scan{margin-left:0}.diagram svg{max-width:none}.program-head{flex-wrap:wrap}}
 @media(max-width:430px){header, .bar{gap:5px}header{font-size:.83rem}.program-head,.io,.editor,.tests{padding:9px}.toolbar{padding:8px}.toolbar button{font-size:.87rem}.editor-fields{gap:6px}.intro{padding:9px 0}}
 .view-switch{display:none}
@@ -38,6 +40,31 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   .view-switch button[aria-pressed="true"]{background:var(--active);border-color:var(--active);color:white}
   #workbench[data-view="ladder"] #io-pane,#workbench[data-view="io"] #program-pane{display:none}
 }
+.station{grid-column:2;grid-row:1;margin:0;padding:7px 13px 8px;background:#f0f4ec;border-left:1px solid var(--line);border-bottom:1px solid var(--line)}
+.bench{grid-template-rows:auto 1fr}
+.bench>.program{grid-column:1;grid-row:1 / 3}
+.bench>.io{grid-column:2;grid-row:2}
+.station svg{display:block;width:100%;height:89px;color:#50665c}
+.station figcaption{color:var(--ink);font-size:.86rem}
+.station .frame{stroke:currentColor;stroke-width:2;stroke-linejoin:round;fill:#e3e9df}
+.station .detail{stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}
+.station text{fill:var(--ink);font:600 12px system-ui,sans-serif;text-anchor:start}
+.station .sensor,.station .lamp,.station .horn,.station .press,.station .box,.station .waves{display:none}
+.station[data-kind="signal"] .sensor,.station[data-kind="holding"] .lamp,.station[data-kind="timer"] .horn,.station[data-kind="logic"] .press,.station.sensing .box,.station.sounding .waves{display:inline}
+.station[data-kind="logic"] .conveyor{display:none}
+.station .roller{transform-box:fill-box;transform-origin:center}
+.station.moving .roller{color:var(--active);animation:roller-turn 1.2s linear infinite}
+.station .belt-marks{stroke:#8a988e;stroke-width:2;stroke-dasharray:6 7}
+.station.moving .belt-marks{stroke:var(--active);animation:belt-travel .65s linear infinite}
+.station .ram{transition:transform .2s ease}
+.station.extended .ram{transform:translateY(19px)}
+.station.lit-lamp .bulb,.station.sensing .eye{fill:#46ad82}
+.station.sounding .waves{stroke:#a05d12;animation:horn-waves .85s ease-in-out infinite alternate}
+@keyframes roller-turn{to{transform:rotate(360deg)}}
+@keyframes belt-travel{to{stroke-dashoffset:-13}}
+@keyframes horn-waves{to{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.station *{animation:none!important;transition:none!important}}
+@media(max-width:750px){.station{grid-column:1;grid-row:1;border-left:0}.station svg{height:76px}.bench>.program,.bench>.io{grid-column:1;grid-row:2}}
 </style></head>
 <body><main>
 <header><a href="index.html">← Learning home</a><div class="bar"><label for="lessonSelect">Program</label><select id="lessonSelect">
@@ -49,13 +76,52 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   <button type="button" data-view="io" aria-controls="io-pane" aria-pressed="false">Field I/O</button>
 </div>
 <div id="workbench" class="bench" data-view="ladder">
+<figure class="station" id="station" aria-label="Simulated machine">
+  <svg viewBox="0 0 290 90" aria-hidden="true">
+    <g class="conveyor">
+      <path class="detail" d="M35 73v10m180-10v10"/>
+      <rect class="frame" x="18" y="51" width="216" height="22" rx="11"/>
+      <path class="belt-marks" d="M33 53h186"/>
+      <g class="roller"><circle class="frame" cx="31" cy="62" r="7"/><path class="detail" d="M26 62h10m-5-5v10"/></g>
+      <g class="roller"><circle class="frame" cx="221" cy="62" r="7"/><path class="detail" d="M216 62h10m-5-5v10"/></g>
+      <g class="sensor">
+        <rect class="frame" x="97" y="13" width="30" height="11" rx="2"/>
+        <circle class="frame eye" cx="112" cy="25" r="3"/><path d="M112 29v20" stroke="#b78137" stroke-dasharray="3 3"/>
+        <text x="140" y="24">Box sensor</text>
+        <g class="box"><rect x="97" y="32" width="30" height="19" rx="2" fill="#e1b573" stroke="#785d38"/><path d="M110 32h4v7h-4z" fill="#fff0c8"/></g>
+      </g>
+      <g class="lamp">
+        <path class="detail" d="M111 50V32"/><circle class="frame bulb" cx="111" cy="24" r="9"/>
+        <text x="127" y="28">Run lamp</text>
+      </g>
+      <g class="horn">
+        <path class="frame" d="M87 19h10l13-7v24l-13-7H87z"/>
+        <path class="detail waves" d="M115 18q6 6 0 12m5-16q10 10 0 20"/>
+        <text x="139" y="29">Warning horn</text>
+      </g>
+    </g>
+    <g class="press">
+      <path class="frame" d="M53 77V11h112v10H65v56z"/><path class="frame" d="M44 77h134v6H44z"/>
+      <g class="ram"><path class="detail" d="M124 31v15"/><rect class="frame" x="106" y="45" width="36" height="8" rx="2"/></g>
+      <rect class="frame" x="111" y="17" width="26" height="19" rx="2"/>
+      <rect x="103" y="72" width="42" height="5" rx="1" fill="#bc8c47"/>
+      <text x="179" y="42">Press head</text>
+    </g>
+  </svg>
+  <figcaption id="machine-state"></figcaption>
+</figure>
 <section id="program-pane" class="program" aria-label="Ladder program">
   <div class="program-head"><h2>Program monitor</h2><span class="flag" id="programState"></span></div>
   <div class="diagram" id="diagram" tabindex="0" aria-label="Ladder diagram, scroll horizontally if needed"><svg id="ladder" role="group" aria-label="Program rungs. Select an instruction to inspect or edit it."></svg></div>
-  <p class="hint">Solid teal traces the path from the left rail. TRUE or FALSE is the contact test from the last scan. Select a symbol to inspect it.</p>
+  <p class="hint">Solid teal traces the path from the left rail. TRUE or FALSE is the contact test from the last scan. Select a symbol to edit it. Open <b>Edit rung layout</b> to add contacts or rungs.</p>
   <section class="editor" aria-labelledby="editorTitle">
     <div class="section-head"><h2 id="editorTitle">Instruction editor</h2><button id="restoreBtn">Restore reference</button></div>
-    <div class="editor-fields" id="editorFields"></div><p id="instructionInfo"></p>
+    <div class="editor-fields" id="editorFields"></div><p class="status" id="editHelp"></p><p id="instructionInfo"></p>
+    <details id="layoutTools" class="layout-tools"><summary>Edit rung layout</summary>
+      <div class="bar"><button id="addSeries">Insert series contact</button><button id="addParallel">Insert parallel contact</button><button id="removeContact">Remove contact</button></div>
+      <p id="layoutHint" class="status"></p>
+      <div class="bar"><button id="addRung">Add rung below</button><button id="removeRung">Remove this rung</button></div>
+    </details>
     <p class="status" id="notice" role="status"></p>
   </section>
 </section>
@@ -70,16 +136,19 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   const onOff = value => value ? "ON" : "OFF";
   const input = (tag,address,name,initial=false) => ({tag,address,name,initial});
   const signal = (tag,address,name) => ({tag,address,name});
-  const contact = (tag,inverted=false) => ({tag,inverted});
-  const rung = (name,columns,target,preset=0) => ({name,columns,target,preset,pairSeries:false});
+  const senses = {NO:"Normally open",NC:"Normally closed",RISE:"Rising edge",FALL:"Falling edge"};
+  const contact = (tag,inverted=false) => ({tag,sense:inverted ? "NC" : "NO"});
+  const group = contacts => ({contacts,series:false});
+  const rung = (name,groups,target,preset=0) => ({name,columns:groups.map(group),target,preset,coil:"ordinary"});
+  const practiceBit = signal("M_A","%M0.1","Practice memory");
   const trial = (name,...steps) => ({name,steps});
   const lessons = {
     signal:{
       title:"Box sensor and conveyor",problem:"The motor command should be ON exactly while a box is detected.",
-      task:"Switch SENSOR on and step. Change its contact to NC, apply the edit, then check the box-present and box-absent cases.",
+      task:"Change the SENSOR contact to rising edge and apply the edit. Switch the sensor on and step twice with the box still present. On which scan does the belt run?",
       inputs:[input("SENSOR","%I0.1","Box detected")], outputs:[signal("MOTOR","%Q0.0","Motor command")],
       rungs:[rung("Detect a box",[[contact("SENSOR")]],"MOTOR")],
-      cases:[trial("No box",{}),trial("Box present",{SENSOR:true}),trial("Box leaves",{SENSOR:true},{SENSOR:false})]
+      cases:[trial("No box",{}),trial("Box present",{SENSOR:true}),trial("Box stays at sensor",{SENSOR:true},{}),trial("Box leaves",{SENSOR:true},{SENSOR:false})]
     },
     logic:{
       title:"Press with two request paths",problem:"With the guard closed and no fault, either the foot switch or the panel button should command a press stroke.",
@@ -91,7 +160,7 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     },
     holding:{
       title:"Motor holding circuit",problem:"A momentary Start request should hold the motor and lamp on. Stop, an open guard or a tripped overload must clear the request.",
-      task:"Turn on START_PB, step, release it, then step again. Replace the holding contact with START_PB and check the Start-and-release case.",
+      task:"Try a SET/RESET pair under Edit rung layout. Add a rung with START_PB that sets M_A, then one with a normally closed STOP_OK contact that resets M_A. Step after pressing Start, releasing Start, and pressing Stop. Watch M_A in the I/O monitor.",
       inputs:[input("START_PB","%I0.0","Start held"),input("STOP_OK","%I0.1","Stop released",true),input("GUARD_OK","%I0.2","Guard closed",true),input("OL_OK","%I0.3","Overload healthy",true)],
       outputs:[signal("RUN_REQUEST","%M0.0","Stored request"),signal("M1","%Q0.0","Conveyor motor"),signal("RUN_LAMP","%Q0.1","Run indicator")],
       rungs:[rung("Store run request",[[contact("STOP_OK")],[contact("GUARD_OK")],[contact("OL_OK")],[contact("START_PB"),contact("RUN_REQUEST")]],"RUN_REQUEST"),rung("Run conveyor",[[contact("RUN_REQUEST")]],"M1"),rung("Light run lamp",[[contact("RUN_REQUEST")]],"RUN_LAMP")],
@@ -106,24 +175,35 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
       cases:[trial("Disabled",{}),trial("Warning starts",{ST:true}),trial("Still warning at 2 s",{ST:true},{},{}),trial("Motor starts at 3 s",{ST:true},{},{},{}),trial("Disable resets timer",{ST:true},{},{},{},{ST:false})]
     }
   };
-  const blankPLC = () => ({memory:{},enabled:false,elapsed:0,trace:null,scans:0});
+  const blankPLC = () => ({memory:{},edges:new WeakMap(),enabled:false,elapsed:0,trace:null,scans:0});
   const defaults = lesson => Object.fromEntries(lesson.inputs.map(i=>[i.tag,i.initial]));
-  // Keep each contact's coordinates in the editable group even when the pair is laid out in series.
+  // Instruction coordinates stay stable when switching a group between series and parallel.
   function columns(row) {
     return row.columns.flatMap((group,col) => {
-      const items = group.map((item,branch) => ({...item,col,branch}));
-      return items.length > 1 && row.pairSeries ? items.map(item => [item]) : [items];
+      const items = group.contacts.map((item,branch) => ({...item,instruction:item,col,branch}));
+      return group.series ? items.map(item => [item]) : [items];
     });
   }
   function scan(program,plc,field,seconds) {
     const memory = {...plc.memory,...field};
+    const written = new Set(program.flatMap(row=>row.preset ? [row.target+".ET",row.target+".Q"] : [row.target]));
+    for(const tag of Object.keys(plc.memory)){
+      if(!(tag in field) && !written.has(tag)) memory[tag] = tag.endsWith(".ET") ? 0 : false;
+    }
+    if(!program.some(row=>row.preset)){plc.elapsed=0;plc.enabled=false;}
     plc.trace = program.map(row => {
       let powered = true;
       const groups = columns(row).map(group => {
         const readings = group.map(item => {
           const bit = Boolean(memory[item.tag]);
-          const pass = item.inverted ? !bit : bit;
-          return {bit,pass,incoming:powered,through:powered && pass};
+          const previous = plc.edges.get(item.instruction) || false;
+          let pass = bit;
+          if (item.sense === "NC") pass = !bit;
+          if (item.sense === "RISE" || item.sense === "FALL") {
+            pass = item.sense === "RISE" ? bit && !previous : !bit && previous;
+            plc.edges.set(item.instruction,bit);
+          }
+          return {bit,previous,pass,incoming:powered,through:powered && pass};
         });
         powered = readings.some(reading => reading.through);
         return readings;
@@ -136,7 +216,9 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
         out = plc.elapsed >= row.preset;
         memory[row.target+".Q"] = out;
       } else {
-        memory[row.target] = out;
+        if (row.coil === "ordinary") memory[row.target] = powered;
+        else if (powered) memory[row.target] = row.coil === "set";
+        out = Boolean(memory[row.target]);
       }
       return {groups,powered,out};
     });
@@ -147,12 +229,14 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   let lesson,program,plc,field,selected,running=false,lastTick=0,compiled=false;
   const workCopies = {};
   const selectedRow = () => program[selected.r];
-  const selectedItem = () => selected.action ? null : selectedRow().columns[selected.col][selected.branch];
+  const selectedItem = () => selected.action ? null : selectedRow().columns[selected.col].contacts[selected.branch];
+  const monitoredTags = () => [...lesson.outputs,practiceBit];
+  const firstInstruction = r => program[r].columns.length ? {r,col:0,branch:0} : {r,action:true};
   function loadProgram() {
     if (lesson) workCopies[lesson.title] = program;
     lesson = lessons[$("lessonSelect").value];
     program = workCopies[lesson.title] || structuredClone(lesson.rungs);
-    selected = {r:0,col:0,branch:0};
+    selected = firstInstruction(0);
     $("programTitle").textContent = lesson.title;
     $("problem").textContent = lesson.problem;
     $("task").textContent = lesson.task;
@@ -169,7 +253,7 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     $("notice").textContent = "";
     $("inputs").innerHTML = lesson.inputs.map(i =>
       `<div class="io-row"><span><b class="tag">${i.tag}</b> <span class="address">${i.address}</span><small>${i.name}</small></span><label title="${i.name}"><input type="checkbox" id="${i.tag}" aria-label="${i.name} (${i.tag})" ${field[i.tag] ? "checked" : ""}><span id="field-${i.tag}" class="bit"></span></label><span class="bit" id="read-${i.tag}"></span></div>`).join("");
-    $("outputs").innerHTML = lesson.outputs.map(i =>
+    $("outputs").innerHTML = monitoredTags().map(i =>
       `<div class="io-row"><span><b class="tag">${i.tag}</b> <span class="address">${i.address}</span><small>${i.name}</small></span><span></span><span class="bit" id="out-${i.tag}"></span></div>`).join("");
     render();
   }
@@ -181,6 +265,7 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     render();
   }
   function render() {
+    renderStation();
     const pending = lesson.inputs.some(i => field[i.tag] !== plc.memory[i.tag]);
     const modified = JSON.stringify(program) !== JSON.stringify(lesson.rungs);
     $("runBtn").setAttribute("aria-pressed",String(running));
@@ -193,12 +278,33 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
       showBit("field-"+i.tag,field[i.tag]);
       showBit("read-"+i.tag,plc.memory[i.tag]);
     }
-    for (const i of lesson.outputs) {
+    for (const i of monitoredTags()) {
       if (i.tag.endsWith(".ET")) $("out-"+i.tag).textContent = (plc.memory[i.tag] || 0).toFixed(1)+" s";
       else showBit("out-"+i.tag,plc.memory[i.tag]);
     }
     drawDiagram();
     describeInstruction();
+  }
+  function renderStation() {
+    const station = $("station");
+    const kind = $("lessonSelect").value;
+    const outputs = plc.memory;
+    const moving = kind === "signal" ? outputs.MOTOR : outputs.M1;
+    station.dataset.kind = kind;
+    station.classList.toggle("moving", Boolean(moving));
+    station.classList.toggle("sensing", kind === "signal" && field.SENSOR);
+    station.classList.toggle("lit-lamp", Boolean(outputs.RUN_LAMP));
+    station.classList.toggle("sounding", Boolean(outputs.HORN));
+    station.classList.toggle("extended", Boolean(outputs.PRESS));
+    let caption;
+    if (kind === "logic") caption = outputs.PRESS ? "Press extended" : "Press retracted";
+    else {
+      const belt = moving ? "Belt running" : "Belt stopped";
+      if (kind === "signal") caption = belt + (field.SENSOR ? " · Box at sensor" : " · Sensor clear");
+      if (kind === "holding") caption = belt + " · Run lamp " + onOff(outputs.RUN_LAMP);
+      if (kind === "timer") caption = belt + " · Warning horn " + onOff(outputs.HORN);
+    }
+    $("machine-state").textContent = caption;
   }
   function showBit(id,value) {
     const node = $(id);
@@ -214,7 +320,8 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     svg.style.minWidth = minWidth+"px";
     const width = Math.max(minWidth,Math.round(svg.getBoundingClientRect().width));
     const left=15,right=width-15,cell=(right-left)/(maxCols+1);
-    const rowHeight = layouts.map(groups=>groups.some(group=>group.length>1) ? 150 : 89);
+    const branchGap = 58;
+    const rowHeight = layouts.map(groups=>89+branchGap*(Math.max(1,...groups.map(group=>group.length))-1));
     const height = rowHeight.reduce((a,b)=>a+b,0)+8;
     svg.setAttribute("viewBox",`0 0 ${width} ${height}`);
     const parts=[];
@@ -224,41 +331,50 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     parts.push(`<path class="rail lit" d="M${left} 4V${height-4}"/><path class="rail" d="M${right} 4V${height-4}"/>`);
     let top=0;
     program.forEach((row,r)=>{
-      const y=top+54,low=y+58,last=compiled ? plc.trace[r] : null;
+      const y=top+54,last=compiled ? plc.trace[r] : null;
       label(left+6,top+15,`R${r+1}   ${row.name}`,"rung-label");
       let incoming=Boolean(last);
       layouts[r].forEach((group,c)=>{
         const start=left+c*cell,end=start+cell,x=(start+end)/2;
         const entry=group.length>1 ? start+2 : start, exit=group.length>1 ? end-2 : end;
         if (group.length>1) {
-          line(start,y,entry,y,incoming);line(entry,y,entry,low,incoming);
+          line(start,y,entry,y,incoming);line(entry,y,entry,y+(group.length-1)*branchGap,incoming);
         }
         group.forEach((item,b)=>{
-          const cy=b ? low : y;
+          const cy=y+b*branchGap;
           const value=last?.groups[c][b];
           const isSelected = selected.r===r && !selected.action && selected.col===item.col && selected.branch===item.branch;
-          parts.push(`<g id="sym-${r}-${item.col}-${item.branch}" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="Rung ${r+1}, ${item.tag}, ${item.inverted ? "normally closed" : "normally open"}, ${value ? value.pass ? "true" : "false" : "awaiting scan"}" data-r="${r}" data-col="${item.col}" data-branch="${item.branch}" class="${isSelected?"selected":""}"><rect class="hit" x="${x-cell/2+4}" y="${cy-28}" width="${cell-8}" height="54" rx="4"/>`);
+          parts.push(`<g id="sym-${r}-${item.col}-${item.branch}" role="button" tabindex="0" aria-pressed="${isSelected}" aria-label="Rung ${r+1}, ${item.tag}, ${senses[item.sense]}, ${value ? value.pass ? "true" : "false" : "awaiting scan"}" data-r="${r}" data-col="${item.col}" data-branch="${item.branch}" class="${isSelected?"selected":""}"><rect class="hit" x="${x-cell/2+4}" y="${cy-28}" width="${cell-8}" height="54" rx="4"/>`);
           line(entry,cy,x-7,cy,value?.incoming);line(x+7,cy,exit,cy,value?.through);
-          parts.push(`<path class="symbol${value?.through ? " lit" : ""}" d="M${x-7} ${cy-10}v20 M${x+7} ${cy-10}v20${item.inverted ? ` M${x-10} ${cy+11}l20 -22` : ""}"/>`);
+          parts.push(`<path class="symbol${value?.through ? " lit" : ""}" d="M${x-7} ${cy-10}v20 M${x+7} ${cy-10}v20${item.sense==="NC" ? ` M${x-10} ${cy+11}l20 -22` : ""}"/>`);
+          if(item.sense==="RISE" || item.sense==="FALL") label(x,cy+4,item.sense==="RISE" ? "P" : "N","small");
           label(x,cy-15,item.tag);label(x,cy+21,value ? value.pass ? "TRUE" : "FALSE" : "—","small"+(value?.pass ? " on" : ""));
           parts.push("</g>");
         });
         incoming=Boolean(last?.groups[c].some(value=>value.through));
-        if(group.length>1){line(exit,low,exit,y,last?.groups[c][1].through);line(exit,y,end,y,incoming);}
+        if(group.length>1){
+          let lowerPath=false;
+          for(let b=group.length-1;b>0;b--){
+            lowerPath ||= Boolean(last?.groups[c][b].through);
+            line(exit,y+b*branchGap,exit,y+(b-1)*branchGap,lowerPath);
+          }
+          line(exit,y,end,y,incoming);
+        }
       });
       const actionX=right-cell/2, edge = row.preset ? 36 : 12;
       line(left+layouts[r].length*cell,y,actionX-edge,y,last?.powered);
       const sel=selected.r===r && selected.action;
-      parts.push(`<g id="sym-${r}-action" role="button" tabindex="0" aria-pressed="${Boolean(sel)}" aria-label="Rung ${r+1}, ${row.target}, ${row.preset ? "on-delay timer" : "output coil"}" data-r="${r}" data-action="1" class="${sel ? "selected" : ""}"><rect class="hit" x="${actionX-cell/2+3}" y="${y-31}" width="${cell-6}" height="61" rx="4"/>`);
-      line(actionX+edge,y,right,y,last?.out);
+      parts.push(`<g id="sym-${r}-action" role="button" tabindex="0" aria-pressed="${Boolean(sel)}" aria-label="Rung ${r+1}, ${row.target}, ${row.preset ? "on-delay timer" : row.coil+" coil"}" data-r="${r}" data-action="1" class="${sel ? "selected" : ""}"><rect class="hit" x="${actionX-cell/2+3}" y="${y-31}" width="${cell-6}" height="61" rx="4"/>`);
+      line(actionX+edge,y,right,y,row.preset ? last?.out : last?.powered);
       if(row.preset){
         parts.push(`<rect class="timer" x="${actionX-edge}" y="${y-12}" width="${2*edge}" height="24" rx="2"/>`);
         label(actionX,y+5,`TON ${row.preset}s`,"small");
       } else {
-        parts.push(`<path class="symbol${last?.out ? " lit" : ""}" d="M${actionX-5} ${y-12}Q${actionX-19} ${y} ${actionX-5} ${y+12} M${actionX+5} ${y-12}Q${actionX+19} ${y} ${actionX+5} ${y+12}"/>`);
+        parts.push(`<path class="symbol${last?.powered ? " lit" : ""}" d="M${actionX-5} ${y-12}Q${actionX-19} ${y} ${actionX-5} ${y+12} M${actionX+5} ${y-12}Q${actionX+19} ${y} ${actionX+5} ${y+12}"/>`);
+        if(row.coil!=="ordinary") label(actionX,y+4,row.coil==="set" ? "S" : "R","small");
       }
       label(actionX,y-16,row.target);
-      label(actionX,y+24,last ? (row.preset ? "Q " : "")+onOff(last.out) : "—","small"+(last?.out ? " on" : ""));
+      label(actionX,y+24,last ? (row.preset ? "Q " : "BIT ")+onOff(last.out) : "—","small"+(last?.out ? " on" : ""));
       parts.push("</g>");
       top+=rowHeight[r];
     });
@@ -266,50 +382,141 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     if(focus) document.getElementById(focus)?.focus({preventScroll:true});
   }
 
+  function options(tags){
+    return tags.map(i=>`<option value="${i.tag}">${i.tag}</option>`).join("");
+  }
   function populateEditor(){
     const row=selectedRow(),item=selectedItem();
     const fields=$("editorFields");
-    $("editorTitle").textContent = `R${selected.r+1} · ${item ? "Contact editor" : row.preset ? "Timer editor" : "Output coil"}`;
+    $("editorTitle").textContent = `R${selected.r+1} · ${item ? "Contact editor" : row.preset ? "Timer editor" : "Coil editor"}`;
+    const apply='<button id="applyBtn" class="primary">Apply edit</button>';
     if(item){
-      const tags=[...lesson.inputs,...lesson.outputs.filter(i=>!i.tag.endsWith(".ET"))];
-      fields.innerHTML=`<label>Read tag<select id="editTag">${tags.map(i=>`<option value="${i.tag}" ${item.tag===i.tag?"selected":""}>${i.tag}</option>`).join("")}</select></label>
-        <label>Instruction<select id="editSense"><option value="NO">NO · true if ON</option><option value="NC">NC · true if OFF</option></select></label>
-        ${row.columns[selected.col].length>1 ? '<label>Pair layout<select id="editLayout"><option value="parallel">Parallel · OR</option><option value="series">Series · AND</option></select></label>' : ""}
-        <button id="applyBtn" class="primary">Apply edit</button>`;
-      $("editSense").value=item.inverted?"NC":"NO";
-      if($("editLayout")) $("editLayout").value=row.pairSeries?"series":"parallel";
+      const readable=[...lesson.inputs,...monitoredTags().filter(i=>!i.tag.endsWith(".ET"))];
+      fields.innerHTML=`<label>Read tag<select id="editTag">${options(readable)}</select></label>
+        <label>Instruction<select id="editSense"><option value="NO">NO · true if ON</option><option value="NC">NC · true if OFF</option><option value="RISE">P · rising edge</option><option value="FALL">N · falling edge</option></select></label>
+        ${row.columns[selected.col].contacts.length>1 ? '<label>Group layout<select id="editLayout"><option value="parallel">Parallel · OR</option><option value="series">Series · AND</option></select></label>' : ""}${apply}`;
+      $("editTag").value=item.tag;
+      $("editSense").value=item.sense;
+      if($("editLayout")) $("editLayout").value=row.columns[selected.col].series ? "series" : "parallel";
     }else if(row.preset){
-      fields.innerHTML=`<label>Preset (seconds)<input type="number" id="editPreset" min="1" max="60" step="1" required value="${row.preset}"></label><button id="applyBtn" class="primary">Apply edit</button>`;
-    }else fields.innerHTML=`<span class="tag">Write ${row.target}</span>`;
+      fields.innerHTML=`<label>Preset (seconds)<input type="number" id="editPreset" min="1" max="60" step="1" required value="${row.preset}"></label>${apply}`;
+    }else{
+      const writable=monitoredTags().filter(i=>!i.tag.includes("."));
+      fields.innerHTML=`<label>Write tag<select id="editTarget">${options(writable)}</select></label>
+        <label>Coil<select id="editCoil"><option value="ordinary">Ordinary coil</option><option value="set">S · SET coil</option><option value="reset">R · RESET coil</option></select></label>${apply}`;
+      $("editTarget").value=row.target;
+      $("editCoil").value=row.coil;
+    }
+    $("addParallel").disabled=!item;
+    $("removeContact").disabled=!item;
+    $("removeRung").disabled=program.length===1;
+    $("layoutHint").textContent=item ? "Inserts use the selected tag and instruction. A series contact goes after the selected column." : "Insert a contact to the left of this instruction. Removing a tag’s last writer clears its value on the next scan.";
+    updateEditHelp();
     describeInstruction();
+  }
+  function updateEditHelp(){
+    const sense=$("editSense")?.value;
+    const coil=$("editCoil")?.value;
+    let help="";
+    if (sense==="RISE" || sense==="FALL"){
+      const transition=sense==="RISE" ? "OFF to ON" : "ON to OFF";
+      help=`This contact passes for one scan when its bit changes from ${transition}. Its previous sample starts OFF after a reset or a tag or type change.`;
+    }else if(coil){
+      help=coil==="ordinary" ? "An ordinary coil writes ON for a true path and OFF for a false path."
+        : `A true path writes ${coil==="set" ? "ON" : "OFF"}. A false path leaves the bit as it was. Rungs execute from top to bottom.`;
+    }
+    $("editHelp").textContent=help;
   }
   function describeInstruction(){
     if(!compiled){$("instructionInfo").textContent="Program changed. Its path and instruction values will appear after the next scan.";return;}
     const row=selectedRow(),last=plc.trace[selected.r],item=selectedItem();
     if (!item){
-      $("instructionInfo").textContent=row.preset ? `${row.target} input ${onOff(last.powered)}. ET ${plc.elapsed.toFixed(1)} s of ${row.preset} s. Q ${onOff(last.out)}.` : `The ${last.powered ? "complete" : "broken"} path writes ${row.target} ${onOff(last.out)}.`;
+      if(row.preset){
+        $("instructionInfo").textContent=`${row.target} input ${onOff(last.powered)}. ET ${plc.elapsed.toFixed(1)} s of ${row.preset} s. Q ${onOff(last.out)}.`;
+        return;
+      }
+      const written=row.coil==="ordinary" || last.powered;
+      let message=`R${selected.r+1} path ${onOff(last.powered)}. This coil ${written?"wrote":"kept"} ${row.target} ${onOff(last.out)}.`;
+      if(last.out!==Boolean(plc.memory[row.target])) message+=` A later rung left ${row.target} ${onOff(plc.memory[row.target])} at the end of the scan.`;
+      $("instructionInfo").textContent=message;
       return;
     }
     const layout=columns(row);
     const c=layout.findIndex(group=>group.some(i=>i.col===selected.col&&i.branch===selected.branch));
     const b=layout[c].findIndex(i=>i.col===selected.col&&i.branch===selected.branch);
     const sample=last.groups[c][b];
-    $("instructionInfo").textContent=`Last scan read ${item.tag} ${onOff(sample.bit)}. Its ${item.inverted?"NC":"NO"} contact was ${sample.pass?"TRUE":"FALSE"}. ${!sample.incoming ? "The upstream path was blocked." : sample.through ? "The path passed this contact." : "The path stopped here."}`;
+    const edge=item.sense==="RISE" || item.sense==="FALL";
+    const history=edge ? ` Its previous sample was ${onOff(sample.previous)}.` : "";
+    $("instructionInfo").textContent=`Last scan read ${item.tag} ${onOff(sample.bit)}.${history} Its ${senses[item.sense]} contact was ${sample.pass?"TRUE":"FALSE"}. ${!sample.incoming ? "The upstream path was blocked." : sample.through ? "The path passed this contact." : "The path stopped here."}`;
+  }
+  function finishEdit(message){
+    compiled=false;
+    clearTests();
+    populateEditor();
+    $("notice").textContent=message+" Run or step to execute the changed program.";
+    render();
   }
   function applyEdit(){
     const row=selectedRow(),item=selectedItem();
     if(item){
-      item.tag=$("editTag").value;
-      item.inverted=$("editSense").value==="NC";
-      if($("editLayout"))row.pairSeries=$("editLayout").value==="series";
-    }else{
-      if(!$("editPreset").reportValidity())return;
+      const tag=$("editTag").value,sense=$("editSense").value;
+      // A changed source or instruction starts its own edge history.
+      if(tag!==item.tag || sense!==item.sense) row.columns[selected.col].contacts[selected.branch]={tag,sense};
+      if($("editLayout")) row.columns[selected.col].series=$("editLayout").value==="series";
+    }else if(row.preset){
+      if(!$("editPreset").reportValidity()) return;
       row.preset=$("editPreset").valueAsNumber;
+    }else{
+      row.coil=$("editCoil").value;
+      row.target=$("editTarget").value;
     }
-    compiled=false;
-    clearTests();
-    $("notice").textContent="Edit applied. Run or step to execute the changed program.";
-    render();
+    finishEdit("Edit applied.");
+    $("applyBtn").focus({preventScroll:true});
+  }
+  function insertContact(inParallel){
+    const row=selectedRow(),item=selectedItem();
+    const added=item ? {tag:$("editTag").value,sense:$("editSense").value} : contact(lesson.inputs[0].tag);
+    let col=item ? selected.col : row.columns.length;
+    let branch=item ? selected.branch : 0;
+    if(item && row.columns[col].series){
+      // A new connection targets the actual contact in the expanded series path.
+      row.columns.splice(col,1,...row.columns[col].contacts.map(member=>group([member])));
+      col+=branch;
+      branch=0;
+    }
+    if(inParallel){
+      branch++;
+      row.columns[col].contacts.splice(branch,0,added);
+    }else{
+      if(item) col++;
+      row.columns.splice(col,0,group([added]));
+      branch=0;
+    }
+    selected={r:selected.r,col,branch};
+    finishEdit(`Inserted ${added.tag} in ${inParallel?"parallel":"series"}.`);
+  }
+  function removeContact(){
+    const row=selectedRow(),members=row.columns[selected.col].contacts;
+    members.splice(selected.branch,1);
+    if(members.length===0) row.columns.splice(selected.col,1);
+    if(row.columns.length){
+      selected.col=Math.min(selected.col,row.columns.length-1);
+      selected.branch=Math.min(selected.branch,row.columns[selected.col].contacts.length-1);
+    }else selected={r:selected.r,action:true};
+    finishEdit(row.columns.length ? "Contact removed." : "Contact removed. With no contacts, this rung has an unconditional path.");
+  }
+  function addRung(){
+    const r=selected.r+1;
+    program.splice(r,0,rung("Practice rung",[[contact(lesson.inputs[0].tag)]],"M_A"));
+    selected={r,action:true};
+    finishEdit("New rung inserted. Select its coil type and write tag.");
+  }
+  function removeRung(){
+    if(program.length===1) return;
+    const removed=selected.r;
+    program.splice(removed,1);
+    selected=firstInstruction(Math.min(removed,program.length-1));
+    finishEdit(`Removed rung R${removed+1}.`);
   }
   function clearTests(){$("testResults").innerHTML="";$("testSummary").textContent="";}
   function runCases(){
@@ -322,7 +529,8 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
         scan(lesson.rungs,expected,simFields,i===0?0:1);
         scan(program,actual,simFields,i===0?0:1);
         for(const {tag} of lesson.outputs){
-          const ref=expected.memory[tag],got=actual.memory[tag];
+          const initial=tag.endsWith(".ET") ? 0 : false;
+          const ref=expected.memory[tag] ?? initial,got=actual.memory[tag] ?? initial;
           const format=v=>typeof v==="number" ? v+" s" : onOff(v);
           if (got!==ref && !difference) difference=`scan ${i+1}, ${tag} expected ${format(ref)}, got ${format(got)}`;
         }
@@ -350,13 +558,16 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     render();
   });
   $("editorFields").addEventListener("click",event=>{if(event.target.id==="applyBtn")applyEdit();});
+  $("editorFields").addEventListener("change",updateEditHelp);
+  $("addSeries").addEventListener("click",()=>insertContact(false));
+  $("addParallel").addEventListener("click",()=>insertContact(true));
+  $("removeContact").addEventListener("click",removeContact);
+  $("addRung").addEventListener("click",addRung);
+  $("removeRung").addEventListener("click",removeRung);
   $("restoreBtn").addEventListener("click",()=>{
     program=structuredClone(lesson.rungs);
-    compiled=false;
-    clearTests();
-    populateEditor();
-    $("notice").textContent="Reference program restored. The next scan executes it.";
-    render();
+    selected=firstInstruction(0);
+    finishEdit("Reference program restored.");
   });
   $("runBtn").addEventListener("click",()=>{
     if(!running){running=true;lastTick=performance.now();takeScan(0);}

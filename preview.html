@@ -57,6 +57,7 @@ input{accent-color:var(--teal);width:18px;height:18px}
 #tank .flow.active{opacity:1;animation:stream .75s linear infinite}
 @keyframes stream{to{stroke-dashoffset:-18}}
 #tank .mixer.active{transform-origin:145px 72px;animation:turn 1.8s linear infinite}
+#tank .mixer.active path{stroke:var(--teal)}
 @keyframes turn{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.flow.active,.mixer.active{animation:none!important}}
 .figcaption{margin-top:3px;font-size:.86rem;color:var(--muted)}
@@ -73,6 +74,14 @@ input{accent-color:var(--teal);width:18px;height:18px}
 .inspect{padding:10px 14px;border-block:1px solid var(--line);background:#f0f5ee;min-height:67px}
 .inspect h3{font:700 .82rem/1.4 var(--mono);color:#174f43}
 .inspect p{font-size:.91rem;margin-top:3px}
+.edit-instruction{margin-top:6px;font-size:.86rem}
+.edit-instruction summary{color:var(--teal);font-weight:650}
+.edit-row{display:flex;gap:7px;align-items:end;flex-wrap:wrap;margin:7px 0}
+.edit-row label{display:grid;gap:3px;font-size:.77rem}
+.edit-row select,.edit-row button{font-size:.85rem;padding:5px 8px}
+.edit-instruction .hint{font-size:.8rem}
+.edit-instruction[hidden],#restore-program[hidden]{display:none}
+#restore-program{margin-top:7px;font-size:.8rem}
 .rung-row{border-bottom:1px solid var(--line);padding:6px 0 0}
 .rung-row:last-child{border-bottom:0}
 .rung-title{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 12px}
@@ -125,7 +134,7 @@ input{accent-color:var(--teal);width:18px;height:18px}
 <header>
   <p class="eyebrow">PLC training · Online monitor</p>
   <h1>Tank PLC workstation</h1>
-  <p>Operate the fill–mix–drain cycle. Follow a field input through the PLC scan to the valve or motor it commands.</p>
+  <p>Edit a contact or coil, then step through READ, SOLVE and UPDATE to see how the valves and mixer respond.</p>
 </header>
 <section class="controller" aria-label="PLC controller">
   <div class="controls">
@@ -133,7 +142,7 @@ input{accent-color:var(--teal);width:18px;height:18px}
     <select id="scan-mode"><option value="manual">Step by phase</option><option value="run">Continuous · 4×</option></select>
     <button type="button" id="next-phase">Run READ</button>
     <button type="button" id="next-stage">Run to next stage</button>
-    <span id="clock"></span><button id="reset" type="button">Reset</button>
+    <span id="clock"></span><button id="reset" type="button">Reset tank</button>
   </div>
   <p id="scan-message" role="status"></p>
 </section>
@@ -146,11 +155,23 @@ input{accent-color:var(--teal);width:18px;height:18px}
     <div class="pad">
       <div class="section-head"><h2 id="rung-heading">Online ladder</h2><span id="solve-stamp" class="badge"></span></div>
       <div class="picker"><label for="network">Network</label><select id="network"></select></div>
+      <button type="button" id="restore-program" hidden>Restore reference program and reset tank</button>
     </div>
-    <div class="inspect" aria-labelledby="inspect-title"><h3 id="inspect-title"></h3><p id="inspect-text"></p></div>
+    <div class="inspect" aria-labelledby="inspect-title">
+      <h3 id="inspect-title"></h3><p id="inspect-text"></p>
+      <details id="edit-instruction" class="edit-instruction" hidden>
+        <summary>Edit this instruction</summary>
+        <div class="edit-row">
+          <label>Instruction<select id="edit-kind"></select></label>
+          <label>Tag<select id="edit-tag"></select></label>
+          <button type="button" id="apply-edit">Apply edit</button>
+        </div>
+        <p class="hint" id="edit-help"></p>
+      </details>
+    </div>
     <div class="program" id="program"></div>
     <p id="scroll-hint" hidden>Scroll long rungs sideways →</p>
-    <p class="legend">Select a contact or coil to inspect it. Solid teal wires show the true path from the last SOLVE. A dashed wire is inactive.</p>
+    <p class="legend">Select a contact or coil to inspect or edit it. Solid teal wires show the true path at the last SOLVE. A dashed wire is inactive.</p>
   </section>
   <section class="panel" id="machine" aria-labelledby="tank-heading">
     <div class="pad">
@@ -165,7 +186,7 @@ input{accent-color:var(--teal);width:18px;height:18px}
           <rect class="device" id="valveB" x="37" y="32" width="12" height="12" rx="2"/>
           <path class="flow" id="streamA" d="M82 38V107"/><path class="flow" id="streamB" d="M69 48V107"/>
           <path d="M145 33 V72" stroke="#4e6b5c" stroke-width="4"/>
-          <g class="mixer" id="blade"><path d="M129 72h32m-16-6v12" stroke="#4e6b5c" stroke-width="4" stroke-linecap="round"/></g>
+          <g class="mixer" id="blade"><path d="M145 72q-8 1-13-5m13 5q4-8 10-9m-10 9q4 7 1 13" fill="none" stroke="#4e6b5c" stroke-width="4" stroke-linecap="round"/><circle cx="145" cy="72" r="3" fill="#4e6b5c"/></g>
           <rect class="device" id="motor" x="127" y="18" width="36" height="17" rx="4"/>
           <rect class="device" id="valveC" x="217" y="97" width="12" height="12" rx="2"/><path class="flow" id="streamC" d="M231 103H257"/>
           <text x="19" y="18">A</text><text x="19" y="53">B</text><text x="137" y="14">Mix</text><text x="218" y="92">C</text>
@@ -198,7 +219,6 @@ input{accent-color:var(--teal);width:18px;height:18px}
 "use strict";
 const $=id=>document.getElementById(id);
 const clone=object=>JSON.parse(JSON.stringify(object));
-const bool=value=>value ? 1 : 0;
 let state, lastTrace=[], playTimer=null;
 
   function fresh(){
@@ -261,255 +281,92 @@ let state, lastTrace=[], playTimer=null;
     }
   }
 
-  function trace(id,title,result,nodes,note,writes=[]){
-    lastTrace.push({id,title,result:!!result,nodes,note,writes});
+// Both the diagram and the simulator use these instructions. Branches retain their
+// positions when a contact is edited, so identical tags can have different polarity.
+const contact=(tag,mode="no")=>({kind:"contact",tag,mode});
+const either=(...items)=>({kind:"parallel",items});
+const series=(...items)=>({kind:"series",items});
+const rung=(title,contacts,kind,tag)=>({title,nodes:[...contacts,{kind,tag}]});
+const referenceProgram=[
+  rung("Process permission",[contact("START_SW"),contact("STOP_PB","nc")],"coil","RUN_OK"),
+  rung("Initialize filling stage",[
+    contact("RUN_OK"),contact("TANK_EMPTY"),contact("FILL_STAGE","nc"),contact("MIX_STAGE","nc"),contact("DRAIN_STAGE","nc")
+  ],"set","FILL_STAGE"),
+  rung("Set mixing stage",[contact("RUN_OK"),contact("FILL_STAGE"),either(contact("LEVEL_HIGH"),contact("SB2_LEVEL"))],"set","MIX_STAGE"),
+  rung("Reset filling stage",[contact("RUN_OK"),contact("FILL_STAGE"),either(contact("LEVEL_HIGH"),contact("SB2_LEVEL"))],"reset","FILL_STAGE"),
+  rung("30-second mixing timer",[contact("RUN_OK"),contact("MIX_STAGE")],"timer","MIX_TIMER"),
+  rung("Set draining stage",[contact("RUN_OK"),contact("MIX_STAGE"),contact("MIX_TIMER.Q")],"set","DRAIN_STAGE"),
+  rung("Reset mixing stage",[contact("RUN_OK"),contact("MIX_STAGE"),contact("MIX_TIMER.Q")],"reset","MIX_STAGE"),
+  rung("Set filling stage after draining",[contact("RUN_OK"),contact("DRAIN_STAGE"),contact("TANK_EMPTY")],"set","FILL_STAGE"),
+  rung("Reset draining stage",[contact("RUN_OK"),contact("DRAIN_STAGE"),contact("TANK_EMPTY")],"reset","DRAIN_STAGE"),
+  rung("Solenoid A output",[contact("RUN_OK"),contact("FILL_STAGE")],"coil","PA_CMD"),
+  rung("Solenoid B output",[contact("RUN_OK"),contact("FILL_STAGE")],"coil","PB_CMD"),
+  rung("Mixer motor output",[contact("RUN_OK"),either(contact("MIX_STAGE"),series(contact("DRAIN_STAGE"),contact("SB3_MIX_DRAIN")))],"coil","MOTOR_CMD"),
+  rung("Solenoid C drain output",[contact("RUN_OK"),contact("DRAIN_STAGE")],"coil","PC_CMD")
+];
+let program=clone(referenceProgram);
+let lastTargets=new Set();
+let revision=0, solvedRevision=0;
+function bitStore(tag){
+  if(tag in state.inputImage)return state.inputImage;
+  return tag in state.outputImage?state.outputImage:state.internal;
+}
+function readBit(tag){
+  return tag==="MIX_TIMER.Q"?state.internal.MIX_TIMER_Q:bitStore(tag)[tag];
+}
+function evaluateContact(spec) {
+  if(spec.items){
+    const items=spec.items.map(evaluateContact);
+    const result=spec.kind==="parallel"?items.some(item=>item.result):items.every(item=>item.result);
+    return {kind:spec.kind,items,result};
   }
-
-  function n(kind,tag,result,mode="no"){return{kind,tag,result:!!result,mode,before:state.internal[tag]};}
-  function p(items){return{kind:"parallel",items,result:items.some(x=>x.result)};}
-  function s(items){return{kind:"series",items,result:items.every(x=>x.result)};}
-
-  function solveLogic(){
-    lastTrace=[];
-    const i=state.inputImage;
-    const m=state.internal;
-    const o=state.outputImage;
-
-
-    // Rung 1: RUN_OK = START_SW AND NOT STOP_PB.
-    // RUN_OK is a non-retentive internal permissive. It does not erase stage memory.
-    const startTrue=i.START_SW;
-    const stopHealthy=!i.STOP_PB;
-    const runOK=startTrue&&stopHealthy;
-    m.RUN_OK=runOK;
-    trace(
-      "R1",
-      "Process permission",
-      runOK,
-      [
-        n("contact","START_SW",startTrue),
-        n("contact","STOP_PB",stopHealthy,"nc"),
-        n("internal","RUN_OK",runOK)
-      ],
-      "The Start switch must be ON and Stop must be released. Holding Stop opens the path and keeps the current stage in memory.",
-      ["RUN_OK"]
-    );
-
-    // Rung 2: initialize filling only from a confirmed empty condition.
-    const noFill=!m.FILL_STAGE;
-    const noMix=!m.MIX_STAGE;
-    const noDrain=!m.DRAIN_STAGE;
-    const initFill=runOK&&i.TANK_EMPTY&&noFill&&noMix&&noDrain;
-    trace(
-      "R2",
-      "Initialize filling stage",
-      initFill,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","TANK_EMPTY",i.TANK_EMPTY),
-        n("contact","FILL_STAGE",noFill,"nc"),
-        n("contact","MIX_STAGE",noMix,"nc"),
-        n("contact","DRAIN_STAGE",noDrain,"nc"),
-        n("set","FILL_STAGE",initFill)
-      ],
-      "When the process is permitted, the tank is empty, and no stage is active, latch FILL_STAGE.",
-      ["FILL_STAGE"]
-    );
-    if(initFill)m.FILL_STAGE=true;
-
-    // Rungs 3 and 4: set the next stage before resetting the current stage.
-    const levelReached=i.LEVEL_HIGH||i.SB2_LEVEL;
-    const setMix=runOK&&m.FILL_STAGE&&levelReached;
-    trace(
-      "R3",
-      "Set mixing stage",
-      setMix,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","FILL_STAGE",m.FILL_STAGE),
-        p([
-          n("contact","LEVEL_HIGH",i.LEVEL_HIGH),
-          n("contact","SB2_LEVEL",i.SB2_LEVEL)
-        ]),
-        n("set","MIX_STAGE",setMix)
-      ],
-      "While filling, LEVEL_HIGH at 80% or an End fill early pulse (SB2_LEVEL) completes the parallel branch. Either one sets MIX_STAGE.",
-      ["MIX_STAGE"]
-    );
-    if(setMix)m.MIX_STAGE=true;
-
-    const resetFill=runOK&&m.FILL_STAGE&&levelReached;
-    trace(
-      "R4",
-      "Reset filling stage",
-      resetFill,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","FILL_STAGE",m.FILL_STAGE),
-        p([
-          n("contact","LEVEL_HIGH",i.LEVEL_HIGH),
-          n("contact","SB2_LEVEL",i.SB2_LEVEL)
-        ]),
-        n("reset","FILL_STAGE",resetFill)
-      ],
-      "This rung uses the same transition condition as R3 and is placed after SET MIX_STAGE.",
-      ["FILL_STAGE"]
-    );
-    if(resetFill)m.FILL_STAGE=false;
-
-    // Rung 5: non-retentive 30-second TON.
-    const timerEnable=runOK&&m.MIX_STAGE;
-    if(!timerEnable){
-      m.MIX_TIMER_ET=0;
-      m.MIX_TIMER_Q=false;
+  const before=readBit(spec.tag);
+  return {...spec,before,result:spec.mode==="nc"?!before:before};
+}
+function executeAction(action,powered){
+  const {kind,tag}=action;
+  if(kind==="timer"){
+    const timer=state.internal;
+    timer.TIMER_INTERVAL_ENABLED=powered;
+    if(!powered){
+      timer.MIX_TIMER_ET=0;
+      timer.MIX_TIMER_Q=false;
     }
-    trace(
-      "R5",
-      "30-second mixing timer",
-      timerEnable,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","MIX_STAGE",m.MIX_STAGE),
-        n("timer","MIX_TIMER",timerEnable)
-      ],
-      `Non-retentive TON: ET=${m.MIX_TIMER_ET.toFixed(1)} s; Q=${bool(m.MIX_TIMER_Q)}. If RUN_OK or MIX_STAGE becomes false, ET and Q reset.`,
-      ["MIX_TIMER.ET","MIX_TIMER.Q"]
-    );
-
-    // Rungs 6 and 7: set drain before resetting mix.
-    const setDrain=runOK&&m.MIX_STAGE&&m.MIX_TIMER_Q;
-    trace(
-      "R6",
-      "Set draining stage",
-      setDrain,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","MIX_STAGE",m.MIX_STAGE),
-        n("contact","MIX_TIMER.Q",m.MIX_TIMER_Q),
-        n("set","DRAIN_STAGE",setDrain)
-      ],
-      "When the 30-second timer is done, latch DRAIN_STAGE.",
-      ["DRAIN_STAGE"]
-    );
-    if(setDrain)m.DRAIN_STAGE=true;
-
-    const resetMix=runOK&&m.MIX_STAGE&&m.MIX_TIMER_Q;
-    trace(
-      "R7",
-      "Reset mixing stage",
-      resetMix,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","MIX_STAGE",m.MIX_STAGE),
-        n("contact","MIX_TIMER.Q",m.MIX_TIMER_Q),
-        n("reset","MIX_STAGE",resetMix)
-      ],
-      "This rung is placed after SET DRAIN_STAGE, so the next stage is established before MIX_STAGE is cleared.",
-      ["MIX_STAGE"]
-    );
-    if(resetMix)m.MIX_STAGE=false;
-
-    // Rungs 8 and 9: return to fill from confirmed empty feedback.
-    const setFill=runOK&&m.DRAIN_STAGE&&i.TANK_EMPTY;
-    trace(
-      "R8",
-      "Set filling stage after draining",
-      setFill,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","DRAIN_STAGE",m.DRAIN_STAGE),
-        n("contact","TANK_EMPTY",i.TANK_EMPTY),
-        n("set","FILL_STAGE",setFill)
-      ],
-      "TANK_EMPTY turns ON at 2% or below. When it is true during draining, the tank starts another filling stage.",
-      ["FILL_STAGE"]
-    );
-    if(setFill)m.FILL_STAGE=true;
-
-    const resetDrain=runOK&&m.DRAIN_STAGE&&i.TANK_EMPTY;
-    trace(
-      "R9",
-      "Reset draining stage",
-      resetDrain,
-      [
-        n("contact","RUN_OK",runOK),
-        n("contact","DRAIN_STAGE",m.DRAIN_STAGE),
-        n("contact","TANK_EMPTY",i.TANK_EMPTY),
-        n("reset","DRAIN_STAGE",resetDrain)
-      ],
-      "This rung uses the same empty-tank condition as R8 and is placed after SET FILL_STAGE.",
-      ["DRAIN_STAGE"]
-    );
-    if(resetDrain)m.DRAIN_STAGE=false;
-
-    // Rungs 10-13: physical outputs are derived only from RUN_OK and stage memory.
-    const pa=runOK&&m.FILL_STAGE;
-    o.PA_CMD=pa;
-    trace(
-      "R10",
-      "Solenoid A output",
-      pa,
-      [n("contact","RUN_OK",runOK),n("contact","FILL_STAGE",m.FILL_STAGE),n("coil","PA_CMD",pa)],
-      "Valve A is commanded from the active filling stage. LEVEL_HIGH belongs in the transition rungs, not in this output rung.",
-      ["PA_CMD"]
-    );
-
-    const pb=runOK&&m.FILL_STAGE;
-    o.PB_CMD=pb;
-    trace(
-      "R11",
-      "Solenoid B output",
-      pb,
-      [n("contact","RUN_OK",runOK),n("contact","FILL_STAGE",m.FILL_STAGE),n("coil","PB_CMD",pb)],
-      "Valve B uses the same filling-stage command as Valve A.",
-      ["PB_CMD"]
-    );
-
-    const mixPath=m.MIX_STAGE;
-    const drainMixPath=m.DRAIN_STAGE&&i.SB3_MIX_DRAIN;
-    const motor=runOK&&(mixPath||drainMixPath);
-    o.MOTOR_CMD=motor;
-    trace(
-      "R12",
-      "Mixer motor output",
-      motor,
-      [
-        n("contact","RUN_OK",runOK),
-        p([
-          n("contact","MIX_STAGE",mixPath),
-          s([
-            n("contact","DRAIN_STAGE",m.DRAIN_STAGE),
-            n("contact","SB3_MIX_DRAIN",i.SB3_MIX_DRAIN)
-          ])
-        ]),
-        n("coil","MOTOR_CMD",motor)
-      ],
-      "One branch runs the mixer during MIX_STAGE. The other runs it when DRAIN_STAGE and Mix during drain (SB3_MIX_DRAIN) are both ON.",
-      ["MOTOR_CMD"]
-    );
-
-    const drain=runOK&&m.DRAIN_STAGE;
-    o.PC_CMD=drain;
-    trace(
-      "R13",
-      "Solenoid C drain output",
-      drain,
-      [n("contact","RUN_OK",runOK),n("contact","DRAIN_STAGE",m.DRAIN_STAGE),n("coil","PC_CMD",drain)],
-      "Valve C is held by DRAIN_STAGE. TANK_EMPTY ends the stage in R8-R9 rather than directly interrupting this output rung.",
-      ["PC_CMD"]
-    );
-
-    // This value controls timer accumulation during the simulated interval after this scan.
-    // It is evaluated after all stage transitions, preventing the timer from gaining time
-    // during the filling interval in which MIX_STAGE is first entered.
-    m.TIMER_INTERVAL_ENABLED=runOK&&m.MIX_STAGE;
-
-
-
+    return {...action,result:powered};
   }
+  const memory=bitStore(tag);
+  const before=memory[tag];
+  if(kind==="coil")memory[tag]=powered;
+  else if(powered)memory[tag]=kind==="set";
+  return {...action,before,after:memory[tag],result:powered};
+}
+function changedRung(index){
+  return JSON.stringify(program[index].nodes)!==JSON.stringify(referenceProgram[index].nodes);
+}
+function actionTitle(action){
+  const verb={coil:"Write",set:"Set",reset:"Reset",timer:"Time"};
+  return verb[action.kind]+" "+action.tag;
+}
+function solveLogic(){
+  solvedRevision=revision;
+  const targets=new Set(program.map(r=>r.nodes.at(-1)).filter(a=>a.kind!=="timer").map(a=>a.tag));
+  // If an edit removed a tag's only writer, its old output/memory clears at SOLVE.
+  for(const oldTag of lastTargets){
+    if(!targets.has(oldTag))bitStore(oldTag)[oldTag]=false;
+  }
+  lastTargets=targets;
+  lastTrace=program.map((spec,index)=>{
+    const contacts=spec.nodes.slice(0,-1).map(evaluateContact);
+    const result=contacts.every(node=>node.result);
+    const action=executeAction(spec.nodes.at(-1),result);
+    const nodes=[...contacts,action];
+    leaves(nodes).forEach((node,slot)=>{node.slot=slot;});
+    const id="R"+(index+1);
+    const title=changedRung(index)?actionTitle(action)+" · edited":spec.title;
+    return {id,title,result,nodes};
+  });
+}
 
-
-// Every displayed instruction comes from the trace captured as its rung was solved.
 const inputs = [
   ["START_SW","Start switch","%I0.0","start"], ["STOP_PB","Hold Stop","%I0.1","stop"],
   ["SB2_LEVEL","End fill early","%I0.2","early-level"], ["SB3_MIX_DRAIN","Mix during drain","%I0.3","mix-drain"],
@@ -561,10 +418,11 @@ function runScan(){
 
 function stage() {
   const m=state.internal;
-  if(m.FILL_STAGE)return "Filling";
-  if(m.MIX_STAGE)return "Mixing";
-  if(m.DRAIN_STAGE)return "Draining";
-  return "Idle";
+  const stages=[];
+  if(m.FILL_STAGE)stages.push("Filling");
+  if(m.MIX_STAGE)stages.push("Mixing");
+  if(m.DRAIN_STAGE)stages.push("Draining");
+  return stages.join(" + ")||"Idle";
 }
 
 const SLOT=109;
@@ -626,7 +484,7 @@ function drawNode(node,x,y,powered) {
   // Coils meet the rung wire at the midpoint of each curve.
   const edge=contact||timer?half:13;
   return wire(x,y,cx-edge,y,powered)+wire(cx+edge,y,end,y,pass)+
-    `<g class="instruction" tabindex="0" role="button" data-tag="${node.tag}" data-kind="${node.kind}" aria-label="Inspect ${node.kind} ${node.tag}, ${status}">
+    `<g class="instruction" tabindex="0" role="button" data-slot="${node.slot}" data-tag="${node.tag}" data-kind="${node.kind}" aria-label="Inspect ${node.kind} ${node.tag}, ${status}">
      <rect class="target" x="${x+2}" y="${y-41}" width="${SLOT-4}" height="76"/>
      <g class="device${node.result?" on":""}">${symbol}</g>
      <text class="tag" x="${cx}" y="${y-24}">${node.tag}</text>
@@ -650,7 +508,7 @@ function makeDiagram(rung) {
 function renderProgram() {
   const active=document.activeElement;
   const key=active.closest("[data-rung]")?.dataset.rung;
-  const tag=active.dataset.tag,kind=active.dataset.kind;
+  const slot=active.dataset.slot;
   const scrollPositions=Array.from($("program").querySelectorAll(".diagram-scroll"),frame=>frame.scrollLeft);
   const group=networks[$("network").selectedIndex];
   $("program").innerHTML=group.rungs.map(number=>makeDiagram(lastTrace[number-1])).join("");
@@ -659,11 +517,11 @@ function renderProgram() {
   if(key){
     const row=$("program").querySelector(`[data-rung="${key}"]`);
     if(row){
-      const target=tag?row.querySelector(`[data-tag="${tag}"][data-kind="${kind}"]`):row.querySelector(active.classList.contains("diagram-scroll")?".diagram-scroll":"[data-select-rung]");
+      const target=slot!==undefined?row.querySelector(`[data-slot="${slot}"]`):row.querySelector(active.classList.contains("diagram-scroll")?".diagram-scroll":"[data-select-rung]");
       target?.focus({preventScroll:true});
     }
   }
-  $("solve-stamp").textContent=`Last SOLVE · scan ${solveStamp}`;
+  $("solve-stamp").textContent=solvedRevision===revision?`Last SOLVE · scan ${solveStamp}`:"Edit queued · awaiting SOLVE";
   renderInspector();
   showScrollHint();
 }
@@ -672,28 +530,31 @@ function renderInspector(){
   const row=$("program").querySelector(`[data-rung="${rung.id}"]`);
   $("program").querySelectorAll(".chosen,.selected").forEach(el=>el.classList.remove("chosen","selected"));
   row?.classList.add("chosen");
-  const node=selectedInstruction&&leaves(rung.nodes).find(n=>n.tag===selectedInstruction.tag&&n.kind===selectedInstruction.kind);
+  const node=selectedInstruction===null?null:leaves(rung.nodes)[selectedInstruction];
+  renderEditor(node);
   for(const signal of $("field-panel").querySelectorAll("tr[data-tag]")){
     signal.classList.toggle("inspected",signal.dataset.tag===node?.tag);
   }
   if(!node){
     $("inspect-title").textContent=`${rung.id} · ${rung.title} · Path ${onOff(rung.result)}`;
-    $("inspect-text").textContent=rung.note;
+    const action=rung.nodes.at(-1);
+    const condition=rung.nodes.slice(0,-1).map(conditionText).join(" AND ");
+    $("inspect-text").textContent=`IF ${condition}, THEN ${actionTitle(action)}.`;
     return;
   }
-  row.querySelector(`[data-tag="${node.tag}"][data-kind="${node.kind}"]`).classList.add("selected");
+  row.querySelector(`[data-slot="${node.slot}"]`).classList.add("selected");
   $("inspect-title").textContent=`${rung.id} · ${node.tag} · ${addresses[node.tag]}`;
   if(node.kind==="contact"){
     const nc=node.mode==="nc", raw=nc?!node.result:node.result;
-    const source=node.tag in state.inputImage?"Sampled input":node.tag==="MIX_TIMER.Q"?"Timer done bit":"Stored bit";
+    const source=node.tag in state.inputImage?"Sampled input":node.tag==="MIX_TIMER.Q"?"Timer done bit":node.tag in state.outputImage?"Output command":"Stored bit";
     $("inspect-text").textContent=`${source} at this rung was ${onOff(raw)}. This ${nc?"slashed":"open"} contact tests for ${nc?"OFF":"ON"}, so its test was ${node.result?"TRUE":"FALSE"}.`;
   }else if(node.kind==="timer"){
     $("inspect-text").textContent=`TON input ${onOff(node.result)} · Elapsed ${state.internal.MIX_TIMER_ET} / 30 s · Done ${onOff(state.internal.MIX_TIMER_Q)}. Losing the input resets elapsed time and the done bit.`;
   }else if(node.kind==="set" || node.kind==="reset"){
     const verb=node.kind==="set"?"sets":"resets";
-    $("inspect-text").textContent=`Bit before this instruction: ${onOff(node.before)}. ${node.result?`This rung ${verb} the bit.`:"The false path leaves the bit alone."} After SOLVE the stored bit is ${onOff(state.internal[node.tag])}.`;
+    $("inspect-text").textContent=`Bit before this instruction: ${onOff(node.before)}. ${node.result?`This rung ${verb} the bit.`:"The false path leaves the bit alone."} After SOLVE the bit is ${onOff(readBit(node.tag))}.`;
   }else if(node.tag in state.outputImage){
-    $("inspect-text").textContent=`This coil wrote the ${node.tag} command ${onOff(node.result)} at SOLVE. The device is ${onOff(state.physicalOutputs[node.tag])}. UPDATE transfers the command to the field.`;
+    $("inspect-text").textContent=`This coil wrote ${node.tag} ${onOff(node.after)}. After all rungs, its command is ${onOff(readBit(node.tag))}. The device is ${onOff(state.physicalOutputs[node.tag])}.`;
   }else{
     $("inspect-text").textContent=`This ordinary coil wrote the internal bit ${onOff(node.result)}. Later rungs read its new value in the same SOLVE.`;
   }
@@ -703,9 +564,83 @@ function selectElement(target){
   if(!row)return;
   selectedRung=Number(row.dataset.rung.slice(1));
   const symbol=target.closest(".instruction");
-  selectedInstruction=symbol?{tag:symbol.dataset.tag,kind:symbol.dataset.kind}:null;
+  selectedInstruction=symbol?Number(symbol.dataset.slot):null;
   renderInspector();
 }
+const writableTags=["RUN_OK","FILL_STAGE","MIX_STAGE","DRAIN_STAGE",...outputs.map(([tag])=>tag)];
+const readableTags=[...inputs.map(([tag])=>tag),...writableTags,"MIX_TIMER.Q"];
+let editorKey="";
+function canEdit(){
+  return $("scan-mode").value==="manual" && nextPhase===0;
+}
+function conditionText(node){
+  if(node.items){
+    const join=node.kind==="parallel"?" OR ":" AND ";
+    return "("+node.items.map(conditionText).join(join)+")";
+  }
+  return node.tag+" is "+(node.mode==="nc"?"OFF":"ON");
+}
+function renderEditor(node){
+  const details=$("edit-instruction");
+  details.hidden=!node || node.kind==="timer";
+  if(details.hidden){details.open=false;editorKey="";return;}
+  const desired=leaves(program[selectedRung-1].nodes)[node.slot];
+  const key=[selectedRung,node.slot,revision].join("/");
+  if(editorKey!==key){
+    editorKey=key;
+    const contact=desired.kind==="contact";
+    const kinds=contact?[["no","Normally open"],["nc","Normally closed"]]:[["coil","Ordinary coil"],["set","Set coil (S)"],["reset","Reset coil (R)"]];
+    $("edit-kind").replaceChildren(...kinds.map(([value,label])=>new Option(label,value)));
+    $("edit-tag").replaceChildren(...(contact?readableTags:writableTags).map(tag=>new Option(tag+" · "+addresses[tag],tag)));
+    $("edit-kind").value=contact?desired.mode:desired.kind;
+    $("edit-tag").value=desired.tag;
+  }
+  const enabled=canEdit();
+  for(const id of ["edit-kind","edit-tag","apply-edit"])$(id).disabled=!enabled;
+  if(!enabled){
+    $("edit-help").textContent=nextPhase===0?"Switch to Step by phase to edit.":"Finish this scan through UPDATE to edit.";
+  }else{
+    $("edit-help").textContent=solvedRevision!==revision
+      ?"Edit queued. The diagram shows the last SOLVE. Run READ, then SOLVE to see the new instruction."
+      :"Apply an edit, then run READ and SOLVE. The device responds at UPDATE.";
+  }
+}
+function updateNetworkLabels(){
+  for(const [index,network] of networks.entries()){
+    const edited=network.rungs.some(n=>changedRung(n-1));
+    $("network").options[index].textContent=edited
+      ?`R${network.rungs[0]}–R${network.rungs.at(-1)} · Edited network`:network.title;
+  }
+}
+$("apply-edit").addEventListener("click",()=>{
+  if(!canEdit() || selectedInstruction===null)return;
+  const instruction=leaves(program[selectedRung-1].nodes)[selectedInstruction];
+  if(instruction.kind==="timer")return;
+  const contact=instruction.kind==="contact";
+  const kind=$("edit-kind").value, tag=$("edit-tag").value;
+  if((contact?instruction.mode:instruction.kind)===kind && instruction.tag===tag){
+    say("That instruction is already in the program.");return;
+  }
+  const previousTag=instruction.tag;
+  if(contact)instruction.mode=kind;
+  else instruction.kind=kind;
+  instruction.tag=tag;
+  revision++;
+  updateNetworkLabels();
+  const clearsBit=!contact && previousTag!==tag && !program.some(rung=>rung.nodes.at(-1).tag===previousTag);
+  say(`Edit saved for R${selectedRung}. The next SOLVE executes the change.`+
+    (clearsBit?` No rung writes ${previousTag} now, so SOLVE will clear it.`:""));
+  render();
+});
+$("restore-program").addEventListener("click",()=>{
+  if(!canEdit())return;
+  program=clone(referenceProgram);
+  revision++;
+  updateNetworkLabels();
+  reset();
+  say("Reference program restored. The tank, stage bits and timer have been reset.");
+});
+
 function buildIO(){
   $("input-watch").innerHTML=inputs.map(([tag,label,addr,id])=>{
     let control=label;
@@ -744,15 +679,18 @@ function render() {
   for(const [tag,ids] of Object.entries({PA_CMD:["valveA","streamA"],PB_CMD:["valveB","streamB"],MOTOR_CMD:["motor","blade"],PC_CMD:["valveC","streamC"]})){
     for(const id of ids)$(id).classList.toggle("active",out[tag]);
   }
-  $("stage").textContent="Stage · "+stage()+(stage()!=="Idle" && !state.internal.RUN_OK?" · Paused":"");
+  $("stage").textContent="Stage · "+stage()+(stage()!=="Idle" && !state.internal.RUN_OK?" · RUN_OK off":"");
   $("stage").classList.toggle("on",state.internal.RUN_OK);
-  $("outputs").textContent=`Level ${level.toFixed(1)}% · A and B ${out.PA_CMD?"open":"closed"} · Mixer ${out.MOTOR_CMD?"on":"off"} · C ${out.PC_CMD?"open":"closed"}`;
+  $("outputs").textContent=`Level ${level.toFixed(1)}% · A ${out.PA_CMD?"open":"closed"} · B ${out.PB_CMD?"open":"closed"} · Mixer ${out.MOTOR_CMD?"on":"off"} · C ${out.PC_CMD?"open":"closed"}`;
 }
 function renderController(){
   const run=$("scan-mode").value==="run";
   $("next-phase").textContent="Run "+phases[nextPhase];
   $("next-phase").disabled=run;
-  $("next-stage").disabled=run || nextPhase!==0 || !state.physicalInputs.START_SW || state.physicalInputs.STOP_PB;
+  const modified=program.some((_,index)=>changedRung(index));
+  $("next-stage").disabled=run || nextPhase!==0 || (!modified && (!state.physicalInputs.START_SW || state.physicalInputs.STOP_PB));
+  $("restore-program").hidden=!modified;
+  $("restore-program").disabled=!canEdit();
   $("clock").textContent=`Scan ${state.scan+(nextPhase===0?0:1)} · ${state.time} s`;
 }
 function say(text){$("scan-message").textContent=text;}
@@ -760,6 +698,8 @@ function stopClock(){clearInterval(playTimer);playTimer=null;}
 function reset(){
   stopClock();
   state=fresh();
+  lastTargets.clear();
+  editorKey="";
   $("level-force").value="auto";
   $("force-indicator").textContent="";
   nextPhase=0;
@@ -768,7 +708,9 @@ function reset(){
   $("scan-mode").value="manual";$("network").selectedIndex=0;
   selectedRung=1;selectedInstruction=null;
   for(const id of ["start","stop","mix-drain"])$(id).checked=false;
-  say("Turn Start on, then run READ. Try holding Stop before SOLVE and compare Field with Sampled.");
+  say(program.some((_,index)=>changedRung(index))
+    ?"Tank reset with your edited program. Run READ to start a scan."
+    :"Turn Start on, then run READ. Try holding Stop before SOLVE and compare Field with Sampled.");
   render();
 }
 $("network").append(...networks.map((g,i)=>new Option(g.title,i)));
