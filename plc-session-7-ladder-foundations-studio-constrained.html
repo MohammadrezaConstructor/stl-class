@@ -37,8 +37,8 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
 .student-help summary:focus-visible{outline:3px solid #ac620c;outline-offset:2px}
 .help-body{padding:0 12px 12px}.help-body p{margin:6px 0}.help-body ol{padding-left:22px;margin:6px 0}.help-body li+li{margin-top:7px}
 .help-body code{font-family:var(--mono);overflow-wrap:anywhere}.help-body .bar{margin-top:9px}.help-body button{font-size:.84rem}
-.quick-reference{margin-top:10px;border-top:1px solid var(--line)}.quick-reference summary{padding:8px 0}
-.quick-reference dl{margin:0}.quick-reference dt{font-weight:650;margin-top:7px}.quick-reference dd{margin:0;color:var(--muted)}
+.design-question{margin-top:9px;padding:10px 12px;border-left:3px solid var(--active);background:var(--soft)}
+.design-question #task{font-size:.88rem;color:var(--muted);margin-top:6px}
 @media(max-width:750px){.student-help{grid-template-columns:1fr}}
 @media(max-width:750px){.bench{grid-template-columns:1fr}.io{border-left:0;border-top:1px solid var(--line)}.toolbar .scan{margin-left:0}.diagram svg{max-width:none}.program-head{flex-wrap:wrap}}
 @media(max-width:430px){header, .bar{gap:5px}header{font-size:.83rem}.program-head,.io,.editor,.tests{padding:9px}.toolbar{padding:8px}.toolbar button{font-size:.87rem}.editor-fields{gap:6px}.intro{padding:9px 0}}
@@ -78,32 +78,23 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
 <body><main>
 <header><a href="index.html">← Learning home</a><div class="bar"><label for="lessonSelect">Program</label><select id="lessonSelect">
 <option value="signal">Box sensor</option><option value="logic">Press controls</option><option value="holding">Holding circuit</option><option value="timer">Warning timer</option></select></div></header>
-<div class="intro"><p class="eyebrow">PLC 7 · Ladder programming bench</p><h1 id="programTitle"></h1><p id="problem"></p></div>
+<div class="intro"><p class="eyebrow">PLC 7 · Ladder programming bench</p><h1 id="programTitle"></h1>
+  <section class="design-question" aria-labelledby="question-heading"><h2 id="question-heading">Design question</h2><p id="problem"></p><p id="task"></p></section>
+</div>
 <section class="student-help" aria-label="Student guidelines and optional hints">
-  <details id="student-guide" class="student-guide"><summary>Student guide · start here</summary>
+  <details id="student-guide" class="student-guide"><summary>How to use this panel</summary>
     <div class="help-body">
       <ol>
-        <li><b>Predict.</b> Read the problem and follow a rung from left to right. Decide which input change should turn its output ON or OFF.</li>
-        <li><b>Try one change.</b> Stay in <b>Hold</b>, change an input switch in the I/O monitor, then click <b>Step one scan</b>. Compare <b>Field</b> with <b>PLC</b>, the teal path and the machine. On a small screen, switch between <b>Ladder</b> and <b>Field I/O</b>.</li>
-        <li><b>Experiment.</b> Select a contact or coil, choose its type and tag, then <b>Apply edit</b> and step again. Open <b>Edit rung layout</b> to add series or parallel contacts and extra rungs. Change one thing at a time.</li>
-        <li><b>Check and explain.</b> Try the exercise below. Test both ON and OFF inputs, and describe why the output changed. <b>Run reference cases</b> compares the original problem with your program; deliberate experiments can produce FAIL results. Watch <code>M_A</code> yourself when practising with this extra memory bit.</li>
+        <li>Click <b>Hold</b>. Tick or untick an input switch.</li>
+        <li>Click <b>Step one scan</b>. Watch the machine and the green ladder path.</li>
+        <li>To change the ladder, click a symbol, choose its type, then click <b>Apply edit</b>. Step again to try it.</li>
       </ol>
-      <p><b>Starting again.</b> <b>Reset I/O</b> resets inputs, memory and timer and scans your current program once. <b>Restore reference</b> restores the selected program; then use <b>Reset I/O</b> for a fresh trial. <b>Run</b> repeats scans; <b>Hold</b> freezes the last scan.</p>
-      <details class="quick-reference"><summary>Contact and coil quick reference</summary>
-        <dl>
-          <dt>Bit state and contact result</dt><dd>ON/OFF is the tag value. TRUE/FALSE is the contact test. A TRUE contact passes the path only when the upstream path reaches it.</dd>
-          <dt>NO and NC</dt><dd>A normally open (NO) contact is TRUE when its tag is ON. A normally closed (NC) contact is TRUE when its tag is OFF. These instructions test a PLC bit.</dd>
-          <dt>Series and parallel</dt><dd>Series requires every test in that path (AND). Parallel needs at least one passing branch (OR).</dd>
-          <dt>P and N edge contacts</dt><dd>P is TRUE for one scan on an OFF → ON change; N on an ON → OFF change. This bench starts each contact’s previous sample OFF after reset or a tag/type change.</dd>
-          <dt>Ordinary, SET and RESET coils</dt><dd>An ordinary coil writes the path result every scan. A TRUE path makes SET write ON and RESET write OFF. With a FALSE path, SET and RESET leave the bit as it was. Rungs run top to bottom; the last instruction that writes a tag determines its final value.</dd>
-          <dt>TON timer</dt><dd>ET is elapsed time; Q is the done bit. The first enabled scan starts ET at 0. Later manual steps add one second. Q turns ON at the preset; a FALSE timer input clears ET and Q.</dd>
-        </dl>
-      </details>
+      <p>On a phone, open <b>Field I/O</b> to find the switches.</p>
+      <p>To start over, click <b>Restore reference</b>, then <b>Reset I/O</b>.</p>
     </div>
   </details>
-  <details id="exercise-hints" class="student-hints"><summary>Optional exercise hints</summary>
+  <details id="exercise-hints" class="student-hints"><summary>Need a hint?</summary>
     <div class="help-body">
-      <p id="hint-task"></p><p class="status">Try a prediction first. Reveal only as much help as you need. These hints start from this example’s reference program.</p>
       <ol id="hint-list" aria-live="polite" aria-relevant="additions"></ol>
       <div class="bar"><button type="button" id="next-hint" aria-controls="hint-list">Show hint 1 of 3</button><button type="button" id="hide-hints" aria-controls="hint-list" hidden>Hide hints</button></div>
     </div>
@@ -168,7 +159,7 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
 <p class="subhead">Input switches</p><div class="io-row io-head"><span>Tag / address</span><span>Field</span><span>PLC</span></div><div id="inputs"></div>
 <p class="subhead">Outputs and memory</p><div id="outputs"></div><p class="status" id="modeHelp" style="margin-top:9px"></p></aside>
 </div>
-<section class="tests"><div class="section-head"><h2>Program check</h2><button id="testBtn">Run reference cases</button></div><p class="hint" id="task"></p><p id="testSummary" role="status"></p><ul id="testResults"></ul></section>
+<section class="tests"><div class="section-head"><h2>Does it answer the question?</h2><button id="testBtn">Check program</button></div><p class="hint">Tests use the design question above.</p><p id="testSummary" role="status"></p><ul id="testResults"></ul></section>
 </main><script>
 (function programmingBench(){
   const $ = id => document.getElementById(id);
@@ -183,31 +174,31 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   const trial = (name,...steps) => ({name,steps});
   const lessons = {
     signal:{
-      title:"Box sensor and conveyor",problem:"The motor command should be ON exactly while a box is detected.",
-      task:"Change the SENSOR contact to rising edge and apply the edit. Switch the sensor on and step twice with the box still present. On which scan does the belt run?",
+      title:"Box sensor and conveyor",problem:"How can you make the conveyor run while the box sensor is ON and stop when it is OFF?",
+      task:"Try it: tick SENSOR and click Step one scan. Untick it and step again.",
       inputs:[input("SENSOR","%I0.1","Box detected")], outputs:[signal("MOTOR","%Q0.0","Motor command")],
       rungs:[rung("Detect a box",[[contact("SENSOR")]],"MOTOR")],
       cases:[trial("No box",{}),trial("Box present",{SENSOR:true}),trial("Box stays at sensor",{SENSOR:true},{}),trial("Box leaves",{SENSOR:true},{SENSOR:false})]
     },
     logic:{
-      title:"Press with two request paths",problem:"With the guard closed and no fault, either the foot switch or the panel button should command a press stroke.",
-      task:"Select FOOT, wire its pair in series, then turn on FOOT alone and step. Run the reference cases to find which requests still work.",
+      title:"Press with two request paths",problem:"How can either the foot switch or the panel button operate the press, but only when the guard is closed and there is no fault? With neither button pressed, the press must stay off.",
+      task:"Try it: turn FOOT on and step. Then turn GUARD off and step again.",
       inputs:[input("GUARD","%I0.0","Guard closed",true),input("FOOT","%I0.1","Foot switch"),input("PANEL","%I0.2","Panel button"),input("FAULT","%I0.3","Fault active")],
       outputs:[signal("PRESS","%Q0.0","Press solenoid")],
       rungs:[rung("Command the press",[[contact("GUARD")],[contact("FOOT"),contact("PANEL")],[contact("FAULT",true)]],"PRESS")],
       cases:[trial("No request",{}),trial("Foot alone",{FOOT:true}),trial("Panel alone",{PANEL:true}),trial("Both requests",{FOOT:true,PANEL:true}),trial("Guard open",{GUARD:false,FOOT:true}),trial("Active fault",{PANEL:true,FAULT:true})]
     },
     holding:{
-      title:"Motor holding circuit",problem:"A momentary Start request should hold the motor and lamp on. Stop, an open guard or a tripped overload must clear the request.",
-      task:"Build a SET/RESET pair on two extra rungs using practice memory M_A. Make Start set the bit and Stop reset it. Can it remember Start after you release the button?",
+      title:"Motor holding circuit",problem:"How can Start turn on the motor and lamp and keep them on after Start is released? Pressing Stop, opening the guard or tripping the overload must turn both off.",
+      task:"Try it: turn START_PB on and step, then off and step. To press Stop, untick STOP_OK and step.",
       inputs:[input("START_PB","%I0.0","Start held"),input("STOP_OK","%I0.1","Stop released",true),input("GUARD_OK","%I0.2","Guard closed",true),input("OL_OK","%I0.3","Overload healthy",true)],
       outputs:[signal("RUN_REQUEST","%M0.0","Stored request"),signal("M1","%Q0.0","Conveyor motor"),signal("RUN_LAMP","%Q0.1","Run indicator")],
       rungs:[rung("Store run request",[[contact("STOP_OK")],[contact("GUARD_OK")],[contact("OL_OK")],[contact("START_PB"),contact("RUN_REQUEST")]],"RUN_REQUEST"),rung("Run conveyor",[[contact("RUN_REQUEST")]],"M1"),rung("Light run lamp",[[contact("RUN_REQUEST")]],"RUN_LAMP")],
       cases:[trial("Ready, no Start",{}),trial("Start and release",{START_PB:true},{START_PB:false}),trial("Stop and restore",{START_PB:true},{START_PB:false,STOP_OK:false},{STOP_OK:true}),trial("Guard opens",{START_PB:true},{START_PB:false,GUARD_OK:false}),trial("Overload trips",{START_PB:true},{START_PB:false,OL_OK:false})]
     },
     timer:{
-      title:"Three-second conveyor warning",problem:"Enable should sound the horn for three seconds. Only when the timer is done should the horn stop and the conveyor start.",
-      task:"Switch ST on and step until Q turns ON. Select the TON block, change its preset to 2 s, then test the warning duration.",
+      title:"Three-second conveyor warning",problem:"How can Enable start a 3-second horn warning, then turn the horn off and start the conveyor? Turning Enable OFF must stop both and reset the timer.",
+      task:"Try it: tick ST and step to start the timer. Step three more times, then untick ST and step.",
       inputs:[input("ST","%I0.0","Enable conveyor")],
       outputs:[signal("T_WARN.ET","TON.ET","Elapsed time"),signal("T_WARN.Q","TON.Q","Timer done"),signal("HORN","%Q0.0","Warning horn"),signal("M1","%Q0.1","Conveyor motor")],
       rungs:[rung("Time the warning",[[contact("ST")]],"T_WARN",3),rung("Sound horn",[[contact("ST")],[contact("T_WARN.Q",true)]],"HORN"),rung("Start conveyor",[[contact("ST")],[contact("T_WARN.Q")]],"M1")],
@@ -216,24 +207,24 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   };
   const exerciseHints = {
     signal:[
-      "A normal NO contact responds to the current value. A rising-edge contact responds to a change. Predict what each will do if SENSOR stays ON for two scans.",
-      "Select SENSOR, choose P · rising edge, and Apply edit. Reset I/O so SENSOR starts OFF. Switch SENSOR ON, then use Step one scan twice without changing it. Compare the PLC input with MOTOR.",
-      "MOTOR should be ON on the first scan and OFF on the second, even though SENSOR stays ON. To trigger it again, scan once with SENSOR OFF, then once with it ON. The reference case ‘Box stays at sensor’ will fail for this intentional edit; restore NO to make the motor follow the box continuously."
+      "Click the SENSOR contact. Choose NO so it passes when the sensor is ON, then click Apply edit.",
+      "Click the MOTOR coil. Choose Ordinary coil and click Apply edit. This lets the motor turn both ON and OFF.",
+      "Tick SENSOR and step: the belt should run. Untick SENSOR and step: it should stop."
     ],
     logic:[
-      "Follow the two request paths between GUARD and FAULT. Does either request work on its own, or do both need to be TRUE? Keep GUARD ON and FAULT OFF while comparing them.",
-      "Select FOOT, set Group layout to Series · AND, and Apply edit. Turn only FOOT ON and step, then turn PANEL ON as well and step. Inspect the TRUE/FALSE label on each request contact.",
-      "In series, both FOOT and PANEL must be ON to energize PRESS. The ‘Foot alone’ and ‘Panel alone’ reference cases should fail. Return the pair to Parallel · OR to meet the original problem. Then open the guard or turn FAULT ON: either should block PRESS after a scan."
+      "GUARD needs an NO contact: it passes when the guard is closed. FAULT needs an NC contact: it passes when there is no fault.",
+      "Click FOOT and choose Parallel · OR under Group layout. Click Apply edit. Either FOOT or PANEL can then request the press.",
+      "Keep GUARD ON and FAULT OFF. Try each request separately, stepping after each change. Both should work."
     ],
     holding:[
-      "Use M_A as a separate practice memory bit. You need one instruction to write it ON when Start is held, and another to write it OFF when Stop is pressed. What should happen when neither button is pressed?",
-      "Select the last rung, open Edit rung layout and Add rung below. Give its START_PB contact type NO and its M_A coil type SET, applying each edit. Add a second rung below it; change its contact to STOP_OK with type NC, and its M_A coil to RESET. STOP_OK is OFF when Stop is pressed.",
-      "With STOP_OK ON, scan START_PB ON, then scan it OFF: M_A should remain ON. Uncheck STOP_OK and scan: M_A should turn OFF. If both requests are active, the lower RESET writes last. These practice rungs only drive M_A; the original motor and lamp still follow their own rungs."
+      "Keep START_PB and RUN_REQUEST in parallel. The RUN_REQUEST contact keeps the path on after you release Start.",
+      "STOP_OK, GUARD_OK and OL_OK should be NO contacts in series. All three must be ON for the motor to run.",
+      "With START_PB OFF, untick STOP_OK and step. The motor and lamp should stop. Tick STOP_OK again and step: they stay off."
     ],
     timer:[
-      "Find the TON done bit T_WARN.Q. The horn uses its NC test and the motor uses its NO test. Predict their states before and after the timer finishes.",
-      "Reset I/O, turn ST ON and step once to start ET at 0. Step again while watching ET and Q. Then select the TON block, set its preset to 2 seconds, Apply edit and Reset I/O for a fair new trial.",
-      "With the 2-second preset, the first enabled scan starts at ET 0; the next two steps reach ET 1 and ET 2. At ET 2, Q is ON, HORN is OFF and M1 is ON. Scan ST OFF to reset the timer. The original 3-second reference cases can fail after this intentional timing change."
+      "Click the TON timer, set Preset to 3 seconds and click Apply edit.",
+      "In the HORN rung, use an NC contact for T_WARN.Q. The horn then stops when the timer finishes.",
+      "In the M1 rung, use an NO contact for T_WARN.Q. The motor then starts when the timer finishes."
     ]
   };
   let shownHints = 0;
@@ -319,7 +310,6 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     $("programTitle").textContent = lesson.title;
     $("problem").textContent = lesson.problem;
     $("task").textContent = lesson.task;
-    $("hint-task").textContent = lesson.task;
     $("exercise-hints").open = false;
     resetHints();
     clearTests();
@@ -621,7 +611,7 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
       return `<li><b class="${difference?"fail":"pass"}">${difference?"FAIL":"PASS"}</b> · ${tc.name}${difference?" — "+difference:""}</li>`;
     });
     $("testResults").innerHTML=results.join("");
-    $("testSummary").textContent=`${passed}/${results.length} reference cases passed. Each case starts with fresh memory.`;
+    $("testSummary").textContent=`${passed}/${results.length} checks passed for this design question.`;
   }
 
   function selectSymbol(node){

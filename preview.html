@@ -120,14 +120,16 @@ input{accent-color:var(--teal);width:18px;height:18px}
 @media(max-width:595px){#machine{display:block}#machine .pad+.pad{border-top:1px solid var(--line);border-left:0}.controller{padding:10px}#clock{margin-left:0}.lab{gap:12px}}
 
 .view-switch{display:none}
+.student-task{margin-bottom:12px;padding:11px 14px;border-left:3px solid var(--teal);background:#edf3eb;font-size:.9rem}
+.student-task h2{font-size:1rem}.student-task p{margin-top:4px}
+.student-task ol{margin:7px 0 0;padding-left:21px}.student-task li+li{margin-top:4px}
+.network-question{margin-top:8px;font-size:.9rem}
 .student-help{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;margin-bottom:12px;font-size:.88rem}
 .student-help>details{min-width:0;border:1px solid var(--line);border-radius:6px;background:var(--white);padding:9px 12px}
 .student-help summary{font-weight:650;color:var(--teal)}
-.student-help p,.student-help ol,.student-help ul{margin:8px 0 0}
-.student-help ol,.student-help ul{padding-left:21px}
+.student-help p,.student-help ol{margin:8px 0 0}
+.student-help ol{padding-left:21px}
 .student-help li+li{margin-top:6px}
-.student-help code{font:.84em var(--mono);overflow-wrap:anywhere}
-.student-help .quick-reference{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 .student-help .hint-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
 .student-help button{font-size:.83rem;padding:5px 9px}
 .student-help .hint-context{font-weight:650}
@@ -150,29 +152,30 @@ input{accent-color:var(--teal);width:18px;height:18px}
   <h1>Tank PLC workstation</h1>
   <p>Edit a contact or coil, then step through READ, SOLVE and UPDATE to see how the valves and mixer respond.</p>
 </header>
+<section class="student-task" aria-labelledby="task-heading">
+  <h2 id="task-heading">Design question</h2>
+  <p>How can the ladder repeat this tank cycle while obeying Start and Stop?</p>
+  <ol>
+    <li>With <b>Start ON</b> and <b>Stop released</b>, begin filling an empty tank through valves A and B.</li>
+    <li>At <b>80% level or above</b>, or when <b>End fill early</b> is pressed, close A and B and mix for <b>30 seconds</b>.</li>
+    <li>Then stop mixing and open C. At <b>2% level or less</b>, close C and fill again.</li>
+    <li><b>Stop held or Start OFF</b> must close all valves and stop the mixer. Keep the current stage for restart. If mixing was interrupted, restart its full 30 seconds.</li>
+    <li>If <b>Mix during drain</b> is selected, also run the mixer while draining.</li>
+  </ol>
+</section>
 <section class="student-help" aria-label="Student guidelines and optional hints">
   <details id="student-guide" class="student-guide">
-    <summary>Student guide · start here</summary>
+    <summary>How to use this panel</summary>
     <ol>
-      <li><b>Predict.</b> Start with the reference program and <b>Step by phase</b>. Which valves should open when Start turns ON?</li>
-      <li><b>Try one scan.</b> Turn on <b>Start switch</b> in Field I/O. Run <b>READ</b> and compare Field with Sampled. Run <b>SOLVE</b> and inspect the teal ladder paths and output Commands. Run <b>UPDATE</b> and watch the devices.</li>
-      <li><b>Change one instruction.</b> After UPDATE, select a contact or coil, open <b>Edit this instruction</b>, choose its type or tag and apply. Predict the difference, then repeat a scan. The diagram updates at SOLVE.</li>
-      <li><b>Compare.</b> Try Start OFF or Stop ON and explain the result. <b>Reset tank</b> restarts the process with your edits. <b>Restore reference program and reset tank</b> also removes your edits.</li>
+      <li>Turn <b>Start switch</b> ON. On a phone, first tap <b>Field I/O</b>.</li>
+      <li>Click <b>Run READ</b>, <b>Run SOLVE</b>, then <b>Run UPDATE</b>. Watch A and B open.</li>
+      <li>Click <b>Run to next stage</b>. Watch filling change to mixing.</li>
+      <li>In <b>Ladder</b>, click a contact or coil. Open <b>Edit this instruction</b>, change one choice, click <b>Apply edit</b>, then repeat step 2.</li>
     </ol>
-    <p class="hint-note">On a small screen, switch between Ladder and Field I/O. Choose a Network to inspect another group of rungs. Run to next stage advances complete scans.</p>
-    <details class="quick-reference">
-      <summary>Contact and coil reminder</summary>
-      <ul>
-        <li><b>NO</b> tests for an ON bit. <b>NC</b> (slashed) tests for an OFF bit. TRUE describes the test, so an OFF bit can make an NC contact TRUE.</li>
-        <li><b>Series means AND.</b> All tests must pass. <b>Parallel means OR.</b> One passing branch is enough. Teal wires trace the connected true path from the left rail.</li>
-        <li>An <b>ordinary coil</b> writes the path result each SOLVE. <b>SET</b> writes ON on a true path, and <b>RESET</b> writes OFF. On a false path, SET and RESET leave the bit alone.</li>
-        <li>Rungs run from top to bottom. If several instructions write the same bit, the last write wins. The device receives its final command at UPDATE.</li>
-        <li><b>TON</b> counts while its input is true. Here it sets its done bit after 30 simulated seconds. A false input resets it.</li>
-      </ul>
-    </details>
+    <p class="hint-note">Reset tank keeps your edits. Restore reference program and reset tank removes them.</p>
   </details>
   <details id="network-hints" class="student-hints">
-    <summary>Optional hints for this network</summary>
+    <summary>Need a hint?</summary>
     <p id="hint-context" class="hint-context"></p>
     <p id="hint-reference" class="hint-note"></p>
     <ol id="hint-list" hidden></ol>
@@ -202,6 +205,7 @@ input{accent-color:var(--teal);width:18px;height:18px}
     <div class="pad">
       <div class="section-head"><h2 id="rung-heading">Online ladder</h2><span id="solve-stamp" class="badge"></span></div>
       <div class="picker"><label for="network">Network</label><select id="network"></select></div>
+      <p class="network-question"><b>Question for these rungs</b> <span id="network-question"></span></p>
       <button type="button" id="restore-program" hidden>Restore reference program and reset tank</button>
     </div>
     <div class="inspect" aria-labelledby="inspect-title">
@@ -423,56 +427,57 @@ const outputs = [["PA_CMD","Valve A","%Q0.0"],["PB_CMD","Valve B","%Q0.1"],["MOT
 const addresses = Object.fromEntries([...inputs,...outputs].map(([tag,,addr])=>[tag,addr]));
 Object.assign(addresses,{RUN_OK:"%M0.0",FILL_STAGE:"%M0.1",MIX_STAGE:"%M0.2",DRAIN_STAGE:"%M0.3","MIX_TIMER":"T1","MIX_TIMER.Q":"T1.Q"});
 const networks=[
-  {title:"01 · Run permission and first fill",rungs:[1,2]},
-  {title:"02 · Filling → mixing",rungs:[3,4]},
-  {title:"03 · Mixing timer → draining",rungs:[5,6,7]},
-  {title:"04 · Draining → filling",rungs:[8,9]},
-  {title:"05 · Inlet valve commands",rungs:[10,11]},
-  {title:"06 · Mixer and drain commands",rungs:[12,13]}
+  {title:"01 · Run permission and first fill",rungs:[1,2],question:"How can Start allow running, Stop block it, and an empty tank with no active stage begin filling?"},
+  {title:"02 · Filling → mixing",rungs:[3,4],question:"While running, how can reaching 80% level or above, or pressing End fill early, change filling to mixing?"},
+  {title:"03 · Mixing timer → draining",rungs:[5,6,7],question:"How can 30 seconds of uninterrupted mixing change the running tank to draining?"},
+  {title:"04 · Draining → filling",rungs:[8,9],question:"While running, how can reaching 2% level or less change draining back to filling?"},
+  {title:"05 · Inlet valve commands",rungs:[10,11],question:"How can A and B open only during filling, with Start ON and Stop released?"},
+  {title:"06 · Mixer and drain commands",rungs:[12,13],question:"With Start ON and Stop released, how can C open during draining and the mixer run during mixing or optional mixing during drain?"}
 ];
 const networkHints=[
   [
-    "Separate permission to run from the stored stage. Which input should allow RUN_OK, and which should block it?",
-    "Inspect R1. START_SW is NO and STOP_PB is NC. In R2, TANK_EMPTY must be ON and all three stage bits must be OFF before the SET coil can initialize filling.",
-    "From a reset reference tank, turn Start ON with Stop OFF and complete READ, SOLVE, UPDATE. Filling starts and A/B open. Then hold Stop and complete another scan. RUN_OK and the valves turn OFF, but FILL_STAGE stays ON."
+    "Click START_SW in R1. Its normally open contact passes when Start is ON.",
+    "Click STOP_PB in R1. Its slashed contact passes when Stop is OFF.",
+    "From a reset tank, turn Start ON and click READ, SOLVE, UPDATE. R2 remembers filling and A/B open."
   ],
   [
-    "A stage transition needs both a reason to leave the current stage and a way to remember the next one. Find the two rungs that work together.",
-    "In R3 and R4, LEVEL_HIGH and SB2_LEVEL share parallel paths. Either can end filling, while RUN_OK and FILL_STAGE must also be ON. Compare the S and R coil targets.",
-    "With the reference tank filling, press End fill early and complete a scan. R3 sets MIX_STAGE and R4 resets FILL_STAGE. A/B close and the mixer starts at UPDATE. The button supplies a pulse at the next READ."
+    "Find LEVEL_HIGH and SB2_LEVEL in R3. Their parallel paths let either condition end filling.",
+    "Compare the coils in R3 and R4. S turns mixing ON, and R turns filling OFF.",
+    "While filling, press End fill early, then click READ, SOLVE, UPDATE. The mixer starts and A/B close."
   ],
   [
-    "Check the timer's input before its done bit. What must stay true while the mixing time accumulates?",
-    "Select the TON in R5 to see elapsed time and done status. RUN_OK and MIX_STAGE enable it. R6 and R7 use MIX_TIMER.Q to set draining and reset mixing.",
-    "During reference mixing, Run to next stage reaches draining after the 30-second timer completes. C opens and the mixer stops unless Mix during drain is ON. Holding Stop and completing a scan resets the timer but retains the mixing stage if it has not yet finished."
+    "Click TON in R5 to see the elapsed seconds. It counts while RUN_OK and MIX_STAGE are ON.",
+    "Find MIX_TIMER.Q in R6 and R7. It turns ON after 30 seconds, starting draining and ending mixing.",
+    "While mixing, click Run to next stage. C opens after the timer finishes."
   ],
   [
-    "When draining finishes, the tank needs to remember filling again. Which sensor indicates that the drain stage can end?",
-    "Inspect TANK_EMPTY in R8 and R9. It is ON at or below 2%. RUN_OK and DRAIN_STAGE must also pass. Follow the SET to FILL_STAGE and the RESET to DRAIN_STAGE.",
-    "While the reference tank is draining with Start ON and Stop OFF, use Run to next stage. Once empty is sampled, filling replaces draining. A/B open and C closes at UPDATE."
+    "Click TANK_EMPTY in R8. It turns ON at 2% level or less.",
+    "Compare R8 and R9. S remembers filling, and R clears draining when the tank is empty and RUN_OK is ON.",
+    "While draining, click Run to next stage. C closes and A/B open for the next fill."
   ],
   [
-    "Compare the stage bit, the rung path, the output Command and the Device. Which of these changes at SOLVE, and which waits for UPDATE?",
-    "R10 and R11 require RUN_OK AND FILL_STAGE. Both ordinary coils write OFF when that path is false. Select PA_CMD and compare its command with the physical valve A.",
-    "Try changing the R10 coil to SET before READ. During filling, complete a scan to set PA_CMD, then hold Stop and complete another scan. A stays open while ordinary-coil B closes. The bit stays ON until another instruction writes OFF, such as a RESET coil with a true path. Restore reference program and reset tank returns to the original behavior."
+    "Check RUN_OK and FILL_STAGE in R10 and R11. Both must be ON to open A and B.",
+    "Use ordinary coils for PA_CMD and PB_CMD. They turn the commands OFF when either condition fails.",
+    "During filling, turn Hold Stop ON, then click READ, SOLVE, UPDATE. Both valves should close."
   ],
   [
-    "The mixer has two possible request paths, while the drain valve follows one stage. Trace each path before changing a switch.",
-    "In R12, MIX_STAGE is parallel to DRAIN_STAGE AND SB3_MIX_DRAIN. RUN_OK gates both branches. In R13, RUN_OK AND DRAIN_STAGE command valve C.",
-    "During reference draining, toggle Mix during drain and complete a scan. The mixer follows this option while C stays open. Hold Stop and complete another scan to turn both devices OFF. The stored drain stage remains ON."
+    "Find the two paths in R12. One uses MIX_STAGE, and the other needs both DRAIN_STAGE and SB3_MIX_DRAIN.",
+    "Check R13. C opens only when RUN_OK and DRAIN_STAGE are both ON.",
+    "During draining, turn Mix during drain ON, then click READ, SOLVE, UPDATE. The mixer starts while C stays open."
   ]
 ];
 let shownHints=0;
 function updateHintReference(){
   const edited=program.some((_,index)=>changedRung(index));
   $("hint-reference").textContent=edited
-    ?"Your program is edited. These hints describe the reference program and include suggested experiments. Your results may differ."
-    :"Reveal one hint at a time. These hints describe the reference program and include suggested experiments.";
+    ?"These hints describe the supplied program. Your edits may change the result."
+    :"Try one hint at a time with the supplied program.";
 }
 function renderHints(){
   const index=$("network").selectedIndex;
   const hints=networkHints[index];
   $("hint-context").textContent=networks[index].title;
+  $("network-question").textContent=networks[index].question;
   $("hint-list").replaceChildren(...hints.slice(0,shownHints).map(text=>{
     const item=document.createElement("li");item.textContent=text;return item;
   }));
