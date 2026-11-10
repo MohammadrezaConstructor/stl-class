@@ -120,6 +120,20 @@ input{accent-color:var(--teal);width:18px;height:18px}
 @media(max-width:595px){#machine{display:block}#machine .pad+.pad{border-top:1px solid var(--line);border-left:0}.controller{padding:10px}#clock{margin-left:0}.lab{gap:12px}}
 
 .view-switch{display:none}
+.student-help{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;margin-bottom:12px;font-size:.88rem}
+.student-help>details{min-width:0;border:1px solid var(--line);border-radius:6px;background:var(--white);padding:9px 12px}
+.student-help summary{font-weight:650;color:var(--teal)}
+.student-help p,.student-help ol,.student-help ul{margin:8px 0 0}
+.student-help ol,.student-help ul{padding-left:21px}
+.student-help li+li{margin-top:6px}
+.student-help code{font:.84em var(--mono);overflow-wrap:anywhere}
+.student-help .quick-reference{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.student-help .hint-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.student-help button{font-size:.83rem;padding:5px 9px}
+.student-help .hint-context{font-weight:650}
+.student-help .hint-note,.student-help .hint-progress{color:var(--muted);font-size:.82rem}
+.student-help [hidden]{display:none!important}
+@media(max-width:595px){.student-help{grid-template-columns:1fr;gap:6px}}
 @media(max-width:820px){
   .view-switch{display:flex;gap:6px;padding:6px 8px;border:1px solid var(--line);background:var(--white)}
   .view-switch button{font-size:.84rem;padding:5px 10px}
@@ -136,6 +150,39 @@ input{accent-color:var(--teal);width:18px;height:18px}
   <h1>Tank PLC workstation</h1>
   <p>Edit a contact or coil, then step through READ, SOLVE and UPDATE to see how the valves and mixer respond.</p>
 </header>
+<section class="student-help" aria-label="Student guidelines and optional hints">
+  <details id="student-guide" class="student-guide">
+    <summary>Student guide · start here</summary>
+    <ol>
+      <li><b>Predict.</b> Start with the reference program and <b>Step by phase</b>. Which valves should open when Start turns ON?</li>
+      <li><b>Try one scan.</b> Turn on <b>Start switch</b> in Field I/O. Run <b>READ</b> and compare Field with Sampled. Run <b>SOLVE</b> and inspect the teal ladder paths and output Commands. Run <b>UPDATE</b> and watch the devices.</li>
+      <li><b>Change one instruction.</b> After UPDATE, select a contact or coil, open <b>Edit this instruction</b>, choose its type or tag and apply. Predict the difference, then repeat a scan. The diagram updates at SOLVE.</li>
+      <li><b>Compare.</b> Try Start OFF or Stop ON and explain the result. <b>Reset tank</b> restarts the process with your edits. <b>Restore reference program and reset tank</b> also removes your edits.</li>
+    </ol>
+    <p class="hint-note">On a small screen, switch between Ladder and Field I/O. Choose a Network to inspect another group of rungs. Run to next stage advances complete scans.</p>
+    <details class="quick-reference">
+      <summary>Contact and coil reminder</summary>
+      <ul>
+        <li><b>NO</b> tests for an ON bit. <b>NC</b> (slashed) tests for an OFF bit. TRUE describes the test, so an OFF bit can make an NC contact TRUE.</li>
+        <li><b>Series means AND.</b> All tests must pass. <b>Parallel means OR.</b> One passing branch is enough. Teal wires trace the connected true path from the left rail.</li>
+        <li>An <b>ordinary coil</b> writes the path result each SOLVE. <b>SET</b> writes ON on a true path, and <b>RESET</b> writes OFF. On a false path, SET and RESET leave the bit alone.</li>
+        <li>Rungs run from top to bottom. If several instructions write the same bit, the last write wins. The device receives its final command at UPDATE.</li>
+        <li><b>TON</b> counts while its input is true. Here it sets its done bit after 30 simulated seconds. A false input resets it.</li>
+      </ul>
+    </details>
+  </details>
+  <details id="network-hints" class="student-hints">
+    <summary>Optional hints for this network</summary>
+    <p id="hint-context" class="hint-context"></p>
+    <p id="hint-reference" class="hint-note"></p>
+    <ol id="hint-list" hidden></ol>
+    <div class="hint-controls">
+      <button type="button" id="next-hint" aria-controls="hint-list">Show next hint</button>
+      <button type="button" id="hide-hints" aria-controls="hint-list" hidden>Hide hints</button>
+    </div>
+    <p id="hint-progress" class="hint-progress" role="status"></p>
+  </details>
+</section>
 <section class="controller" aria-label="PLC controller">
   <div class="controls">
     <label for="scan-mode">Controller</label>
@@ -383,6 +430,67 @@ const networks=[
   {title:"05 · Inlet valve commands",rungs:[10,11]},
   {title:"06 · Mixer and drain commands",rungs:[12,13]}
 ];
+const networkHints=[
+  [
+    "Separate permission to run from the stored stage. Which input should allow RUN_OK, and which should block it?",
+    "Inspect R1. START_SW is NO and STOP_PB is NC. In R2, TANK_EMPTY must be ON and all three stage bits must be OFF before the SET coil can initialize filling.",
+    "From a reset reference tank, turn Start ON with Stop OFF and complete READ, SOLVE, UPDATE. Filling starts and A/B open. Then hold Stop and complete another scan. RUN_OK and the valves turn OFF, but FILL_STAGE stays ON."
+  ],
+  [
+    "A stage transition needs both a reason to leave the current stage and a way to remember the next one. Find the two rungs that work together.",
+    "In R3 and R4, LEVEL_HIGH and SB2_LEVEL share parallel paths. Either can end filling, while RUN_OK and FILL_STAGE must also be ON. Compare the S and R coil targets.",
+    "With the reference tank filling, press End fill early and complete a scan. R3 sets MIX_STAGE and R4 resets FILL_STAGE. A/B close and the mixer starts at UPDATE. The button supplies a pulse at the next READ."
+  ],
+  [
+    "Check the timer's input before its done bit. What must stay true while the mixing time accumulates?",
+    "Select the TON in R5 to see elapsed time and done status. RUN_OK and MIX_STAGE enable it. R6 and R7 use MIX_TIMER.Q to set draining and reset mixing.",
+    "During reference mixing, Run to next stage reaches draining after the 30-second timer completes. C opens and the mixer stops unless Mix during drain is ON. Holding Stop and completing a scan resets the timer but retains the mixing stage if it has not yet finished."
+  ],
+  [
+    "When draining finishes, the tank needs to remember filling again. Which sensor indicates that the drain stage can end?",
+    "Inspect TANK_EMPTY in R8 and R9. It is ON at or below 2%. RUN_OK and DRAIN_STAGE must also pass. Follow the SET to FILL_STAGE and the RESET to DRAIN_STAGE.",
+    "While the reference tank is draining with Start ON and Stop OFF, use Run to next stage. Once empty is sampled, filling replaces draining. A/B open and C closes at UPDATE."
+  ],
+  [
+    "Compare the stage bit, the rung path, the output Command and the Device. Which of these changes at SOLVE, and which waits for UPDATE?",
+    "R10 and R11 require RUN_OK AND FILL_STAGE. Both ordinary coils write OFF when that path is false. Select PA_CMD and compare its command with the physical valve A.",
+    "Try changing the R10 coil to SET before READ. During filling, complete a scan to set PA_CMD, then hold Stop and complete another scan. A stays open while ordinary-coil B closes. The bit stays ON until another instruction writes OFF, such as a RESET coil with a true path. Restore reference program and reset tank returns to the original behavior."
+  ],
+  [
+    "The mixer has two possible request paths, while the drain valve follows one stage. Trace each path before changing a switch.",
+    "In R12, MIX_STAGE is parallel to DRAIN_STAGE AND SB3_MIX_DRAIN. RUN_OK gates both branches. In R13, RUN_OK AND DRAIN_STAGE command valve C.",
+    "During reference draining, toggle Mix during drain and complete a scan. The mixer follows this option while C stays open. Hold Stop and complete another scan to turn both devices OFF. The stored drain stage remains ON."
+  ]
+];
+let shownHints=0;
+function updateHintReference(){
+  const edited=program.some((_,index)=>changedRung(index));
+  $("hint-reference").textContent=edited
+    ?"Your program is edited. These hints describe the reference program and include suggested experiments. Your results may differ."
+    :"Reveal one hint at a time. These hints describe the reference program and include suggested experiments.";
+}
+function renderHints(){
+  const index=$("network").selectedIndex;
+  const hints=networkHints[index];
+  $("hint-context").textContent=networks[index].title;
+  $("hint-list").replaceChildren(...hints.slice(0,shownHints).map(text=>{
+    const item=document.createElement("li");item.textContent=text;return item;
+  }));
+  $("hint-list").hidden=shownHints===0;
+  $("next-hint").disabled=shownHints===hints.length;
+  $("hide-hints").hidden=shownHints===0;
+  $("hint-progress").textContent=`${shownHints} of ${hints.length} hints shown.`;
+  updateHintReference();
+}
+function resetHints(){shownHints=0;renderHints();}
+$("next-hint").addEventListener("click",()=>{
+  shownHints=Math.min(networkHints[$("network").selectedIndex].length,shownHints+1);
+  renderHints();
+});
+$("hide-hints").addEventListener("click",()=>{
+  resetHints();
+  $("next-hint").focus();
+});
 const phases=["READ","SOLVE","UPDATE"];
 let nextPhase=0, solveStamp=0, readInterval=0;
 let selectedRung=1, selectedInstruction=null;
@@ -684,6 +792,7 @@ function render() {
   $("outputs").textContent=`Level ${level.toFixed(1)}% · A ${out.PA_CMD?"open":"closed"} · B ${out.PB_CMD?"open":"closed"} · Mixer ${out.MOTOR_CMD?"on":"off"} · C ${out.PC_CMD?"open":"closed"}`;
 }
 function renderController(){
+  updateHintReference();
   const run=$("scan-mode").value==="run";
   $("next-phase").textContent="Run "+phases[nextPhase];
   $("next-phase").disabled=run;
@@ -706,6 +815,7 @@ function reset(){
   readInputs(0);solveLogic();solveStamp=0;
   state.physicalOutputs=clone(state.outputImage);
   $("scan-mode").value="manual";$("network").selectedIndex=0;
+  resetHints();
   selectedRung=1;selectedInstruction=null;
   for(const id of ["start","stop","mix-drain"])$(id).checked=false;
   say(program.some((_,index)=>changedRung(index))
@@ -721,6 +831,7 @@ $("level-force").addEventListener("change",event=>{
   say(force==="auto"?"Force released. The next READ uses the field sensor.":`The next READ will sample LEVEL_HIGH as ${force.toUpperCase()}. Compare Field and Sampled.`);
 });
 $("network").addEventListener("change",()=>{
+  resetHints();
   selectedRung=networks[$("network").selectedIndex].rungs[0];
   selectedInstruction=null;
   renderProgram();

@@ -31,6 +31,15 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
 .tests .hint{padding:0;margin:4px 0}.tests ul{list-style:none;padding:0;margin:8px 0 0}.tests li{padding:4px 0;border-top:1px solid var(--line);font-size:.87rem}.fail{color:#8e401b}.pass{color:var(--active)}[hidden]{display:none!important}
 .layout-tools{margin-top:8px;font-size:.86rem}.layout-tools summary{cursor:pointer;color:var(--active);font-weight:650;width:fit-content}
 .layout-tools .bar{margin-top:7px}.layout-tools button{font-size:.83rem}
+.student-help{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px;align-items:start}
+.student-help>details{min-width:0;border:1px solid var(--line);border-radius:6px;background:var(--white);font-size:.88rem}
+.student-help summary{padding:9px 12px;cursor:pointer;font-weight:650;color:var(--active)}
+.student-help summary:focus-visible{outline:3px solid #ac620c;outline-offset:2px}
+.help-body{padding:0 12px 12px}.help-body p{margin:6px 0}.help-body ol{padding-left:22px;margin:6px 0}.help-body li+li{margin-top:7px}
+.help-body code{font-family:var(--mono);overflow-wrap:anywhere}.help-body .bar{margin-top:9px}.help-body button{font-size:.84rem}
+.quick-reference{margin-top:10px;border-top:1px solid var(--line)}.quick-reference summary{padding:8px 0}
+.quick-reference dl{margin:0}.quick-reference dt{font-weight:650;margin-top:7px}.quick-reference dd{margin:0;color:var(--muted)}
+@media(max-width:750px){.student-help{grid-template-columns:1fr}}
 @media(max-width:750px){.bench{grid-template-columns:1fr}.io{border-left:0;border-top:1px solid var(--line)}.toolbar .scan{margin-left:0}.diagram svg{max-width:none}.program-head{flex-wrap:wrap}}
 @media(max-width:430px){header, .bar{gap:5px}header{font-size:.83rem}.program-head,.io,.editor,.tests{padding:9px}.toolbar{padding:8px}.toolbar button{font-size:.87rem}.editor-fields{gap:6px}.intro{padding:9px 0}}
 .view-switch{display:none}
@@ -70,6 +79,36 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
 <header><a href="index.html">← Learning home</a><div class="bar"><label for="lessonSelect">Program</label><select id="lessonSelect">
 <option value="signal">Box sensor</option><option value="logic">Press controls</option><option value="holding">Holding circuit</option><option value="timer">Warning timer</option></select></div></header>
 <div class="intro"><p class="eyebrow">PLC 7 · Ladder programming bench</p><h1 id="programTitle"></h1><p id="problem"></p></div>
+<section class="student-help" aria-label="Student guidelines and optional hints">
+  <details id="student-guide" class="student-guide"><summary>Student guide · start here</summary>
+    <div class="help-body">
+      <ol>
+        <li><b>Predict.</b> Read the problem and follow a rung from left to right. Decide which input change should turn its output ON or OFF.</li>
+        <li><b>Try one change.</b> Stay in <b>Hold</b>, change an input switch in the I/O monitor, then click <b>Step one scan</b>. Compare <b>Field</b> with <b>PLC</b>, the teal path and the machine. On a small screen, switch between <b>Ladder</b> and <b>Field I/O</b>.</li>
+        <li><b>Experiment.</b> Select a contact or coil, choose its type and tag, then <b>Apply edit</b> and step again. Open <b>Edit rung layout</b> to add series or parallel contacts and extra rungs. Change one thing at a time.</li>
+        <li><b>Check and explain.</b> Try the exercise below. Test both ON and OFF inputs, and describe why the output changed. <b>Run reference cases</b> compares the original problem with your program; deliberate experiments can produce FAIL results. Watch <code>M_A</code> yourself when practising with this extra memory bit.</li>
+      </ol>
+      <p><b>Starting again.</b> <b>Reset I/O</b> resets inputs, memory and timer and scans your current program once. <b>Restore reference</b> restores the selected program; then use <b>Reset I/O</b> for a fresh trial. <b>Run</b> repeats scans; <b>Hold</b> freezes the last scan.</p>
+      <details class="quick-reference"><summary>Contact and coil quick reference</summary>
+        <dl>
+          <dt>Bit state and contact result</dt><dd>ON/OFF is the tag value. TRUE/FALSE is the contact test. A TRUE contact passes the path only when the upstream path reaches it.</dd>
+          <dt>NO and NC</dt><dd>A normally open (NO) contact is TRUE when its tag is ON. A normally closed (NC) contact is TRUE when its tag is OFF. These instructions test a PLC bit.</dd>
+          <dt>Series and parallel</dt><dd>Series requires every test in that path (AND). Parallel needs at least one passing branch (OR).</dd>
+          <dt>P and N edge contacts</dt><dd>P is TRUE for one scan on an OFF → ON change; N on an ON → OFF change. This bench starts each contact’s previous sample OFF after reset or a tag/type change.</dd>
+          <dt>Ordinary, SET and RESET coils</dt><dd>An ordinary coil writes the path result every scan. A TRUE path makes SET write ON and RESET write OFF. With a FALSE path, SET and RESET leave the bit as it was. Rungs run top to bottom; the last instruction that writes a tag determines its final value.</dd>
+          <dt>TON timer</dt><dd>ET is elapsed time; Q is the done bit. The first enabled scan starts ET at 0. Later manual steps add one second. Q turns ON at the preset; a FALSE timer input clears ET and Q.</dd>
+        </dl>
+      </details>
+    </div>
+  </details>
+  <details id="exercise-hints" class="student-hints"><summary>Optional exercise hints</summary>
+    <div class="help-body">
+      <p id="hint-task"></p><p class="status">Try a prediction first. Reveal only as much help as you need. These hints start from this example’s reference program.</p>
+      <ol id="hint-list" aria-live="polite" aria-relevant="additions"></ol>
+      <div class="bar"><button type="button" id="next-hint" aria-controls="hint-list">Show hint 1 of 3</button><button type="button" id="hide-hints" aria-controls="hint-list" hidden>Hide hints</button></div>
+    </div>
+  </details>
+</section>
 <div class="toolbar" aria-label="PLC scan controls"><b>PLC</b><button id="runBtn" aria-pressed="false">Run</button><button id="holdBtn" aria-pressed="true">Hold</button><button id="stepBtn">Step one scan</button><span class="scan" id="scanInfo"></span></div>
 <div id="view-switch" class="view-switch" role="group" aria-label="Workspace view">
   <button type="button" data-view="ladder" aria-controls="program-pane" aria-pressed="true">Ladder</button>
@@ -160,7 +199,7 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     },
     holding:{
       title:"Motor holding circuit",problem:"A momentary Start request should hold the motor and lamp on. Stop, an open guard or a tripped overload must clear the request.",
-      task:"Try a SET/RESET pair under Edit rung layout. Add a rung with START_PB that sets M_A, then one with a normally closed STOP_OK contact that resets M_A. Step after pressing Start, releasing Start, and pressing Stop. Watch M_A in the I/O monitor.",
+      task:"Build a SET/RESET pair on two extra rungs using practice memory M_A. Make Start set the bit and Stop reset it. Can it remember Start after you release the button?",
       inputs:[input("START_PB","%I0.0","Start held"),input("STOP_OK","%I0.1","Stop released",true),input("GUARD_OK","%I0.2","Guard closed",true),input("OL_OK","%I0.3","Overload healthy",true)],
       outputs:[signal("RUN_REQUEST","%M0.0","Stored request"),signal("M1","%Q0.0","Conveyor motor"),signal("RUN_LAMP","%Q0.1","Run indicator")],
       rungs:[rung("Store run request",[[contact("STOP_OK")],[contact("GUARD_OK")],[contact("OL_OK")],[contact("START_PB"),contact("RUN_REQUEST")]],"RUN_REQUEST"),rung("Run conveyor",[[contact("RUN_REQUEST")]],"M1"),rung("Light run lamp",[[contact("RUN_REQUEST")]],"RUN_LAMP")],
@@ -175,6 +214,46 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
       cases:[trial("Disabled",{}),trial("Warning starts",{ST:true}),trial("Still warning at 2 s",{ST:true},{},{}),trial("Motor starts at 3 s",{ST:true},{},{},{}),trial("Disable resets timer",{ST:true},{},{},{},{ST:false})]
     }
   };
+  const exerciseHints = {
+    signal:[
+      "A normal NO contact responds to the current value. A rising-edge contact responds to a change. Predict what each will do if SENSOR stays ON for two scans.",
+      "Select SENSOR, choose P · rising edge, and Apply edit. Reset I/O so SENSOR starts OFF. Switch SENSOR ON, then use Step one scan twice without changing it. Compare the PLC input with MOTOR.",
+      "MOTOR should be ON on the first scan and OFF on the second, even though SENSOR stays ON. To trigger it again, scan once with SENSOR OFF, then once with it ON. The reference case ‘Box stays at sensor’ will fail for this intentional edit; restore NO to make the motor follow the box continuously."
+    ],
+    logic:[
+      "Follow the two request paths between GUARD and FAULT. Does either request work on its own, or do both need to be TRUE? Keep GUARD ON and FAULT OFF while comparing them.",
+      "Select FOOT, set Group layout to Series · AND, and Apply edit. Turn only FOOT ON and step, then turn PANEL ON as well and step. Inspect the TRUE/FALSE label on each request contact.",
+      "In series, both FOOT and PANEL must be ON to energize PRESS. The ‘Foot alone’ and ‘Panel alone’ reference cases should fail. Return the pair to Parallel · OR to meet the original problem. Then open the guard or turn FAULT ON: either should block PRESS after a scan."
+    ],
+    holding:[
+      "Use M_A as a separate practice memory bit. You need one instruction to write it ON when Start is held, and another to write it OFF when Stop is pressed. What should happen when neither button is pressed?",
+      "Select the last rung, open Edit rung layout and Add rung below. Give its START_PB contact type NO and its M_A coil type SET, applying each edit. Add a second rung below it; change its contact to STOP_OK with type NC, and its M_A coil to RESET. STOP_OK is OFF when Stop is pressed.",
+      "With STOP_OK ON, scan START_PB ON, then scan it OFF: M_A should remain ON. Uncheck STOP_OK and scan: M_A should turn OFF. If both requests are active, the lower RESET writes last. These practice rungs only drive M_A; the original motor and lamp still follow their own rungs."
+    ],
+    timer:[
+      "Find the TON done bit T_WARN.Q. The horn uses its NC test and the motor uses its NO test. Predict their states before and after the timer finishes.",
+      "Reset I/O, turn ST ON and step once to start ET at 0. Step again while watching ET and Q. Then select the TON block, set its preset to 2 seconds, Apply edit and Reset I/O for a fair new trial.",
+      "With the 2-second preset, the first enabled scan starts at ET 0; the next two steps reach ET 1 and ET 2. At ET 2, Q is ON, HORN is OFF and M1 is ON. Scan ST OFF to reset the timer. The original 3-second reference cases can fail after this intentional timing change."
+    ]
+  };
+  let shownHints = 0;
+  function resetHints() {
+    shownHints = 0;
+    $("hint-list").replaceChildren();
+    $("next-hint").disabled = false;
+    $("next-hint").textContent = "Show hint 1 of 3";
+    $("hide-hints").hidden = true;
+  }
+  function revealHint() {
+    const hints = exerciseHints[$("lessonSelect").value];
+    if(shownHints >= hints.length) return;
+    const item = document.createElement("li");
+    item.textContent = hints[shownHints++];
+    $("hint-list").append(item);
+    $("hide-hints").hidden = false;
+    $("next-hint").disabled = shownHints === hints.length;
+    $("next-hint").textContent = shownHints === hints.length ? "All 3 hints shown" : `Show hint ${shownHints+1} of 3`;
+  }
   const blankPLC = () => ({memory:{},edges:new WeakMap(),enabled:false,elapsed:0,trace:null,scans:0});
   const defaults = lesson => Object.fromEntries(lesson.inputs.map(i=>[i.tag,i.initial]));
   // Instruction coordinates stay stable when switching a group between series and parallel.
@@ -240,6 +319,9 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
     $("programTitle").textContent = lesson.title;
     $("problem").textContent = lesson.problem;
     $("task").textContent = lesson.task;
+    $("hint-task").textContent = lesson.task;
+    $("exercise-hints").open = false;
+    resetHints();
     clearTests();
     resetIO();
     populateEditor();
@@ -576,6 +658,8 @@ svg .on{fill:var(--active)}svg .timer{fill:#edf3ed;stroke:#53675d;stroke-width:2
   $("stepBtn").addEventListener("click",()=>{if(!running)takeScan(1);});
   $("resetBtn").addEventListener("click",resetIO);
   $("testBtn").addEventListener("click",runCases);
+  $("next-hint").addEventListener("click",revealHint);
+  $("hide-hints").addEventListener("click",()=>{resetHints();$("next-hint").focus();});
   $("lessonSelect").addEventListener("change",loadProgram);
   $("view-switch").addEventListener("click",event=>{
     const button=event.target.closest("button[data-view]");
