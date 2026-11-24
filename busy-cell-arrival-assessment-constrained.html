@@ -60,30 +60,76 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
 
 .quick-guide{grid-template-columns:repeat(4,1fr)}@media(max-width:900px){.quick-guide{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.quick-guide{grid-template-columns:1fr}}
 
+/* Learning support stays local to the guide and its contextual hint controls. */
+.help-topic[open]>summary .help-topic-title{transform:none}
+.help-trigger{display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px;width:30px;height:30px;min-width:30px;padding:0;border:1px solid #b9cec0;border-radius:50%;background:#f4f9ef;color:#456d57;font:600 13px/1 var(--mono);vertical-align:middle;box-shadow:inset 0 1px 0 #fff8;transition:background .15s,border-color .15s}
+.help-trigger:hover,.help-trigger[aria-expanded=true]{background:#e0efe1;border-color:#76a88c;color:#075d50}.help-trigger[aria-expanded=true]{box-shadow:0 0 0 3px #e7f1e1}
+#quickGuide.lab-guide{display:block;padding:26px;margin:0 0 26px;border-color:#bfd5c1;background:linear-gradient(135deg,#fffef9,#f2f7ed);scroll-margin-top:16px;box-shadow:0 9px 30px #20482c06}
+.help-guide-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:25px}.help-guide-heading{max-width:670px}.help-guide-heading>.eyebrow{font-size:9px;letter-spacing:.12em;color:#557c5b;margin-bottom:8px}.help-guide-heading h2{font-size:26px;line-height:1.25;letter-spacing:-.6px;margin:0 0 9px}.help-guide-heading>p:last-child{font-size:12px;color:var(--muted);line-height:1.7}.help-guide-tools{display:flex;align-items:center;gap:12px;flex-shrink:0}.help-language{display:flex;background:#eaf0e4;border:1px solid #d3e0cd;border-radius:7px;padding:3px;gap:2px}.help-language button{font-size:11px;border:1px solid transparent;border-radius:4px;background:transparent;padding:6px 9px;color:#60745b;min-height:30px}.help-language button[aria-pressed=true]{background:#fffefa;border-color:#c7d8bf;color:#075d50;box-shadow:0 1px 3px #173e2709}
+.help-close{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex:0 0 32px;padding:0;border:1px solid #d2dfca;border-radius:50%;font-size:21px;font-weight:400;color:#586f59;background:#f8fbf2;line-height:1}.help-close:hover{background:#e9f2e3;color:#17593b;border-color:#a8c299}
+.help-quick-start{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.help-step{display:flex;align-items:flex-start;gap:11px;background:#f8fbf2;border:1px solid #d7e4ce;border-radius:9px;padding:18px 15px}.help-step-number{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:8px;border:1px solid #cbdcc4;background:#eaf3e1;font:500 10px/1 var(--mono);color:#507346}.help-step:first-child .help-step-number{background:#087b6a;color:#fffefa;border-color:#087b6a}.help-step h3{font-size:13px;line-height:1.5;margin:0 0 7px}.help-step p{font-size:11px;line-height:1.85;color:#5c705e}
+.help-topic-heading{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin:25px 0 12px}.help-topic-heading h3{font-size:13px;letter-spacing:-.1px}.help-topic-heading>span{font-size:10px;color:#71806a}.help-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:start}.help-topic{border:1px solid #d4e0cd;border-radius:8px;background:#fffef9;scroll-margin-top:18px;min-width:0;overflow:hidden}.help-topic>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;cursor:pointer;list-style:none;font-size:12px;color:#264f3c}.help-topic>summary::-webkit-details-marker{display:none}.help-topic>summary:hover{background:#f5f9ef}.help-topic-title{display:block;min-width:0}.help-topic-title strong{display:block;font-size:12px;line-height:1.6}.help-topic-title small{display:block;font-size:10px;color:#71806a;font-weight:400;line-height:1.7;margin-top:2px}.help-chevron{font-size:19px;font-weight:400;color:#75916c;flex-shrink:0;transition:transform .15s}.help-topic[open]{border-color:#b8cfac}.help-topic[open]>summary{background:#edf5e5;border-bottom:1px solid #d8e5ce}.help-topic[open] .help-chevron{transform:rotate(45deg)}.help-topic-body{padding:14px 16px 17px}.help-topic-body p{font-size:11px;color:#526a55;line-height:1.9;margin:0}.help-topic-body p+p{margin-top:12px}.help-definitions{margin:0 0 13px}.help-definitions>div{padding:9px 0;display:grid;grid-template-columns:105px 1fr;gap:12px;border-bottom:1px solid #e6eddf}.help-definitions>div:first-child{padding-top:0}.help-definitions dt{font-size:11px;font-weight:650;color:#2a6248;line-height:1.8;overflow-wrap:anywhere}.help-definitions dd{font-size:11px;color:#596f59;line-height:1.85;margin:0}.help-guide-foot{font-size:10px;line-height:1.9;color:#64785d;border-top:1px solid #d7e3ce;padding-top:15px;margin-top:20px!important}
+.help-popover{position:fixed;z-index:1000;width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:auto;padding:17px 18px 15px;border:1px solid #a8c6af;border-radius:12px;background:#fffef9;color:var(--ink);box-shadow:0 12px 38px #183b2824,0 2px 8px #183b2810;animation:help-appear .13s ease-out}
+.help-hint-header{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:7px}.help-hint-header .eyebrow{font-size:9px;color:#6b865f;letter-spacing:.12em}.help-hint-header .help-close{width:29px;height:29px;flex-basis:29px;background:#f7faf1}.help-popover h3{font-size:17px;line-height:1.4;letter-spacing:-.35px;margin:0 0 10px}.help-popover>p{font-size:12px;line-height:1.85;color:#526b57;margin:0}.help-hint-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #dce7d3;margin-top:15px;padding-top:11px}.help-hint-footer button{background:transparent;border:0;border-radius:4px;padding:5px 0;font-size:11px;color:#08735d;line-height:1.5;text-align:start}.help-read-more{font-weight:600}.help-hint-language{font-weight:400;white-space:nowrap}.help-hint-footer button:hover{text-decoration:underline}.help-guide-heading h2:focus{outline:2px solid #c28d32;outline-offset:5px;border-radius:2px}
+.lab-guide[dir=rtl],.help-popover[dir=rtl]{font-family:Tahoma,Arial,sans-serif}.lab-guide[dir=rtl] .eyebrow,.help-popover[dir=rtl] .eyebrow{letter-spacing:0;font-family:inherit}.lab-guide[dir=rtl] .help-guide-heading h2{letter-spacing:0;font-size:25px}.lab-guide[dir=rtl] .help-step h3{font-size:13px}.lab-guide[dir=rtl] .help-step p,.lab-guide[dir=rtl] .help-topic-body p,.lab-guide[dir=rtl] .help-definitions dd{font-size:12px;line-height:2}.lab-guide[dir=rtl] .help-topic-title strong{font-size:13px}.lab-guide[dir=rtl] .help-topic-title small{font-size:11px}.lab-guide[dir=rtl] .help-definitions dt{font-size:12px}.help-popover[dir=rtl]>p{font-size:13px;line-height:2}.help-popover[dir=rtl] h3{letter-spacing:0;font-size:17px}.lab-guide bdi,.help-popover bdi{font-family:inherit}.lab-guide[dir=rtl] .help-definitions>div{grid-template-columns:115px 1fr}
+@keyframes help-appear{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1000px){.help-guide-header{gap:14px}.help-guide-heading h2{font-size:23px}.help-step{padding:15px 12px;gap:9px}.help-step-number{width:24px;height:24px;flex-basis:24px}.help-quick-start{gap:8px}.help-step h3{font-size:12px}}
+@media(max-width:700px){#quickGuide.lab-guide{padding:19px 17px;margin-bottom:20px}.help-guide-header{flex-direction:column;gap:16px}.help-guide-tools{width:100%;justify-content:space-between;order:-1}.help-guide-heading h2{font-size:23px}.help-quick-start{grid-template-columns:1fr;gap:8px}.help-step{padding:14px;gap:12px}.help-step p{font-size:12px;line-height:1.8}.help-step h3{font-size:13px;margin-bottom:5px}.help-topics{grid-template-columns:1fr}.help-topic-heading{margin-top:20px;align-items:flex-start;flex-wrap:wrap;gap:5px}.help-topic>summary{padding:14px}.help-topic-title strong{font-size:13px}.help-topic-title small{font-size:11px}.help-topic-body{padding:14px}.help-topic-body p,.help-definitions dd{font-size:12px}.help-definitions>div,.lab-guide[dir=rtl] .help-definitions>div{grid-template-columns:1fr;gap:3px}.help-definitions dt{font-size:12px}.help-guide-foot{font-size:11px}.help-trigger{width:32px;height:32px;min-width:32px;flex-basis:32px}.help-popover{padding:15px 16px}.help-hint-header .help-close{width:32px;height:32px;flex-basis:32px}.lab-guide[dir=rtl] .help-guide-heading h2{font-size:23px}}
+@media(prefers-reduced-motion:reduce){.help-popover{animation:none}.help-trigger,.help-chevron{transition:none}}
+
+.help-title{display:flex;align-items:center;gap:8px;min-width:0}
+.help-title h2{min-width:0}
+.mode-context{display:flex;align-items:center;gap:10px;max-width:440px}
+.mode-context p{font-size:12px;color:var(--muted);text-align:right}
+.program-toolbar>.program-tools{flex-wrap:nowrap;flex-shrink:0;gap:8px}
+.heading-label>.help-trigger{margin-inline-start:2px}
+.inputs-bar>.help-trigger{margin-inline-start:-5px}
+.ce-intro-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.ce-intro-row .ce-intro{margin:0}
+.ce-section-label>.help-trigger{margin-inline-start:8px;vertical-align:middle;letter-spacing:normal}
+.ce-preset-help{display:flex;align-items:flex-end;gap:8px;min-width:0}
+.ce-preset-help .ce-field{flex:1;min-width:0}
+.ce-preset-help>.help-trigger{margin-bottom:4px}
+.ce-help-links{display:flex;align-items:center;flex-wrap:wrap;gap:6px 20px;margin-top:10px}
+.ce-help-link{padding:5px 0;background:none;border:0;border-radius:2px;font-size:11px;font-weight:500;color:var(--teal-dark);text-decoration:underline;text-underline-offset:3px}
+.ce-help-link:hover{background:none;color:var(--teal)}
+@media(max-width:900px){.mode-context{max-width:330px}.mode-context p{font-size:11px}}
+@media(max-width:600px){.mode-context{max-width:none;margin:8px 0 0;justify-content:space-between}.mode-context p{text-align:left}.program-toolbar>.program-tools{gap:5px}.machine-card .heading-label{gap:6px}.machine-card .heading-label h2{font-size:13px}.heading-label>.help-trigger{margin:0}.help-title{gap:6px}.inputs-bar{column-gap:10px}.ce-intro-row{align-items:flex-start}.ce-help-links{gap:6px 14px}}
+
 </style>
 </head>
 <body>
 <a class="skip-link" href="#workbench">Skip to simulator</a>
 <main>
-  <header class="topbar"><a class="brand" href="plc8c.html" aria-label="Production cell learning home"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M5 4v22M25 4v22M5 10h7m6 0h7M12 6v8m6-8v8M5 21h8m4 0h8"/><circle cx="15" cy="21" r="4"/></svg><span>PLC <b>LAB</b></span></a><span class="chapter-label">CHAPTER 08 <span>/</span> PRODUCTION SYSTEMS</span><button id="guideBtn" class="text-button" aria-expanded="false" aria-controls="quickGuide">How to use this lab <span class="arrow-icon" aria-hidden="true"></span></button></header>
+  <header class="topbar"><a class="brand" href="plc8c.html" aria-label="Production cell learning home"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M5 4v22M25 4v22M5 10h7m6 0h7M12 6v8m6-8v8M5 21h8m4 0h8"/><circle cx="15" cy="21" r="4"/></svg><span>PLC <b>LAB</b></span></a><span class="chapter-label">CHAPTER 08 <span>/</span> PRODUCTION SYSTEMS</span><button id="guideBtn" class="text-button" aria-expanded="false" aria-controls="quickGuide">Guide &amp; hints <span class="arrow-icon" aria-hidden="true"></span></button></header>
   <section class="hero" aria-labelledby="pageTitle"><div><p class="eyebrow">FROM A CONDITION TO A COMPLETE CYCLE</p><h1 id="pageTitle">One part. <span class="hero-accent">Four operations.</span></h1><p class="lede">Follow a part through positioning, robot loading, machining and unloading.<br class="desktop-break"> See exactly what changes when the PLC remembers the active stage.</p></div><div class="cycle-mark" aria-label="20 second nominal process"><div class="cycle-dial" aria-hidden="true"><strong id="configuredCycle">20<span>s</span></strong></div><span id="cycleLabel">NOMINAL PROCESS TIME</span><small id="cycleBreakdown">2 + 5 + 10 + 3 seconds</small></div></section>
-  <section id="quickGuide" class="quick-guide" hidden aria-label="Quick guide"><div><b>01 · Run a cycle</b><p>Start demo enables ST and places a part at SN. Pause freezes the clock, mechanism and program together.</p></div><div><b>02 · Read the cause</b><p>Follow the highlighted operation, timer and ladder. Select a rung to see the values it actually read in the last scan.</p></div><div><b>03 · Change a condition</b><p>Clear SN during loading, or switch ST off. Compare the result in the two modes. Step one scan to inspect a boundary.</p></div><div><b>04 · Edit your program</b><p>Open Edit program, choose a rung and change its conditions or instruction. Apply &amp; reset cell runs and saves your edits in this browser. Export JSON shares them; Restore reference starts over.</p></div><button id="closeGuide" class="icon-button" aria-label="Close quick guide">×</button></section>
-  <div class="mode-bar"><div class="mode-switch" role="group" aria-label="Control strategy"><button id="simpleMode" data-mode="simple" aria-pressed="true"><span>01</span> Simple <small>Eight rungs</small></button><button id="advancedMode" data-mode="advanced" aria-pressed="false"><span>02</span> Advanced <small>Stage memory</small></button></div><p id="modeCaption">One timed cycle, with SN held ON.</p></div>
-  <div class="program-toolbar"><div><b id="programBadge">Reference program</b><span id="programSaved">Edit conditions, instructions and timer presets</span></div><button id="editProgramBtn" class="edit-program-button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 14l9-9 3 3-9 9H3Zm8-8 3 3M13 4l1-1q1-1 2 0l1 1q1 1 0 2l-1 1"/></svg>Edit program</button></div>
+    <section id="quickGuide" class="lab-guide panel" hidden aria-labelledby="helpGuideTitle">
+    <header class="help-guide-header">
+      <div class="help-guide-heading"><p id="helpGuideEyebrow" class="eyebrow">YOUR FIELD GUIDE</p><h2 id="helpGuideTitle" tabindex="-1">A clear path through the lab.</h2><p id="helpGuideIntro">Start with one cycle. Then change one thing and follow the result.</p></div>
+      <div class="help-guide-tools"><div class="help-language" role="group" aria-label="Guide language"><button type="button" data-help-language="en" aria-pressed="true" lang="en">English</button><button type="button" data-help-language="fa" aria-pressed="false" lang="fa" dir="rtl">فارسی</button></div><button id="closeGuide" type="button" class="help-close" aria-label="Close guide">×</button></div>
+    </header>
+    <div id="helpQuickStart" class="help-quick-start"></div>
+    <div class="help-topic-heading"><h3 id="helpTopicsTitle">A little more detail</h3><span id="helpTopicsNote">Open only what you need.</span></div>
+    <div id="helpTopics" class="help-topics"></div>
+    <p id="helpGuideFoot" class="help-guide-foot"></p>
+  </section>
+
+  <div class="mode-bar"><div class="mode-switch" role="group" aria-label="Control strategy"><button id="simpleMode" data-mode="simple" aria-pressed="true"><span>01</span> Simple <small>Eight rungs</small></button><button id="advancedMode" data-mode="advanced" aria-pressed="false"><span>02</span> Advanced <small>Stage memory</small></button></div><div class="mode-context"><p id="modeCaption">One timed cycle, with SN held ON.</p><button type="button" class="help-trigger" data-help="modes" aria-label="Help: Control strategies">?</button></div></div>
+  <div class="program-toolbar"><div><b id="programBadge">Reference program</b><span id="programSaved">Edit conditions, instructions and timer presets</span></div><div class="program-tools"><button type="button" class="help-trigger" data-help="editor" aria-label="Help: Program editor">?</button><button id="editProgramBtn" class="edit-program-button"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 14l9-9 3 3-9 9H3Zm8-8 3 3M13 4l1-1q1-1 2 0l1 1q1 1 0 2l-1 1"/></svg>Edit program</button></div></div>
   <section id="workbench" class="workspace" aria-label="Production cell simulator">
     <div class="machine-card panel">
-      <div class="panel-heading"><div class="heading-label"><span class="live-dot" id="clockDot"></span><h2>The production cell</h2></div><span id="clockLabel" class="mono muted">READY · 0.00 s</span></div>
+      <div class="panel-heading"><div class="heading-label"><span class="live-dot" id="clockDot"></span><h2>The production cell</h2><button type="button" class="help-trigger" data-help="controls" aria-label="Help: Simulation controls">?</button></div><span id="clockLabel" class="mono muted">READY · 0.00 s</span></div>
       <div id="scene" class="scene"></div><p class="scroll-hint">Swipe sideways to inspect the whole cell.</p>
       <div class="scene-caption"><span id="sceneNote">Place one raw part at the sensor to begin.</span><span class="legend"><i class="raw-key"></i> Raw <i class="finished-key"></i> Finished</span></div>
       <div class="sequence" aria-label="Process sequence"><div data-phase="position"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 16h18M5 16V9h5v7m4 0V4h5v12M3 9h4m10-7v4"/></svg></span><div><b>Position</b><small>GT · 2 s</small></div><i></i></div><div data-phase="load"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 20h8m-6 0v-5l-6-7 5-5 6 7m0 0 3 2m-3-2 1-3m2 5 2-2M4 8l2-2"/><circle cx="11" cy="15" r="2"/><circle cx="10" cy="3" r="1.5"/></svg></span><div><b>Load</b><small>RL · 5 s</small></div><i></i></div><div data-phase="cnc"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V4h16v16ZM7 16h10M10 4v5h4V4m-2 5v4m-4 7v-3h8v3"/></svg></span><div><b>Machine</b><small>CNS · 10 s</small></div><i></i></div><div data-phase="unload"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17h18M5 21h14M7 17v4m10-4v4M4 7h9m-3-3 3 3-3 3m5 1h5v6h-5"/></svg></span><div><b>Unload</b><small>RU · 3 s</small></div><i></i></div></div>
       <div class="transport"><div class="transport-main"><button id="playBtn" class="primary"><span class="play-icon" aria-hidden="true"></span> Start demo</button><button id="scanBtn" title="Evaluate one complete PLC scan; advance 50 milliseconds">Step 1 scan</button><button id="secondBtn" title="Evaluate 20 PLC scans">+1 s</button><button id="resetBtn" class="quiet" title="Clear the cell, inputs, timers and clock">Reset</button></div><label class="speed-label">Speed <select id="speedSelect" aria-label="Simulation speed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option></select></label></div>
-      <div class="inputs-bar"><label class="switch-label"><input id="stInput" type="checkbox" role="switch"><span class="switch-track"></span><span><b>ST</b> Enable cell</span></label><label class="switch-label"><input id="snInput" type="checkbox" role="switch"><span class="switch-track"></span><span><b>SN</b> Part sensor</span></label><button id="partBtn" class="small-button">Place part at SN <span aria-hidden="true">+</span></button></div>
+      <div class="inputs-bar"><label class="switch-label"><input id="stInput" type="checkbox" role="switch"><span class="switch-track"></span><span><b>ST</b> Enable cell</span></label><label class="switch-label"><input id="snInput" type="checkbox" role="switch"><span class="switch-track"></span><span><b>SN</b> Part sensor</span></label><button type="button" class="help-trigger" data-help="inputs" aria-label="Help: ST and SN inputs">?</button><button id="partBtn" class="small-button">Place part at SN <span aria-hidden="true">+</span></button></div>
     </div>
-    <aside class="guide-column" aria-label="Live explanation and timers"><section class="live-guide panel"><div class="eyebrow" id="guideEyebrow">WHAT TO NOTICE</div><h2 id="guideTitle">A working simple sequence.</h2><p id="guideText"></p><div class="why" id="whyText"></div><p id="logicDiagnostics" class="logic-diagnostics" role="status" hidden></p><div id="overlapNotice" class="boundary-note" hidden></div><div class="guide-bottom"><span class="mini-label">LAST EVENT</span><p id="eventText" role="status" aria-live="polite">Ready for a new part.</p></div></section><section class="timer-card panel"><div class="panel-heading"><h2>Timers</h2><span class="mini-label">ET / PT</span></div><div id="timers"></div><p class="timer-foot">TON · resets when its enable is OFF.</p></section></aside>
+    <aside class="guide-column" aria-label="Live explanation and timers"><section class="live-guide panel"><div class="eyebrow" id="guideEyebrow">WHAT TO NOTICE</div><h2 id="guideTitle">A working simple sequence.</h2><p id="guideText"></p><div class="why" id="whyText"></div><p id="logicDiagnostics" class="logic-diagnostics" role="status" hidden></p><div id="overlapNotice" class="boundary-note" hidden></div><div class="guide-bottom"><span class="mini-label">LAST EVENT</span><p id="eventText" role="status" aria-live="polite">Ready for a new part.</p></div></section><section class="timer-card panel"><div class="panel-heading"><div class="help-title"><h2>Timers</h2><button type="button" class="help-trigger" data-help="timers" aria-label="Help: Timers">?</button></div><span class="mini-label">ET / PT</span></div><div id="timers"></div><p class="timer-foot">TON · resets when its enable is OFF.</p></section></aside>
   </section>
-  <section class="experiment-strip" aria-labelledby="experimentTitle"><div><p class="eyebrow">TRY A DIFFERENT CONDITION</p><h2 id="experimentTitle">Make the difference visible.</h2></div><div class="experiment-actions"><button id="sensorExperiment"><span>01</span><div><b>Sensor clears on pickup</b><small>Compare the two strategies</small></div><span class="arrow-icon" aria-hidden="true"></span></button><button id="stopExperiment"><span>02</span><div><b>Stop during machining</b><small>Cancel, then test re-enabling</small></div><span class="arrow-icon" aria-hidden="true"></span></button><button id="arrivalExperiment"><span>03</span><div><b>A second part arrives</b><small>Advanced · hold the infeed</small></div><span class="arrow-icon" aria-hidden="true"></span></button></div></section>
+  <section class="experiment-strip" aria-labelledby="experimentTitle"><div><p class="eyebrow">TRY A DIFFERENT CONDITION</p><div class="help-title"><h2 id="experimentTitle">Make the difference visible.</h2><button type="button" class="help-trigger" data-help="experiments" aria-label="Help: Experiments">?</button></div></div><div class="experiment-actions"><button id="sensorExperiment"><span>01</span><div><b>Sensor clears on pickup</b><small>Compare the two strategies</small></div><span class="arrow-icon" aria-hidden="true"></span></button><button id="stopExperiment"><span>02</span><div><b>Stop during machining</b><small>Cancel, then test re-enabling</small></div><span class="arrow-icon" aria-hidden="true"></span></button><button id="arrivalExperiment"><span>03</span><div><b>A second part arrives</b><small>Advanced · hold the infeed</small></div><span class="arrow-icon" aria-hidden="true"></span></button></div></section>
   <details id="programEditor" class="panel"></details>
-  <section class="logic-area" aria-label="Program and monitor"><div class="ladder-panel panel"><div class="panel-heading"><div><p class="eyebrow">READ THE LAST SCAN</p><h2 id="ladderTitle">The corrected eight rungs</h2></div><span class="mono muted" id="scanCount">SCAN 0</span></div><div id="rungGroups" class="rung-groups" role="group" aria-label="Program section"></div><p class="ladder-key"><span class="path-key"></span> Teal = true path <span class="path-key inactive"></span> Grey = blocked <span>Click a rung to read it.</span></p><p class="scroll-hint">Swipe sideways to follow each rung to its output.</p><div id="ladder" class="ladder" aria-label="Live ladder program"></div><div class="rung-inspector"><div class="inspector-heading"><span id="rungId" class="mini-label">RUNG INSPECTOR</span><button id="editSelectedBtn" class="small-button">Edit this rung</button></div><p id="rungDetail">Select a rung to inspect its condition and action.</p></div></div><aside class="monitor-column"><section class="panel monitor-panel"><div class="panel-heading"><h2>Output commands</h2><span class="mini-label">AFTER SOLVE</span></div><div id="outputMonitor"></div><div id="memoryPanel" hidden><h3>Stored stage bits</h3><div id="memoryBits"></div></div><div id="practiceMemory" hidden><h3>Practice memory</h3><div id="practiceBits"></div></div><p id="outputNote" class="monitor-note"></p></section><details id="extensionDetails" class="panel extension-panel"><summary>When another part arrives <span aria-hidden="true">+</span></summary><div class="details-body"><p>A second part at SN must wait while the cell is busy. The reference program adds the conveyor rules below. If you edit them, the live ladder and values show your applied behavior.</p><code>INFEED_HOLD = SN AND CELL_BUSY<br>M1 = ST AND NOT INFEED_HOLD<br>M2 = ST AND STEP_UNLOAD</code><div class="request-row"><span>Infeed hold</span><b id="infeedValue">OFF</b></div><div class="request-row"><span>Bypass request · one scan</span><b id="bypassValue">OFF</b></div><p class="fine-print">A bypass request does not move a part. A physical route, robot availability, stored transfer state and completion signals must be defined first. This lab keeps the second part at the sensor.</p><p id="waitingNote" class="waiting-note" hidden>A physical part is waiting; this model has no automatic queue. Clear and re-detect it after the cell becomes idle.</p><button id="redetectBtn" class="small-button" hidden>Clear & re-detect held part</button></div></details></aside></section>
+  <section class="logic-area" aria-label="Program and monitor"><div class="ladder-panel panel"><div class="panel-heading"><div><p class="eyebrow">READ THE LAST SCAN</p><div class="help-title"><h2 id="ladderTitle">The corrected eight rungs</h2><button type="button" class="help-trigger" data-help="ladder" aria-label="Help: Live ladder">?</button></div></div><span class="mono muted" id="scanCount">SCAN 0</span></div><div id="rungGroups" class="rung-groups" role="group" aria-label="Program section"></div><p class="ladder-key"><span class="path-key"></span> Teal = true path <span class="path-key inactive"></span> Grey = blocked <span>Click a rung to read it.</span></p><p class="scroll-hint">Swipe sideways to follow each rung to its output.</p><div id="ladder" class="ladder" aria-label="Live ladder program"></div><div class="rung-inspector"><div class="inspector-heading"><span id="rungId" class="mini-label">RUNG INSPECTOR</span><button id="editSelectedBtn" class="small-button">Edit this rung</button></div><p id="rungDetail">Select a rung to inspect its condition and action.</p></div></div><aside class="monitor-column"><section class="panel monitor-panel"><div class="panel-heading"><div class="help-title"><h2>Output commands</h2><button type="button" class="help-trigger" data-help="outputs" aria-label="Help: Outputs and memory">?</button></div><span class="mini-label">AFTER SOLVE</span></div><div id="outputMonitor"></div><div id="memoryPanel" hidden><h3>Stored stage bits</h3><div id="memoryBits"></div></div><div id="practiceMemory" hidden><h3>Practice memory</h3><div id="practiceBits"></div></div><p id="outputNote" class="monitor-note"></p></section><details id="extensionDetails" class="panel extension-panel"><summary>When another part arrives <span aria-hidden="true">+</span></summary><div class="details-body"><p>A second part at SN must wait while the cell is busy. The reference program adds the conveyor rules below. If you edit them, the live ladder and values show your applied behavior.</p><code>INFEED_HOLD = SN AND CELL_BUSY<br>M1 = ST AND NOT INFEED_HOLD<br>M2 = ST AND STEP_UNLOAD</code><div class="request-row"><span>Infeed hold</span><b id="infeedValue">OFF</b></div><div class="request-row"><span>Bypass request · one scan</span><b id="bypassValue">OFF</b></div><p class="fine-print">A bypass request does not move a part. A physical route, robot availability, stored transfer state and completion signals must be defined first. This lab keeps the second part at the sensor.</p><p id="waitingNote" class="waiting-note" hidden>A physical part is waiting; this model has no automatic queue. Clear and re-detect it after the cell becomes idle.</p><button id="redetectBtn" class="small-button" hidden>Clear & re-detect held part</button></div></details></aside></section>
   <details class="model-notes panel"><summary>Reference model & the three corrections <span aria-hidden="true">+</span></summary><div class="notes-grid"><div><h3>Simple: why it now completes</h3><ol><li><code>GT = ST AND SN</code> keeps the gate permissive available.</li><li>Add <code>TRO.Q</code> to the loading command.</li><li>Add <code>TRO.Q</code> to the loading timer enable.</li></ol><p>SN is held ON even after pickup, and the gate is allowed to remain commanded. Completing the cycle does not release GT or reset the timers. Remove an enabling condition to rearm.</p><p>With the exact eight-rung order, an output is evaluated before its timer. RL/CNS and CNS/RU can therefore overlap for one scan at a transition.</p></div><div><h3>Advanced: remember the operation</h3><p><code>NEW_PART = ST AND rising_edge(SN)</code>. SN is tracked even with ST off. A held sensor cannot create another arrival when ST is re-enabled.</p><p>Stage timers are evaluated before transitions; outputs follow the updated stage. ST off cancels the cycle, clears stage bits and resets timers. It is not pause/resume.</p><p>All times are teaching assumptions: 2 / 5 / 10 / 3 seconds. The 50 ms simulated scan is chosen for inspection. Real equipment needs ready, position and completion feedback. This is an educational model.</p></div></div></details>
   <footer><span>PLC LAB <i>/</i> CHAPTER 08</span><span>Condition → timer → action → next stage.</span><span>Self-contained · works offline</span></footer>
 </main>
@@ -804,6 +850,12 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
     node.dataset.editorAction = action;
     return node;
   };
+  const hint = (key, label) => {
+    const node = el('button', 'help-trigger', '?');
+    node.type = 'button'; node.dataset.help = key;
+    node.setAttribute('aria-label', `Help: ${label}`);
+    return node;
+  };
   function field(label, input, className = '') {
     const wrapper = el('label', `ce-field ${className}`);
     wrapper.append(el('span', 'ce-label', label), input);
@@ -902,7 +954,9 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
     controls.form.append(metadata);
 
     const conditions = el('fieldset', 'ce-conditions');
-    conditions.append(el('legend', 'ce-section-label', 'IF · conditions'));
+    const conditionLegend = el('legend', 'ce-section-label', 'IF · conditions');
+    conditionLegend.append(hint('conditions', 'Contacts and branches'));
+    conditions.append(conditionLegend);
     conditions.append(el('p', 'ce-small', 'All contacts in one branch must pass (AND). Any complete branch can pass the rung (OR).'));
     row.branches.forEach((branch, branchIndex) => {
       if (branchIndex) conditions.append(el('div', 'ce-or', 'OR'));
@@ -947,7 +1001,9 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
   }
   function renderAction(row) {
     const section = el('fieldset', 'ce-action');
-    section.append(el('legend', 'ce-section-label', 'THEN · instruction'));
+    const instructionLegend = el('legend', 'ce-section-label', 'THEN · instruction');
+    instructionLegend.append(hint('instructions', 'Output instructions'));
+    section.append(instructionLegend);
     const usedTimers = draft.rows.filter(other => other.id !== row.id && other.action.kind === 'ton').map(other => other.action.tag);
     const hasFreeTimer = catalog().timerTags.some(tag => !usedTimers.includes(tag));
     const available = [
@@ -970,7 +1026,9 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
       const preset = el('input', 'ce-input');
       preset.type = 'number'; preset.min = '0.1'; preset.max = '60'; preset.step = '0.1';
       preset.value = action.preset; preset.dataset.editorField = 'preset';
-      layout.append(field('Preset · seconds (0.1–60)', preset));
+      const presetGroup = el('div', 'ce-preset-help');
+      presetGroup.append(field('Preset · seconds (0.1–60)', preset), hint('preset', 'Timer preset'));
+      layout.append(presetGroup);
       section.append(el('p', 'ce-small', 'TON resets elapsed time and Q when this rung becomes FALSE. Each timer can have only one TON instruction.'));
     } else if (action.kind === 'setreset') {
       for (const key of ['sets', 'resets']) {
@@ -1204,7 +1262,9 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
     headingText.append(el('strong', '', 'Edit program'), el('small', '', 'Contacts, branches, timers & output instructions'));
     heading.append(headingText, controls.badge);
     body = el('div', 'ce-body');
-    body.append(el('p', 'ce-intro', 'Edits run only after Apply; applying resets the cell.'));
+    const intro = el('div', 'ce-intro-row');
+    intro.append(el('p', 'ce-intro', 'Edits run only after Apply; applying resets the cell.'), hint('editor', 'Program editor'));
+    body.append(intro);
     const guide = el('p', 'ce-guide');
     guide.textContent = 'NO tests ON · NC tests OFF · AND within a branch · OR between branches. Ordinary coils write every scan; SET/RESET keep memory until another instruction changes it.';
     body.append(guide);
@@ -1217,6 +1277,7 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
     for (const [name, action, ref] of [['+ Rung', 'add-rung'], ['Duplicate', 'duplicate-rung'], ['↑ Move up', 'move-up', 'up'], ['↓ Move down', 'move-down', 'down'], ['Delete rung', 'remove-rung', 'remove']]) {
       const control = button(name, action, 'ce-small-button'); tools.append(control); if (ref) controls[ref] = control;
     }
+    tools.append(hint('rung-order', 'Rung order and disabled instructions'));
     body.append(tools);
     controls.form = el('div', 'ce-form'); body.append(controls.form);
     controls.preview = el('code', 'ce-preview'); controls.preview.setAttribute('aria-label', 'Draft rung expression'); body.append(controls.preview);
@@ -1226,6 +1287,13 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
     }
     controls.restore.title = 'Replace your program with the reference and reset the cell';
     body.append(actions);
+    const helpLinks = el('div', 'ce-help-links');
+    for (const [key, label] of [['apply', 'Apply, Reset or Restore?'], ['files', 'Saving & sharing programs']]) {
+      const link = el('button', 'ce-help-link', label);
+      link.type = 'button'; link.dataset.help = key;
+      helpLinks.append(link);
+    }
+    body.append(helpLinks);
     controls.file = el('input'); controls.file.type = 'file'; controls.file.accept = '.json,application/json'; controls.file.hidden = true;
     controls.file.dataset.editorField = 'import-file';
     controls.file.addEventListener('change', () => { const file = controls.file.files[0]; controls.file.value = ''; importFile(file); });
@@ -1612,8 +1680,6 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
   $('editProgramBtn').addEventListener('click',openEditor);
   $('editSelectedBtn').addEventListener('click',openEditor);
   $('programEditor').addEventListener('toggle',()=>{if($('programEditor').open){pause();render(true);}});
-  function showGuide(open){$('quickGuide').hidden=!open;$('guideBtn').setAttribute('aria-expanded',String(open));}
-  $('guideBtn').addEventListener('click',()=>showGuide($('quickGuide').hidden));$('closeGuide').addEventListener('click',()=>{showGuide(false);$('guideBtn').focus();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){pause();render(true);}});
   function frame(now){
     const dt=lastFrame?Math.min(.1,(now-lastFrame)/1000):0;lastFrame=now;
@@ -1631,4 +1697,210 @@ body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var
 })();
 
 </script>
+<script>
+(function (global) {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const copy = {
+    en: {
+      eyebrow:'YOUR FIELD GUIDE', title:'A clear path through the lab.', intro:'Start with one cycle. Then change one thing and follow the result.',
+      topics:'A little more detail', topicNote:'Open only what you need.', close:'Close guide', closeHint:'Close hint', read:'Read this part of the guide', hint:'Help', language:'Guide language',
+      foot:'Look for the ? beside a section or field. Click, tap or press Enter for a focused hint. Help leaves your program and simulation controls unchanged.',
+      quick:[
+        ['Run a first cycle','Choose Simple or Advanced, then Start demo. It resets the cell, enables ST, places a part at SN and runs your applied program.'],
+        ['Pause and follow the cause','Pause, select a ladder rung and compare its read values with the timer and final outputs. Step 1 scan advances 50 ms.'],
+        ['Try one small edit','Open Edit program. Change one timer preset, then Apply & reset cell and Start demo. Watch the timing and robot movement change.']
+      ],
+      topicsData:[
+        {id:'controls',title:'Run, inputs & modes',sub:'The clock and the program have different jobs.',paragraphs:[
+          'Pause stops automatic scans. Run resumes the simulation clock; it does not turn ST on. Input changes still evaluate the logic immediately, even while paused.',
+          'Step 1 scan advances 50 ms. +1 s runs up to 20 scans and can stop early when a cycle completes or is interrupted. Speed changes playback pace, not timer presets.',
+          'ST is the enable input; SN is the part sensor. Place part at SN turns SN on. In the reference programs, switching ST off cancels the cycle; edited instructions determine their own response.',
+          'The Simple reference keeps SN on through one timed cycle. The Advanced reference stores the active stage after pickup. Changing modes resets the cell; each mode keeps its own applied program and current-tab draft.'
+        ]},
+        {id:'ladder',title:'Read the ladder & outputs',sub:'Trace a condition all the way to its instruction.',paragraphs:[
+          'NO passes when its bit is ON; NC passes when its bit is OFF. Every contact in a branch must pass (AND). Any complete parallel branch can pass the rung (OR). An empty imported branch is always TRUE.',
+          'Teal shows a conducting path; grey shows a blocked path. Select a rung to read the values it saw at that point in the scan. The output table shows final values after the whole scan; a later instruction can change an earlier result.',
+          'An ordinary coil writes TRUE or FALSE every enabled scan. SET writes ON and RESET writes OFF only when their rung is TRUE. A disabled rung writes nothing, so a stored value can remain ON.',
+          'In the Simple reference, adjacent commands can overlap for one scan because output rungs precede their timers. Step once to see the earlier command turn off.'
+        ]},
+        {id:'timers',title:'Understand the timers',sub:'Four small labels explain the timing.',terms:[['ET','Elapsed time in seconds.'],['PT','Preset duration in seconds.'],['EN','The timer’s enabling condition.'],['Q','The done bit: ON when ET reaches PT.']],paragraphs:[
+          'TON starts at zero on its first enabled scan. When its condition becomes FALSE, elapsed time and Q reset. Pause holds time; changing an input may still reset the timer.',
+          'Edit a TON instruction to set PT from 0.1 to 60 seconds. Apply the program to use it. Animation timing follows the configured presets. Their total is a timing reference; edits to the sequence can change the actual cycle.'
+        ]},
+        {id:'edit',title:'Build & apply an edit',sub:'A draft becomes active only when you apply it.',paragraphs:[
+          'Opening Edit program pauses the clock. Choose a rung, change its contacts or instruction, and read the draft expression. + Contact adds AND; + Parallel branch adds OR. You can add, duplicate, reorder, disable or delete rungs.',
+          'Program order matters: rungs execute from top to bottom, and later writes can override earlier ones. M_A and M_B are practice memory bits you can use in either mode.',
+          'Apply & reset cell validates the draft, installs it, resets the cell, inputs and clock, and saves the applied program in this browser when storage is available. Start demo or set the inputs and step to try it.',
+          'Unapplied changes do not affect the running logic. If you press Run while a draft is pending, the last applied program runs. Drafts survive mode changes in this tab, but a reload can discard them.'
+        ]},
+        {id:'save',title:'Save, share & start over',sub:'Choose the action that keeps what you need.',terms:[['Reset','Restart the cell; keep your applied program and current-tab draft.'],['Discard draft','Drop unapplied edits; keep the applied program running as it is.'],['Restore reference','Replace this mode’s program and draft with the reference, and reset the cell. The other mode is kept.'],['Export JSON','Download the current valid draft, including unapplied edits.'],['Import JSON','Load a valid program into the matching mode’s draft. Review it, then Apply.']],paragraphs:[
+          'Applied programs are stored separately for Simple and Advanced in this browser. They are not an account backup and do not change anyone else’s program. Export JSON to keep a portable copy or share it.'
+        ]},
+        {id:'troubleshoot',title:'When the result surprises you',sub:'Use the live evidence to find the cause.',terms:[['Nothing moves?','Check the clock, ST, SN and the highlighted rung. Read the final outputs. A draft still marked “Unapplied changes” is not running.'],['Advanced will not restart?','The Advanced reference needs a fresh SN OFF → ON edge while enabled. Holding SN on, or re-enabling ST with SN already on, does not create a new arrival.'],['Mechanism view held?','Conflicting edited commands hold the illustration. The PLC logic, ladder and outputs remain inspectable; Pause and step through the relevant rungs.'],['A second part waits?','The reference busy-arrival extension holds it at the infeed. A bypass request is a one-scan signal, not a physical transfer or an automatic queue.']],paragraphs:[
+          'The three experiment cards reset the cell with its applied program, run to a chosen event and pause for inspection. The arrival experiment uses Advanced mode. With edited logic, the event may not be reached and the outcome follows your program.'
+        ]}
+      ]
+    },
+    fa: {
+      eyebrow:'راهنمای کار با آزمایشگاه',title:'قدم‌به‌قدم، از اجرا تا تغییر برنامه.',intro:'اول یک چرخه را ببینید؛ بعد یک مورد را تغییر دهید و نتیجه را دنبال کنید.',
+      topics:'کمی بیشتر بدانید',topicNote:'فقط بخش موردنیازتان را باز کنید.',close:'بستن راهنما',closeHint:'بستن نکته',read:'توضیح بیشتر در راهنما',hint:'راهنمای',language:'زبان راهنما',
+      foot:'کنار بخش‌ها و فیلدها علامت ? را پیدا کنید. با کلیک، لمس یا کلید Enter یک نکتهٔ کوتاه بخوانید. باز کردن راهنما برنامه یا کنترل‌های شبیه‌سازی را تغییر نمی‌دهد.',
+      quick:[
+        ['اول یک چرخه اجرا کنید','حالت Simple یا Advanced را انتخاب کنید و Start demo را بزنید. سلول از ابتدا آماده می‌شود، ST و SN روشن می‌شوند و برنامهٔ اعمال‌شده اجرا می‌شود.'],
+        ['مکث کنید و علت را بخوانید','Pause را بزنید، یک ردیف Ladder را انتخاب کنید و مقادیر خوانده‌شده را با تایمر و خروجی‌های نهایی مقایسه کنید. Step 1 scan زمان را ۵۰ میلی‌ثانیه جلو می‌برد.'],
+        ['یک تغییر کوچک امتحان کنید','Edit program را باز کنید، زمان یک تایمر را تغییر دهید و Apply & reset cell و سپس Start demo را بزنید. تغییر زمان‌بندی و حرکت ربات را ببینید.']
+      ],
+      topicsData:[
+        {id:'controls',title:'اجرا، ورودی‌ها و حالت‌ها',sub:'ساعت شبیه‌سازی و برنامه وظیفه‌های متفاوتی دارند.',paragraphs:[
+          'Pause اسکن خودکار را متوقف می‌کند. Run ساعت شبیه‌سازی را ادامه می‌دهد؛ ST را روشن نمی‌کند. تغییر ورودی‌ها حتی هنگام مکث، منطق برنامه را همان لحظه ارزیابی می‌کند.',
+          'Step 1 scan برابر ۵۰ میلی‌ثانیه است. +1 s تا ۲۰ اسکن را اجرا می‌کند و با پایان یا قطع چرخه ممکن است زودتر متوقف شود. Speed سرعت نمایش را عوض می‌کند، نه زمان تنظیم‌شدهٔ تایمرها را.',
+          'ST ورودی فعال‌سازی و SN حسگر قطعه است. Place part at SN حسگر را روشن می‌کند. در برنامه‌های مرجع، خاموش‌کردن ST چرخه را لغو می‌کند؛ در برنامهٔ ویرایش‌شده، دستورهای شما تعیین‌کننده‌اند.',
+          'برنامهٔ مرجع Simple حسگر SN را در طول یک چرخه روشن نگه می‌دارد. مرجع Advanced مرحلهٔ فعال را پس از برداشتن قطعه به خاطر می‌سپارد. عوض‌کردن حالت، سلول را از ابتدا آماده می‌کند؛ برنامهٔ اعمال‌شده و پیش‌نویس همان برگه برای هر حالت جدا نگه داشته می‌شود.'
+        ]},
+        {id:'ladder',title:'خواندن Ladder و خروجی‌ها',sub:'مسیر یک شرط را تا دستور خروجی دنبال کنید.',paragraphs:[
+          'کنتاکت NO وقتی بیت روشن است عبور می‌دهد؛ NC وقتی بیت خاموش است. همهٔ کنتاکت‌های یک شاخه باید برقرار باشند (AND). برقرارشدن یک شاخهٔ موازی کافی است (OR). شاخهٔ خالی در فایل واردشده همیشه TRUE است.',
+          'مسیر سبز برقرار و مسیر خاکستری قطع است. یک ردیف را انتخاب کنید تا مقادیری را ببینید که همان ردیف هنگام اسکن خوانده است. جدول خروجی‌ها مقدار نهایی پس از کل اسکن را نشان می‌دهد؛ دستور بعدی می‌تواند نتیجهٔ قبلی را تغییر دهد.',
+          'کویل معمولی در هر اسکن فعال، TRUE یا FALSE می‌نویسد. SET فقط با شرط برقرار، بیت را روشن و RESET آن را خاموش می‌کند. ردیف غیرفعال چیزی نمی‌نویسد؛ بنابراین مقدار ذخیره‌شده ممکن است روشن بماند.',
+          'در مرجع Simple خروجی‌های دو مرحلهٔ مجاور ممکن است یک اسکن هم‌زمان روشن باشند، چون ردیف خروجی پیش از تایمرش اجرا می‌شود. یک اسکن جلو بروید تا خاموش‌شدن دستور قبلی را ببینید.'
+        ]},
+        {id:'timers',title:'معنی عددها و بیت‌های تایمر',sub:'چهار برچسب کوچک، زمان‌بندی را توضیح می‌دهند.',terms:[['ET','زمان سپری‌شده، بر حسب ثانیه.'],['PT','زمان تنظیم‌شده، بر حسب ثانیه.'],['EN','شرط فعال‌سازی تایمر.'],['Q','بیت پایان: وقتی ET به PT برسد روشن می‌شود.']],paragraphs:[
+          'تایمر TON در اولین اسکن فعال از صفر شروع می‌کند. با FALSE شدن شرط، زمان سپری‌شده و Q صفر می‌شوند. Pause زمان را نگه می‌دارد؛ تغییر ورودی همچنان ممکن است تایمر را صفر کند.',
+          'در دستور TON می‌توانید PT را از ۰٫۱ تا ۶۰ ثانیه تنظیم کنید. برای اجرا، برنامه را Apply کنید. زمان انیمیشن با تنظیم تایمرها هماهنگ است. مجموع تایمرها فقط یک مرجع زمانی است؛ تغییر ترتیب و شرط‌ها می‌تواند مدت واقعی چرخه را عوض کند.'
+        ]},
+        {id:'edit',title:'ویرایش و اعمال تغییرات',sub:'پیش‌نویس فقط پس از Apply وارد اجرا می‌شود.',paragraphs:[
+          'بازکردن Edit program ساعت را متوقف می‌کند. یک ردیف انتخاب کنید، شرط یا دستورش را تغییر دهید و عبارت پیش‌نویس را بخوانید. + Contact شرط AND و + Parallel branch مسیر OR اضافه می‌کند. افزودن، تکثیر، جابه‌جایی، غیرفعال‌کردن و حذف ردیف هم ممکن است.',
+          'ترتیب برنامه مهم است: ردیف‌ها از بالا به پایین اجرا می‌شوند و نوشتنِ بعدی می‌تواند مقدار قبلی را عوض کند. M_A و M_B دو بیت حافظهٔ تمرینی در هر دو حالت‌اند.',
+          'Apply & reset cell پیش‌نویس را بررسی و اعمال می‌کند، سلول و ورودی‌ها و ساعت را از ابتدا آماده می‌کند و در صورت دسترس‌بودن حافظهٔ مرورگر، برنامهٔ اعمال‌شده را ذخیره می‌کند. سپس Start demo را بزنید یا ورودی‌ها را تنظیم کنید و یک اسکن جلو بروید.',
+          'تغییر اعمال‌نشده روی اجرای فعلی اثر ندارد. اگر پیش‌نویس دارید و Run را بزنید، آخرین برنامهٔ اعمال‌شده اجرا می‌شود. پیش‌نویس با عوض‌کردن حالت در همین برگه حفظ می‌شود، اما با بارگذاری دوبارهٔ صفحه ممکن است از بین برود.'
+        ]},
+        {id:'save',title:'ذخیره، اشتراک و شروع دوباره',sub:'دکمه‌ای را انتخاب کنید که کارتان را حفظ کند.',terms:[['Reset','سلول را از ابتدا آماده می‌کند؛ برنامهٔ اعمال‌شده و پیش‌نویس همین برگه حفظ می‌شوند.'],['Discard draft','تغییرات اعمال‌نشده را کنار می‌گذارد؛ برنامهٔ در حال اجرا تغییری نمی‌کند.'],['Restore reference','برنامه و پیش‌نویس همین حالت را با مرجع جایگزین و سلول را بازنشانی می‌کند. حالت دیگر حفظ می‌شود.'],['Export JSON','پیش‌نویس معتبر فعلی، حتی تغییرات اعمال‌نشده، را به‌صورت فایل می‌گیرد.'],['Import JSON','برنامهٔ معتبر را در پیش‌نویسِ حالت متناظر وارد می‌کند. آن را بررسی کنید و سپس Apply بزنید.']],paragraphs:[
+          'برنامه‌های اعمال‌شدهٔ Simple و Advanced جداگانه در همین مرورگر ذخیره می‌شوند. این ذخیره‌سازی، پشتیبان حساب کاربری نیست و برنامهٔ افراد دیگر را تغییر نمی‌دهد. برای نگهداری یا اشتراک یک نسخه، Export JSON بگیرید.'
+        ]},
+        {id:'troubleshoot',title:'وقتی نتیجه غیرمنتظره است',sub:'علت را از روی وضعیت واقعی پیدا کنید.',terms:[['حرکتی نمی‌بینید؟','ساعت، ST، SN و ردیف روشن را بررسی کنید. خروجی‌های نهایی را بخوانید. پیش‌نویسی با برچسب Unapplied changes هنوز اجرا نمی‌شود.'],['Advanced دوباره شروع نمی‌شود؟','مرجع Advanced هنگام فعال‌بودن به لبهٔ تازهٔ SN از OFF به ON نیاز دارد. روشن‌ماندن SN یا روشن‌کردن دوبارهٔ ST در حالی که SN روشن است، ورود تازه نمی‌سازد.'],['نمای مکانیزم متوقف شده؟','دستورهای متناقض در برنامهٔ ویرایش‌شده تصویر را نگه می‌دارند. منطق PLC، Ladder و خروجی‌ها قابل بررسی‌اند؛ Pause کنید و ردیف‌های مربوط را اسکن‌به‌اسکن بخوانید.'],['قطعهٔ دوم منتظر مانده؟','افزونهٔ ورود هنگام مشغولی در مرجع، قطعه را در ورودی نگه می‌دارد. درخواست بای‌پس فقط سیگنالی یک‌اسکنی است، نه انتقال فیزیکی یا صف خودکار.']],paragraphs:[
+          'سه کارت آزمایش، سلول را با برنامهٔ اعمال‌شده از ابتدا آماده می‌کنند، تا رویداد مشخصی اجرا می‌کنند و برای بررسی مکث می‌کنند. آزمایش ورود قطعهٔ دوم از Advanced استفاده می‌کند. با منطق ویرایش‌شده ممکن است آن رویداد رخ ندهد و نتیجه تابع برنامهٔ شماست.'
+        ]}
+      ]
+    }
+  };
+  const hints = {
+    controls:{topic:'controls',en:['Control the clock','Pause stops automatic scans; Run resumes time. Step 1 scan advances 50 ms. Reset restarts the cell and keeps your program. Input changes still evaluate while paused.'],fa:['کنترل ساعت','Pause اسکن خودکار را متوقف و Run زمان را ادامه می‌دهد. Step 1 scan برابر ۵۰ میلی‌ثانیه است. Reset سلول را بازنشانی و برنامه را حفظ می‌کند. تغییر ورودی حتی هنگام مکث ارزیابی می‌شود.']},
+    inputs:{topic:'controls',en:['ST and SN are inputs','ST enables the reference sequence. SN means a part is detected. Switching these inputs evaluates the logic immediately; Run controls the clock separately.'],fa:['ST و SN ورودی‌اند','ST توالی مرجع را فعال می‌کند. SN یعنی قطعه تشخیص داده شده است. تغییر این ورودی‌ها منطق را همان لحظه ارزیابی می‌کند؛ Run جداگانه ساعت را کنترل می‌کند.']},
+    modes:{topic:'controls',en:['Compare two strategies','The Simple reference uses a held sensor and chained timers. The Advanced reference remembers the stage after pickup. Switching modes resets the cell; each mode keeps its own program and current-tab draft.'],fa:['دو روش را مقایسه کنید','مرجع Simple از حسگر روشن و تایمرهای زنجیره‌ای استفاده می‌کند. مرجع Advanced مرحله را پس از برداشتن قطعه حفظ می‌کند. تغییر حالت سلول را بازنشانی می‌کند؛ برنامه و پیش‌نویس همین برگه برای هر حالت جدا می‌ماند.']},
+    timers:{topic:'timers',en:['Read ET / PT / Q','ET is elapsed time; PT is the preset. EN shows the enabling condition and Q is the done bit. A TON resets ET and Q when its condition goes FALSE.'],fa:['خواندن ET و PT و Q','ET زمان سپری‌شده و PT زمان تنظیم‌شده است. EN شرط فعال‌سازی و Q بیت پایان است. با FALSE شدن شرط، تایمر TON مقدار ET و Q را صفر می‌کند.']},
+    ladder:{topic:'ladder',en:['Follow the last scan','Select a rung to see the values it actually read. Teal paths conduct; grey paths are blocked. Final output values can differ if another rung writes the same bit later.'],fa:['آخرین اسکن را دنبال کنید','یک ردیف را انتخاب کنید تا مقادیری را ببینید که واقعاً خوانده است. مسیر سبز برقرار و خاکستری قطع است. اگر ردیف بعدی همان بیت را بنویسد، مقدار نهایی خروجی می‌تواند متفاوت باشد.']},
+    outputs:{topic:'ladder',en:['Outputs after the whole scan','ON and OFF are the final command values. A dash means no command is defined for that output. Stage bits store the current operation; M_A and M_B are editable practice memory.'],fa:['خروجی پس از کل اسکن','ON و OFF مقدار نهایی دستورها هستند. خط تیره یعنی دستوری برای آن خروجی تعریف نشده است. بیت‌های مرحله، عملیات جاری را ذخیره می‌کنند؛ M_A و M_B حافظهٔ تمرینی قابل‌ویرایش‌اند.']},
+    editor:{topic:'edit',en:['Make a draft, then Apply','Opening the editor pauses the clock. Your changes remain a draft until Apply & reset cell. Run still uses the last applied program while edits are pending.'],fa:['اول پیش‌نویس، بعد Apply','بازکردن ویرایشگر ساعت را متوقف می‌کند. تغییرات تا Apply & reset cell فقط پیش‌نویس‌اند. تا آن زمان Run آخرین برنامهٔ اعمال‌شده را اجرا می‌کند.']},
+    conditions:{topic:'ladder',en:['AND within, OR between','NO passes when ON; NC passes when OFF. All contacts in one branch must pass. Any complete parallel branch is enough to pass the rung.'],fa:['داخل شاخه AND، بین شاخه‌ها OR','NO با روشن‌بودن و NC با خاموش‌بودن بیت عبور می‌دهد. همهٔ کنتاکت‌های یک شاخه باید برقرار باشند؛ برقرارشدن یک شاخهٔ موازی برای عبور ردیف کافی است.']},
+    instructions:{topic:'ladder',en:['Choose how a value changes','Ordinary coils write TRUE or FALSE every enabled scan. SET and RESET change stored bits only when the rung passes. A disabled rung writes nothing; later writes can override earlier ones.'],fa:['روش تغییر مقدار را انتخاب کنید','کویل معمولی در هر اسکن فعال TRUE یا FALSE می‌نویسد. SET و RESET فقط با شرط برقرار، بیت ذخیره‌شده را تغییر می‌دهند. ردیف غیرفعال چیزی نمی‌نویسد؛ نوشتنِ بعدی می‌تواند قبلی را عوض کند.']},
+    preset:{topic:'timers',en:['Set the timer duration','Enter 0.1–60 seconds, then Apply. Each timer can have one TON instruction. The new preset controls the actual timer and its corresponding animation timing.'],fa:['مدت تایمر را تنظیم کنید','عددی از ۰٫۱ تا ۶۰ ثانیه وارد و سپس Apply کنید. هر تایمر می‌تواند یک دستور TON داشته باشد. مقدار تازه، زمان واقعی تایمر و انیمیشن مربوط به آن را تعیین می‌کند.']},
+    'rung-order':{topic:'edit',en:['Order is part of the logic','Rungs execute from top to bottom. Move a rung to change when it reads or writes a value. Later writes win; disabling a rung does not necessarily turn its target OFF.'],fa:['ترتیب بخشی از منطق است','ردیف‌ها از بالا به پایین اجرا می‌شوند. با جابه‌جایی ردیف، زمان خواندن یا نوشتن مقدار عوض می‌شود. آخرین نوشتن تعیین‌کننده است؛ غیرفعال‌کردن ردیف لزوماً مقصدش را خاموش نمی‌کند.']},
+    apply:{topic:'edit',en:['Apply starts a fresh cell','Apply validates and installs your draft, resets inputs and time, and saves in this browser when storage is available. Reset keeps that program. Restore reference replaces this mode’s edits.'],fa:['Apply سلول تازه‌ای آماده می‌کند','Apply پیش‌نویس را بررسی و اعمال می‌کند، ورودی‌ها و زمان را بازنشانی می‌کند و در صورت دسترس‌بودن حافظهٔ مرورگر، برنامه را ذخیره می‌کند. Reset برنامه را حفظ می‌کند؛ Restore reference ویرایش‌های همین حالت را جایگزین می‌کند.']},
+    files:{topic:'save',en:['Keep or share a program','Export JSON downloads the current valid draft, even before Apply. Import JSON loads a matching-mode draft; review it and Apply to run. Unapplied drafts can be lost on reload.'],fa:['برنامه را نگه دارید یا به اشتراک بگذارید','Export JSON پیش‌نویس معتبر فعلی را حتی پیش از Apply دانلود می‌کند. Import JSON پیش‌نویس حالت متناظر را وارد می‌کند؛ بررسی کنید و برای اجرا Apply بزنید. پیش‌نویس اعمال‌نشده ممکن است با بارگذاری دوباره از بین برود.']},
+    experiments:{topic:'troubleshoot',en:['Run a focused experiment','These cards reset the cell using its applied program, run toward a selected event and pause for inspection. The second-part experiment uses Advanced. Edited logic can change the result or prevent the event.'],fa:['یک آزمایش مشخص اجرا کنید','این کارت‌ها سلول را با برنامهٔ اعمال‌شده بازنشانی می‌کنند، به سمت رویداد انتخابی اجرا می‌کنند و برای بررسی مکث می‌کنند. آزمایش قطعهٔ دوم از Advanced استفاده می‌کند. منطق ویرایش‌شده می‌تواند نتیجه یا وقوع رویداد را عوض کند.']}
+  };
+  let mounted=false, lang='en', trigger=null, hintKey=null, popover, guide;
+  const el=(tag,className,text)=>{const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)rich(node,text);return node;};
+  function rich(node,text){
+    node.replaceChildren();
+    if(lang!=='fa'){node.textContent=text;return;}
+    const chunks=String(text).split(/([A-Za-z][A-Za-z0-9_]*(?:[ /&+·→-]+[A-Za-z0-9_]+)*)/g);
+    chunks.forEach((chunk,i)=>{if(i%2){const bdi=document.createElement('bdi');bdi.dir='ltr';bdi.textContent=chunk;node.append(bdi);}else node.append(document.createTextNode(chunk));});
+  }
+  function renderGuide(){
+    const t=copy[lang], open=new Set([...guide.querySelectorAll('[data-guide-topic][open]')].map(n=>n.dataset.guideTopic));
+    guide.lang=lang;guide.dir=lang==='fa'?'rtl':'ltr';
+    for(const [id,key] of [['helpGuideEyebrow','eyebrow'],['helpGuideTitle','title'],['helpGuideIntro','intro'],['helpTopicsTitle','topics'],['helpTopicsNote','topicNote'],['helpGuideFoot','foot']])rich($(id),t[key]);
+    $('closeGuide').setAttribute('aria-label',t.close);
+    guide.querySelector('.help-language').setAttribute('aria-label',t.language);
+    guide.querySelectorAll('[data-help-language]').forEach(n=>n.setAttribute('aria-pressed',String(n.dataset.helpLanguage===lang)));
+    const quick=$('helpQuickStart');quick.replaceChildren();
+    t.quick.forEach(([title,text],i)=>{
+      const card=el('article','help-step');const number=el('span','help-step-number',lang==='fa'?['۰۱','۰۲','۰۳'][i]:`0${i+1}`);number.setAttribute('aria-hidden','true');
+      const body=el('div','help-step-content');body.append(el('h3','',title),el('p','',text));card.append(number,body);quick.append(card);
+    });
+    const topics=$('helpTopics');topics.replaceChildren();
+    t.topicsData.forEach(topic=>{
+      const details=el('details','help-topic');details.id=`help-topic-${topic.id}`;details.dataset.guideTopic=topic.id;details.open=open.has(topic.id);
+      const summary=el('summary','');const heading=el('span','help-topic-title');heading.append(el('strong','',topic.title),el('small','',topic.sub));const chevron=el('span','help-chevron','+');chevron.setAttribute('aria-hidden','true');summary.append(heading,chevron);details.append(summary);
+      const body=el('div','help-topic-body');
+      if(topic.terms){const list=el('dl','help-definitions');topic.terms.forEach(([term,meaning])=>{const pair=el('div','');pair.append(el('dt','',term),el('dd','',meaning));list.append(pair);});body.append(list);}
+      (topic.paragraphs||[]).forEach(p=>body.append(el('p','',p)));details.append(body);topics.append(details);
+    });
+    document.querySelectorAll('button[data-help]').forEach(node=>{const item=hints[node.dataset.help];if(item){node.setAttribute('aria-label',`${t.hint}: ${item[lang][0]}`);node.setAttribute('aria-controls','helpPopover');node.setAttribute('aria-expanded',String(node===trigger&&!popover.hidden));}});
+  }
+  function setLanguage(value){
+    if(value!=='en'&&value!=='fa')return;lang=value;
+    try{localStorage.setItem('plc-help-language-v1',lang);}catch(_){}
+    renderGuide();if(!popover.hidden)renderHint();
+  }
+  function show(topic){
+    closeHint(false);guide.hidden=false;$('guideBtn').setAttribute('aria-expanded','true');
+    const section=guide.querySelector(`[data-guide-topic="${['controls','ladder','timers','edit','save','troubleshoot'].includes(topic)?topic:''}"]`);
+    const focus=section?section.querySelector('summary'):$('helpGuideTitle');if(section)section.open=true;
+    focus.focus({preventScroll:true});(section||guide).scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  }
+  function closeGuide(){guide.hidden=true;$('guideBtn').setAttribute('aria-expanded','false');$('guideBtn').focus({preventScroll:true});}
+  function positionHint(){
+    if(popover.hidden||!trigger)return;
+    if(!trigger.isConnected){closeHint(false);return;}
+    const anchor=trigger.getBoundingClientRect(),vw=document.documentElement.clientWidth,vh=window.innerHeight;
+    if(anchor.bottom<0||anchor.top>vh){closeHint(false);return;}
+    const box=popover.getBoundingClientRect();let top=anchor.bottom+10;
+    if(top+box.height>vh-12)top=anchor.top-box.height-10;
+    top=Math.max(12,Math.min(top,vh-box.height-12));
+    const left=Math.max(12,Math.min(lang==='fa'?anchor.right-box.width:anchor.left,vw-box.width-12));
+    popover.style.left=`${left}px`;popover.style.top=`${top}px`;
+  }
+  function renderHint(){
+    const item=hints[hintKey];if(!item)return;
+    popover.lang=lang;popover.dir=lang==='fa'?'rtl':'ltr';
+    rich($('helpHintEyebrow'),lang==='fa'?'یک نکتهٔ کوتاه':'A QUICK HINT');rich($('helpHintTitle'),item[lang][0]);rich($('helpHintText'),item[lang][1]);
+    $('closeHint').setAttribute('aria-label',copy[lang].closeHint);rich($('hintReadGuide'),copy[lang].read);
+    $('hintLanguage').textContent=lang==='fa'?'English':'فارسی';$('hintLanguage').lang=lang==='fa'?'en':'fa';$('hintLanguage').setAttribute('aria-label',lang==='fa'?'Read hints in English':'خواندن نکته‌ها به فارسی');
+    trigger?.setAttribute('aria-label',`${copy[lang].hint}: ${item[lang][0]}`);
+    positionHint();
+  }
+  function closeHint(restoreFocus){
+    if(!popover||popover.hidden)return;
+    popover.hidden=true;const previous=trigger;previous?.setAttribute('aria-expanded','false');trigger=null;hintKey=null;
+    if(restoreFocus){if(previous?.isConnected&&previous.getClientRects().length)previous.focus({preventScroll:true});else $('guideBtn').focus({preventScroll:true});}
+  }
+  function openHint(button){
+    if(!hints[button.dataset.help])return;
+    if(trigger===button&&!popover.hidden){closeHint(true);return;}
+    closeHint(false);trigger=button;hintKey=button.dataset.help;
+    button.setAttribute('aria-controls','helpPopover');button.setAttribute('aria-expanded','true');
+    popover.hidden=false;renderHint();$('closeHint').focus({preventScroll:true});
+  }
+  function mount(){
+    if(mounted)return;guide=$('quickGuide');if(!guide)return;mounted=true;
+    try{const saved=localStorage.getItem('plc-help-language-v1');if(saved==='en'||saved==='fa')lang=saved;}catch(_){}
+    popover=el('aside','help-popover');popover.id='helpPopover';popover.hidden=true;popover.setAttribute('role','dialog');popover.setAttribute('aria-modal','false');popover.setAttribute('aria-labelledby','helpHintTitle');popover.setAttribute('aria-describedby','helpHintText');
+    const header=el('div','help-hint-header');const eyebrow=el('span','eyebrow');eyebrow.id='helpHintEyebrow';const close=el('button','help-close','×');close.id='closeHint';close.type='button';header.append(eyebrow,close);
+    const title=el('h3');title.id='helpHintTitle';const text=el('p');text.id='helpHintText';
+    const footer=el('div','help-hint-footer');const read=el('button','help-read-more');read.id='hintReadGuide';read.type='button';const language=el('button','help-hint-language');language.id='hintLanguage';language.type='button';footer.append(read,language);
+    popover.append(header,title,text,footer);document.body.append(popover);renderGuide();
+    $('guideBtn').addEventListener('click',()=>guide.hidden?show():closeGuide());$('closeGuide').addEventListener('click',closeGuide);
+    guide.addEventListener('click',event=>{const button=event.target.closest('[data-help-language]');if(button)setLanguage(button.dataset.helpLanguage);});
+    close.addEventListener('click',()=>closeHint(true));language.addEventListener('click',()=>setLanguage(lang==='en'?'fa':'en'));
+    read.addEventListener('click',()=>{const topic=hints[hintKey]?.topic;show(topic);});
+    document.addEventListener('click',event=>{
+      const button=event.target.closest('button[data-help]');
+      if(button){event.preventDefault();openHint(button);return;}
+      if(!popover.hidden&&!popover.contains(event.target))closeHint(false);
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key!=='Escape')return;
+      if(!popover.hidden){event.preventDefault();closeHint(true);}
+      else if(!guide.hidden&&guide.contains(document.activeElement)){event.preventDefault();closeGuide();}
+    });
+    document.addEventListener('focusin',event=>{if(!popover.hidden&&!popover.contains(event.target)&&event.target!==trigger)closeHint(false);});
+    window.addEventListener('resize',positionHint);window.addEventListener('scroll',positionHint,true);
+  }
+  global.CellHelp={mount,show,get language(){return lang;}};
+})(window);
+
+</script>
+<script>CellHelp.mount();</script>
 </body></html>
