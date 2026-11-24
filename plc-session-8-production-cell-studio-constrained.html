@@ -18,13 +18,39 @@
 
 .scroll-hint{display:none}@media(max-width:600px){.scroll-hint{display:block;color:var(--muted);font:9px/1.5 var(--mono);padding:7px 12px;background:#f4f7ee;border-top:1px solid #e6ecdf}}
 
+/* Material and visual hierarchy refinement; animation is still driven by PLC time. */
+:root{--paper:#f3f5f0;--panel:#fffefa;--ink:#1c3733;--muted:#596d64;--line:#d7e1d5;--teal:#087b6a;--teal-dark:#075d50}
+body{background:radial-gradient(ellipse at 79% 0%,#e8efe5 0,transparent 42%),var(--paper)}
+.topbar{border-bottom-color:#cfdbce}.brand svg{width:33px;height:33px;padding:4px;border:1px solid #c6d7c8;border-radius:8px;background:#edf4e9}.brand{letter-spacing:.06em}
+.hero{padding-top:36px;padding-bottom:29px}.hero h1{font-weight:620}.hero h1 .hero-accent{color:var(--teal)}.hero .eyebrow{color:#587762}.lede{color:#586d62}
+.cycle-mark{position:relative;min-height:98px;padding-left:124px;min-width:297px;justify-content:center;gap:6px;border-left:0}
+.cycle-dial{position:absolute;left:0;top:0;width:100px;height:100px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(from -90deg,#9ec5ad 0deg 33deg,transparent 33deg 38deg,#528f7b 38deg 123deg,transparent 123deg 128deg,#146f60 128deg 303deg,transparent 303deg 308deg,#c5a765 308deg 355deg,transparent 355deg 360deg);box-shadow:0 0 0 1px #ccd9ca,0 4px 15px #274d3b06}
+.cycle-dial::before{content:"";position:absolute;inset:7px;background:#f5f7f1;border-radius:50%;border:1px solid #dce5d6;box-shadow:inset 0 1px 6px #264d3a06}
+.cycle-dial strong{position:relative;z-index:1;font-size:40px;font-weight:450;letter-spacing:-2.8px}.cycle-dial strong span{font-size:20px;margin-left:2px}.cycle-mark>span{font-size:9px}.cycle-mark small{font-size:10px}
+.mode-switch{border:1px solid #d9e2d3;background:#e7ede2;padding:4px;box-shadow:inset 0 1px 2px #2a493904}.mode-switch button[aria-pressed=true]{border-color:#c7d9c5;box-shadow:0 2px 5px #1d42200b;color:var(--teal-dark)}
+.panel{border-color:#d4e0d1;box-shadow:0 2px 3px #264a3502,0 9px 24px #264a3503;border-radius:12px}.machine-card{box-shadow:0 8px 28px #27452d07}.machine-card>.panel-heading{background:linear-gradient(110deg,#fffefa,#f4f8ee);border-bottom:1px solid #e3ebdd;padding-top:18px;padding-bottom:18px}
+.machine-card .heading-label h2{letter-spacing:-.45px}.live-dot{box-shadow:0 0 0 4px #eaf0e5}.live-dot.running{background:#078d70;box-shadow:0 0 0 4px #d9efdf,0 0 0 7px #eef7e9}
+#clockLabel{padding:6px 9px;border:1px solid #dbe5d4;border-radius:5px;background:#f6f9f0;color:#516b59;font-size:10px;font-variant-numeric:tabular-nums}
+.scene{background:#f6f8f0;padding:4px 8px 0}.scene-caption{background:#fbfcf6;color:#5d725f;border-color:#dde7d6}.legend i{width:9px;height:9px;border:1px solid #aa95633b;box-shadow:inset 0 1px 1px #fff9}
+.sequence{padding:17px 19px;gap:9px;background:#fcfdf7}.sequence>div{padding:10px 8px 12px;border:1px solid #dfe7d6;border-radius:8px;background:#f6f8ef;overflow:hidden;gap:8px;align-items:center}.sequence>div.active{background:linear-gradient(125deg,#e7f3e3,#f4f9ed);border-color:#8cb69d;box-shadow:0 2px 8px #245b3906}.sequence>div.done{background:#f1f6e9;border-color:#cddfc7}.sequence i{height:3px;bottom:0;background:#388b69}.sequence .step-number{width:31px;height:31px;border-radius:8px;border:1px solid #dbe5d2;background:#fffef8;color:#6a8069}.sequence .step-number svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;fill:none}.sequence .active .step-number{background:#087b6a;color:#fffef5;border-color:#087b6a;box-shadow:0 2px 5px #14644319}.sequence .done .step-number{background:#e7f0df;color:#478463;border-color:#cedfc6}.sequence small{color:#63775f;font-size:9px}.sequence b{font-size:12px;letter-spacing:-.15px}
+.transport{background:#fcfdf7;padding-bottom:19px}.transport button{box-shadow:0 1px 2px #284a3106}.transport .primary{background:linear-gradient(#0c8773,#076e60);border-color:#0b7562;box-shadow:inset 0 1px 0 #ffffff2e,0 3px 7px #16614418}.transport .primary:hover{background:linear-gradient(#0d927b,#086c5b)}.transport .quiet{box-shadow:none}.speed-label select{background:#fffef8;border-color:#cfdcc6;color:#34513c;min-width:46px}.inputs-bar{background:#f1f6ea;border-color:#dce6d3}.switch-track{box-shadow:inset 0 1px 2px #23402a16}.small-button{border-color:#c9d9c1}
+.live-guide{position:relative;background:linear-gradient(145deg,#fbfdf5,#f4f8ee);border-color:#cdddc4;box-shadow:inset 0 3px 0 #aac7ae,0 5px 16px #27452d03}.live-guide>.eyebrow{display:inline-block;color:#487458;font-size:9px;letter-spacing:.11em;border:1px solid #d7e4ce;border-radius:4px;background:#edf5e7;padding:4px 7px}.live-guide h2{font-size:22px;letter-spacing:-.65px}.live-guide>p{color:#4e6658}.why{background:#e9f2e2;border:1px solid #dce8d1;color:#27654a;font-size:10px;padding:11px;border-radius:6px;box-shadow:inset 0 1px 0 #ffffff70}.guide-bottom{border-color:#d8e4ce}.guide-bottom .mini-label{color:#637f5c}.guide-bottom p{color:#536d57}
+.timer-card .panel-heading{padding-top:16px}.timer{margin:12px 0;gap:9px}.timer-tag{color:#526c55;font-size:10px}.timer-tag small{color:#667e60;font-size:9px}.timer-numbers{color:#35523d;font-variant-numeric:tabular-nums}.timer-numbers span:last-child{color:#6e8064}.bar-track{height:5px;background:#e4ebdb;box-shadow:inset 0 1px 1px #3f5a2e08}.bar-fill{background:linear-gradient(90deg,#94baa0,#659a7b);border-radius:3px}.timer.enabled .bar-fill{background:linear-gradient(90deg,#0c7763,#58a57a)}.timer-q{border-color:#d8e2ce;background:#f7f9f1;color:#73836b}.timer-q.on{background:#e0eed8;border-color:#a8c59a;color:#286b43;box-shadow:0 0 0 2px #f1f7e9}.timer-foot{color:#62745d;font-size:10px}
+.experiment-strip{border-bottom-color:#d5e0cd}.experiment-actions button{background:#f9fbf4;border-color:#d1dfc9;border-radius:9px;box-shadow:0 2px 4px #2d4c2403}.experiment-actions button:hover{background:#edf5e6;border-color:#94b38a}.experiment-actions button>span:first-child{display:grid;place-items:center;width:25px;height:25px;flex-shrink:0;border-radius:7px;background:#eaf1e2;color:#56764b;border:1px solid #d8e5cc}.experiment-actions small{color:#607359}.experiment-actions .arrow-icon{color:#54805b}
+.ladder-panel>.panel-heading{background:linear-gradient(110deg,#fffefa,#f8fbf1)}.rung-groups{border-color:#e0e9d7}.rung-groups button[aria-pressed=true]{background:#e5f1de;border:1px solid #c6dcbc;padding-top:6px;padding-bottom:6px}.ladder-key{color:#5e7256;background:#fbfcf6}.ladder{background-color:#fffef9;background-image:radial-gradient(#d8e2cd 0.6px,transparent 0.6px);background-size:12px 12px;border-top-color:#e4ebda}.rung-button{background:#fffef9bf}.rung-button.selected{background:#edf5e5ed;border-color:#b5cfa7;box-shadow:inset 3px 0 0 #6d9c62}.rung-button:hover{background:#f3f7ed}.rung-inspector{background:#eff5e7;border-top-color:#d5e4c9}.rung-inspector .mini-label{color:#4d7650}.rung-inspector p{color:#4b654e}
+.monitor-panel .panel-heading{background:#f9fbf3}.output-row{transition:background .12s;border-color:#e8eedf}.output-row.on{background:linear-gradient(90deg,#edf5e5,#fffef9)}.bit-light{background:#c9d7bd}.output-row.on .bit-light{background:#178456;box-shadow:0 0 0 3px #dcebd2}.output-row .output-state{color:#6b7d61;border:1px solid transparent;padding:3px 5px;border-radius:4px;min-width:32px;text-align:center}.output-row .output-state.on{background:#e4f0da;border-color:#c7dfb8;color:#2b7447}.memory-chip.on{background:#e4f0d9;border-color:#a7c796;color:#36724a}.model-notes{background:#f9fbf3}.extension-panel{background:linear-gradient(140deg,#fffef9,#f8faf1)}
+@media(max-width:1150px){.cycle-mark{min-width:255px;padding-left:108px}.cycle-dial{width:88px;height:88px;top:4px}.cycle-dial strong{font-size:36px}.sequence{padding-inline:14px;gap:7px}.sequence>div{padding:9px 6px 11px;gap:6px}.sequence .step-number{width:26px;height:29px}.sequence .step-number svg{width:17px;height:17px}.sequence b{font-size:11px}.live-guide h2{font-size:21px}}
+@media(max-width:900px){.cycle-mark{display:none}.hero h1{font-size:42px}.sequence{padding:17px}.sequence .step-number{width:31px;height:31px}.sequence .step-number svg{width:20px;height:20px}}
+@media(max-width:600px){.brand svg{width:28px;height:28px}.hero{padding-top:26px;padding-bottom:24px}.hero h1{font-size:35px;line-height:1.15}.hero h1 .hero-accent{display:block}.hero .eyebrow{font-size:8px}.panel{border-radius:10px}.machine-card>.panel-heading{padding:15px 12px}#clockLabel{font-size:8px;padding:5px 6px}.heading-label{gap:8px}.scene{padding:2px 0 0}.sequence{padding:13px 10px;gap:6px}.sequence>div{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:9px 7px 11px}.sequence .step-number{display:grid;width:25px;height:25px;border-radius:6px}.sequence .step-number svg{width:17px;height:17px}.sequence b{font-size:10px}.sequence small{font-size:8px;margin-top:4px;white-space:nowrap}.transport{display:grid;grid-template-columns:1fr auto;gap:10px;padding:0 12px 14px}.transport-main{grid-column:1/-1;display:grid;grid-template-columns:minmax(91px,1.2fr) minmax(77px,1fr) 41px 45px;gap:5px;width:100%}.transport-main button{font-size:10px;padding:10px 5px;min-width:0}.transport .primary{min-width:0}.speed-label{grid-column:2;justify-self:end;font-size:10px}.inputs-bar{padding:13px 12px}.live-guide{padding-top:18px}.live-guide h2{font-size:21px}.timer{margin:11px 0}.experiment-actions button{padding:13px}.experiment-actions button>span:first-child{width:29px;height:29px}.experiment-actions b{font-size:12px}.ladder-key{font-size:9px}.rung-inspector p{font-size:12px}.output-row{padding-top:11px;padding-bottom:11px}}
+@media(prefers-reduced-motion:reduce){.output-row{transition:none}}
+
 </style>
 </head>
 <body>
 <a class="skip-link" href="#workbench">Skip to simulator</a>
 <main>
   <header class="topbar"><a class="brand" href="plc8c.html" aria-label="Production cell learning home"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M5 4v22M25 4v22M5 10h7m6 0h7M12 6v8m6-8v8M5 21h8m4 0h8"/><circle cx="15" cy="21" r="4"/></svg><span>PLC <b>LAB</b></span></a><span class="chapter-label">CHAPTER 08 <span>/</span> PRODUCTION SYSTEMS</span><button id="guideBtn" class="text-button" aria-expanded="false" aria-controls="quickGuide">How to use this lab <span class="arrow-icon" aria-hidden="true"></span></button></header>
-  <section class="hero" aria-labelledby="pageTitle"><div><p class="eyebrow">FROM A CONDITION TO A COMPLETE CYCLE</p><h1 id="pageTitle">One part. Four operations.</h1><p class="lede">Follow a part through positioning, robot loading, machining and unloading.<br class="desktop-break"> See exactly what changes when the PLC remembers the active stage.</p></div><div class="cycle-mark" aria-label="20 second nominal process"><strong>20<span>s</span></strong><span>NOMINAL PROCESS TIME</span><small>2 + 5 + 10 + 3 seconds</small></div></section>
+  <section class="hero" aria-labelledby="pageTitle"><div><p class="eyebrow">FROM A CONDITION TO A COMPLETE CYCLE</p><h1 id="pageTitle">One part. <span class="hero-accent">Four operations.</span></h1><p class="lede">Follow a part through positioning, robot loading, machining and unloading.<br class="desktop-break"> See exactly what changes when the PLC remembers the active stage.</p></div><div class="cycle-mark" aria-label="20 second nominal process"><div class="cycle-dial" aria-hidden="true"><strong>20<span>s</span></strong></div><span>NOMINAL PROCESS TIME</span><small>2 + 5 + 10 + 3 seconds</small></div></section>
   <section id="quickGuide" class="quick-guide" hidden aria-label="Quick guide"><div><b>01 · Run a cycle</b><p>Start demo enables ST and places a part at SN. Pause freezes the clock, mechanism and program together.</p></div><div><b>02 · Read the cause</b><p>Follow the highlighted operation, timer and ladder. Select a rung to see the values it actually read in the last scan.</p></div><div><b>03 · Change a condition</b><p>Clear SN during loading, or switch ST off. Compare the result in the two modes. Step one scan to inspect a boundary.</p></div><button id="closeGuide" class="icon-button" aria-label="Close quick guide">×</button></section>
   <div class="mode-bar"><div class="mode-switch" role="group" aria-label="Control strategy"><button id="simpleMode" data-mode="simple" aria-pressed="true"><span>01</span> Simple <small>Eight rungs</small></button><button id="advancedMode" data-mode="advanced" aria-pressed="false"><span>02</span> Advanced <small>Stage memory</small></button></div><p id="modeCaption">One timed cycle, with SN held ON.</p></div>
   <section id="workbench" class="workspace" aria-label="Production cell simulator">
@@ -32,7 +58,7 @@
       <div class="panel-heading"><div class="heading-label"><span class="live-dot" id="clockDot"></span><h2>The production cell</h2></div><span id="clockLabel" class="mono muted">READY · 0.00 s</span></div>
       <div id="scene" class="scene"></div><p class="scroll-hint">Swipe sideways to inspect the whole cell.</p>
       <div class="scene-caption"><span id="sceneNote">Place one raw part at the sensor to begin.</span><span class="legend"><i class="raw-key"></i> Raw <i class="finished-key"></i> Finished</span></div>
-      <div class="sequence" aria-label="Process sequence"><div data-phase="position"><span class="step-number">1</span><div><b>Position</b><small>GT · 2 s</small></div><i></i></div><div data-phase="load"><span class="step-number">2</span><div><b>Load</b><small>RL · 5 s</small></div><i></i></div><div data-phase="cnc"><span class="step-number">3</span><div><b>Machine</b><small>CNS · 10 s</small></div><i></i></div><div data-phase="unload"><span class="step-number">4</span><div><b>Unload</b><small>RU · 3 s</small></div><i></i></div></div>
+      <div class="sequence" aria-label="Process sequence"><div data-phase="position"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 16h18M5 16V9h5v7m4 0V4h5v12M3 9h4m10-7v4"/></svg></span><div><b>Position</b><small>GT · 2 s</small></div><i></i></div><div data-phase="load"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 20h8m-6 0v-5l-6-7 5-5 6 7m0 0 3 2m-3-2 1-3m2 5 2-2M4 8l2-2"/><circle cx="11" cy="15" r="2"/><circle cx="10" cy="3" r="1.5"/></svg></span><div><b>Load</b><small>RL · 5 s</small></div><i></i></div><div data-phase="cnc"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V4h16v16ZM7 16h10M10 4v5h4V4m-2 5v4m-4 7v-3h8v3"/></svg></span><div><b>Machine</b><small>CNS · 10 s</small></div><i></i></div><div data-phase="unload"><span class="step-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17h18M5 21h14M7 17v4m10-4v4M4 7h9m-3-3 3 3-3 3m5 1h5v6h-5"/></svg></span><div><b>Unload</b><small>RU · 3 s</small></div><i></i></div></div>
       <div class="transport"><div class="transport-main"><button id="playBtn" class="primary"><span class="play-icon" aria-hidden="true"></span> Start demo</button><button id="scanBtn" title="Evaluate one complete PLC scan; advance 50 milliseconds">Step 1 scan</button><button id="secondBtn" title="Evaluate 20 PLC scans">+1 s</button><button id="resetBtn" class="quiet" title="Clear the cell, inputs, timers and clock">Reset</button></div><label class="speed-label">Speed <select id="speedSelect" aria-label="Simulation speed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option></select></label></div>
       <div class="inputs-bar"><label class="switch-label"><input id="stInput" type="checkbox" role="switch"><span class="switch-track"></span><span><b>ST</b> Enable cell</span></label><label class="switch-label"><input id="snInput" type="checkbox" role="switch"><span class="switch-track"></span><span><b>SN</b> Part sensor</span></label><button id="partBtn" class="small-button">Place part at SN <span aria-hidden="true">+</span></button></div>
     </div>
@@ -283,7 +309,7 @@
   let svg, nodes = {}, last = null, lastTime = null, resetToken, beltIn = 0, beltOut = 0, serial = 0;
   const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, Number(v) || 0));
   const smooth = t => t * t * (3 - 2 * t);
-  const home = { x: 615, y: 120 }, pickup = { x: 321, y: 250 }, machine = { x: 716, y: 223 }, delivery = { x: 914, y: 261 };
+  const home = { x: 315, y: 140 }, pickup = { x: 321, y: 250 }, machine = { x: 716, y: 223 }, delivery = { x: 914, y: 261 };
   const blend = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
   function pathAt(stops, progress, discrete = false) {
     for (let i = 1; i < stops.length; i++) {
@@ -291,8 +317,8 @@
     }
     return stops[stops.length - 1][1];
   }
-  const loadPath = [[0, home], [.10, {x:490,y:45}], [.22, pickup], [.30, pickup], [.46, {x: 321, y: 163}], [.56,{x:490,y:45}], [.66, {x: 674, y: 158}], [.82, machine], [.90, machine], [1, home]];
-  const unloadPath = [[0, home], [.19, machine], [.28, machine], [.44, {x: 716, y: 163}], [.67, {x: 914, y: 188}], [.82, delivery], [.89, delivery], [1, home]];
+  const loadPath = [[0, home], [.22, pickup], [.30, pickup], [.46, {x: 321, y: 163}], [.56,{x:490,y:45}], [.66, {x: 674, y: 158}], [.82, machine], [.90, machine], [.95,{x:490,y:45}], [1, home]];
+  const unloadPath = [[0, home], [.08,{x:490,y:45}], [.19, machine], [.28, machine], [.44, {x: 716, y: 163}], [.67, {x: 914, y: 188}], [.82, delivery], [.89, delivery], [.95,{x:600,y:100}], [1, home]];
   function el(name, attrs) {
     const node = document.createElementNS(NS, name);
     for (const [key, value] of Object.entries(attrs || {})) node.setAttribute(key, value);
@@ -307,13 +333,41 @@
   function badge(x, y, tag, name, key) {
     return `<g transform="translate(${x} ${y})"><rect x="0" y="0" width="39" height="23" rx="5" fill="#eef0ec" stroke="#cbd3cc" data-node="${key}-badge"/><text x="19.5" y="15" text-anchor="middle" class="cs-tag" data-node="${key}-tag">${tag}</text><text x="49" y="15" class="cs-label">${name}</text></g>`;
   }
-  function conveyor(x, y, width, key) {
+  function conveyor(x, y, width, key, id) {
     let wheels = '';
     for (let i = 0; i < Math.floor((width - 20) / 30); i++) {
       const cx = x + 20 + i * 30;
-      wheels += `<g transform="translate(${cx} ${y+13})"><g data-belt="${key}"><circle r="9" fill="#f8f8f2" stroke="#74847c" stroke-width="1.6"/><path d="M-6 0H6M0-6V6" stroke="#a6b1a9" stroke-width="1.2"/><circle r="2.5" fill="#536960"/></g></g>`;
+      wheels += `<g transform="translate(${cx} ${y+13})"><circle r="10" fill="#405a51"/><circle r="8.5" fill="url(#${id}Steel)" stroke="#6f8379" stroke-width=".7"/><g data-belt="${key}"><path d="M-5.6-2.1A6 6 0 0 1 3.4-5M-3.4 5A6 6 0 0 1-5.8 1" fill="none" stroke="#fffdf5" stroke-width="1.6"/><path d="M-4.4 0h8.8" stroke="#91a49b" stroke-width="1"/><circle r="2.6" fill="#526e61"/><circle r="1" fill="#dbe6df"/></g></g>`;
     }
-    return `<g><path d="M${x+28} ${y+25}v42m${width-57} -42v42" stroke="#8b9990" stroke-width="7"/><path d="M${x+12} ${y+68}h32m${width-77} 0h32" stroke="#526960" stroke-width="3" stroke-linecap="round"/><rect x="${x}" y="${y}" width="${width}" height="27" rx="13.5" fill="#d9dfd6" stroke="#526960" stroke-width="2"/><path d="M${x+15} ${y+2}H${x+width-15}" stroke="#71867a" stroke-width="3"/>${wheels}<path d="M${x+14} ${y-3}H${x+width-14}" fill="none" stroke="#187a68" stroke-width="3" stroke-dasharray="12 14" opacity="0" data-node="${key}-belt"/><rect x="${x+width*.57}" y="${y+24}" width="39" height="29" rx="6" fill="#e9ece4" stroke="#526960" stroke-width="1.6"/><path d="M${x+width*.57+8} ${y+29}v18m7-18v18m7-18v18" stroke="#9aa99e" stroke-width="1.5"/><circle cx="${x+width*.57+32}" cy="${y+38}" r="4" fill="#b8c4b9" data-node="${key}-motor"/></g>`;
+    const motorX=x+width*.57;
+    return `<g>
+      <ellipse cx="${x+width/2}" cy="${y+72}" rx="${width/2-4}" ry="6" fill="#244d3d" opacity=".08"/>
+      <path d="M${x+24} ${y+25}v39h10v-39m${width-67} 0v39h10v-39" fill="url(#${id}Steel)" stroke="#668273" stroke-width="1"/>
+      <path d="M${x+29} ${y+39}H${x+width-29}" stroke="#bdcbc1" stroke-width="3"/>
+      <path d="M${x+16} ${y+65}h27v5H${x+16}Zm${width-57} 0h27v5h-27Z" fill="#476356"/>
+      <path d="M${x+13} ${y}l8-10h${width-30}l11 10Z" fill="#dce6dc" stroke="#7d9587" stroke-width="1"/>
+      <path d="M${x+23} ${y-8}H${x+width-14}" stroke="#fffef8" stroke-width="2"/>
+      <rect x="${x}" y="${y}" width="${width}" height="28" rx="13.5" fill="url(#${id}Frame)" stroke="#526e60" stroke-width="1.5"/>
+      <path d="M${x+15} ${y+2}H${x+width-15}" stroke="#fbfdf6" stroke-width="2"/>
+      <path d="M${x+16} ${y+25}H${x+width-16}" stroke="#7f9887" stroke-width="2"/>
+      ${wheels}
+      <path d="M${x+14} ${y-3}H${x+width-14}" fill="none" stroke="#187a68" stroke-width="2.5" stroke-dasharray="12 14" opacity="0" data-node="${key}-belt"/>
+      <path d="M${motorX+4} ${y+26}h34l6 6v20h-40Z" fill="#769285" stroke="#4c6a59" stroke-width="1"/>
+      <rect x="${motorX}" y="${y+25}" width="39" height="27" rx="5" fill="url(#${id}Steel)" stroke="#668171" stroke-width="1"/>
+      <path d="M${motorX+7} ${y+30}v16m5-16v16m5-16v16m5-16v16" stroke="#819b8c" stroke-width="1.5"/>
+      <circle cx="${motorX+32}" cy="${y+38}" r="5" fill="#cedad0" stroke="#6b8474" stroke-width="1"/><circle cx="${motorX+32}" cy="${y+38}" r="3" fill="#9caf9f" data-node="${key}-motor"/>
+    </g>`;
+  }
+  function workpiece(id,prefix,group,waiting=false) {
+    return `<g data-node="${group}" visibility="hidden" filter="url(#${id}Shadow)">
+      <path d="M-18-12l5-5h31v26l-5 6h-31Z" fill="#bf8a30" stroke="#936b34" stroke-width="1" data-node="${prefix}-edge"/>
+      <rect x="-18" y="-12" width="32" height="27" rx="2" fill="url(#${id}Raw)" stroke="#a37c3a" stroke-width="1" data-node="${prefix}-body"/>
+      <path d="M-16-10H12M-16-10V12" fill="none" stroke="#fff3c8" stroke-width="1.1" opacity=".8"/>
+      <path d="M-18-12l5-5h31l-4 5Z" fill="#f1d497" stroke="#b08a47" stroke-width=".7" data-node="${prefix}-top"/>
+      <path d="M-11-6H7M-11 9H7" stroke="#9b722e" stroke-width=".8" opacity=".65" data-node="${prefix}-score"/>
+      <g data-node="${prefix}-hole" visibility="hidden"><circle cx="-2" cy="1" r="7" fill="#657f7d" stroke="#edf5ee" stroke-width="1.5"/><circle cx="-1" cy="2" r="4.6" fill="#294f4a"/><path d="M-6 2A5 5 0 0 1 0-3" fill="none" stroke="#a7c2b8" stroke-width="1"/></g>
+      ${waiting?'<path d="M-23 24h46" stroke="#c09a4a" stroke-width="1.6" stroke-dasharray="3 3"/>':''}
+    </g>`;
   }
   function mount(container) {
     serial += 1;
@@ -324,12 +378,19 @@
     svg.innerHTML = `<title id="${id}Title">PLC production cell: conveyor, robot and CNC machine</title><desc id="${id}Desc" data-node="description">A raw part arrives at a stop gate. The robot loads the CNC machine and moves the finished part to the outfeed.</desc>
       <defs>
         <pattern id="${id}Grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#d9dfd5" stroke-width=".6"/></pattern>
-        <linearGradient id="${id}Body" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f9faf4"/><stop offset="1" stop-color="#dfe6dc"/></linearGradient>
-        <linearGradient id="${id}Window" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d8e7e0" stop-opacity=".88"/><stop offset="1" stop-color="#c6dbd1" stop-opacity=".5"/></linearGradient>
-        <linearGradient id="${id}Raw"><stop stop-color="#e6b657"/><stop offset=".5" stop-color="#f3d38b"/><stop offset="1" stop-color="#cf9a39"/></linearGradient>
-        <linearGradient id="${id}Metal"><stop stop-color="#b8c9c9"/><stop offset=".45" stop-color="#e7f0ec"/><stop offset="1" stop-color="#8ba7a4"/></linearGradient>
+        <linearGradient id="${id}Body" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#fffff8"/><stop offset=".45" stop-color="#eaf0e5"/><stop offset="1" stop-color="#c7d6c9"/></linearGradient>
+        <linearGradient id="${id}Steel" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="#fafcf6"/><stop offset=".3" stop-color="#d8e4da"/><stop offset=".56" stop-color="#a7beb1"/><stop offset=".66" stop-color="#d9e5db"/><stop offset="1" stop-color="#a0b5a6"/></linearGradient>
+        <linearGradient id="${id}Frame" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="#f6faf1"/><stop offset=".46" stop-color="#d2dfd2"/><stop offset="1" stop-color="#a4baa9"/></linearGradient>
+        <linearGradient id="${id}Teal" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#82aa98"/><stop offset=".48" stop-color="#466f60"/><stop offset="1" stop-color="#244e40"/></linearGradient>
+        <linearGradient id="${id}Recess" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#526f60"/><stop offset=".13" stop-color="#a5bbae"/><stop offset=".75" stop-color="#d6e2d4"/><stop offset="1" stop-color="#9eb5a2"/></linearGradient>
+        <linearGradient id="${id}Window" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#e2f4ec" stop-opacity=".48"/><stop offset=".4" stop-color="#b5d3c5" stop-opacity=".2"/><stop offset="1" stop-color="#72a493" stop-opacity=".38"/></linearGradient>
+        <linearGradient id="${id}Raw" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#f4d796"/><stop offset=".48" stop-color="#dfb85f"/><stop offset="1" stop-color="#ba8a32"/></linearGradient>
+        <linearGradient id="${id}Metal" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#f4faf4"/><stop offset=".4" stop-color="#c9dcd3"/><stop offset=".65" stop-color="#f2f7ee"/><stop offset="1" stop-color="#8fac9e"/></linearGradient>
+        <linearGradient id="${id}Arm" x1="0" y1="50" x2="0" y2="350" gradientUnits="userSpaceOnUse"><stop stop-color="#edf7ec"/><stop offset=".4" stop-color="#a7cbb7"/><stop offset="1" stop-color="#638f79"/></linearGradient>
+        <radialGradient id="${id}Hub"><stop stop-color="#fcfff7"/><stop offset=".53" stop-color="#e1ecdf"/><stop offset=".76" stop-color="#9bb9a5"/><stop offset="1" stop-color="#527d65"/></radialGradient>
+        <linearGradient id="${id}Floor" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="#dae3d7" stop-opacity=".1"/><stop offset="1" stop-color="#d7e1d2" stop-opacity=".72"/></linearGradient>
         <clipPath id="${id}DoorClip"><rect x="641" y="139" width="160" height="130" rx="4"/></clipPath>
-        <filter id="${id}Shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#233e35" flood-opacity=".12"/></filter>
+        <filter id="${id}Shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="1" dy="3" stdDeviation="2" flood-color="#233e35" flood-opacity=".16"/></filter>
       </defs>
       <style>
         .cell-scene .cs-label{font:500 12px system-ui,sans-serif;fill:#627268;letter-spacing:.1px}
@@ -338,49 +399,86 @@
         .cell-scene .cs-small{font:500 10px ui-monospace,SFMono-Regular,Consolas,monospace;fill:#849087;letter-spacing:.65px}
       </style>
       <rect width="1100" height="440" rx="12" fill="#f7f7ef"/>
-      <rect x="32" y="24" width="1036" height="382" fill="url(#${id}Grid)" opacity=".47"/>
-      <path d="M47 367H1061" stroke="#b9c6b9" stroke-width="1"/>
-      <ellipse cx="511" cy="354" rx="71" ry="10" fill="#244d3d" opacity=".075"/>
-      <ellipse cx="733" cy="290" rx="137" ry="10" fill="#244d3d" opacity=".065"/>
+      <rect x="32" y="24" width="1036" height="382" fill="url(#${id}Grid)" opacity=".26"/>
+      <path d="M75 247H1025L1066 366H42Z" fill="url(#${id}Floor)"/>
+      <path d="M422 348l31-55h104l38 55Z" fill="#d3dfce" opacity=".55"/><path d="M443 348l24-43h76l26 43" fill="none" stroke="#bdcdb8" stroke-width="1" stroke-dasharray="4 5"/>
+      <path d="M47 367H1061" stroke="#adbeaa" stroke-width="1"/>
+      <ellipse cx="511" cy="354" rx="75" ry="10" fill="#244d3d" opacity=".1"/><ellipse cx="509" cy="353" rx="48" ry="5" fill="#244d3d" opacity=".08"/>
+      <ellipse cx="739" cy="291" rx="132" ry="9" fill="#244d3d" opacity=".09"/>
       <text x="67" y="64" class="cs-small">01 / ARRIVAL</text><text x="67" y="86" class="cs-title">Infeed &amp; detection</text>
       <text x="862" y="64" class="cs-small">03 / OUTPUT</text><text x="862" y="86" class="cs-title">Finished workpiece</text>
       <path d="M126 119h52m-7-5 7 5-7 5M929 119h52m-7-5 7 5-7 5" fill="none" stroke="#b2bfb3" stroke-width="1.5" stroke-linecap="round"/>
-      ${conveyor(67,285,294,'M1')}
-      ${conveyor(831,296,221,'M2')}
+      ${conveyor(67,285,294,'M1',id)}
+      ${conveyor(831,296,221,'M2',id)}
       <g aria-hidden="true">
-        <path d="M625 107h208l25 17v153H625Z" fill="#d9e2d7" stroke="#4f685a" stroke-width="2"/>
-        <path d="M833 107v170h25V124Z" fill="#c9d6c8" stroke="#4f685a" stroke-width="1.5"/>
-        <rect x="617" y="107" width="217" height="172" rx="7" fill="url(#${id}Body)" stroke="#4f685a" stroke-width="2"/>
-        <path d="M617 132h217" stroke="#8da18f" stroke-width="1.3"/>
-        <text x="635" y="123" class="cs-small" style="fill:#546e5e;letter-spacing:1.4px">CNC · MILLING STATION</text>
-        <rect x="641" y="139" width="160" height="130" rx="4" fill="#e1e9df" stroke="#829888" stroke-width="1.5"/>
-        <path d="M653 142v116h140" fill="none" stroke="#b3c3b3" stroke-width="3"/>
-        <path d="M658 257h134M665 264h119" stroke="#718976" stroke-width="3"/>
-        <path d="M675 248v9m15-9v9m15-9v9m15-9v9m15-9v9m15-9v9m15-9v9" stroke="#99ae9b" stroke-width="1.3"/>
-        <g data-node="spindle"><path d="M704 139v44h25v-44" fill="#b8c8bc" stroke="#526e5c" stroke-width="1.5"/><rect x="699" y="179" width="35" height="23" rx="3" fill="#edf2e9" stroke="#526e5c" stroke-width="1.6"/><path d="M711 203v17h11v-17" fill="#8da69a" stroke="#526e5c" stroke-width="1.4"/><path d="M713 208h8m-8 5h8m-8 5h8" stroke="#e3ede4" stroke-width="1.4" data-node="spindle-lines"/></g>
+        <path d="M625 103h208l27 18v155l-26 8H625Z" fill="#405965" stroke="#344e59" stroke-width="1.6"/>
+        <path d="M834 108l26 14v154l-26 7Z" fill="#4b6570"/>
+        <path d="M842 139l12 6v94l-12-2Z" fill="#3a525e"/>
+        <path d="M844 149l7 4m-7 5 7 4m-7 5 7 4m-7 5 7 4m-7 5 7 4m-7 5 7 4m-7 5 7 4" stroke="#6e8590" stroke-width="2"/>
+        <rect x="617" y="107" width="217" height="172" rx="8" fill="url(#${id}Body)" stroke="#435d62" stroke-width="1.7"/>
+        <path d="M625 109h201q5 0 5 5v156" fill="none" stroke="#fffef7" stroke-width="2" opacity=".85"/>
+        <path d="M617 132v-17q0-8 8-8h201q8 0 8 8v17Z" fill="#304d58"/>
+        <path d="M625 111h201" stroke="#6d8790" stroke-width="1"/>
+        <text x="633" y="123" style="font:650 10px system-ui,sans-serif;fill:#e8f0e8;letter-spacing:1.5px">CNC / MILLING STATION</text>
+        <circle cx="820" cy="120" r="2" fill="#a8c3af"/>
+        <rect x="637" y="137" width="167" height="134" rx="6" fill="#80988b"/>
+        <rect x="641" y="139" width="160" height="130" rx="4" fill="url(#${id}Recess)" stroke="#5c796b" stroke-width="1"/>
+        <path d="M649 143v113h145" fill="none" stroke="#dce9dc" stroke-width="1.5" opacity=".7"/>
+        <path d="M656 257l9-10h119l9 10v6H656Z" fill="url(#${id}Steel)" stroke="#6d8978" stroke-width="1"/>
+        <path d="M663 255h122m-118-4h113" stroke="#627d6e" stroke-width="1"/>
+        <path d="M685 253v-10h12v10m41 0v-10h12v10" fill="#708b7b" stroke="#506e60" stroke-width="1"/>
+        <rect x="696" y="252" width="43" height="6" rx="1" fill="#a6bfb0" stroke="#668674" stroke-width=".8"/>
+        <path d="M681 145v92m69-92v92" stroke="#a3baab" stroke-width="3"/><path d="M680 145v92m69-92v92" stroke="#dce9dd" stroke-width="1"/>
+        <g data-node="spindle">
+          <path d="M703 139v44h27v-44" fill="url(#${id}Steel)" stroke="#5d7a6b" stroke-width="1"/>
+          <path d="M708 144v31m17-31v31" stroke="#f5faf0" stroke-width="1.5"/>
+          <path d="M699 178l4-5h27l5 5v24h-36Z" fill="#4d6d62" stroke="#38594e" stroke-width="1"/>
+          <rect x="699" y="179" width="35" height="22" rx="3" fill="url(#${id}Steel)" stroke="#627f6e" stroke-width="1"/>
+          <path d="M704 183h25m-25 3h25" stroke="#f6faf2" stroke-width="1"/>
+          <path d="M708 201h17l-3 7h-11Z" fill="#4c6661" stroke="#3d5a50" stroke-width="1"/>
+          <path d="M713 208v12h7v-12" fill="#acbdb3" stroke="#58796b" stroke-width="1"/>
+          <path d="M714 209l5 3-5 3 5 3" fill="none" stroke="#eaf4eb" stroke-width="1.2" data-node="spindle-lines"/>
+        </g>
         <g data-node="chips" visibility="hidden" stroke="#ba8931" stroke-width="1.6" stroke-linecap="round"><path d="M702 230l-7-4m35 5 6-6m-29 10-8 2m31 1 7 3"/></g>
-        <rect x="810" y="145" width="14" height="35" rx="3" fill="#415f51"/><rect x="813" y="149" width="8" height="10" rx="1" fill="#91baaa" data-node="cnc-screen"/><circle cx="817" cy="166" r="2" fill="#cfb871"/><circle cx="817" cy="174" r="2" fill="#9fb3a4"/>
-        <path d="M631 280v8h25v-8m143 0v8h25v-8" stroke="#637e69" stroke-width="2" fill="#b6c6b8"/>
-        <path d="M824 105V88" stroke="#607a66" stroke-width="3"/><rect x="819" y="77" width="10" height="9" rx="2" fill="#b2c4b4" data-node="cnc-lamp"/>
+        <rect x="809" y="145" width="17" height="45" rx="3" fill="#34535d" stroke="#728c88" stroke-width="1"/><rect x="812" y="149" width="11" height="14" rx="1" fill="#91baaa" data-node="cnc-screen"/><path d="M814 153h7m-7 3h4m-4 3h6" stroke="#dfefe0" stroke-width=".8"/>
+        <circle cx="814" cy="170" r="1.5" fill="#9db8a9"/><circle cx="821" cy="170" r="1.5" fill="#9db8a9"/><circle cx="818" cy="181" r="3" fill="#d3ad64" stroke="#b9914e" stroke-width=".7"/>
+        <path d="M812 246h12m-12 4h12m-12 4h12" stroke="#98b29f" stroke-width="1.1"/>
+        <path d="M631 280v8h25v-8m143 0v8h25v-8" stroke="#435e58" stroke-width="1" fill="#6c8478"/>
+        <path d="M628 288h31m137 0h31" stroke="#314e48" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M822 105V89" stroke="#607a66" stroke-width="3"/><rect x="816" y="77" width="12" height="13" rx="3" fill="#b2c4b4" stroke="#6f8b78" stroke-width=".8" data-node="cnc-lamp"/><path d="M819 80v6" stroke="#eff8e9" stroke-width="1.5" opacity=".7"/>
       </g>
-      <g data-node="main-part" visibility="hidden" filter="url(#${id}Shadow)"><rect x="-18" y="-15" width="36" height="30" rx="3" fill="url(#${id}Raw)" stroke="#986b2e" stroke-width="1.5" data-node="part-body"/><path d="M-11-8H11M-11 8H11" stroke="#a67d37" stroke-width="1.1" opacity=".65" data-node="part-score"/><circle cx="0" cy="0" r="6" fill="none" stroke="#6b8a82" stroke-width="2" visibility="hidden" data-node="part-hole"/></g>
-      <g clip-path="url(#${id}DoorClip)"><g data-node="door"><rect x="641" y="139" width="160" height="130" rx="4" fill="url(#${id}Window)" stroke="#527364" stroke-width="1.5"/><rect x="651" y="149" width="133" height="96" rx="3" fill="#eef5ed" fill-opacity=".12" stroke="#9db4a5"/><path d="M659 159l42 0-42 39Z" fill="#ffffff" opacity=".24"/><path d="M791 192v24" stroke="#4e6d5b" stroke-width="4" stroke-linecap="round"/></g></g>
-      <g data-node="waiting-part" visibility="hidden"><rect x="-18" y="-15" width="36" height="30" rx="3" fill="url(#${id}Raw)" stroke="#986b2e" stroke-width="1.5"/><path d="M-11-8H11M-11 8H11" stroke="#a67d37" stroke-width="1.1" opacity=".65"/><path d="M-24 24h48" stroke="#c09a4a" stroke-width="1.6" stroke-dasharray="3 3"/></g>
+      ${workpiece(id,'part','main-part')}
+      <g clip-path="url(#${id}DoorClip)"><g data-node="door">
+        <rect x="641" y="139" width="160" height="130" rx="4" fill="url(#${id}Window)" stroke="#375f54" stroke-width="1.5"/>
+        <rect x="647" y="145" width="137" height="112" rx="3" fill="none" stroke="#b9d2c2" stroke-width="2"/>
+        <path d="M652 149h68l-68 72ZM667 255h20l91-91v-15h-1Z" fill="#fffef8" opacity=".15"/>
+        <path d="M788 182h9v39h-9" fill="#a7c4b4" stroke="#466f5e" stroke-width="1"/><path d="M793 187v29" stroke="#355b4b" stroke-width="4" stroke-linecap="round"/><path d="M791 187v27" stroke="#e0eede" stroke-width="1"/>
+        <path d="M648 265h144" stroke="#42665b" stroke-width="2"/>
+      </g></g>
+      ${workpiece(id,'waiting','waiting-part',true)}
       <g data-node="gate"><rect x="346" y="302" width="18" height="25" rx="3" fill="#c8d4c8" stroke="#526c5c" stroke-width="1.6"/><path d="M355 304v-31" stroke="#577563" stroke-width="7" data-node="gate-shaft"/><path d="M346 273h18" stroke="#365b49" stroke-width="5" stroke-linecap="round" data-node="gate-stop"/></g>
       <g><path d="M293 302v-37" stroke="#86998a" stroke-width="3"/><rect x="286" y="260" width="15" height="13" rx="2" fill="#e4eade" stroke="#536e5e" stroke-width="1.5"/><circle cx="297" cy="266" r="2.5" fill="#9aada0" data-node="sensor-eye"/><path d="M302 266h39" stroke="#17806b" stroke-width="1.5" stroke-dasharray="3 4" opacity=".15" data-node="sensor-beam"/></g>
       <g data-node="robot" filter="url(#${id}Shadow)">
-        <path d="M470 346l10-32h43l12 32Z" fill="#b9cbbc" stroke="#385a47" stroke-width="2"/><rect x="463" y="342" width="79" height="10" rx="3" fill="#d8e3d6" stroke="#385a47" stroke-width="2"/>
-        <path d="M484 316V195q0-18 16-18t16 18v121" fill="#d5e3d5" stroke="#385a47" stroke-width="2"/>
-        <path data-node="arm-outline" d="M500 289L390 110L505 143" stroke="#365c49" stroke-width="25" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-        <path data-node="arm-body" d="M500 289L390 110L505 143" stroke="#c0d8c6" stroke-width="19" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-        <path data-node="arm-inlay" d="M500 289L390 110L505 143" stroke="#f1f6eb" stroke-width="3" opacity=".75" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-        <circle cx="500" cy="195" r="19" fill="#e4ede0" stroke="#365c49" stroke-width="2"/><circle cx="500" cy="195" r="9" fill="#7ea38c" stroke="#496e57" stroke-width="1.4"/>
-        <g data-node="elbow"><circle r="16" fill="#edf3e7" stroke="#365c49" stroke-width="2"/><circle r="7" fill="#8aac94"/><path d="M-9 0H9" stroke="#fffdf5" stroke-width="2"/></g>
-        <g data-node="gripper"><circle r="10" fill="#edf3e7" stroke="#365c49" stroke-width="2"/><circle r="3.5" fill="#739781"/><path d="M0 10v7" stroke="#426650" stroke-width="5"/><path d="M-15 17v13h6m24-13v13h-6" fill="none" stroke="#426650" stroke-width="3" stroke-linecap="round" data-node="fingers"/></g>
+        <path d="M470 344l10-32h43l14 32Z" fill="url(#${id}Teal)" stroke="#3c5a57" stroke-width="1.5"/>
+        <path d="M478 338l7-22h34" fill="none" stroke="#a8c3ac" stroke-width="1.5" opacity=".8"/>
+        <path d="M463 342h79v9h-79Z" fill="#304e56" stroke="#2d4850" stroke-width="1"/><path d="M464 343h77" stroke="#89a697" stroke-width="2"/>
+        <path d="M484 316V195q0-18 16-18t16 18v121Z" fill="url(#${id}Body)" stroke="#4d6c61" stroke-width="1.5"/>
+        <path d="M508 202v109h7V198Z" fill="#abc1ad"/><path d="M488 214v95" stroke="#fdfef4" stroke-width="2"/>
+        <rect x="491" y="270" width="13" height="31" rx="3" fill="#8ba997" opacity=".65"/><path d="M494 276h7m-7 4h7m-7 4h7m-7 4h7" stroke="#d9e8d5" stroke-width="1"/>
+        <path data-node="arm-cable" d="M510 211L600 91L315 140" stroke="#3d5456" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+        <path data-node="arm-cable-highlight" d="M510 211L600 91L315 140" stroke="#809a8e" stroke-width="1.3" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+        <path data-node="arm-outline" d="M500 195L590 78L315 140" stroke="#344f59" stroke-width="28" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+        <path data-node="arm-body" d="M500 195L590 78L315 140" stroke="url(#${id}Arm)" stroke-width="23" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+        <path data-node="arm-bevel" d="M500 195L590 78L315 140" stroke="#e8f5df" stroke-width="3.2" opacity=".9" fill="none" stroke-linejoin="round" stroke-linecap="round" transform="translate(-3 -4)"/>
+        <path data-node="arm-inlay" d="M500 195L590 78L315 140" stroke="#5d8e78" stroke-width="5" opacity=".72" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+        <g transform="translate(500 195)"><circle r="24" fill="#3b5861" stroke="#304951" stroke-width="1.3"/><circle r="20.5" fill="url(#${id}Hub)" stroke="#a7beab" stroke-width="1"/><circle r="12" fill="#3c5a64" stroke="#dce8da" stroke-width="1"/><circle r="6.5" fill="#779c88"/><path d="M-4 0h8M0-4v8" stroke="#b6d0bb" stroke-width="1.1"/><g fill="#edf5e6" stroke="#779882" stroke-width=".7"><circle cx="0" cy="-16" r="1.8"/><circle cx="16" cy="0" r="1.8"/><circle cx="0" cy="16" r="1.8"/><circle cx="-16" cy="0" r="1.8"/></g></g>
+        <g data-node="elbow"><circle r="19" fill="#344f5c" stroke="#2c4752" stroke-width="1.3"/><circle r="15.5" fill="url(#${id}Hub)" stroke="#c8dbc7" stroke-width=".8"/><circle r="8" fill="#3d5b63"/><circle r="3.5" fill="#94b69c"/><g fill="#edf5e6"><circle cx="0" cy="-12" r="1.5"/><circle cx="12" cy="0" r="1.5"/><circle cx="0" cy="12" r="1.5"/><circle cx="-12" cy="0" r="1.5"/></g></g>
+        <g data-node="gripper"><circle r="12" fill="#3c5760" stroke="#2c4951" stroke-width="1.2"/><circle r="8" fill="url(#${id}Steel)" stroke="#adc6b2" stroke-width=".8"/><circle r="3" fill="#577e6e"/><rect x="-6" y="10" width="12" height="9" rx="2" fill="url(#${id}Steel)" stroke="#46695b" stroke-width="1"/><rect x="-24" y="14" width="48" height="6" rx="2" fill="url(#${id}Steel)" stroke="#46695b" stroke-width="1"/><path d="M-15 17v13h6m24-13v13h-6" fill="none" stroke="#3e5b61" stroke-width="3.5" stroke-linecap="round" data-node="fingers"/></g>
+        <circle cx="472" cy="347" r="1.8" fill="#bacabb"/><circle cx="533" cy="347" r="1.8" fill="#bacabb"/>
       </g>
-      <g data-node="carried-part" visibility="hidden" filter="url(#${id}Shadow)"><rect x="-18" y="-15" width="36" height="30" rx="3" fill="url(#${id}Raw)" stroke="#986b2e" stroke-width="1.5" data-node="carried-body"/><path d="M-11-8H11M-11 8H11" stroke="#a67d37" stroke-width="1.1" opacity=".65" data-node="carried-score"/><circle cx="0" cy="0" r="6" fill="none" stroke="#6b8a82" stroke-width="2" visibility="hidden" data-node="carried-hole"/></g>
+      ${workpiece(id,'carried','carried-part')}
       ${badge(78,383,'M1','Infeed motor','M1')}${badge(283,383,'GT','Stop gate','GT')}${badge(454,383,'RL/RU','Robot transfer','robot')}${badge(657,383,'CNS','CNC spindle','CNS')}${badge(868,383,'M2','Outfeed motor','M2')}
-      <g><path d="M285 243l-19-25h-32" fill="none" stroke="#98ac9b" stroke-width="1"/><text x="220" y="213" class="cs-tag">SN</text><text x="244" y="213" class="cs-label">Part sensor</text></g>
+      <g><path d="M285 243l-19-25h-92" fill="none" stroke="#98ac9b" stroke-width="1"/><text x="160" y="213" class="cs-tag">SN</text><text x="184" y="213" class="cs-label">Part sensor</text></g>
       <text x="454" y="426" class="cs-small" data-node="robot-state">ROBOT READY</text>
       <text x="1060" y="426" text-anchor="end" class="cs-small" data-node="scene-state">PHYSICAL CELL · AT REST</text>`;
     container.append(svg);
@@ -455,7 +553,9 @@
     const theta = Math.atan2(dy,dx)+Math.acos(clamp((150*150+d*d-285*285)/(2*150*d),-1,1));
     const elbow = {x:500+150*Math.cos(theta),y:195+150*Math.sin(theta)};
     const armPath = `M500 195L${elbow.x.toFixed(2)} ${elbow.y.toFixed(2)}L${tip.x.toFixed(2)} ${tip.y.toFixed(2)}`;
-    for (const name of ['arm-outline','arm-body','arm-inlay']) set(name,{d:armPath});
+    for (const name of ['arm-outline','arm-body','arm-bevel','arm-inlay']) set(name,{d:armPath});
+    const cablePath=`M510 212Q${elbow.x+23} ${elbow.y+22} ${elbow.x+13} ${elbow.y+11}L${tip.x+5} ${tip.y+7}`;
+    set('arm-cable',{d:cablePath});set('arm-cable-highlight',{d:cablePath});
     set('elbow',{transform:`translate(${elbow.x} ${elbow.y})`});
     set('gripper',{transform:`translate(${tip.x} ${tip.y})`});
     set('fingers',{d:pose.held?'M-20 17v15h5m35-15v15h-5':'M-24 17v15h6m42-15v15h-6'});
@@ -465,6 +565,8 @@
     }
     for (const prefix of ['part','carried']) {
       set(prefix+'-body',{fill:pose.finished?nodes.metalFill:nodes.rawFill,stroke:pose.finished?'#678b83':'#986b2e'});
+      set(prefix+'-edge',{fill:pose.finished?'#809e91':'#bf8a30',stroke:pose.finished?'#5d8073':'#936b34'});
+      set(prefix+'-top',{fill:pose.finished?'#e0eee1':'#f1d497',stroke:pose.finished?'#92b09c':'#b08a47'});
       visible(prefix+'-hole',pose.finished); visible(prefix+'-score',!pose.finished);
     }
     set('door',{transform:pose.doorClosed?'translate(0 0)':'translate(160 0)'});
